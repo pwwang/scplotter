@@ -1,0 +1,19 @@
+---
+title: "All available palettes"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(scplotter)
+```
+
+```{r, fig.width = 10, fig.height = 48}
+#| fig-alt: All available palettes
+show_palettes()
+```

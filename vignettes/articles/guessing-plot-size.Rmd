@@ -1,0 +1,63 @@
+---
+title: "Guessing the plot size"
+---
+
+We provide a `guess_size` argument to help you guess the size of the plot. This is useful when you want to save the plot to a file and you want to make sure it fits well. The `guess_size` argument will return the width and height of the plot in pixels. You can then use these values to set the `fig.width` and `fig.height` arguments in the chunk options in R Markdown or `options(repr.plot.width = ...)` and `options(repr.plot.height = ...)` in Jupyter notebooks.
+
+The sizes are based on the resolution (`res` argument). So when you pass them to `fig.width`/`fig.height` or `options(repr.plot.width = ...)/options(repr.plot.height = ...)`, you should divide them by the resolution to get the size in inches.
+
+You can also use them to save the plot to a file with the guessed size. For example:
+
+```r
+p <- SomePlot(x, ..., guess_size = TRUE, res = 100)
+png("plot.png", width = p$width, height = p$height, res = 100)
+print(p$plot)
+dev.off()
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(scplotter)
+data(enrichr_multidb_example)
+```
+
+Without guessing the size:
+
+```{r}
+#| fig-alt: Bar plot with multiple databases
+
+EnrichmentPlot(enrichr_multidb_example, plot_type = "bar", facet_by = "Database")
+```
+
+Guessing the size of the plot:
+```{r}
+res <- 100
+p <- EnrichmentPlot(enrichr_multidb_example, plot_type = "bar",
+                    split_by = "Database", guess_size = TRUE, res = res)
+paste("Width:", p$width, "Height:", p$height)
+
+# Next chunk options: fig.width = p$width / res, fig.height = p$height / res
+```
+
+```{r, fig.width = p$width / res, fig.height = p$height / res}
+#| fig-alt: Bar plot with multiple databases
+p$plot
+```
+
+Another example with a clustree plot:
+
+```{r}
+p <- ClustreePlot(ifnb_sub, prefix = "RNA_snn_res.", guess_size = TRUE)
+paste("Width:", p$width, "Height:", p$height)
+```
+
+```{r, fig.width = p$width / 100, fig.height = p$height / 100}
+#| fig-alt: Clustree plot
+p$plot
+```

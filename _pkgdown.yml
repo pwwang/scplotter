@@ -1,0 +1,35 @@
+url: https://pwwang.github.io/scplotter/
+template:
+  bootstrap: 5
+  bootswatch: lumen
+reference:
+  - title: scRNA
+    desc: Functions for plotting single cell RNA-seq data
+    contents:
+    - EnrichmentPlot
+    - ClustreePlot
+    - CellStatPlot
+    - CellDimPlot
+    - LineagePlot
+  - title: Theming
+    desc: Functions for theming
+    contents:
+    - palette_scp
+    - show_palettes
+    - theme_scp
+    - theme_blank
+  # - title: Base Plotting
+  #   desc: Functions for base plotting
+  #   contents:
+  #   - BarPlotBaseSingleValue
+  #   - PieChartBaseSingleValue
+  #   - LinePlotBaseSingleValue
+  - title: Data
+    desc: Builtin data for scplotter
+    contents:
+    - palette_list
+    - enrichr_example
+    - enrichr_multidb_example
+    - ifnb_sub
+    - pancreas_sub
+    - words_excluded

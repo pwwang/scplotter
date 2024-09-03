@@ -1,0 +1,16 @@
+Package: scplotter
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R:
+    person("Panwen", "Wang", , "pwwang@pwwang.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Publication quality plots for single cell data analysis.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Config/Needs/website: rmarkdown
+Depends:
+    R (>= 2.10)
+LazyData: true
+URL: https://github.com/pwwang/scplotter
