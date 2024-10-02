@@ -51,7 +51,10 @@ jobs:
         with:
           cache-version: 2
           extra-packages: |
-            any::devtools, any::pkgdown, any::plotthis
+            any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
+            any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr,
+            any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
+            any::scattermore
 
       - name: Install scplotter
         run: |

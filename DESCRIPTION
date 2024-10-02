@@ -1,6 +1,6 @@
 Package: scplotter
 Title: Publication Quality Plots for Single Cell Data Analysis
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R:
     person("Panwen", "Wang", , "pwwang@pwwang.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4614-8970"))
@@ -15,7 +15,18 @@ Depends:
 Imports:
     Seurat (>= 5.0.0),
     SeuratObject,
-    plotthis
+    plotthis,
+    ComplexHeatmap,
+    clustree,
+    ggwordcloud,
+    ggalluvial,
+    ggpubr,
+    ggforce,
+    ggraph,
+    ggridges,
+    hexbin,
+    igraph,
+    scattermore
 LazyData: true
 Remotes: pwwang/plotthis
 URL: https://github.com/pwwang/scplotter
