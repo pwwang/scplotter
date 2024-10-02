@@ -4,7 +4,7 @@ package:
 
 source:
   git_url: https://github.com/pwwang/scplotter
-  git_rev: 675668eec7ee3cd2f0b10bb8546425954c227387 # on 10/01/2024
+  git_rev: 3a79339f013ce0e9f4d67d09fc10e7b0470f315a # on 10/01/2024
 
 build:
   number: 1
