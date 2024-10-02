@@ -1,16 +1,20 @@
 Package: scplotter
-Title: What the Package Does (One Line, Title Case)
+Title: Publication Quality Plots for Single Cell Data Analysis
 Version: 0.0.0.9000
 Authors@R:
     person("Panwen", "Wang", , "pwwang@pwwang.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Publication quality plots for single cell data analysis.
+           comment = c(ORCID = "0000-0002-4614-8970"))
+Description: Publication quality plots for single cell data analysis
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/Needs/website: rmarkdown
 Depends:
-    R (>= 2.10)
+    R (>= 4.0.0)
+Imports:
+    Seurat (>= 5.0.0),
+    SeuratObject,
+    plotthis
 LazyData: true
 URL: https://github.com/pwwang/scplotter

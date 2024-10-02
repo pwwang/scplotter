@@ -1,3 +1,15 @@
-^vignettes/articles$
 ^LICENSE\.md$
-^data-raw$
+^pkgdown\/.+
+^vignettes/articles$
+^CRAN-SUBMISSION$
+^cran-comments\.md$
+^docs/\.nojekyll$
+^\.github\/.+
+^_pkgdown\.yml$
+^conda\/.+
+^docs\/.+
+^test\.ipynb$
+^.+\.Rcheck/.+$
+^.+\.tar\.gz$
+^\.github\/.+$
+^conda\/.+
