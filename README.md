@@ -45,3 +45,13 @@ $ conda install pwwang::r-scplotter
 [`VolcanoPlot`][9]
 
 ![VolcanoPlot](./man/figures/volcanoplot.png)
+
+[1]: https://github.com/pwwang/plotthis
+[2]: https://zhanghao-njmu.github.io/SCP/index.html
+[3]: https://pwwang.github.io/scplotter/reference/CellDimPlot.html
+[4]: https://pwwang.github.io/scplotter/reference/CellStatPlot.html
+[5]: https://pwwang.github.io/scplotter/reference/ClustreePlot.html
+[6]: https://pwwang.github.io/scplotter/reference/FeatureStatPlot.html
+[7]: https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html
+[8]: https://pwwang.github.io/plotthis/reference/gsea.html
+[9]: https://pwwang.github.io/plotthis/reference/VolcanoPlot.html
