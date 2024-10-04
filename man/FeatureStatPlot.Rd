@@ -7,7 +7,7 @@
 FeatureStatPlot(
   object,
   features,
-  plot_type = c("violin", "box", "bar", "ridge", "dim", "heatmap"),
+  plot_type = c("violin", "box", "bar", "ridge", "dim", "heatmap", "cor"),
   reduction = NULL,
   graph = NULL,
   bg_cutoff = 0,
@@ -178,7 +178,7 @@ FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = 
    plot_type = "dim")
 
 # Heatmap
-features = c(
+features <- c(
    "Sox9", "Anxa2", "Bicc1", # Ductal
    "Neurog3", "Hes6", # EPs
    "Fev", "Neurod1", # Pre-endocrine
@@ -227,4 +227,13 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    plot_type = "heatmap", dot_size = mean, palette = "viridis", add_reticle = TRUE,
    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
    rows_split_by = "group")
+named_features <- list(
+   Ductal = c("Sox9", "Anxa2", "Bicc1"),
+   EPs = c("Neurog3", "Hes6"),
+   `Pre-endocrine` = c("Fev", "Neurod1"),
+   Endocrine = c("Rbp4", "Pyy"),
+   Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
+)
+FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
+   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE)
 }

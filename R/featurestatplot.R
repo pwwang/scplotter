@@ -131,7 +131,7 @@
 #'    plot_type = "dim")
 #'
 #' # Heatmap
-#' features = c(
+#' features <- c(
 #'    "Sox9", "Anxa2", "Bicc1", # Ductal
 #'    "Neurog3", "Hes6", # EPs
 #'    "Fev", "Neurod1", # Pre-endocrine
@@ -180,8 +180,17 @@
 #'    plot_type = "heatmap", dot_size = mean, palette = "viridis", add_reticle = TRUE,
 #'    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
 #'    rows_split_by = "group")
+#' named_features <- list(
+#'    Ductal = c("Sox9", "Anxa2", "Bicc1"),
+#'    EPs = c("Neurog3", "Hes6"),
+#'    `Pre-endocrine` = c("Fev", "Neurod1"),
+#'    Endocrine = c("Rbp4", "Pyy"),
+#'    Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
+#' )
+#' FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
+#'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE)
 FeatureStatPlot <- function(
-    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "heatmap"),
+    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "heatmap", "cor"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = "seurat_clusters", assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -193,28 +202,29 @@ FeatureStatPlot <- function(
 
     reduction <- reduction %||% DefaultDimReduc(object)
     # dim plot may use expression for highlighting cells
-    # Heatmap may use other variables as annotations
+    # Heatmap may use other variables as annotations, but shrinking only includes minimal columns
     should_shrink <- !plot_type %in% c("dim", "heatmap")
-    should_pivot <- !plot_type %in% c("dim", "heatmap")
+    should_pivot <- !plot_type %in% c("dim", "heatmap", "cor")
 
+    unlisted_features <- unname(unlist(features))
     assay_data <- GetAssayData(object, assay = assay, layer = layer)
-    assay_feature <- intersect(features, rownames(assay_data))
+    assay_feature <- intersect(unlisted_features, rownames(assay_data))
     assay_data <- t(as.matrix(assay_data[assay_feature, , drop = FALSE]))
     data <- cbind(Embeddings(object, reduction = reduction), object@meta.data, assay_data)
 
     if (should_shrink) {
         dims <- if (is.null(dims)) NULL else colnames(data)[dims]
-        data <- data[, c(dims, ident, features, group_by, if (isTRUE(split_by)) NULL else split_by), drop = FALSE]
+        data <- data[, c(dims, ident, unlisted_features, group_by, if (isTRUE(split_by)) NULL else split_by), drop = FALSE]
     }
     if (should_pivot) {
-        data <- pivot_longer(data, cols = features, names_to = ".features", values_to = ".value")
-    }
+        data <- pivot_longer(data, cols = unlisted_features, names_to = ".features", values_to = ".value")
 
     if (isTRUE(split_by)) {
         split_by <- ".features"
         facet_by <- NULL
     } else {
         facet_by <- ".features"
+        }
     }
 
     if (plot_type == "violin") {
@@ -242,16 +252,10 @@ FeatureStatPlot <- function(
             }
             graph <- object@graphs[[graph]]
         }
-        if (identical(split_by, ".features")) {
-            split_by = TRUE
-        }
         FeatureDimPlot(
-            data, dims = dims, features = features, graph = graph, bg_cutoff = bg_cutoff,
+            data, dims = dims, features = unlisted_features, graph = graph, bg_cutoff = bg_cutoff,
             split_by = split_by, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "heatmap") {
-        if (identical(split_by, ".features")) {
-            stop("Cannot split by the features (split_by = TRUE) in the heatmap plot.")
-        }
         Heatmap(data, rows = features, columns_by = ident, rows_name = rows_name, split_by = split_by, ...)
     }
 }
