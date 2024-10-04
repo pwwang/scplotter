@@ -18,3 +18,8 @@ reference:
     - GSEASummaryPlot
     - GSEAPlot
     - VolcanoPlot
+  - title: data
+    desc: Built-in data sets
+    contents:
+    - ifnb_sub
+    - pancreas_sub
