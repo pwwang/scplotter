@@ -2,7 +2,7 @@ pandoc: 2.9.2.1
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-10-02T15:24Z
+last_built: 2024-10-05T03:16Z
 urls:
   reference: https://pwwang.github.io/scplotter/reference
   article: https://pwwang.github.io/scplotter/articles
