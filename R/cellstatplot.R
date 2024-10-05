@@ -187,7 +187,7 @@ CellStatPlot <- function(
             } else {
                 data <- data %>% mutate(.frac = 1)  # not used
             }
-        } else if (length(group_by) > 1) {
+        } else if (length(group_by) > 1 && !identical(plot_type, "sankey")) {
             # calculate the frac for each group. we don't want them to be concatenated.
             data <- do.call(rbind, lapply(group_by, function(g) {
                 dat <- data %>%
@@ -313,6 +313,7 @@ CellStatPlot <- function(
         if (isTRUE(swap)) {
             stop("'swap = TRUE' is not supported for 'sankey' plot.")
         }
+        d <<- data
         SankeyPlot(
             data,
             nodes_by = c(ident, group_by),
