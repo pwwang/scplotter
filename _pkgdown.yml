@@ -11,6 +11,11 @@ reference:
     - ClustreePlot
     - EnrichmentPlot
     - FeatureStatPlot
+  - title: data
+    desc: Built-in data sets
+    contents:
+    - ifnb_sub
+    - pancreas_sub
   - title: Re-exports
     desc: Functions that are re-exported from plotthis
     contents:
@@ -18,8 +23,3 @@ reference:
     - GSEASummaryPlot
     - GSEAPlot
     - VolcanoPlot
-  - title: data
-    desc: Built-in data sets
-    contents:
-    - ifnb_sub
-    - pancreas_sub

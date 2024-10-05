@@ -72,6 +72,9 @@ If TRUE, the cells are split by the features.}
 \item For \code{plot_type} "ridge", the arguments are passed to \code{\link{plotthis::RidgePlot}}.
 \item For \code{plot_type} "dim", the arguments are passed to \code{\link{plotthis::FeatureDimPlot}}.
 \item For \code{plot_type} "heatmap", the arguments are passed to \code{\link{plotthis::Heatmap}}.
+\item For \code{plot_type} "cor" with 2 features, the arguments are passed to \code{\link{plotthis::CorPlot}}.
+\item For \code{plot_type} "cor" with more than 2 features, the arguments are passed to \code{\link{plotthis::CorPairsPlot}}.
+\item For \code{plot_type} "dot", the arguments are passed to \code{\link{plotthis::Heatmap}} with \code{cell_type} set to "dot".
 }}
 }
 \value{
