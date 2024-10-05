@@ -2,7 +2,7 @@
 #' @description Statistic plot for features
 #' @param object A seurat object
 #' @param features A character vector of feature names
-#' @param plot_type Type of the plot. It can be "violin", "box", "bar", "ridge", "dim" or "heatmap".
+#' @param plot_type Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"
 #' @param reduction Name of the reduction to plot (for example, "umap"), only used when `plot_type` is "dim" or you can to use the reduction as feature.
 #' @param dims Dimensions to plot, only used when `plot_type` is "dim".
 #' @param rows_name The name of the rows in the heatmap, only used when `plot_type` is "heatmap".
@@ -26,13 +26,16 @@
 #'  * For `plot_type` "ridge", the arguments are passed to \code{\link{plotthis::RidgePlot}}.
 #'  * For `plot_type` "dim", the arguments are passed to \code{\link{plotthis::FeatureDimPlot}}.
 #'  * For `plot_type` "heatmap", the arguments are passed to \code{\link{plotthis::Heatmap}}.
+#'  * For `plot_type` "cor" with 2 features, the arguments are passed to \code{\link{plotthis::CorPlot}}.
+#'  * For `plot_type` "cor" with more than 2 features, the arguments are passed to \code{\link{plotthis::CorPairsPlot}}.
+#'  * For `plot_type` "dot", the arguments are passed to \code{\link{plotthis::Heatmap}} with `cell_type` set to "dot".
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom rlang %||% syms
 #' @importFrom dplyr group_by summarise
 #' @importFrom tidyr pivot_longer
 #' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs
-#' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap
+#' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
 #' @examples
 #' data(pancreas_sub)
 #'
@@ -155,7 +158,8 @@
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
 #'    plot_type = "heatmap", cell_type = "bars", name = "Expression Level")
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
-#'    plot_type = "heatmap", name = "Expression Level", dot_size = mean, add_bg = TRUE,
+#'    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
+#'    dot_size_name = "Percent Expressed", add_bg = TRUE,
 #'    rows_data = rows_data, show_row_names = TRUE, rows_split_by = "group", cluster_rows = FALSE,
 #'    column_annotation = c("Phase", "G2M_score"),
 #'    column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
@@ -164,7 +168,8 @@
 #'    row_annotation_side = "right",
 #'    row_annotation_type = list(TF = "simple", CSPA = "simple"))
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
-#'    plot_type = "heatmap", name = "Expression Level", dot_size = mean, add_bg = TRUE,
+#'    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
+#'    dot_size_name = "Percent Expressed", add_bg = TRUE,
 #'    rows_data = rows_data, show_column_names = TRUE, rows_split_by = "group",
 #'    cluster_rows = FALSE, flip = TRUE, palette = "YlOrRd",
 #'    column_annotation = c("Phase", "G2M_score"),
@@ -177,9 +182,14 @@
 #'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
 #'    cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data)
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
-#'    plot_type = "heatmap", dot_size = mean, palette = "viridis", add_reticle = TRUE,
+#'    plot_type = "heatmap", dot_size = function(x) sum(x > 0) / length(x),
+#'    dot_size_name = "Percent Expressed", palette = "viridis", add_reticle = TRUE,
 #'    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
 #'    rows_split_by = "group")
+#'
+#' # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
+#' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", plot_type = "dot")
+#'
 #' named_features <- list(
 #'    Ductal = c("Sox9", "Anxa2", "Bicc1"),
 #'    EPs = c("Neurog3", "Hes6"),
@@ -189,8 +199,14 @@
 #' )
 #' FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
 #'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE)
+#'
+#' # Correlation plot
+#' FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
+#'    anno_items = c("eq", "r2", "spearman"))
+#' FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
+#'    plot_type = "cor")
 FeatureStatPlot <- function(
-    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "heatmap", "cor"),
+    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = "seurat_clusters", assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -203,8 +219,8 @@ FeatureStatPlot <- function(
     reduction <- reduction %||% DefaultDimReduc(object)
     # dim plot may use expression for highlighting cells
     # Heatmap may use other variables as annotations, but shrinking only includes minimal columns
-    should_shrink <- !plot_type %in% c("dim", "heatmap")
-    should_pivot <- !plot_type %in% c("dim", "heatmap", "cor")
+    should_shrink <- !plot_type %in% c("dim", "heatmap", "dot")
+    should_pivot <- !plot_type %in% c("dim", "heatmap", "dot", "cor")
 
     unlisted_features <- unname(unlist(features))
     assay_data <- GetAssayData(object, assay = assay, layer = layer)
@@ -219,11 +235,11 @@ FeatureStatPlot <- function(
     if (should_pivot) {
         data <- pivot_longer(data, cols = unlisted_features, names_to = ".features", values_to = ".value")
 
-    if (isTRUE(split_by)) {
-        split_by <- ".features"
-        facet_by <- NULL
-    } else {
-        facet_by <- ".features"
+        if (isTRUE(split_by)) {
+            split_by <- ".features"
+            facet_by <- NULL
+        } else {
+            facet_by <- ".features"
         }
     }
 
@@ -257,5 +273,33 @@ FeatureStatPlot <- function(
             split_by = split_by, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "heatmap") {
         Heatmap(data, rows = features, columns_by = ident, rows_name = rows_name, split_by = split_by, ...)
+    } else if (plot_type == "dot") {
+        args <- list(...)
+        args$data <- data
+        args$rows <- features
+        args$columns_by <- ident
+        args$rows_name <- rows_name
+        args$split_by <- split_by
+        args$cell_type <- "dot"
+        args$name <- args$name %||% "Expression Level"
+        args$dot_size <- args$dot_size %||% function(x) sum(x > 0) / length(x)
+        args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
+        args$row_name_annotation <- FALSE
+        args$column_name_annotation <- FALSE
+        args$cluster_rows <- args$cluster_rows %||% FALSE
+        args$cluster_columns <- args$cluster_columns %||% FALSE
+        args$row_names_side <- args$row_names_side %||% "left"
+        do.call(Heatmap, args)
+    } else if (plot_type == "cor") {
+        if (length(unlisted_features) < 2) {
+            stop("The number of features should be at least 2 for correlation plot.")
+        }
+        if (length(unlisted_features) == 2) {
+            CorPlot(data, x = unlisted_features[1], y = unlisted_features[2], group_by = ident, split_by = split_by,
+                facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
+        } else {
+            CorPairsPlot(
+                data, columns = unlisted_features, group_by = ident, split_by = split_by, facet_by = facet_by, ...)
+        }
     }
 }

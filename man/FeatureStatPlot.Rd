@@ -7,7 +7,7 @@
 FeatureStatPlot(
   object,
   features,
-  plot_type = c("violin", "box", "bar", "ridge", "dim", "heatmap", "cor"),
+  plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
   reduction = NULL,
   graph = NULL,
   bg_cutoff = 0,
@@ -31,7 +31,7 @@ FeatureStatPlot(
 
 \item{features}{A character vector of feature names}
 
-\item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim" or "heatmap".}
+\item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}
 
@@ -202,7 +202,8 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "Phase",
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
    plot_type = "heatmap", cell_type = "bars", name = "Expression Level")
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
-   plot_type = "heatmap", name = "Expression Level", dot_size = mean, add_bg = TRUE,
+   plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
+   dot_size_name = "Percent Expressed", add_bg = TRUE,
    rows_data = rows_data, show_row_names = TRUE, rows_split_by = "group", cluster_rows = FALSE,
    column_annotation = c("Phase", "G2M_score"),
    column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
@@ -211,7 +212,8 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    row_annotation_side = "right",
    row_annotation_type = list(TF = "simple", CSPA = "simple"))
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
-   plot_type = "heatmap", name = "Expression Level", dot_size = mean, add_bg = TRUE,
+   plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
+   dot_size_name = "Percent Expressed", add_bg = TRUE,
    rows_data = rows_data, show_column_names = TRUE, rows_split_by = "group",
    cluster_rows = FALSE, flip = TRUE, palette = "YlOrRd",
    column_annotation = c("Phase", "G2M_score"),
@@ -224,9 +226,14 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
    cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data)
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
-   plot_type = "heatmap", dot_size = mean, palette = "viridis", add_reticle = TRUE,
+   plot_type = "heatmap", dot_size = function(x) sum(x > 0) / length(x),
+   dot_size_name = "Percent Expressed", palette = "viridis", add_reticle = TRUE,
    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
    rows_split_by = "group")
+
+# Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
+FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", plot_type = "dot")
+
 named_features <- list(
    Ductal = c("Sox9", "Anxa2", "Bicc1"),
    EPs = c("Neurog3", "Hes6"),
@@ -236,4 +243,10 @@ named_features <- list(
 )
 FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE)
+
+# Correlation plot
+FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
+   anno_items = c("eq", "r2", "spearman"))
+FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
+   plot_type = "cor")
 }

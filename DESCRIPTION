@@ -30,3 +30,6 @@ Imports:
 LazyData: true
 Remotes: pwwang/plotthis
 URL: https://github.com/pwwang/scplotter
+    https://pwwang.github.io/scplotter/
+BugReports:
+    https://github.com/pwwang/scplotter/issues
