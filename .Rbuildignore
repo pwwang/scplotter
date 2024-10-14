@@ -13,3 +13,4 @@
 ^.+\.tar\.gz$
 ^\.github\/.+$
 ^conda\/.+
+^Makefile$

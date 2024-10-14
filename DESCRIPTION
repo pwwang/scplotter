@@ -37,7 +37,8 @@ Suggests:
     igraph,
     clustree,
     concaveman,
-    scattermore
+    scattermore,
+    gridGraphics
 LazyData: true
 Remotes:
     pwwang/plotthis,
