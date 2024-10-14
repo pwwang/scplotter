@@ -3,7 +3,7 @@ template:
   bootstrap: 5
   bootswatch: lumen
 reference:
-  - title: scRNA
+  - title: scRNA-seq
     desc: Functions for plotting single cell RNA-seq data
     contents:
     - CellDimPlot
@@ -11,6 +11,14 @@ reference:
     - ClustreePlot
     - EnrichmentPlot
     - FeatureStatPlot
+  - title: scTCR-seq/scBCR-seq
+    desc: Functions for plotting single cell TCR-seq/BCR-seq data
+    contents:
+    - ClonalVolumePlot
+    - ClonalAbundancePlot
+    - ClonalLengthPlot
+    - ClonalResidencyPlot
+    - ClonalCompositionPlot
   - title: data
     desc: Built-in data sets
     contents:
