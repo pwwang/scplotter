@@ -4,7 +4,7 @@
 #' @param object A seurat object
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot.
-#' @param ... Other arguments passed to \code{\link{plotthis::DimPlot}}
+#' @param ... Other arguments passed to [plotthis::DimPlot].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions
@@ -56,7 +56,7 @@
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 #'             add_mark = TRUE)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
-#'             add_mark = TRUE, mark_expand = unit(1, "mm"))
+#'             add_mark = TRUE, mark_expand = grid::unit(1, "mm"))
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 #'             add_mark = TRUE, mark_alpha = 0.3)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",

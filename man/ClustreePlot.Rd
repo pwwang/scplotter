@@ -9,7 +9,7 @@ ClustreePlot(object, ...)
 \arguments{
 \item{object}{The data frame or Seurat object}
 
-\item{...}{Other arguments passed to \code{\link{plotthis::ClustreePlot}}}
+\item{...}{Other arguments passed to \link[plotthis:ClustreePlot]{plotthis::ClustreePlot}}
 }
 \value{
 A ggplot object or a list if \code{combine} is FALSE

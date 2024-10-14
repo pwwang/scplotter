@@ -20,15 +20,15 @@
 #' @param ylab The y-axis label.
 #' @param x_text_angle The angle of the x-axis text. Only used when `plot_type` is "violin", "bar", or "box".
 #' @param ... Other arguments passed to the plot functions.
-#'  * For `plot_type` "violin", the arguments are passed to \code{\link{plotthis::ViolinPlot}}.
-#'  * For `plot_type` "box", the arguments are passed to \code{\link{plotthis::BoxPlot}}.
-#'  * For `plot_type` "bar", the arguments are passed to \code{\link{plotthis::BarPlot}}.
-#'  * For `plot_type` "ridge", the arguments are passed to \code{\link{plotthis::RidgePlot}}.
-#'  * For `plot_type` "dim", the arguments are passed to \code{\link{plotthis::FeatureDimPlot}}.
-#'  * For `plot_type` "heatmap", the arguments are passed to \code{\link{plotthis::Heatmap}}.
-#'  * For `plot_type` "cor" with 2 features, the arguments are passed to \code{\link{plotthis::CorPlot}}.
-#'  * For `plot_type` "cor" with more than 2 features, the arguments are passed to \code{\link{plotthis::CorPairsPlot}}.
-#'  * For `plot_type` "dot", the arguments are passed to \code{\link{plotthis::Heatmap}} with `cell_type` set to "dot".
+#'  * For `plot_type` "violin", the arguments are passed to [plotthis::ViolinPlot].
+#'  * For `plot_type` "box", the arguments are passed to [plotthis::BoxPlot].
+#'  * For `plot_type` "bar", the arguments are passed to [plotthis::BarPlot].
+#'  * For `plot_type` "ridge", the arguments are passed to [plotthis::RidgePlot].
+#'  * For `plot_type` "dim", the arguments are passed to [plotthis::FeatureDimPlot].
+#'  * For `plot_type` "heatmap", the arguments are passed to [plotthis::Heatmap].
+#'  * For `plot_type` "cor" with 2 features, the arguments are passed to [plotthis::CorPlot].
+#'  * For `plot_type` "cor" with more than 2 features, the arguments are passed to [plotthis::CorPairsPlot].
+#'  * For `plot_type` "dot", the arguments are passed to [plotthis::Heatmap] with `cell_type` set to "dot".
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom rlang %||% syms
@@ -253,7 +253,7 @@ FeatureStatPlot <- function(
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
     } else if (plot_type == "bar") {
         data <- data %>% group_by(!!!syms(unique(c(ident, split_by, ".features")))) %>%
-            summarise(.value = agg(.value))
+            summarise(.value = agg(!!sym(".value")))
         BarPlot(
             data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)

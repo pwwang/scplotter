@@ -4,7 +4,7 @@ Version: 0.0.2
 Authors@R:
     person("Panwen", "Wang", , "pwwang@pwwang.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4614-8970"))
-Description: Publication quality plots for single cell data analysis
+Description: Publication quality plots for single cell data analysis.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -13,19 +13,30 @@ Config/Needs/website: rmarkdown
 Depends:
     R (>= 4.0.0)
 Imports:
-    Seurat (>= 5.0.0),
     SeuratObject,
-    plotthis,
+    scRepertoire (>= 2.0.8),
+    circlize,
+    dplyr,
+    scales,
+    ggnewscale,
+    ggplot2,
+    rlang,
+    stringr,
+    tidyr,
+    plotthis
+Suggests:
     ComplexHeatmap,
-    clustree,
-    ggwordcloud,
+    Seurat (>= 5.0.0),
     ggalluvial,
-    ggpubr,
     ggforce,
+    ggpubr,
     ggraph,
     ggridges,
+    ggwordcloud,
     hexbin,
     igraph,
+    clustree,
+    concaveman,
     scattermore
 LazyData: true
 Remotes: pwwang/plotthis

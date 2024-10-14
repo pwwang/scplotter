@@ -1,2 +1,4 @@
 /test.ipynb
 docs/
+*.Rcheck/
+/*.tar.gz

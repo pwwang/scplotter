@@ -47,15 +47,15 @@
 #' @param name The name of the 'pies'/'heatmap' plot, shown as the name of the main legend. Default is NULL.
 #' @param ylab The y-axis label. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
-#'   * For `bar` plot, see \code{\link{plotthis::BarPlot}}.
-#'   * For `circos` plot, see \code{\link{plotthis::CircosPlot}}.
-#'   * For `pie` chart, see \code{\link{plotthis::PieChart}}.
-#'   * For `pies` plot, see \code{\link{plotthis::Heatmap}}.
-#'   * For `heatmap` plot, see \code{\link{plotthis::Heatmap}}.
-#'   * For `ring`/`donut` plot, see \code{\link{plotthis::RingPlot}}.
-#'   * For `trend` plot, see \code{\link{plotthis::TrendPlot}}.
-#'   * For `area` plot, see \code{\link{plotthis::AreaPlot}}.
-#'   * For `sankey`/`alluvial` plot, see \code{\link{plotthis::SankeyPlot}}.
+#'   * For `bar` plot, see [plotthis::BarPlot].
+#'   * For `circos` plot, see [plotthis::CircosPlot].
+#'   * For `pie` chart, see [plotthis::PieChart].
+#'   * For `pies` plot, see [plotthis::Heatmap].
+#'   * For `heatmap` plot, see [plotthis::Heatmap].
+#'   * For `ring`/`donut` plot, see [plotthis::RingPlot].
+#'   * For `trend` plot, see [plotthis::TrendPlot].
+#'   * For `area` plot, see [plotthis::AreaPlot].
+#'   * For `sankey`/`alluvial` plot, see [plotthis::SankeyPlot].
 #'
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang sym syms
@@ -64,7 +64,7 @@
 #' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap
 #' @export
 #' @examples
-#' library(patchwork)
+#' # library(patchwork)
 #' data(ifnb_sub)
 #'
 #' # Bar plot
@@ -141,17 +141,17 @@ CellStatPlot <- function(
     if (plot_type == "donut") plot_type <- "ring"
     if (plot_type == "alluvial") plot_type <- "sankey"
     if (isFALSE(swap) && plot_type %in% c("sankey", "heatmap")) {
-        group_by <- plotthis:::check_columns(data, group_by, force_factor = TRUE,
+        group_by <- check_columns(data, group_by, force_factor = TRUE,
             allow_multi = TRUE)
     } else {
-        group_by <- plotthis:::check_columns(data, group_by, force_factor = TRUE,
+        group_by <- check_columns(data, group_by, force_factor = TRUE,
             allow_multi = TRUE, concat_multi = TRUE, concat_sep = group_by_sep)
     }
-    split_by <- plotthis:::check_columns(data, split_by, force_factor = TRUE,
+    split_by <- check_columns(data, split_by, force_factor = TRUE,
         allow_multi = TRUE, concat_multi = TRUE, concat_sep = split_by_sep)
-    facet_by <- plotthis:::check_columns(data, facet_by, force_factor = TRUE,
+    facet_by <- check_columns(data, facet_by, force_factor = TRUE,
         allow_multi = TRUE)
-    rows <- plotthis:::check_columns(data, rows, force_factor = TRUE,
+    rows <- check_columns(data, rows, force_factor = TRUE,
         allow_multi = TRUE)
 
     frac <- match.arg(frac)
@@ -183,7 +183,7 @@ CellStatPlot <- function(
             if (frac != "none") {
                 data <- data %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
-                    mutate(.frac = .n / sum(.n))
+                    mutate(.frac = !!sym(".n") / sum(!!sym(".n")))
             } else {
                 data <- data %>% mutate(.frac = 1)  # not used
             }
@@ -198,17 +198,17 @@ CellStatPlot <- function(
                 if (frac == "group") {
                     dat <- dat %>%
                         dplyr::group_by(!!!syms(unique(c(split_by, facet_by, g, columns_split_by)))) %>%
-                        mutate(.frac = .n / sum(.n)) %>%
+                        mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                         ungroup()
                 } else if (frac == "ident") {
                     dat <- dat %>%
                         dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
-                        mutate(.frac = .n / sum(.n)) %>%
+                        mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                         ungroup()
                 } else if (frac == "all") {
                     dat <- dat %>%
                         dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
-                        mutate(.frac = .n / sum(.n)) %>%
+                        mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                         ungroup()
                 } else {
                     dat <- dat %>% mutate(.frac = 1)  # not used
@@ -225,17 +225,17 @@ CellStatPlot <- function(
             if (frac == "group") {
                 data <- data %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by)))) %>%
-                    mutate(.frac = .n / sum(.n)) %>%
+                    mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else if (frac == "ident") {
                 data <- data %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
-                    mutate(.frac = .n / sum(.n)) %>%
+                    mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else if (frac == "all") {
                 data <- data %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
-                    mutate(.frac = .n / sum(.n)) %>%
+                    mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else {
                 data <- data %>% mutate(.frac = 1)  # not used
@@ -313,7 +313,6 @@ CellStatPlot <- function(
         if (isTRUE(swap)) {
             stop("'swap = TRUE' is not supported for 'sankey' plot.")
         }
-        d <<- data
         SankeyPlot(
             data,
             nodes_by = c(ident, group_by),

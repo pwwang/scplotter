@@ -13,7 +13,7 @@ CellDimPlot(object, reduction = NULL, graph = NULL, ...)
 
 \item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
 
-\item{...}{Other arguments passed to \code{\link{plotthis::DimPlot}}}
+\item{...}{Other arguments passed to \link[plotthis:dimplot]{plotthis::DimPlot}.}
 }
 \value{
 A ggplot object or a list if \code{combine} is FALSE
@@ -68,7 +68,7 @@ CellDimPlot(pancreas_sub,
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             add_mark = TRUE)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
-            add_mark = TRUE, mark_expand = unit(1, "mm"))
+            add_mark = TRUE, mark_expand = grid::unit(1, "mm"))
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             add_mark = TRUE, mark_alpha = 0.3)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",

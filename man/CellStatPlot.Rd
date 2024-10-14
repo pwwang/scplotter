@@ -88,15 +88,15 @@ Note that this is different from \code{flip}. \code{flip} is used to transpose t
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{bar} plot, see \code{\link{plotthis::BarPlot}}.
-\item For \code{circos} plot, see \code{\link{plotthis::CircosPlot}}.
-\item For \code{pie} chart, see \code{\link{plotthis::PieChart}}.
-\item For \code{pies} plot, see \code{\link{plotthis::Heatmap}}.
-\item For \code{heatmap} plot, see \code{\link{plotthis::Heatmap}}.
-\item For \code{ring}/\code{donut} plot, see \code{\link{plotthis::RingPlot}}.
-\item For \code{trend} plot, see \code{\link{plotthis::TrendPlot}}.
-\item For \code{area} plot, see \code{\link{plotthis::AreaPlot}}.
-\item For \code{sankey}/\code{alluvial} plot, see \code{\link{plotthis::SankeyPlot}}.
+\item For \code{bar} plot, see \link[plotthis:barplot]{plotthis::BarPlot}.
+\item For \code{circos} plot, see \link[plotthis:chordplot]{plotthis::CircosPlot}.
+\item For \code{pie} chart, see \link[plotthis:PieChart]{plotthis::PieChart}.
+\item For \code{pies} plot, see \link[plotthis:Heatmap]{plotthis::Heatmap}.
+\item For \code{heatmap} plot, see \link[plotthis:Heatmap]{plotthis::Heatmap}.
+\item For \code{ring}/\code{donut} plot, see \link[plotthis:RingPlot]{plotthis::RingPlot}.
+\item For \code{trend} plot, see \link[plotthis:TrendPlot]{plotthis::TrendPlot}.
+\item For \code{area} plot, see \link[plotthis:AreaPlot]{plotthis::AreaPlot}.
+\item For \code{sankey}/\code{alluvial} plot, see \link[plotthis:sankeyplot]{plotthis::SankeyPlot}.
 }}
 }
 \value{
@@ -106,7 +106,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the statistics of the cells.
 }
 \examples{
-library(patchwork)
+# library(patchwork)
 data(ifnb_sub)
 
 # Bar plot
