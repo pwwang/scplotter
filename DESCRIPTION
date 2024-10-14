@@ -42,6 +42,7 @@ Suggests:
     scattermore,
     gridGraphics
 LazyData: true
+LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
     ncborcherding/scRepertoire
