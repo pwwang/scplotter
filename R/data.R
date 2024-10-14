@@ -60,8 +60,10 @@ NULL
 #'   pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
 #'   pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
 #'   pancreas_sub[["Phase"]] <- ifelse(pancreas_sub$S_score > pancreas_sub$G2M_score, "S", "G2M")
-#'   pancreas_sub[["Phase"]][apply(pancreas_sub[[]][, c("S_score", "G2M_score")], 1, max) < 0, ] <- "G1"
-#'   pancreas_sub[["Phase", drop = TRUE]] <- factor(pancreas_sub[["Phase", drop = TRUE]], levels = c("G1", "S", "G2M"))
+#'   pancreas_sub[["Phase"]][
+#'       apply(pancreas_sub[[]][, c("S_score", "G2M_score")], 1, max) < 0, ] <- "G1"
+#'   pancreas_sub[["Phase", drop = TRUE]] <- factor(pancreas_sub[["Phase", drop = TRUE]],
+#'       levels = c("G1", "S", "G2M"))
 #'   pancreas_sub[["PCA"]] <- pancreas_sub[["X_pca"]]
 #'   pancreas_sub[["UMAP"]] <- pancreas_sub[["X_umap"]]
 #'   pancreas_sub[["X_umap"]] <- pancreas_sub[["X_pca"]] <- NULL

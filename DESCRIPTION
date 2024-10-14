@@ -32,6 +32,7 @@ Suggests:
     ggpubr,
     ggraph,
     ggridges,
+    ggupset,
     ggwordcloud,
     ggVennDiagram (>= 1.5.0),
     hexbin,
