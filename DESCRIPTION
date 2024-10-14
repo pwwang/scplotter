@@ -33,6 +33,7 @@ Suggests:
     ggraph,
     ggridges,
     ggwordcloud,
+    ggVennDiagram (>= 1.5.0),
     hexbin,
     igraph,
     clustree,

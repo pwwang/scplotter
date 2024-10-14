@@ -52,7 +52,7 @@ jobs:
           cache-version: 2
           extra-packages: |
             any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
-            any::Seurat, any::concaveman, any::gridGraphics,
+            any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
             any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore
