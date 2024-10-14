@@ -20,6 +20,7 @@ reference:
     - ClonalResidencyPlot
     - ClonalCompositionPlot
     - ClonalOverlapPlot
+    - ClonalDiversityPlot
   - title: data
     desc: Built-in data sets
     contents:

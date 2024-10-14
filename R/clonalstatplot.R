@@ -1076,6 +1076,7 @@ ClonalCompositionPlot <- function(
 #' @param show_column_names Whether to show the column names. Default is TRUE.
 #' @param ... Other arguments passed to the specific plot function [plotthis::Heatmap].
 #' @return A ComplexHeatmap object or a list if `combine` is FALSE
+#' @importFrom stats as.dist
 #' @importFrom rlang syms
 #' @importFrom dplyr %>% filter
 #' @importFrom tidyr separate pivot_longer unite
