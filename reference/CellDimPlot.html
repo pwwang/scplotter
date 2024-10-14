@@ -57,7 +57,7 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other arguments passed to <code><a href="https://pwwang.github.io/plotthis/reference/dimplot.html" class="external-link">plotthis::DimPlot</a></code></p></dd>
+<dd><p>Other arguments passed to plotthis::DimPlot.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -124,37 +124,37 @@
 <span class="r-in"><span><span class="co"># Add various shape of marks</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mark_fun(data = data[!is.na(data[[group_by]]), , drop = FALSE],     mapping = aes(x = !!sym(dims[1]), y = !!sym(dims[2]), color = !!sym(group_by),         fill = !!sym(group_by)), expand = mark_expand, alpha = mark_alpha,     linetype = mark_linetype, show.legend = FALSE):</span> The package "concaveman" is required to calculate concave hulls</span>
-<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_expand <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">1</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mark_fun(data = data[!is.na(data[[group_by]]), , drop = FALSE],     mapping = aes(x = !!sym(dims[1]), y = !!sym(dims[2]), color = !!sym(group_by),         fill = !!sym(group_by)), expand = mark_expand, alpha = mark_alpha,     linetype = mark_linetype, show.legend = FALSE):</span> The package "concaveman" is required to calculate concave hulls</span>
-<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_alpha <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mark_fun(data = data[!is.na(data[[group_by]]), , drop = FALSE],     mapping = aes(x = !!sym(dims[1]), y = !!sym(dims[2]), color = !!sym(group_by),         fill = !!sym(group_by)), expand = mark_expand, alpha = mark_alpha,     linetype = mark_linetype, show.legend = FALSE):</span> The package "concaveman" is required to calculate concave hulls</span>
-<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mark_fun(data = data[!is.na(data[[group_by]]), , drop = FALSE],     mapping = aes(x = !!sym(dims[1]), y = !!sym(dims[2]), color = !!sym(group_by),         fill = !!sym(group_by)), expand = mark_expand, alpha = mark_alpha,     linetype = mark_linetype, show.legend = FALSE):</span> The package "concaveman" is required to calculate concave hulls</span>
-<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_type <span class="op">=</span> <span class="st">"ellipse"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CellDimPlot-13.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_type <span class="op">=</span> <span class="st">"rect"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_expand <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CellDimPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_type <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_alpha <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CellDimPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
+<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="CellDimPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
+<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_type <span class="op">=</span> <span class="st">"ellipse"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="CellDimPlot-17.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
+<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_type <span class="op">=</span> <span class="st">"rect"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="CellDimPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
+<span class="r-in"><span>            add_mark <span class="op">=</span> <span class="cn">TRUE</span>, mark_type <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="CellDimPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Add a density layer</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            add_density <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            add_density <span class="op">=</span> <span class="cn">TRUE</span>, density_filled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 396 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 396 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-17.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-21.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>, density_filled <span class="op">=</span> <span class="cn">TRUE</span>, density_filled_palette <span class="op">=</span> <span class="st">"Blues"</span>,</span></span>
@@ -164,24 +164,24 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 396 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-22.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Add statistical charts</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, stat_by <span class="op">=</span> <span class="st">"Phase"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-19.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, stat_by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  stat_plot_type <span class="op">=</span> <span class="st">"ring"</span>, stat_plot_label <span class="op">=</span> <span class="cn">TRUE</span>, stat_plot_size <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-20.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-24.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, stat_by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  stat_plot_type <span class="op">=</span> <span class="st">"bar"</span>, stat_type <span class="op">=</span> <span class="st">"count"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-21.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-25.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, stat_by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  stat_plot_type <span class="op">=</span> <span class="st">"line"</span>, stat_type <span class="op">=</span> <span class="st">"count"</span>, stat_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>point_size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-22.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-26.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Chane the plot type from point to the hexagonal bin</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
@@ -190,29 +190,29 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 5 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-23.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-27.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            hex <span class="op">=</span> <span class="cn">TRUE</span>, hex_bins <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 4 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 4 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-24.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-28.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            hex <span class="op">=</span> <span class="cn">TRUE</span>, hex_count <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 5 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 5 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-25.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-29.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show neighbors graphs on the plot</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            graph <span class="op">=</span> <span class="st">"RNA_nn"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-26.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-30.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"CellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            graph <span class="op">=</span> <span class="st">"RNA_snn"</span>, edge_color <span class="op">=</span> <span class="st">"grey80"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-27.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-31.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show lineages on the plot based on the pseudotime</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
@@ -221,7 +221,7 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 8 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-28.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-32.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            lineages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Lineage"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, lineages_whiskers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 8 rows containing missing values or values outside the scale range</span>
@@ -230,10 +230,10 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 8 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-plt img"><img src="CellDimPlot-29.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-33.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group_by <span class="op">=</span> <span class="st">"SubCellType"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>            lineages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Lineage"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, lineages_span <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellDimPlot-30.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellDimPlot-34.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
