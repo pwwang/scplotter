@@ -4,7 +4,7 @@
 \alias{MergeClonalGroupings}
 \title{MergeClonalGroupings}
 \usage{
-MergeClonalGroupings(data, groupings)
+MergeClonalGroupings(data, groupings, sep = " // ")
 }
 \arguments{
 \item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or

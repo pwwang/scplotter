@@ -12,7 +12,7 @@
 #' @importFrom tidyr unite
 #' @importFrom scRepertoire addVariable
 #' @keywords internal
-MergeClonalGroupings <- function(data, groupings) {
+MergeClonalGroupings <- function(data, groupings, sep = " // ") {
     if (inherits(data, "Seurat")) {
         if (!"Sample" %in% colnames(data@meta.data)) {
             warning("The 'Sample' column is not found in the meta data, 'orig.indent' will be used instead.")
@@ -21,7 +21,7 @@ MergeClonalGroupings <- function(data, groupings) {
         samples <- unique(data$Sample)
         # combine Sample and group_by so that the count/frequency is calculated for each
         # combined group
-        data@meta.data <- unite(data@meta.data, ".group", !!!syms(groupings), sep = " // ", remove = FALSE)
+        data@meta.data <- unite(data@meta.data, ".group", !!!syms(groupings), sep = sep, remove = FALSE)
     } else {
         samples <- names(data)
         data <- addVariable(data, variable.name = "Sample", variables = samples)
@@ -30,7 +30,7 @@ MergeClonalGroupings <- function(data, groupings) {
         vs <- sapply(samples, function(s) {
             paste0(sapply(groupings, function(group) {
                 data[[s]][, group, drop = TRUE][1]
-            }), collapse = " // ")
+            }), collapse = sep)
         })
         data <- addVariable(data, variable.name = ".group", variables = vs)
     }
@@ -1041,4 +1041,127 @@ ClonalCompositionPlot <- function(
                 xlab = xlab %||% group_name, ylab = ylab, ...)
         }
     }
+}
+
+#' ClonalOverlapPlot
+#'
+#' @description Plot the overlap of the clones in different samples/groups.
+#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
+#'  [scRepertoire::combineExpression].
+#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
+#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
+#'  in the data
+#' @param chain indicate if both or a specific chain should be used - e.g. "both",
+#'  "TRA", "TRG", "IGH", "IGL"
+#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
+#' @param group_by_sep The separator used to concatenate the group_by when multiple columns are used.
+#' @param full Whether to plot the full heatmap, or just a triangle. Default is TRUE.
+#' @param split_by The column name in the meta data to split the plots. Default: NULL
+#' @param order The order of the groups. Default is an empty list.
+#'  It should be a list of values. The names are the column names, and the values are the order.
+#' @param method The method to calculate the overlap. Default is "raw".
+#'  * "overlap" - overlap coefficient
+#'  * "morisita" - Morisita’s overlap index
+#'  * "jaccard" - Jaccard index
+#'  * "cosine" - cosine similarity
+#'  * "raw" - exact number of overlapping clones
+#'  See also [scRepertoire::clonalOverlap].
+#' @param palette The color palette to use. Default is "Blues".
+#' @param label_accuracy The accuracy of the labels. Default is NULL.
+#'  If NULL, it will be 1 for "raw" and 0.01 for other methods.
+#' @param label_cutoff The cutoff for the labels to show. Default is 1e-3.
+#' @param cluster_rows Whether to cluster the rows. Default is FALSE.
+#' @param cluster_columns Whether to cluster the columns. Default is FALSE.
+#' @param show_row_names Whether to show the row names. Default is TRUE.
+#' @param show_column_names Whether to show the column names. Default is TRUE.
+#' @param ... Other arguments passed to the specific plot function [plotthis::Heatmap].
+#' @return A ComplexHeatmap object or a list if `combine` is FALSE
+#' @importFrom rlang syms
+#' @importFrom dplyr %>% filter
+#' @importFrom tidyr separate pivot_longer unite
+#' @importFrom scRepertoire clonalOverlap
+#' @export
+#' @examples
+#' set.seed(8525)
+#' data(contig_list, package = "scRepertoire")
+#' data <- scRepertoire::combineTCR(contig_list,
+#'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
+#' data <- scRepertoire::addVariable(data,
+#'     variable.name = "Type",
+#'     variables = rep(c("B", "L"), 4)
+#' )
+#' data <- scRepertoire::addVariable(data,
+#'     variable.name = "Subject",
+#'     variables = rep(c("P17", "P18", "P19", "P20"), each = 2)
+#' )
+#'
+#' ClonalOverlapPlot(data)
+#' ClonalOverlapPlot(data, clone_call = "strict", label_cutoff = 0,
+#'   label_accuracy = 0.001, method = "morisita", full = FALSE)
+#' ClonalOverlapPlot(data, group_by = c("Subject", "Type"))
+#' ClonalOverlapPlot(data, group_by = "Type", split_by = "Subject")
+ClonalOverlapPlot <- function(
+    data, clone_call = "aa", chain = "both", group_by = "Sample", group_by_sep = "_", full = TRUE,
+    split_by = NULL, order = list(), method = c("raw", "overlap", "morisita", "jaccard", "cosine"),
+    palette = "Blues", label_accuracy = NULL, label_cutoff = 1e-3, cluster_rows = FALSE, cluster_columns = FALSE,
+    show_row_names = TRUE, show_column_names = TRUE, ...
+) {
+    method <- match.arg(method)
+
+    all_groupings <- unique(c(group_by, split_by))
+    data <- MergeClonalGroupings(data, all_groupings)
+    data <- clonalOverlap(data, cloneCall = clone_call, chain = chain, group.by = ".group",
+        method = method, exportTable = TRUE)
+    if (isTRUE(full)) {
+        data[lower.tri(data)] <- data[upper.tri(data)]
+    }
+    #          B // P17 B // P18 B // P19
+    # B // P17       NA        0    0.117
+    # B // P18       NA       NA    0.001
+    # B // P19       NA       NA       NA
+    data$.group <- rownames(data)
+    data <- separate(data, ".group", into = all_groupings, sep = " // ")
+    data <- data %>%
+        pivot_longer(cols = -all_groupings, names_to = ".names", values_to = ".values")
+
+    data <- separate(data, ".names", into = paste(".names", all_groupings, sep = "_"), sep = " // ")
+    if (!is.null(split_by)) {
+        data <- data %>%
+            unite(".split", split_by, sep = " // ", remove = FALSE) %>%
+            unite(".names.split", !!!syms(paste(".names", split_by, sep = "_")), sep = " // ", remove = FALSE) %>%
+            filter(!!sym(".split") == !!sym(".names.split"))
+
+        data <- data[, setdiff(colnames(data), c(".split", ".names.split", paste(".names", split_by, sep = "_"))), drop = FALSE]
+    }
+
+    columns_by <- paste(group_by, collapse = group_by_sep)
+    data <- data %>%
+        unite("rows", !!!syms(paste(".names", group_by, sep = "_")), sep = group_by_sep) %>%
+        unite(!!sym(columns_by), !!!syms(group_by), sep = group_by_sep)
+    rows <- unique(data$rows)
+    data <- data %>% pivot_wider(names_from = "rows", values_from = ".values", values_fill = 0)
+    name <- switch(method,
+        overlap = "Overlap Coefficient",
+        morisita = "Morisita's Overlap Index",
+        jaccard = "Jaccard Index",
+        cosine = "Cosine Similarity",
+        "# Overlap Clones"
+    )
+    label_accuracy <- label_accuracy %||% ifelse(method == "raw", 1, 0.01)
+
+    clustering_distance <- function(m) {
+        values <- m[upper.tri(m)]
+        values <- 1 - scales::rescale(values, to = c(0, 1))
+        m[upper.tri(m)] <- values
+        m[lower.tri(m)] <- m[upper.tri(m)]
+        diag(m) <- 0
+        as.dist(m)
+    }
+
+    Heatmap(data, rows = rows, columns_by = columns_by, split_by = split_by,
+        clustering_distance_rows = function(m) { clustering_distance(t(m)) },
+        clustering_distance_columns = clustering_distance, label_cutoff = label_cutoff,
+        rows_name = columns_by, name = name, palette = palette, label_accuracy = label_accuracy,
+        cluster_rows = cluster_rows, cluster_columns = cluster_columns, cell_type = "label",
+        show_row_names = show_row_names, show_column_names = show_column_names, ...)
 }
