@@ -170,3 +170,103 @@ ClonalDiversityPlot <- function(
     }
 }
 
+#' ClonalRarefactionPlot
+#'
+#' Plot the rarefaction curves
+#'
+#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
+#'  [scRepertoire::combineExpression].
+#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
+#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
+#' @param chain indicate if both or a specific chain should be used - e.g. "both",
+#'  "TRA", "TRG", "IGH", "IGL"
+#' @param group_by A character vector of column names to group the samples. Default is "Sample".
+#' @param group_by_sep The separator for the group_by column. Default is "_".
+#' @param n_boots The number of bootstrap samples. Default is 20.
+#' @param q The hill number. Default is 0.
+#'  * 0 - Species richness
+#'  * 1 - Shannon entropy
+#'  * 2 - Simpson index#'
+#' @param facet_by A character vector of column names to facet the plots. Default is NULL.
+#' @param split_by A character vector of column names to split the plots. Default is NULL.
+#' @param split_by_sep The separator for the split_by column. Default is "_".
+#' @param palette The color palette to use. Default is "Paired".
+#' @param combine Whether to combine the plots into a single plot. Default is TRUE.
+#' @param nrow The number of rows in the combined plot. Default is NULL.
+#' @param ncol The number of columns in the combined plot. Default is NULL.
+#' @param byrow Whether to fill the combined plot by row. Default is TRUE.
+#' @param ... Other arguments passed to [plotthis::RarefactionPlot].
+#' @return A ggplot object or a list if `combine` is FALSE
+#' @importFrom plotthis RarefactionPlot
+#' @export
+#' @examples
+#' set.seed(8525)
+#' data(contig_list, package = "scRepertoire")
+#' data <- scRepertoire::combineTCR(contig_list,
+#'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
+#' data <- scRepertoire::addVariable(data,
+#'     variable.name = "Type",
+#'     variables = rep(c("B", "L"), 4)
+#' )
+#' data <- scRepertoire::addVariable(data,
+#'     variable.name = "Subject",
+#'     variables = rep(c("P17", "P18", "P19", "P20"), each = 2)
+#' )
+#'
+#' ClonalRarefactionPlot(data, type = 1, q = 0, n_boots = 2)
+#' ClonalRarefactionPlot(data, type = 2, q = 0, n_boots = 2)
+#' ClonalRarefactionPlot(data, type = 3, q = 0, n_boots = 2)
+#' ClonalRarefactionPlot(data, q = 1, n_boots = 2)
+#' ClonalRarefactionPlot(data, q = 1, n_boots = 2, group_by = "Type")
+#' ClonalRarefactionPlot(data, n_boots = 2, split_by = "Type")
+ClonalRarefactionPlot <- function(
+    data, clone_call = "aa", chain = "both",
+    group_by = "Sample", group_by_sep = "_",
+    n_boots = 20, q = 0, facet_by = NULL, split_by = NULL, split_by_sep = "_",
+    palette = "Paired", combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, ...
+) {
+    if (!is.null(facet_by)) {
+        stop("'facet_by' is not supported in ClonalRarefactionPlot.")
+    }
+
+    all_groupings <- unique(c(group_by, split_by))
+    data <- MergeClonalGroupings(data, all_groupings)
+
+    .data.wrangle <- getFromNamespace(".data.wrangle", "scRepertoire")
+    .theCall <- getFromNamespace(".theCall", "scRepertoire")
+    .groupList <- getFromNamespace(".groupList", "scRepertoire")
+    is_se_object <- getFromNamespace("is_se_object", "scRepertoire")
+    is_seurat_object <- getFromNamespace("is_seurat_object", "scRepertoire")
+
+    data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE),
+        chain)
+    cloneCall <- .theCall(data, clone_call)
+
+    if (!is_seurat_object(data) && !is_se_object(data)) {
+        data <- .groupList(data, group.by = ".group")
+    }
+
+    if (is.null(split_by)) {
+        matlist <- lapply(data, function(x) { table(x[, cloneCall]) })
+        RarefactionPlot(matlist, q = q, nboot = n_boots, palette = palette,
+            group_name = paste(group_by, sep = group_by_sep), ...)
+    } else {
+        datas <- list()
+        for (nm in names(data)) {
+            nms <- strsplit(nm, " // ", fixed = TRUE)[[1]]
+            names(nms) <- all_groupings
+            gname <- paste(nms[group_by], collapse = group_by_sep)
+            sname <- paste(nms[split_by], collapse = split_by_sep)
+            d <- list(table(data[[nm]][, cloneCall]))
+            names(d) <- gname
+            datas[[sname]] <- c(datas[[sname]], d)
+        }
+
+        plots <- lapply(names(datas), function(nm) {
+            RarefactionPlot(datas[[nm]], q = q, nboot = n_boots, palette = palette,
+                group_name = paste(group_by, sep = group_by_sep), title = nm, ...)
+        })
+
+        combine_plots(plots, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow)
+    }
+}

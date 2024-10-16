@@ -24,6 +24,7 @@ reference:
     - ClonalGeneUsagePlot
     - ClonalPositionalPlot
     - ClonalKmerPlot
+    - ClonalRarefactionPlot
   - title: data
     desc: Built-in data sets
     contents:

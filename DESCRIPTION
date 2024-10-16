@@ -40,7 +40,8 @@ Suggests:
     clustree,
     concaveman,
     scattermore,
-    gridGraphics
+    gridGraphics,
+    iNEXT
 LazyData: true
 LazyDataCompression: xz
 Remotes:
