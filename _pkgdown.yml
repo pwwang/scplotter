@@ -21,6 +21,9 @@ reference:
     - ClonalCompositionPlot
     - ClonalOverlapPlot
     - ClonalDiversityPlot
+    - ClonalGeneUsagePlot
+    - ClonalPositionalPlot
+    - ClonalKmerPlot
   - title: data
     desc: Built-in data sets
     contents:
