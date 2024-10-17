@@ -20,7 +20,7 @@
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
 #'  Not available for 'circos', 'sankey', and 'heatmap' plots.
 #' @param plot_type The type of plot to use. Default is "bar".
-#'   Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", and "sankey"/"alluvial".
+#'   Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", "sankey"/"alluvial", "radar" and "spider".
 #'   'pie' vs 'pies': 'pie' plot will plot a single pie chart for each group, while 'pies' plot will plot multiple pie charts for each group and split.
 #'   'pies' basically is a heatmap with 'cell_type = "pie"'.
 #' @param frac The way of calculating the fraction. Default is "none".
@@ -61,7 +61,7 @@
 #' @importFrom rlang sym syms
 #' @importFrom dplyr %>% summarise mutate ungroup n
 #' @importFrom tidyr drop_na pivot_wider
-#' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap
+#' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot
 #' @export
 #' @examples
 #' # library(patchwork)
@@ -128,11 +128,16 @@
 #' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
 #' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
 #'    frac = "group", columns_split_by = "seurat_annotations", swap = TRUE)
+#'
+#' # Radar plot/Spider plot
+#' pr <- CellStatPlot(ifnb_sub, plot_type = "radar", group_by = "stim")
+#' ps <- CellStatPlot(ifnb_sub, plot_type = "spider", group_by = "stim")
+#' pr | ps
 CellStatPlot <- function(
     object, ident = "seurat_clusters", group_by = NULL, group_by_sep = "_",
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
-    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap"),
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider"),
     swap = FALSE, ylab = NULL, ...
 ) {
     data <- object@meta.data
@@ -361,5 +366,24 @@ CellStatPlot <- function(
             columns_by = if (swap) columns_split_by else group_by,
             columns_split_by = if (swap) group_by else columns_split_by,
             split_by = split_by, ...)
+    } else {
+        if (is.null(group_by)) {
+            stop("Cannot create a '", plot_type, "' plot without specifying 'group_by'.")
+        }
+        if (plot_type == "radar") {
+            RadarPlot(
+                data,
+                x = ifelse(swap, group_by, ident),
+                y = ifelse(identical(frac, "none"), ".n", ".frac"),
+                group_by = ifelse(swap, ident, group_by),
+                split_by = split_by, facet_by = facet_by, ...)
+        } else if (plot_type == "spider") {
+            SpiderPlot(
+                data,
+                x = ifelse(swap, group_by, ident),
+                y = ifelse(identical(frac, "none"), ".n", ".frac"),
+                group_by = ifelse(swap, ident, group_by),
+                split_by = split_by, facet_by = facet_by, ...)
+        }
     }
 }

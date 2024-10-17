@@ -18,7 +18,7 @@ CellStatPlot(
   rows_name = NULL,
   name = NULL,
   plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area",
-    "sankey", "alluvial", "heatmap"),
+    "sankey", "alluvial", "heatmap", "radar", "spider"),
   swap = FALSE,
   ylab = NULL,
   ...
@@ -71,7 +71,7 @@ Only works when \code{group-by} is specified.
 \item{name}{The name of the 'pies'/'heatmap' plot, shown as the name of the main legend. Default is NULL.}
 
 \item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", and "sankey"/"alluvial".
+Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", "sankey"/"alluvial", "radar" and "spider".
 'pie' vs 'pies': 'pie' plot will plot a single pie chart for each group, while 'pies' plot will plot multiple pie charts for each group and split.
 'pies' basically is a heatmap with 'cell_type = "pie"'.}
 
@@ -170,4 +170,9 @@ CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim",
 CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
 CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
    frac = "group", columns_split_by = "seurat_annotations", swap = TRUE)
+
+# Radar plot/Spider plot
+pr <- CellStatPlot(ifnb_sub, plot_type = "radar", group_by = "stim")
+ps <- CellStatPlot(ifnb_sub, plot_type = "spider", group_by = "stim")
+pr | ps
 }
