@@ -1,9 +1,10 @@
 #' Cell-Cell Communication Plot
 #'
 #' @description Plot the cell-cell communication.
-#'  See also the review: https://www.sciencedirect.com/science/article/pii/S2452310021000081
-#'  the LIANA package: https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot
-#'  and the CCPlotR package: https://github.com/Sarah145/CCPlotR
+#'  See also:
+#'  * The review: \url{https://www.sciencedirect.com/science/article/pii/S2452310021000081}
+#'  * The LIANA package: \url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot}
+#'  * The CCPlotR package: \url{https://github.com/Sarah145/CCPlotR}
 #'
 #' @param data A data frame with the cell-cell communication data.
 #'  A typical data frame should have the following columns:
@@ -28,6 +29,11 @@
 #'  * sankey: A sankey plot with the source and target cells as the nodes and the communication as the flows.
 #'  * alluvial: Alias of "sankey".
 #'  * dot: A dot plot with the source and target cells as the nodes and the communication as the dots.
+#' @param method The method to determine the plot entities.
+#'  * aggregation: Aggregate the ligand-receptor pairs interactions for each source-target pair.
+#'    Only the source / target pairs will be plotted.
+#'  * interaction: Plot the ligand-receptor pairs interactions directly.
+#'    The ligand-receptor pairs will also be plotted.
 #' @param magnitude The column name in the data to use as the magnitude of the communication.
 #'  By default, the second last column will be used.
 #'  See `li.mt.show_methods()` for the available methods in `LIANA`.
@@ -71,8 +77,10 @@
 #' @examples
 #' set.seed(8525)
 #' data(cellphonedb_res)
-#' CCCPlot(data = cellphonedb_res)
+#' CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
+#'  theme = "theme_blank", theme_args = list(add_coord = FALSE))
 #' CCCPlot(cellphonedb_res, plot_type = "chord")
+#' CCCPlot(cellphonedb_res, plot_type = "heatmap")
 #' CCCPlot(cellphonedb_res, plot_type = "dot", weighted = FALSE)
 #'
 #' cellphonedb_res_sub <- cellphonedb_res[
@@ -158,7 +166,7 @@ CCCPlot <- function(
         if (plot_type == "network") {
             Network(links, from = source_col, to = target_col, node_fill_by = "name",
                 link_curvature = link_curvature, link_weight_name = link_weight_name, link_alpha = link_alpha,
-                node_fill_name = "Entities", link_weight_by = "interactionStrength", ...)
+                node_fill_name = "Source/Target", link_weight_by = "interactionStrength", ...)
         } else if (plot_type %in% c("chord", "circos")) {
             ChordPlot(links, y = "interactionStrength", from = source_col, to = target_col,
                 ...)
@@ -204,7 +212,7 @@ CCCPlot <- function(
         } else if (plot_type == "heatmap") {
             data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
             all_lrs <- unique(data$ligand_receptor)
-            data <- pivot_wider(data, names_from = ligand_receptor, values_from = magnitude,
+            data <- pivot_wider(data, names_from = "ligand_receptor", values_from = magnitude,
                 values_fill = 0)
             Heatmap(data, rows = all_lrs, rows_name = "Ligand -> Receptor",
                 name = magnitude, columns_by = target_col, columns_split_by = source_col,

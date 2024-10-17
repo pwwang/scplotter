@@ -14,9 +14,11 @@ $ conda install pwwang::r-scplotter
 
 ## Credits
 
-`scplotter` is greatly inspired by the [`SCP`][2] package, where the visualization was detached from the analysis and implemented in the [`plotthis`][1] package. The `scplotter` package is built upon the `plotthis` package and provides a set of even higher-level functions to visualize single-cell sequencing data.
+`scplotter` draws significant inspiration from the [`SCP`][2] package, which separates visualization from analysis and implements it in the [`plotthis`][1] package. Building on `plotthis`, `scplotter` offers advanced functions for visualizing single-cell sequencing data. Special thanks to the [`scRepertoire`][2] package for its APIs that facilitate the analysis of single-cell TCR/BCR sequencing data.
 
 ## Gallery
+
+### scRNA-seq
 
 [`CellDimPlot`][3]
 
@@ -46,6 +48,20 @@ $ conda install pwwang::r-scplotter
 
 ![VolcanoPlot](./man/figures/volcanoplot.png)
 
+[`CCCPlot`][10]
+
+![CCCPlot](./man/figures/cccplot.png)
+
+### scTCR-seq/scBCR-seq
+
+[`ClonalVolumePlot`][11] | [`ClonalAbundancePlot`][12] | [`ClonalResidencyPlot`][13] | [`ClonalCompositionPlot`][14] | [`ClonalOverlapPlot`][15] | [`ClonalGeneUsagePlot`][16]
+
+![clonalstat](./man/figures/clonalstat.png)
+
+[`ClonalRarefactionPlot`][17] | [`ClonalGeneUsagePlot`][18] | [`ClonalDiversityPlot`][19] | [`ClonalPositionalPlot`][20]
+
+![clonaldiv](./man/figures/clonaldiv.png)
+
 [1]: https://github.com/pwwang/plotthis
 [2]: https://zhanghao-njmu.github.io/SCP/index.html
 [3]: https://pwwang.github.io/scplotter/reference/CellDimPlot.html
@@ -55,3 +71,14 @@ $ conda install pwwang::r-scplotter
 [7]: https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html
 [8]: https://pwwang.github.io/plotthis/reference/gsea.html
 [9]: https://pwwang.github.io/plotthis/reference/VolcanoPlot.html
+[10]: https://pwwang.github.io/plotthis/reference/CCCPlot.html
+[11]: https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.html
+[12]: https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.html
+[13]: https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.html
+[14]: https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.html
+[15]: https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.html
+[16]: https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html
+[17]: https://pwwang.github.io/scplotter/reference/ClonalRarefactionPlot.html
+[18]: https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html
+[19]: https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html
+[20]: https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html

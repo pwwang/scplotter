@@ -52,6 +52,14 @@ Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial
 \item dot: A dot plot with the source and target cells as the nodes and the communication as the dots.
 }}
 
+\item{method}{The method to determine the plot entities.
+\itemize{
+\item aggregation: Aggregate the ligand-receptor pairs interactions for each source-target pair.
+Only the source / target pairs will be plotted.
+\item interaction: Plot the ligand-receptor pairs interactions directly.
+The ligand-receptor pairs will also be plotted.
+}}
+
 \item{magnitude}{The column name in the data to use as the magnitude of the communication.
 By default, the second last column will be used.
 See \code{li.mt.show_methods()} for the available methods in \code{LIANA}.
@@ -103,15 +111,20 @@ A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
 Plot the cell-cell communication.
-See also the review: https://www.sciencedirect.com/science/article/pii/S2452310021000081
-the LIANA package: https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot
-and the CCPlotR package: https://github.com/Sarah145/CCPlotR
+See also:
+\itemize{
+\item The review: \url{https://www.sciencedirect.com/science/article/pii/S2452310021000081}
+\item The LIANA package: \url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot}
+\item The CCPlotR package: \url{https://github.com/Sarah145/CCPlotR}
+}
 }
 \examples{
 set.seed(8525)
 data(cellphonedb_res)
-CCCPlot(data = cellphonedb_res)
+CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
+ theme = "theme_blank", theme_args = list(add_coord = FALSE))
 CCCPlot(cellphonedb_res, plot_type = "chord")
+CCCPlot(cellphonedb_res, plot_type = "heatmap")
 CCCPlot(cellphonedb_res, plot_type = "dot", weighted = FALSE)
 
 cellphonedb_res_sub <- cellphonedb_res[

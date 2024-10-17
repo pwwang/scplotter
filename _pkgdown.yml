@@ -11,6 +11,7 @@ reference:
     - ClustreePlot
     - EnrichmentPlot
     - FeatureStatPlot
+    - CCCPlot
   - title: scTCR-seq/scBCR-seq
     desc: Functions for plotting single cell TCR-seq/BCR-seq data
     contents:
@@ -30,6 +31,7 @@ reference:
     contents:
     - ifnb_sub
     - pancreas_sub
+    - cellphonedb_res
   - title: Re-exports
     desc: Functions that are re-exported from plotthis
     contents:
