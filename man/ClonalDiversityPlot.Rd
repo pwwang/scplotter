@@ -32,7 +32,7 @@ in the data}
 "TRA", "TRG", "IGH", "IGL"}
 
 \item{method}{The method to calculate the diversity. Options are "shannon" (default),
-"inv.simpson", "norm.entropy", "gini.simpson", "chao1" and "ACE".
+"inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE" and "gini.coeff".
 See \link[scRepertoire:clonalDiversity]{scRepertoire::clonalDiversity} for details.}
 
 \item{plot_type}{The type of plot. Options are "bar", "box" and "violin".}

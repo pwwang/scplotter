@@ -78,7 +78,7 @@ ClonalDiversity <- function(
 #' @param chain indicate if both or a specific chain should be used - e.g. "both",
 #'  "TRA", "TRG", "IGH", "IGL"
 #' @param method The method to calculate the diversity. Options are "shannon" (default),
-#'  "inv.simpson", "norm.entropy", "gini.simpson", "chao1" and "ACE".
+#'  "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE" and "gini.coeff".
 #'  See [scRepertoire::clonalDiversity] for details.
 #' @param plot_type The type of plot. Options are "bar", "box" and "violin".
 #' @param position The position adjustment for the bars. Default is "dodge".
