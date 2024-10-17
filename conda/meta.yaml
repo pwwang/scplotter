@@ -30,6 +30,10 @@ requirements:
     - r-hexbin
     - r-igraph
     - r-scattermore
+    - r-concaveman
+    - r-gridgraphics
+    - r-inext
+    - r-metap
 
   run:
     - r-base
@@ -48,6 +52,10 @@ requirements:
     - r-hexbin
     - r-igraph
     - r-scattermore
+    - r-concaveman
+    - r-gridgraphics
+    - r-inext
+    - r-metap
 
 test:
   commands:

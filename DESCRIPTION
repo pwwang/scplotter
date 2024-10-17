@@ -41,7 +41,8 @@ Suggests:
     concaveman,
     scattermore,
     gridGraphics,
-    iNEXT
+    iNEXT,
+    metap
 LazyData: true
 LazyDataCompression: xz
 Remotes:
