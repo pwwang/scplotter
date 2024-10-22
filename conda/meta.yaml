@@ -18,6 +18,7 @@ requirements:
     - r-seurat
     - pwwang::r-plotthis
     - bioconda::bioconductor-complexheatmap
+    - pwwang::bioconductor-screpertoire
     - r-clustree
     - r-ggwordcloud
     - r-ggalluvial
@@ -40,6 +41,7 @@ requirements:
     - r-seurat
     - pwwang::r-plotthis
     - bioconda::bioconductor-complexheatmap
+    - pwwang::bioconductor-screpertoire
     - r-clustree
     - r-ggwordcloud
     - r-ggalluvial
