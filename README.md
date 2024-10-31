@@ -48,7 +48,7 @@ $ conda install pwwang::r-scplotter
 
 ![VolcanoPlot](./man/figures/volcanoplot.png)
 
-[`CCCPlot`][10]
+[`CCCPlot`][10] (Cell-Cell Communication Plot)
 
 ![CCCPlot](./man/figures/cccplot.png)
 
