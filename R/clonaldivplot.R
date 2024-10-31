@@ -14,7 +14,7 @@ ClonalDiversity <- function(
             1 / n * (n + 1 - 2 * sum((n + 1 - 1:n) * d) / sum(d))
         }
     } else {
-        div_fn <- getFromNamespace(paste0(".", method), "scRepertoire")
+        div_fn <- getFromNamespace(paste0(".", gsub(".", "", method, fixed = TRUE)), "scRepertoire")
     }
 
     is_seurat_object <- getFromNamespace("is_seurat_object", "scRepertoire")
@@ -63,6 +63,7 @@ ClonalDiversity <- function(
     }
     colnames(mat) <- method
     mat[, group_by] <- names(input.data)
+
     mat
 }
 
@@ -116,6 +117,8 @@ ClonalDiversity <- function(
 #' ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin")
 #' ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
 #'   method = "gini.coeff", add_box = TRUE)
+#' ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
+#'   method = "inv.simpson", add_box = TRUE)
 ClonalDiversityPlot <- function(
     data, clone_call = "gene", chain = "both",
     method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE"),

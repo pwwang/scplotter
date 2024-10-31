@@ -82,4 +82,6 @@ ClonalDiversityPlot(data, group_by = "Type", plot_type = "box")
 ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin")
 ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
   method = "gini.coeff", add_box = TRUE)
+ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
+  method = "inv.simpson", add_box = TRUE)
 }
