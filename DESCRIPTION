@@ -29,6 +29,7 @@ Suggests:
     Seurat (>= 5.0.0),
     ggalluvial,
     ggforce,
+    gglogger,
     ggpubr,
     ggraph,
     ggridges,
