@@ -179,6 +179,8 @@ FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", bg_cutoff =
    lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim")
 FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = "UMAP",
    plot_type = "dim")
+FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
+   ident = "SubCellType", plot_type = "dim", facet_by = "Phase", split_by = TRUE, ncol = 1)
 
 # Heatmap
 features <- c(

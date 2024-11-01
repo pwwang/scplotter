@@ -132,6 +132,8 @@
 #'    lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim")
 #' FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = "UMAP",
 #'    plot_type = "dim")
+#' FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
+#'    ident = "SubCellType", plot_type = "dim", facet_by = "Phase", split_by = TRUE, ncol = 1)
 #'
 #' # Heatmap
 #' features <- c(
@@ -211,10 +213,10 @@ FeatureStatPlot <- function(
     ident = "seurat_clusters", assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
-    if (!is.null(facet_by)) {
+    plot_type <- match.arg(plot_type)
+    if (!is.null(facet_by) && plot_type != "dim") {
         stop("Cannot facet plots because the plots are facetted by the 'features'.")
     }
-    plot_type <- match.arg(plot_type)
 
     reduction <- reduction %||% DefaultDimReduc(object)
     # dim plot may use expression for highlighting cells
@@ -270,7 +272,7 @@ FeatureStatPlot <- function(
         }
         FeatureDimPlot(
             data, dims = dims, features = unlisted_features, graph = graph, bg_cutoff = bg_cutoff,
-            split_by = split_by, xlab = xlab, ylab = ylab, ...)
+            split_by = split_by, facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "heatmap") {
         Heatmap(data, rows = features, columns_by = ident, rows_name = rows_name, split_by = split_by, ...)
     } else if (plot_type == "dot") {
