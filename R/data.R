@@ -42,7 +42,7 @@ NULL
 #'
 #' @format A \code{Seurat} object.
 #' @concept data
-#' @source \url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/} \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
+#' @source \url{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html} \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
 #' @examples
 #' \dontrun{
 #' if (interactive()) {

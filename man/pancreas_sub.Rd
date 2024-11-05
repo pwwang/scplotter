@@ -7,7 +7,7 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/} \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
+\url{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html} \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
 }
 \description{
 Mouse pancreatic endocrinogenesis dataset from \href{https://doi.org/10.1242/dev.173849}{Bastidas-Ponce et al. (2019)}. A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.

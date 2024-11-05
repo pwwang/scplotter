@@ -71,7 +71,7 @@ $ conda install pwwang::r-scplotter
 [7]: https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html
 [8]: https://pwwang.github.io/plotthis/reference/gsea.html
 [9]: https://pwwang.github.io/plotthis/reference/VolcanoPlot.html
-[10]: https://pwwang.github.io/plotthis/reference/CCCPlot.html
+[10]: https://pwwang.github.io/scplotter/reference/CCCPlot.html
 [11]: https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.html
 [12]: https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.html
 [13]: https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.html
