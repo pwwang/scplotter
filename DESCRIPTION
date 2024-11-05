@@ -46,9 +46,6 @@ Suggests:
     metap
 LazyData: true
 LazyDataCompression: xz
-Remotes:
-    pwwang/plotthis,
-    ncborcherding/scRepertoire
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/
 BugReports:
