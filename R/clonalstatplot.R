@@ -870,7 +870,10 @@ ClonalResidencyPlot <- function(
 #'  * For "homeostasis", "homeo", "rel" - Default is `list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)`.
 #'  * For "top" - Default is `c(10, 100, 1000, 10000, 30000, 100000)`.
 #'  * For "rare" - Default is `c(1, 3, 10, 30, 100)`.
-#' @param scale Whether to scale the number to 1 for each sample. Default is TRUE.
+#' @param scale Whether to scale the values on the y-axis. Default is TRUE.
+#'  * TRUE: The values of each group (on the x-axis) will be scaled to 1.
+#'  * FALSE: No scaling.
+#'  * "sample"/"Sample": The values in each sample will be scaled to 1.
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
 #' @param group_by The column name in the meta data to group the cells. Default: NULL
 #' @param split_by The column name in the meta data to split the plots. Default: NULL
@@ -1009,6 +1012,11 @@ ClonalCompositionPlot <- function(
         group_name <- ifelse(method == "top", "Clonal Indices", "Clonal Sizes")
 
         if (isTRUE(scale)) {
+            data <- data %>%
+                dplyr::group_by(!!!syms(c(group_by, facet_by, split_by))) %>%
+                mutate(.values = !!sym(".values") / sum(!!sym(".values")))
+            ylab <- ylab %||% "Relative Abundance"
+        } else if (identical(scale, "sample") || identical(scale, "Sample")) {
             data <- data %>%
                 dplyr::group_by(!!!syms(c("Sample", group_by, facet_by, split_by))) %>%
                 mutate(.values = !!sym(".values") / sum(!!sym(".values")))
