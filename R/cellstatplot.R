@@ -8,6 +8,9 @@
 #'  For 'heatmap' plot, this will be used as the rows of the heatmap.
 #' @param group_by The column name in the meta data to group the cells. Default: NULL
 #'  This should work as the columns of the plot_type: heatmap.
+#'  For violin/box plot, at most 2 `group_by` columns are allowed and they will not be concatenated.
+#'  The first one is used to break down the values in groups, and the second one works as the `group_by`
+#'  argument in [plotthis::ViolinPlot]/[plotthis::BoxPlot].
 #' @param group_by_sep The separator to use when combining multiple columns in `group_by`. Default: "_"
 #'  For 'sankey'/'heatmap' plot, multiple columns will not be combined, and each of them will be used as a node.
 #' @param split_by The column name in the meta data to split the cells. Default: NULL
@@ -56,12 +59,16 @@
 #'   * For `trend` plot, see [plotthis::TrendPlot].
 #'   * For `area` plot, see [plotthis::AreaPlot].
 #'   * For `sankey`/`alluvial` plot, see [plotthis::SankeyPlot].
+#'   * For `radar` plot, see [plotthis::RadarPlot].
+#'   * For `spider` plot, see [plotthis::SpiderPlot].
+#'   * For `violin` plot, see [plotthis::ViolinPlot].
+#'   * For `box` plot, see [plotthis::BoxPlot].
 #'
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang sym syms
 #' @importFrom dplyr %>% summarise mutate ungroup n
 #' @importFrom tidyr drop_na pivot_wider
-#' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot
+#' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot ViolinPlot BoxPlot
 #' @export
 #' @examples
 #' # library(patchwork)
@@ -137,7 +144,7 @@ CellStatPlot <- function(
     object, ident = "seurat_clusters", group_by = NULL, group_by_sep = "_",
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
-    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider"),
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
     data <- object@meta.data
@@ -145,7 +152,7 @@ CellStatPlot <- function(
     plot_type <- match.arg(plot_type)
     if (plot_type == "donut") plot_type <- "ring"
     if (plot_type == "alluvial") plot_type <- "sankey"
-    if (isFALSE(swap) && plot_type %in% c("sankey", "heatmap")) {
+    if (isFALSE(swap) && plot_type %in% c("sankey", "heatmap", "violin", "box")) {
         group_by <- check_columns(data, group_by, force_factor = TRUE,
             allow_multi = TRUE)
     } else {
@@ -192,7 +199,7 @@ CellStatPlot <- function(
             } else {
                 data <- data %>% mutate(.frac = 1)  # not used
             }
-        } else if (length(group_by) > 1 && !identical(plot_type, "sankey")) {
+        } else if (length(group_by) > 1 && !plot_type %in% c("sankey", "violin", "box")) {
             # calculate the frac for each group. we don't want them to be concatenated.
             data <- do.call(rbind, lapply(group_by, function(g) {
                 dat <- data %>%
@@ -366,7 +373,31 @@ CellStatPlot <- function(
             columns_by = if (swap) columns_split_by else group_by,
             columns_split_by = if (swap) group_by else columns_split_by,
             split_by = split_by, ...)
-    } else {
+    } else if (plot_type %in% c("violin", "box")) {
+        if (is.null(group_by)) {
+            stop("Cannot create a 'violin'/'box' plot without specifying 'group_by'.")
+        }
+        if (length(group_by) > 2) {
+            stop("Cannot create a 'violin'/'box' plot with more than 2 'group_by'.")
+        }
+        fn <- ifelse(plot_type == "violin", ViolinPlot, BoxPlot)
+        d <<- data
+        if (length(group_by) == 1) {
+            fn(
+                data,
+                x = ifelse(swap, group_by, ident),
+                y = ifelse(identical(frac, "none"), ".n", ".frac"),
+                in_form = "long",
+                ylab = ylab, split_by = split_by, facet_by = facet_by, ...)
+        } else {
+            fn(
+                data,
+                x = ifelse(swap, group_by[2], ident),
+                y = ifelse(identical(frac, "none"), ".n", ".frac"),
+                group_by = ifelse(swap, ident, group_by[2]),
+                ylab = ylab, split_by = split_by, facet_by = facet_by, ...)
+        }
+    } else {  # radar/spider plot
         if (is.null(group_by)) {
             stop("Cannot create a '", plot_type, "' plot without specifying 'group_by'.")
         }

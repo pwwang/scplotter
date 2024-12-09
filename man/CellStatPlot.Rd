@@ -18,7 +18,7 @@ CellStatPlot(
   rows_name = NULL,
   name = NULL,
   plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area",
-    "sankey", "alluvial", "heatmap", "radar", "spider"),
+    "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
   swap = FALSE,
   ylab = NULL,
   ...

@@ -50,7 +50,12 @@ be the fraction of the clones in each sample.
 \item For "rare" - Default is \code{c(1, 3, 10, 30, 100)}.
 }}
 
-\item{scale}{Whether to scale the number to 1 for each sample. Default is TRUE.}
+\item{scale}{Whether to scale the values on the y-axis. Default is TRUE.
+\itemize{
+\item TRUE: The values of each group (on the x-axis) will be scaled to 1.
+\item FALSE: No scaling.
+\item "sample"/"Sample": The values in each sample will be scaled to 1.
+}}
 
 \item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
 
