@@ -51,7 +51,7 @@
 <span>  rows_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bar"</span>, <span class="st">"circos"</span>, <span class="st">"pie"</span>, <span class="st">"pies"</span>, <span class="st">"ring"</span>, <span class="st">"donut"</span>, <span class="st">"trend"</span>, <span class="st">"area"</span>,</span>
-<span>    <span class="st">"sankey"</span>, <span class="st">"alluvial"</span>, <span class="st">"heatmap"</span>, <span class="st">"radar"</span>, <span class="st">"spider"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"sankey"</span>, <span class="st">"alluvial"</span>, <span class="st">"heatmap"</span>, <span class="st">"radar"</span>, <span class="st">"spider"</span>, <span class="st">"violin"</span>, <span class="st">"box"</span><span class="op">)</span>,</span>
 <span>  swap <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -74,7 +74,10 @@ For 'heatmap' plot, this will be used as the rows of the heatmap.</p></dd>
 
 <dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
 <dd><p>The column name in the meta data to group the cells. Default: NULL
-This should work as the columns of the plot_type: heatmap.</p></dd>
+This should work as the columns of the plot_type: heatmap.
+For violin/box plot, at most 2 <code>group_by</code> columns are allowed and they will not be concatenated.
+The first one is used to break down the values in groups, and the second one works as the <code>group_by</code>
+argument in plotthis::ViolinPlot/plotthis::BoxPlot.</p></dd>
 
 
 <dt id="arg-group-by-sep">group_by_sep<a class="anchor" aria-label="anchor" href="#arg-group-by-sep"></a></dt>
@@ -161,6 +164,10 @@ Note that this is different from <code>flip</code>. <code>flip</code> is used to
 <li><p>For <code>trend</code> plot, see <a href="https://pwwang.github.io/plotthis/reference/TrendPlot.html" class="external-link">plotthis::TrendPlot</a>.</p></li>
 <li><p>For <code>area</code> plot, see <a href="https://pwwang.github.io/plotthis/reference/AreaPlot.html" class="external-link">plotthis::AreaPlot</a>.</p></li>
 <li><p>For <code>sankey</code>/<code>alluvial</code> plot, see plotthis::SankeyPlot.</p></li>
+<li><p>For <code>radar</code> plot, see plotthis::RadarPlot.</p></li>
+<li><p>For <code>spider</code> plot, see plotthis::SpiderPlot.</p></li>
+<li><p>For <code>violin</code> plot, see plotthis::ViolinPlot.</p></li>
+<li><p>For <code>box</code> plot, see plotthis::BoxPlot.</p></li>
 </ul></dd>
 
 </dl></div>
