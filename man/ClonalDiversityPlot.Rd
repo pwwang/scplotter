@@ -9,7 +9,8 @@ ClonalDiversityPlot(
   clone_call = "gene",
   chain = "both",
   method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson",
-    "chao1", "ACE"),
+    "chao1", "ACE", "d50", "dXX"),
+  d = 50,
   plot_type = c("bar", "box", "violin"),
   position = "dodge",
   group_by = NULL,
@@ -32,8 +33,17 @@ in the data}
 "TRA", "TRG", "IGH", "IGL"}
 
 \item{method}{The method to calculate the diversity. Options are "shannon" (default),
-"inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE" and "gini.coeff".
-See \link[scRepertoire:clonalDiversity]{scRepertoire::clonalDiversity} for details.}
+"inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "gini.coeff", "d50" and "dXX".
+See \link[scRepertoire:clonalDiversity]{scRepertoire::clonalDiversity} for details.
+The last 3 methods are supported by \code{scplotter} only:
+\itemize{
+\item "gini.coeff" - The Gini Coefficient. A measure of inequality in the distribution of clones.
+0 indicates perfect equality, 1 indicates perfect inequality.
+\item "d50" - The number of clones that make up \verb{50\%} of the total number of clones.
+\item "dXX" - The number of clones that make up \verb{XX\%} of the total number of clones.
+}}
+
+\item{d}{The percentage for the "dXX" method. Default is 50.}
 
 \item{plot_type}{The type of plot. Options are "bar", "box" and "violin".}
 
@@ -84,4 +94,6 @@ ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
   method = "gini.coeff", add_box = TRUE)
 ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
   method = "inv.simpson", add_box = TRUE)
+ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
+  method = "d50", add_box = TRUE)
 }

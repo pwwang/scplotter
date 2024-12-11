@@ -5,13 +5,22 @@
 #' @importFrom dplyr slice_sample
 ClonalDiversity <- function(
     input.data, cloneCall = "gene", chain = "both",
-    method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE"),
+    method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "d50", "dXX"),
     d = 50, group_by = NULL, n_boots = 0) {
     method <- match.arg(method)
     if (method == "gini.coeff") {
-        div_fn <- function(d) {
-            n <- length(d)
-            1 / n * (n + 1 - 2 * sum((n + 1 - 1:n) * d) / sum(d))
+        div_fn <- function(dat) {
+            n <- length(dat)
+            1 / n * (n + 1 - 2 * sum((n + 1 - 1:n) * dat) / sum(dat))
+        }
+    } else if (method == "d50" || method == "dXX") {
+        if (method == "d50") {
+            d <- 50
+        }
+        div_fn <- function(dat) {
+            dat <- sort(dat, decreasing = TRUE)
+            dat <- 100 * cumsum(dat) / sum(dat)
+            which(dat > d)[1]
         }
     } else {
         div_fn <- getFromNamespace(paste0(".", gsub(".", "", method, fixed = TRUE)), "scRepertoire")
@@ -79,8 +88,14 @@ ClonalDiversity <- function(
 #' @param chain indicate if both or a specific chain should be used - e.g. "both",
 #'  "TRA", "TRG", "IGH", "IGL"
 #' @param method The method to calculate the diversity. Options are "shannon" (default),
-#'  "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE" and "gini.coeff".
+#'  "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "gini.coeff", "d50" and "dXX".
 #'  See [scRepertoire::clonalDiversity] for details.
+#'  The last 3 methods are supported by `scplotter` only:
+#'  * "gini.coeff" - The Gini Coefficient. A measure of inequality in the distribution of clones.
+#'    0 indicates perfect equality, 1 indicates perfect inequality.
+#'  * "d50" - The number of clones that make up `50%` of the total number of clones.
+#'  * "dXX" - The number of clones that make up `XX%` of the total number of clones.
+#' @param d The percentage for the "dXX" method. Default is 50.
 #' @param plot_type The type of plot. Options are "bar", "box" and "violin".
 #' @param position The position adjustment for the bars. Default is "dodge".
 #' @param group_by A character vector of column names to group the samples. Default is NULL.
@@ -119,10 +134,12 @@ ClonalDiversity <- function(
 #'   method = "gini.coeff", add_box = TRUE)
 #' ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
 #'   method = "inv.simpson", add_box = TRUE)
+#' ClonalDiversityPlot(data, group_by = "Type", plot_type = "violin",
+#'   method = "d50", add_box = TRUE)
 ClonalDiversityPlot <- function(
     data, clone_call = "gene", chain = "both",
-    method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE"),
-    plot_type = c("bar", "box", "violin"), position = "dodge",
+    method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "d50", "dXX"),
+    d = 50, plot_type = c("bar", "box", "violin"), position = "dodge",
     group_by = NULL, facet_by = NULL, split_by = NULL,
     xlab = NULL, ylab = NULL,
     ...) {
@@ -145,8 +162,7 @@ ClonalDiversityPlot <- function(
 
     data <- MergeClonalGroupings(data, all_groupings)
     data <- ClonalDiversity(data,
-        cloneCall = clone_call, chain = chain, method = method,
-        group_by = ".group"
+        cloneCall = clone_call, chain = chain, method = method, d = d, group_by = ".group"
     )
     data <- separate(data, ".group", into = all_groupings, sep = " // ")
 

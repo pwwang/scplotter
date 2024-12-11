@@ -32,7 +32,10 @@ For 'pies', this will be used as the \code{pie_group_by}.
 For 'heatmap' plot, this will be used as the rows of the heatmap.}
 
 \item{group_by}{The column name in the meta data to group the cells. Default: NULL
-This should work as the columns of the plot_type: heatmap.}
+This should work as the columns of the plot_type: heatmap.
+For violin/box plot, at most 2 \code{group_by} columns are allowed and they will not be concatenated.
+The first one is used to break down the values in groups, and the second one works as the \code{group_by}
+argument in \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}/\link[plotthis:boxviolinplot]{plotthis::BoxPlot}.}
 
 \item{group_by_sep}{The separator to use when combining multiple columns in \code{group_by}. Default: "_"
 For 'sankey'/'heatmap' plot, multiple columns will not be combined, and each of them will be used as a node.}
@@ -97,6 +100,10 @@ Note that this is different from \code{flip}. \code{flip} is used to transpose t
 \item For \code{trend} plot, see \link[plotthis:TrendPlot]{plotthis::TrendPlot}.
 \item For \code{area} plot, see \link[plotthis:AreaPlot]{plotthis::AreaPlot}.
 \item For \code{sankey}/\code{alluvial} plot, see \link[plotthis:sankeyplot]{plotthis::SankeyPlot}.
+\item For \code{radar} plot, see \link[plotthis:radarplot]{plotthis::RadarPlot}.
+\item For \code{spider} plot, see \link[plotthis:radarplot]{plotthis::SpiderPlot}.
+\item For \code{violin} plot, see \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}.
+\item For \code{box} plot, see \link[plotthis:boxviolinplot]{plotthis::BoxPlot}.
 }}
 }
 \value{

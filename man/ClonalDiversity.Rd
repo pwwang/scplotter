@@ -9,9 +9,10 @@ ClonalDiversity(
   cloneCall = "gene",
   chain = "both",
   method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson",
-    "chao1", "ACE"),
+    "chao1", "ACE", "d50", "dXX"),
+  d = 50,
   group_by = NULL,
-  n_boots = 100
+  n_boots = 0
 )
 }
 \description{
