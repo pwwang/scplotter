@@ -6,7 +6,7 @@
 ClonalDiversity <- function(
     input.data, cloneCall = "gene", chain = "both",
     method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE"),
-    group_by = NULL, n_boots = 100) {
+    d = 50, group_by = NULL, n_boots = 0) {
     method <- match.arg(method)
     if (method == "gini.coeff") {
         div_fn <- function(d) {
@@ -40,7 +40,7 @@ ClonalDiversity <- function(
         data <- as.data.frame(table(input.data[[i]][, cloneCall]))
         mat_a <- NULL
         sample <- c()
-        if (n_boots > 0) {
+        if (n_boots == 0) {
             sample <- div_fn(data$Freq)
             mat_a <- rbind(mat_a, sample)
             mat_a[is.na(mat_a)] <- 0
