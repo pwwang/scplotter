@@ -983,6 +983,19 @@ ClonalCompositionPlot <- function(
         }
     }
 
+    if (isTRUE(scale)) {print(123)
+        data <- data %>%
+            dplyr::group_by(!!!syms(c(group_by, facet_by, split_by))) %>%
+            mutate(.values = !!sym(".values") / sum(!!sym(".values")))
+        ylab <- ylab %||% "Relative Abundance"
+    } else if (identical(scale, "sample") || identical(scale, "Sample")) {
+        data <- data %>%
+            dplyr::group_by(!!!syms(c("Sample", group_by, facet_by, split_by))) %>%
+            mutate(.values = !!sym(".values") / sum(!!sym(".values")))
+        ylab <- ylab %||% "Relative Abundance"
+    } else {
+        ylab <- ylab %||% "Abundance"
+    }
     if (method == "homeostasis" || method == "homeo" || method == "rel") {
         if (plot_type %in% c("bar", "ring") && !is.null(group_by)) {
             data <- data %>%
@@ -994,11 +1007,11 @@ ClonalCompositionPlot <- function(
         if (plot_type == "bar") {
             BarPlot(data, x = group_by %||% "Sample", y = ".values", group_by = ".names",
                 group_name = "Clonal Group", position = "stack", facet_by = facet_by, split_by = split_by,
-                xlab = xlab %||% "Sample", ylab = ylab %||% "Relative Abundance", ...)
+                xlab = xlab %||% group_by %||% "Sample", ylab = ylab %||% "Relative Abundance", ...)
         } else if (plot_type == "ring") {
             RingPlot(data, x = group_by %||% "Sample", y = ".values", group_by = ".names",
                 group_name = "Clonal Group", facet_by = facet_by, split_by = split_by,
-                xlab = xlab %||% "Sample", ylab = ylab %||% "Relative Abundance", ...)
+                xlab = xlab %||% group_by %||% "Sample", ylab = ylab %||% "Relative Abundance", ...)
         } else if (plot_type == "box") {
             BoxPlot(data, x = ".names", y = ".values", group_by = group_by,
                 facet_by = facet_by, split_by = split_by,
@@ -1011,19 +1024,6 @@ ClonalCompositionPlot <- function(
     } else {
         group_name <- ifelse(method == "top", "Clonal Indices", "Clonal Sizes")
 
-        if (isTRUE(scale)) {
-            data <- data %>%
-                dplyr::group_by(!!!syms(c(group_by, facet_by, split_by))) %>%
-                mutate(.values = !!sym(".values") / sum(!!sym(".values")))
-            ylab <- ylab %||% "Relative Abundance"
-        } else if (identical(scale, "sample") || identical(scale, "Sample")) {
-            data <- data %>%
-                dplyr::group_by(!!!syms(c("Sample", group_by, facet_by, split_by))) %>%
-                mutate(.values = !!sym(".values") / sum(!!sym(".values")))
-            ylab <- ylab %||% "Relative Abundance"
-        } else {
-            ylab <- ylab %||% "Abundance"
-        }
         if (plot_type %in% c("bar", "ring") && !is.null(group_by)) {
             data <- data %>%
                 dplyr::group_by(!!!syms(setdiff(colnames(data), c("Sample", ".values")))) %>%
@@ -1034,11 +1034,11 @@ ClonalCompositionPlot <- function(
         if (plot_type == "bar") {
             BarPlot(data, x = group_by %||% "Sample", y = ".values", group_by = ".names",
                 group_name = group_name, position = "stack", facet_by = facet_by, split_by = split_by,
-                xlab = xlab, ylab = ylab, ...)
+                xlab = xlab %||% group_by %||% "Sample", ylab = ylab, ...)
         } else if (plot_type == "ring") {
             RingPlot(data, x = group_by %||% "Sample", y = ".values", group_by = ".names",
                 group_name = group_name, facet_by = facet_by, split_by = split_by,
-                xlab = xlab, ylab = ylab, ...)
+                xlab = xlab %||% group_by %||% "Sample", ylab = ylab, ...)
         } else if (plot_type == "box") {
             BoxPlot(data, x = ".names", y = ".values", group_by = group_by,
                 facet_by = facet_by, split_by = split_by,
