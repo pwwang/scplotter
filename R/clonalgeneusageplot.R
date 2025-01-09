@@ -76,7 +76,7 @@ ClonalGeneUsagePlot <- function(
     }
 
     all_groupings <- unique(c(group_by, split_by))
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
     data <- vizGenes(data, x.axis = genes, y.axis = genes2, group.by = ".group", scale = scale, exportTable = TRUE)
     if (is.null(genes2)) {
         axis1 <- genes

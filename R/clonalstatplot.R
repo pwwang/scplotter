@@ -1,43 +1,3 @@
-#' MergeClonalGroupings
-#'
-#' @description Merge the multiple clonal groupings into a single grouping.
-#' @details Because [scRepertoire::clonalQuant] and families don't support mutliple groupings,
-#'  this is trying to merge the multiple groupings into a single grouping. And then
-#'  later restore the original groupings.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param groupings A list of the clonal groupings. Each element is a column in the data.
-#' @return The data with the combined groupings (`.group`)
-#' @importFrom rlang syms
-#' @importFrom tidyr unite
-#' @importFrom scRepertoire addVariable
-#' @keywords internal
-MergeClonalGroupings <- function(data, groupings, sep = " // ") {
-    if (inherits(data, "Seurat")) {
-        if (!"Sample" %in% colnames(data@meta.data)) {
-            warning("The 'Sample' column is not found in the meta data, 'orig.indent' will be used instead.")
-            data$Sample <- data$orig.ident
-        }
-        samples <- unique(data$Sample)
-        # combine Sample and group_by so that the count/frequency is calculated for each
-        # combined group
-        data@meta.data <- unite(data@meta.data, ".group", !!!syms(groupings), sep = sep, remove = FALSE)
-    } else {
-        samples <- names(data)
-        data <- addVariable(data, variable.name = "Sample", variables = samples)
-        # combine Sample and group_by so that the count/frequency is calculated for each
-        # combined group
-        vs <- sapply(samples, function(s) {
-            paste0(sapply(groupings, function(group) {
-                data[[s]][, group, drop = TRUE][1]
-            }), collapse = sep)
-        })
-        data <- addVariable(data, variable.name = ".group", variables = vs)
-    }
-
-    data
-}
-
 #' ClonalVolumePlot
 #'
 #' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
@@ -113,7 +73,7 @@ ClonalVolumePlot <- function(
     } else {
         all_groupings <- unique(c(x, group_by, facet_by, split_by))
     }
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalQuant(data,
         cloneCall = clone_call, chain = chain, scale = scale,
         group.by = ".group", exportTable = TRUE
@@ -218,7 +178,7 @@ ClonalAbundancePlot <- function(
     plot_type <- match.arg(plot_type)
 
     all_groupings <- unique(c(group_by, facet_by, split_by))
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
     if (length(all_groupings) > 0) {
         data <- clonalAbundance(data,
             cloneCall = clone_call, chain = chain,
@@ -320,7 +280,7 @@ ClonalLengthPlot <- function(
     } else {
         all_groupings <- unique(c(group_by, facet_by, split_by))
     }
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
 
     if (identical(all_groupings, "Sample")) {
         data <- clonalLength(data, cloneCall = clone_call, chain = chain, exportTable = TRUE)
@@ -419,67 +379,6 @@ ClonalLengthPlot <- function(
             ...
         )
     }
-}
-
-#' ClonalSizeData
-#'
-#' @description Function to get the clonal size data for all group_by values.
-#'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param groupings The column names in the meta data to group the cells.
-#' @keywords internal
-#' @importFrom dplyr distinct filter
-#' @importFrom tidyr pivot_longer
-ClonalSizeData <- function(data, clone_call, chain, groupings) {
-    data <- MergeClonalGroupings(data, groupings)
-
-    if (inherits(data, "Seurat")) {
-        all_gvalues <- unique(data@meta.data$.group)
-    } else {
-        # clonalScatter only returns data for each sample
-        # need to re-organize the data to get the data for each group
-        all_gvalues <- unique(sapply(data, function(x) x$.group[1]))
-        newdata <- list()
-        for (d in data) {
-            nd <- split(d, d$.group)
-            for (gn in names(nd)) {
-                if (is.null(newdata[[gn]])) {
-                    newdata[[gn]] <- nd[[gn]]
-                } else {
-                    newdata[[gn]] <- rbind(newdata[[gn]], nd[[gn]])
-                }
-            }
-        }
-        data <- newdata
-    }
-
-    gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
-    do.call(rbind, lapply(gv_pairs, function(gv) {
-        d <- clonalScatter(data,
-            cloneCall = clone_call, chain = chain,
-            x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
-        )
-        d$class <- NULL
-        d$sum <- NULL
-        d$size <- NULL
-        names(d)[2:3] <- paste(names(d)[2:3], "count", sep = ".")
-        d <- pivot_longer(
-            d,
-            cols = -"Var1",
-            names_to = c(".group", ".value"),
-            names_sep = "\\."
-        )
-        d
-    })) %>%
-    distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
-    separate(".group", into = groupings, sep = " // ") %>%
-    filter(!!sym("count") > 0)
 }
 
 #' DummyClonalScatterPlot
@@ -626,8 +525,8 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     )
     label_df <- plotdata %>% group_by(!!sym("TypeName")) %>%
         summarise(
-            x = first(!!sym(pair[1])),
-            y = first(!!sym(pair[2])),
+            x = first(!!sym("x")),
+            y = first(!!sym("y")),
             Type = mean(!!sym("Type"), na.rm = TRUE), .groups = "drop")
     label_df$TypeName <- factor(label_df$TypeName, levels = labels)
     label_df <- label_df[order(label_df$TypeName), , drop = FALSE]
@@ -745,7 +644,7 @@ ClonalResidencyPlot <- function(
     scatter_size_by <- match.arg(scatter_size_by)
 
     all_groupings <- unique(c(group_by, facet_by, split_by))
-    data <- ClonalSizeData(data, clone_call, chain, all_groupings)
+    data <- clonal_size_data(data, clone_call, chain, all_groupings)
 
     # restore the groups
     for (group in all_groupings) {
@@ -805,7 +704,7 @@ ClonalResidencyPlot <- function(
                 if (grepl("/", df$id[i], fixed = TRUE)) {
                     label <- c(label, df$count[i])
                 } else {
-                    indicator <- data$Var1 %in% df$item[[i]] &
+                    indicator <- data$CloneID %in% df$item[[i]] &
                         data[[group_by]] == df$name[i] &
                         data$count == 1
                     if (!is.null(split_by)) {
@@ -819,7 +718,7 @@ ClonalResidencyPlot <- function(
         }
 
         VennDiagram(data,
-            in_form = "long", id_by = "Var1", group_by = group_by, label = label_fun,
+            in_form = "long", id_by = "CloneID", group_by = group_by, label = label_fun,
             split_by = split_by, split_by_sep = split_by_sep, ...
         )
     } else if (plot_type == "upset") {
@@ -844,7 +743,7 @@ ClonalResidencyPlot <- function(
                 .cols = starts_with("count_")
             )
 
-        UpsetPlot(data, in_form = "wide", id_by = "Var1", split_by = split_by, split_by_sep = split_by_sep, ...)
+        UpsetPlot(data, in_form = "wide", id_by = "CloneID", split_by = split_by, split_by_sep = split_by_sep, ...)
     }
 }
 
@@ -939,7 +838,7 @@ ClonalCompositionPlot <- function(
     }
     all_groupings <- unique(c("Sample", group_by, facet_by, split_by))
     if (method == "homeostasis" || method == "homeo" || method == "rel" || method == "top") {
-        data <- MergeClonalGroupings(data, all_groupings)
+        data <- merge_clonal_groupings(data, all_groupings)
         if (method == "top") {
             data <- clonalProportion(data, cloneCall = clone_call, chain = chain,
                 clonalSplit = clone_split, group.by = ".group", exportTable = TRUE)
@@ -955,8 +854,8 @@ ClonalCompositionPlot <- function(
         # Sample Type  .names        .values
         name_levels <- unique(data$.names)
     } else {  # rare
-        data <- ClonalSizeData(data, clone_call, chain, all_groupings)
-        # Var1 Sample Type count fraction
+        data <- clonal_size_data(data, clone_call, chain, all_groupings)
+        # CloneID Sample Type count fraction
         clone_split <- sort(clone_split)
         clone_split <- c(-Inf, clone_split, Inf)
         labels <- sapply(1:(length(clone_split) - 1), function(i) {
@@ -973,7 +872,7 @@ ClonalCompositionPlot <- function(
         data$.names <- cut(data$count, breaks = clone_split, labels = labels)
         name_levels <- levels(data$.names)
         data <- data %>%
-            dplyr::group_by(!!!syms(setdiff(colnames(data), c("Var1", "count", "fraction")))) %>%
+            dplyr::group_by(!!!syms(setdiff(colnames(data), c("CloneID", "count", "fraction")))) %>%
             summarise(.values = n(), .groups = "drop")
     }
 
@@ -983,7 +882,7 @@ ClonalCompositionPlot <- function(
         }
     }
 
-    if (isTRUE(scale)) {print(123)
+    if (isTRUE(scale)) {
         data <- data %>%
             dplyr::group_by(!!!syms(c(group_by, facet_by, split_by))) %>%
             mutate(.values = !!sym(".values") / sum(!!sym(".values")))
@@ -1118,7 +1017,7 @@ ClonalOverlapPlot <- function(
     method <- match.arg(method)
 
     all_groupings <- unique(c(group_by, split_by))
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalOverlap(data, cloneCall = clone_call, chain = chain, group.by = ".group",
         method = method, exportTable = TRUE)
     if (isTRUE(full)) {

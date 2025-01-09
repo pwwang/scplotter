@@ -79,7 +79,7 @@ ClonalPositionalPlot <- function (
     } else {
         all_groupings <- unique(c(group_by, facet_by, split_by))
     }
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
 
     if (method == "AA") {
         if (!is.null(facet_by)) {
@@ -255,7 +255,7 @@ ClonalKmerPlot <- function (
 ) {
     plot_type <- match.arg(plot_type)
     all_groupings <- unique(c(group_by, split_by))
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
 
     data <- percentKmer(data, chain = chain, cloneCall = clone_call, motif.length = k,
         top.motifs = top, group.by = ".group", exportTable = TRUE)

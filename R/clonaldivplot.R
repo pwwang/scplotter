@@ -160,7 +160,7 @@ ClonalDiversityPlot <- function(
         ACE = "ACE Index"
     )
 
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
     data <- ClonalDiversity(data,
         cloneCall = clone_call, chain = chain, method = method, d = d, group_by = ".group"
     )
@@ -249,7 +249,7 @@ ClonalRarefactionPlot <- function(
     }
 
     all_groupings <- unique(c(group_by, split_by))
-    data <- MergeClonalGroupings(data, all_groupings)
+    data <- merge_clonal_groupings(data, all_groupings)
 
     .data.wrangle <- getFromNamespace(".data.wrangle", "scRepertoire")
     .theCall <- getFromNamespace(".theCall", "scRepertoire")
