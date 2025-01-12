@@ -21,6 +21,7 @@ reference:
     - ClonalResidencyPlot
     - ClonalCompositionPlot
     - ClonalOverlapPlot
+    - ClonalDynamicsPlot
     - ClonalDiversityPlot
     - ClonalGeneUsagePlot
     - ClonalPositionalPlot

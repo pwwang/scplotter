@@ -1073,3 +1073,192 @@ ClonalOverlapPlot <- function(
         cluster_rows = cluster_rows, cluster_columns = cluster_columns, cell_type = "label",
         show_row_names = show_row_names, show_column_names = show_column_names, ...)
 }
+
+#' ClonalDynamicsPlot
+#'
+#' @description Visualize the dynamics of the clones using TrendPlot or SankeyPlot.
+#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
+#'  [scRepertoire::combineExpression].
+#' @param clones The specific clones to track. This argument must be provided.
+#'  If a single character value is provided, it will be evaluated as an expression to select the clones.
+#'  If multiple character values are provided, they will be treated as clone IDs.
+#'  For expression, see also \code{\link{clone_selectors}}.
+#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
+#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
+#'  in the data
+#' @param chain indicate if both or a specific chain should be used - e.g. "both",
+#'  "TRA", "TRG", "IGH", "IGL"
+#' @param plot_type The type of plot to use. Default is "sankey".
+#'  Possible values are "trend", "sankey", and "alluvial" (alias of "sankey").
+#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
+#' @param groups The groups to include in the plot. Default is NULL.
+#'  If NULL, all the groups in `group_by` will be included.
+#' @param subgroup_by The column name in the meta data to subgroup the nodes (group nodes on each `x`). Default: NULL.
+#' This argument is only supported for "sankey"/"alluvial" plot.
+#' If NULL, the nodes will be grouped/colored by the clones
+#' @param subgroups The subgroups to include in the plot. Default is NULL.
+#' If NULL, all the subgroups in `subgroup_by` will be included.
+#' If a vector, the subgroups will be included in the order of the vector for all `groups`.
+#' If a list, the subgroups will be used for each `groups`, with `groups` as the names.
+#' @param subgroups The subgroups to include in the plot. Default is NULL.
+#' @param facet_by The column name in the meta data to facet the plots. Default: NULL.
+#'  This argument is not supported and will raise an error if provided.
+#' @param split_by The column name in the meta data to split the plots. Default: NULL
+#' @param top The number of top clones to select. Default is 10.
+#' @param orderby An expression to order the clones by. Default is NULL.
+#' Note that the clones will be ordered by the value of this expression in descending order.
+#' @param ... Other arguments passed to the specific plot function.
+#'  * For `chord` plot, see [plotthis::ChordPlot].
+#'  * For `sankey` plot, see [plotthis::SankeyPlot].
+#' @return A ggplot object or a list if `combine` is FALSE
+#' @importFrom rlang parse_expr
+#' @importFrom dplyr %>% summarise arrange desc mutate rename
+#' @importFrom dplyr across slice_head ungroup inner_join reframe
+#' @importFrom tidyr unite pivot_wider
+#' @importFrom plotthis SankeyPlot TrendPlot
+#' @export
+#' @examples
+#' \donttest{
+#' set.seed(8525)
+#' data(contig_list, package = "scRepertoire")
+#' data <- scRepertoire::combineTCR(contig_list,
+#'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
+#' data <- scRepertoire::addVariable(data,
+#'     variable.name = "Type",
+#'     variables = rep(c("B", "L"), 4)
+#' )
+#' data <- scRepertoire::addVariable(data,
+#'     variable.name = "Subject",
+#'     variables = rep(c("P17", "P18", "P19", "P20"), each = 2)
+#' )
+#'
+#' # showing the top 10 clones in P17B and P17L
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"))
+#'
+#' # showing the top 10 clones in P17B and P17L, with the clones relabeled
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"), relabel = TRUE)
+#'
+#' # showing the top 10 clones in P17B and P17L, with subgroups in each group
+#' ClonalDynamicsPlot(data, group_by = "Type", subgroup_by = "Sample",
+#'     subgroups = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L"), relabel = TRUE)
+#'
+#' # showing selected clones in P17B and P17L
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+#'     clones = c("CVVSDNTGGFKTIF_CASSVRRERANTGELFF", "NA_CASSVRRERANTGELFF"), relabel = TRUE)
+#'
+#' # facetting is supported
+#' ClonalDynamicsPlot(data, group_by = "Subject", groups = c("P17", "P19"),
+#'     facet_by = "Type", relabel = TRUE)
+#'
+#' # as well as splitting
+#' ClonalDynamicsPlot(data, group_by = "Subject", groups = c("P17", "P19"),
+#'     split_by = "Type", relabel = TRUE)
+#'
+#' # showing shared clones between P17B and P17L (clones that are present in both samples)
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+#'      clones = "shared(P17B, P17L)", relabel = TRUE)
+#'
+#' # showing shared clones but with a different order
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+#'      clones = "shared(P17B, P17L)", relabel = TRUE, orderby = "P17L - P17B")
+#'
+#' # showing clones larger than 10 in P17L and ordered by the clone size in P17L descendingly
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+#'      clones = "select(P17L > 10)", relabel = TRUE, top = 5, orderby = "P17L")
+#'
+#' # using trend plot
+#' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+#'     clones = "intersect(select(P17L > 20), shared(P17L, P17B))", relabel = TRUE, orderby = "P17L",
+#'     plot_type = "trend")
+#' }
+ClonalDynamicsPlot <- function(
+    data, clones = NULL, top = 10, orderby = NULL, clone_call = "aa", chain = "both",
+    plot_type = c("sankey", "alluvial", "trend"), group_by = "Sample", groups = NULL,
+    subgroup_by = NULL, subgroups = NULL, relabel = FALSE, facet_by = NULL, split_by = NULL, ...
+) {
+    plot_type <- match.arg(plot_type)
+    if (plot_type == "alluvial") plot_type <- "sankey"
+    stopifnot("Only a single group_by is supported for 'ClonalDynamicsPlot'" = length(unique(group_by)) == 1)
+    stopifnot("'subgroup_by' is not supported for 'ClonalDynamicsPlot' with plot_type = 'trend'" = is.null(subgroup_by) || plot_type != "trend")
+
+    if (!is.null(groups)) {
+        data <- screp_subset(data, paste0('`', group_by, '`', ' %in% c(', paste0('"', groups, '"', collapse = ', '), ')'))
+    }
+
+    all_groupings <- unique(c(group_by, subgroup_by, facet_by, split_by))
+    data <- clonal_size_data(data, clone_call, chain, all_groupings)
+    data$fraction <- NULL
+    groups <- groups %||% unique(data[[group_by]])
+    nonexist_groups <- setdiff(groups, unique(data[[group_by]]))
+    if (length(nonexist_groups) > 0) {
+        stop(paste("The following groups do not exist in the data:", paste(nonexist_groups, collapse = ", ")))
+    }
+    if (length(groups) < 2) {
+        stop("At least 2 groups are required for ClonalDynamicsPlot")
+    }
+    if (identical(plot_type, "chord") && length(groups) > 2) {
+        stop("'chord'/'circos' plot only supports up to 2 groups. Please use 'sankey' plot instead.")
+    }
+
+    if (!is.null(subgroup_by) && !is.null(subgroups)) {
+        if (!is.list(subgroups)) {
+            subgroups <- rep(list(subgroups), length(groups))
+            names(subgroups) <- groups
+        }
+        data <- data %>%
+            dplyr::group_by(!!sym(group_by)) %>%
+            group_modify(function(df, .gf) {
+                df[df[[subgroup_by]] %in% subgroups[[.gf[[1]]]], , drop = FALSE]
+            })
+    }
+
+    topn <- top
+    top <- getFromNamespace("top", "scplotter")
+    orderby <- orderby %||% paste(sapply(groups, function(g) {
+        ifelse(startsWith(g, "`") && endsWith(g, "`"), g, paste0("`", g, "`"))
+    }), collapse = " + ")
+
+    clones <- clones %||% paste0("top(", topn, ")")
+    clones_is_expr <- length(clones) == 1 && grepl("(", clones, fixed = TRUE) && grepl(")", clones, fixed = TRUE)
+
+    data <- data %>%
+        pivot_wider(names_from = group_by, values_from = "count", values_fill = 0) %>%
+        dplyr::group_by(!!!syms(unique(c("CloneID", subgroup_by, facet_by, split_by)))) %>%
+        summarise(across(groups, sum), .groups = "drop") %>%
+        mutate(.order = !!parse_expr(orderby)) %>%
+        arrange(desc(.order))
+
+    if (clones_is_expr) {
+        clones <- eval(parse(text = clones))
+        if (is.data.frame(clones)) {
+            # apply topn to each split_by
+            clones <- clones %>%
+                dplyr::group_by(!!!syms(c(facet_by, split_by))) %>%
+                reframe(CloneID = unique(CloneID)[1:topn])
+        } else {
+            clones <- unique(clones)[1:topn]
+        }
+    }
+    if (is.data.frame(clones)) {
+        data <- data %>% inner_join(clones, by = unique(c("CloneID", facet_by, split_by)))
+    } else {
+        data <- data[data$CloneID %in% as.character(clones), , drop = FALSE]
+    }
+    if (nrow(data) == 0) {
+        stop("No clones selected in the data")
+    }
+    if (relabel) {
+        data$CloneID <- paste("clone", seq(nrow(data)))
+    }
+    data$CloneID <- factor(data$CloneID, levels = unique(data$CloneID))
+
+    if (identical(plot_type, "sankey")) {
+        SankeyPlot(data, x = groups, links_name = "Clones",
+            links_fill_by = "CloneID", flow = TRUE,
+            facet_by = facet_by, split_by = split_by, ...)
+    } else {
+        data <- data %>% pivot_longer(cols = groups, names_to = group_by, values_to = "Count")
+        TrendPlot(data, x = group_by, y = "Count", group_by = "CloneID", group_name = "Clones",
+            facet_by = facet_by, split_by = split_by, ...)
+    }
+}
