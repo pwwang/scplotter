@@ -67,7 +67,7 @@
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang sym syms
 #' @importFrom dplyr %>% summarise mutate ungroup n
-#' @importFrom tidyr drop_na pivot_wider
+#' @importFrom tidyr drop_na pivot_wider pivot_longer
 #' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot ViolinPlot BoxPlot
 #' @export
 #' @examples
@@ -114,8 +114,9 @@
 #'              x_text_angle = 90, group_by = c("stim", "seurat_annotations"))
 #'
 #' # Sankey plot
-#' CellStatPlot(ifnb_sub, plot_type = "sankey", group_by = "stim", alpha = .6)
-#' CellStatPlot(ifnb_sub, plot_type = "sankey", alpha = .6,
+#' CellStatPlot(ifnb_sub, plot_type = "sankey", group_by = c("seurat_clusters", "stim"),
+#'              links_alpha = .6)
+#' CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
 #'              group_by = c("stim", "seurat_annotations", "orig.ident"))
 #'
 #' # Area plot
@@ -320,15 +321,13 @@ CellStatPlot <- function(
             stop("Cannot create a sankey plot without specifying 'group_by'.")
         }
         if (frac == "ident") {
-            stop("Cannot calculate the fraction by 'ident' for 'trend' plot.")
+            stop("Cannot calculate the fraction by 'ident' for 'sankey' plot.")
         }
         if (isTRUE(swap)) {
             stop("'swap = TRUE' is not supported for 'sankey' plot.")
         }
         SankeyPlot(
-            data,
-            nodes_by = c(ident, group_by),
-            # links_by = ident,
+            data, x = group_by, links_fill_by = ident, xlab = "", ylab = "", flow = TRUE,
             y = ifelse(identical(frac, "none"), ".n", ".frac"),
             split_by = split_by, facet_by = facet_by, ...)
     } else if (plot_type == "pies") {
