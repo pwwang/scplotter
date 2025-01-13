@@ -49,7 +49,7 @@
 #' )
 #'
 #' ClonalGeneUsagePlot(data)
-#' ClonalGeneUsagePlot(data, genes = "TRBJ", genes2 = "TRBV")
+#' ClonalGeneUsagePlot(data, genes = c("TRBJ", "TRBV"))
 #' ClonalGeneUsagePlot(data, top = 40, plot_type = "heatmap")
 #' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "heatmap")
 #' ClonalGeneUsagePlot(data, genes = "TRBV", group_by = "Type", plot_type = "chord")
