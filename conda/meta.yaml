@@ -1,10 +1,10 @@
 package:
   name: r-scplotter
-  version: 0.1.2
+  version: 0.2.0
 
 source:
   git_url: https://github.com/pwwang/scplotter
-  git_rev: 0.1.2
+  git_rev: 0.2.0
 
 build:
   number: 1
