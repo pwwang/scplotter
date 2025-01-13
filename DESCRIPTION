@@ -47,7 +47,7 @@ Suggests:
 LazyData: true
 LazyDataCompression: xz
 Remotes:
-    ncborcherding/scRepertoire
+    ncborcherding/scRepertoire,
     pwwang/plotthis
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/
