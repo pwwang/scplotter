@@ -116,8 +116,8 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
 #' screp <- scRepertoire::combineTCR(contig_list,
 #'    samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #'
-#' head(ScRepSubset(screp, "nchar(CTaa) < 20")[[1]])
-#' names(ScRepSubset(screp, "Sample %in% c('P17B', 'P17L')"))
+#' head(scplotter:::screp_subset(screp, "nchar(CTaa) < 20")[[1]])
+#' names(scplotter:::screp_subset(screp, "Sample %in% c('P17B', 'P17L')"))
 #' }
 screp_subset <- function(screp, subset) {
     if (inherits(screp, "Seurat")) {
