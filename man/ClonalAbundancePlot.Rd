@@ -69,9 +69,9 @@ It should be a list of values. The names are the column names, and the values ar
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{trend} plot, see \link[plotthis:densityhistoplot]{plotthis::Histogram}.
-\item For \code{histogram} plot, see \link[plotthis:densityhistoplot]{plotthis::Histogram}.
-\item For \code{density} plot, see \link[plotthis:densityhistoplot]{plotthis::DensityPlot}.
+\item For \code{trend} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::Histogram()}}.
+\item For \code{histogram} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::Histogram()}}.
+\item For \code{density} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::DensityPlot()}}.
 }}
 }
 \value{

@@ -62,7 +62,7 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable}
 
 \item{byrow}{Whether to fill the combined plot by row. Default is TRUE.}
 
-\item{...}{Other arguments passed to \link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot}.}
+\item{...}{Other arguments passed to \code{\link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot()}}.}
 }
 \value{
 A ggplot object or a list if \code{combine} is FALSE

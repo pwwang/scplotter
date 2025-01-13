@@ -68,8 +68,8 @@ This argument is not supported and will raise an error if provided.}
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{chord} plot, see \link[plotthis:chordplot]{plotthis::ChordPlot}.
-\item For \code{sankey} plot, see \link[plotthis:sankeyplot]{plotthis::SankeyPlot}.
+\item For \code{trend} plot, see \code{\link[plotthis:TrendPlot]{plotthis::TrendPlot()}}.
+\item For \code{sankey} plot, see \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}.
 }}
 }
 \value{

@@ -13,7 +13,7 @@ CellDimPlot(object, reduction = NULL, graph = NULL, ...)
 
 \item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
 
-\item{...}{Other arguments passed to \link[plotthis:dimplot]{plotthis::DimPlot}.}
+\item{...}{Other arguments passed to \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.}
 }
 \value{
 A ggplot object or a list if \code{combine} is FALSE

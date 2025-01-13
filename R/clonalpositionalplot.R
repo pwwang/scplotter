@@ -35,11 +35,11 @@
 #' @param facet_nrow The number of rows in the facet grid. Default is NULL.
 #' @param aspect.ratio The aspect ratio of the plot. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot]
-#'  * For "line", [plotthis::LinePlot]
-#'  * For "heatmap", [plotthis::Heatmap]
-#'  * For "box", [plotthis::BoxPlot]
-#'  * For "violin", [plotthis::ViolinPlot]
+#'  * For "bar", [plotthis::BarPlot()].
+#'  * For "line", [plotthis::LinePlot()].
+#'  * For "heatmap", [plotthis::Heatmap()].
+#'  * For "box", [plotthis::BoxPlot()].
+#'  * For "violin", [plotthis::ViolinPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom ggplot2 element_blank
@@ -220,9 +220,9 @@ ClonalPositionalPlot <- function (
 #' @param aspect.ratio The aspect ratio of the plot. Default is NULL.
 #' @param facet_ncol The number of columns in the facet grid. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot]
-#'  * For "line", [plotthis::LinePlot]
-#'  * For "heatmap", [plotthis::Heatmap]
+#'  * For "bar", [plotthis::BarPlot()].
+#'  * For "line", [plotthis::LinePlot()].
+#'  * For "heatmap", [plotthis::Heatmap()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom tidyr pivot_longer separate unite

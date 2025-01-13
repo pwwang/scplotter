@@ -61,11 +61,11 @@
 #' @param show_column_names Whether to show the column names in the heatmap. Default is TRUE.
 #'  Only used when `plot_type` is "heatmap".
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For `Network`, see [plotthis::Network].
-#'  * For `ChordPlot`, see [plotthis::ChordPlot].
-#'  * For `Heatmap`, see [plotthis::Heatmap].
-#'  * For `SankeyPlot`, see [plotthis::SankeyPlot].
-#'  * For `DotPlot`, see [plotthis::DotPlot].
+#'  * For `Network`, see [plotthis::Network()].
+#'  * For `ChordPlot`, see [plotthis::ChordPlot()].
+#'  * For `Heatmap`, see [plotthis::Heatmap()].
+#'  * For `SankeyPlot`, see [plotthis::SankeyPlot()].
+#'  * For `DotPlot`, see [plotthis::DotPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom utils getFromNamespace
 #' @importFrom rlang syms sym

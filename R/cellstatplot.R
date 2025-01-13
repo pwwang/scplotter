@@ -50,19 +50,19 @@
 #' @param name The name of the 'pies'/'heatmap' plot, shown as the name of the main legend. Default is NULL.
 #' @param ylab The y-axis label. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
-#'   * For `bar` plot, see [plotthis::BarPlot].
-#'   * For `circos` plot, see [plotthis::CircosPlot].
-#'   * For `pie` chart, see [plotthis::PieChart].
-#'   * For `pies` plot, see [plotthis::Heatmap].
-#'   * For `heatmap` plot, see [plotthis::Heatmap].
-#'   * For `ring`/`donut` plot, see [plotthis::RingPlot].
-#'   * For `trend` plot, see [plotthis::TrendPlot].
-#'   * For `area` plot, see [plotthis::AreaPlot].
-#'   * For `sankey`/`alluvial` plot, see [plotthis::SankeyPlot].
-#'   * For `radar` plot, see [plotthis::RadarPlot].
-#'   * For `spider` plot, see [plotthis::SpiderPlot].
-#'   * For `violin` plot, see [plotthis::ViolinPlot].
-#'   * For `box` plot, see [plotthis::BoxPlot].
+#'   * For `bar` plot, see [plotthis::BarPlot()].
+#'   * For `circos` plot, see [plotthis::CircosPlot()].
+#'   * For `pie` chart, see [plotthis::PieChart()].
+#'   * For `pies` plot, see [plotthis::Heatmap()].
+#'   * For `heatmap` plot, see [plotthis::Heatmap()].
+#'   * For `ring`/`donut` plot, see [plotthis::RingPlot()].
+#'   * For `trend` plot, see [plotthis::TrendPlot()].
+#'   * For `area` plot, see [plotthis::AreaPlot()].
+#'   * For `sankey`/`alluvial` plot, see [plotthis::SankeyPlot()].
+#'   * For `radar` plot, see [plotthis::RadarPlot()].
+#'   * For `spider` plot, see [plotthis::SpiderPlot()].
+#'   * For `violin` plot, see [plotthis::ViolinPlot()].
+#'   * For `box` plot, see [plotthis::BoxPlot()].
 #'
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang sym syms

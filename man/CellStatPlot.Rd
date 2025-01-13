@@ -91,19 +91,19 @@ Note that this is different from \code{flip}. \code{flip} is used to transpose t
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{bar} plot, see \link[plotthis:barplot]{plotthis::BarPlot}.
-\item For \code{circos} plot, see \link[plotthis:chordplot]{plotthis::CircosPlot}.
-\item For \code{pie} chart, see \link[plotthis:PieChart]{plotthis::PieChart}.
-\item For \code{pies} plot, see \link[plotthis:Heatmap]{plotthis::Heatmap}.
-\item For \code{heatmap} plot, see \link[plotthis:Heatmap]{plotthis::Heatmap}.
-\item For \code{ring}/\code{donut} plot, see \link[plotthis:RingPlot]{plotthis::RingPlot}.
-\item For \code{trend} plot, see \link[plotthis:TrendPlot]{plotthis::TrendPlot}.
-\item For \code{area} plot, see \link[plotthis:AreaPlot]{plotthis::AreaPlot}.
-\item For \code{sankey}/\code{alluvial} plot, see \link[plotthis:sankeyplot]{plotthis::SankeyPlot}.
-\item For \code{radar} plot, see \link[plotthis:radarplot]{plotthis::RadarPlot}.
-\item For \code{spider} plot, see \link[plotthis:radarplot]{plotthis::SpiderPlot}.
-\item For \code{violin} plot, see \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}.
-\item For \code{box} plot, see \link[plotthis:boxviolinplot]{plotthis::BoxPlot}.
+\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For \code{circos} plot, see \code{\link[plotthis:chordplot]{plotthis::CircosPlot()}}.
+\item For \code{pie} chart, see \code{\link[plotthis:PieChart]{plotthis::PieChart()}}.
+\item For \code{pies} plot, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+\item For \code{heatmap} plot, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+\item For \code{ring}/\code{donut} plot, see \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}.
+\item For \code{trend} plot, see \code{\link[plotthis:TrendPlot]{plotthis::TrendPlot()}}.
+\item For \code{area} plot, see \code{\link[plotthis:AreaPlot]{plotthis::AreaPlot()}}.
+\item For \code{sankey}/\code{alluvial} plot, see \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}.
+\item For \code{radar} plot, see \code{\link[plotthis:radarplot]{plotthis::RadarPlot()}}.
+\item For \code{spider} plot, see \code{\link[plotthis:radarplot]{plotthis::SpiderPlot()}}.
+\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
 }}
 }
 \value{

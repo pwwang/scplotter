@@ -22,10 +22,10 @@
 #' @param row_annotation_side The side of the row annotation. Default is "right".
 #' @param row_annotation_agg A list of row annotation aggregation functions.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot]
-#'  * For "heatmap", [plotthis::Heatmap]
-#'  * For "circos", [plotthis::ChordPlot]
-#'  * For "chord", [plotthis::ChordPlot]
+#'  * For "bar", [plotthis::BarPlot()].
+#'  * For "heatmap", [plotthis::Heatmap()].
+#'  * For "circos", [plotthis::ChordPlot()].
+#'  * For "chord", [plotthis::ChordPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang := syms
 #' @importFrom dplyr mutate rename slice_max summarise pull filter all_of

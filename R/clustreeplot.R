@@ -3,7 +3,7 @@
 #'
 #' @description This function generates a clustree plot from a data frame or a Seurat object.
 #' @param object The data frame or Seurat object
-#' @param ... Other arguments passed to [plotthis::ClustreePlot]
+#' @param ... Other arguments passed to [plotthis::ClustreePlot()]
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @examples

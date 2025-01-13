@@ -20,9 +20,9 @@
 #' @param order The order of the x-axis items or groups. Default is an empty list.
 #'  It should be a list of values. The names are the column names, and the values are the order.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For `bar` plot, see [plotthis::BarPlot].
-#'  * For `box` plot, see [plotthis::BoxPlot].
-#'  * For `violin` plot, see [plotthis::ViolinPlot].
+#'  * For `bar` plot, see [plotthis::BarPlot()].
+#'  * For `box` plot, see [plotthis::BoxPlot()].
+#'  * For `violin` plot, see [plotthis::ViolinPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom tidyr separate
 #' @importFrom plotthis BarPlot BoxPlot ViolinPlot
@@ -143,9 +143,9 @@ ClonalVolumePlot <- function(
 #' @param ytrans The transformation to apply to the y-axis. Default is "identity".
 #' @param theme_args The theme arguments to be passed to the plot function.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For `trend` plot, see [plotthis::Histogram].
-#'  * For `histogram` plot, see [plotthis::Histogram].
-#'  * For `density` plot, see [plotthis::DensityPlot].
+#'  * For `trend` plot, see [plotthis::Histogram()].
+#'  * For `histogram` plot, see [plotthis::Histogram()].
+#'  * For `density` plot, see [plotthis::DensityPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom tidyr full_seq complete
 #' @importFrom dplyr group_modify
@@ -234,7 +234,7 @@ ClonalAbundancePlot <- function(
 #' @param chain indicate if both or a specific chain should be used - e.g. "both",
 #'  "TRA", "TRB", "TRD", "TRG", "IGH", or "IGL" to specify a specific chain.
 #' @param plot_type The type of plot to use. Default is "bar".
-#'  Possible values are "histogram" and "density".
+#'  Possible values are "box", "violin" and "density".
 #' @param x_nbreaks The number of breaks for the x-axis. Default is 10.
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
@@ -245,7 +245,10 @@ ClonalAbundancePlot <- function(
 #' @param ylab The y-axis label.
 #' @param position The position of the bars for bar plot on the x-axis. Default is "dodge".
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For
+#' * For `bar` plot, see [plotthis::BarPlot()].
+#' * For `box` plot, see [plotthis::BoxPlot()].
+#' * For `violin` plot, see [plotthis::ViolinPlot()].
+#' * For `density` plot, see [plotthis::DensityPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom stats quantile
 #' @importFrom rlang syms
@@ -601,9 +604,9 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' @param ncol The number of columns in the combined plot. Default is NULL.
 #' @param byrow Whether to fill the combined plot by row. Default is TRUE.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For `scatter` plot, see [plotthis::ScatterPlot].
-#'  * For `venn` plot, see [plotthis::VennDiagram].
-#'  * For `upset` plot, see [plotthis::UpsetPlot].
+#'  * For `scatter` plot, see [plotthis::ScatterPlot()].
+#'  * For `venn` plot, see [plotthis::VennDiagram()].
+#'  * For `upset` plot, see [plotthis::UpsetPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom utils combn
@@ -783,10 +786,10 @@ ClonalResidencyPlot <- function(
 #' @param order The order of the x-axis items or groups. Default is an empty list.
 #'  It should be a list of values. The names are the column names, and the values are the order.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For `bar` plot, see [plotthis::BarPlot].
-#'  * For `ring` plot, see [plotthis::RingPlot].
-#'  * For `box` plot, see [plotthis::BoxPlot].
-#'  * For `violin` plot, see [plotthis::ViolinPlot].
+#'  * For `bar` plot, see [plotthis::BarPlot()].
+#'  * For `ring` plot, see [plotthis::RingPlot()].
+#'  * For `box` plot, see [plotthis::BoxPlot()].
+#'  * For `violin` plot, see [plotthis::ViolinPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom dplyr %>% mutate summarise ungroup n
 #' @importFrom tidyr pivot_longer separate
@@ -981,7 +984,7 @@ ClonalCompositionPlot <- function(
 #' @param cluster_columns Whether to cluster the columns. Default is FALSE.
 #' @param show_row_names Whether to show the row names. Default is TRUE.
 #' @param show_column_names Whether to show the column names. Default is TRUE.
-#' @param ... Other arguments passed to the specific plot function [plotthis::Heatmap].
+#' @param ... Other arguments passed to the specific plot function [plotthis::Heatmap()].
 #' @return A ComplexHeatmap object or a list if `combine` is FALSE
 #' @importFrom stats as.dist
 #' @importFrom rlang syms
@@ -1111,8 +1114,8 @@ ClonalOverlapPlot <- function(
 #' @param orderby An expression to order the clones by. Default is NULL.
 #' Note that the clones will be ordered by the value of this expression in descending order.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For `chord` plot, see [plotthis::ChordPlot].
-#'  * For `sankey` plot, see [plotthis::SankeyPlot].
+#'  * For `trend` plot, see [plotthis::TrendPlot()].
+#'  * For `sankey` plot, see [plotthis::SankeyPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang parse_expr
 #' @importFrom dplyr %>% summarise arrange desc mutate rename

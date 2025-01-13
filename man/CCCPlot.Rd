@@ -99,11 +99,11 @@ Only used when \code{plot_type} is "heatmap".}
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{Network}, see \link[plotthis:Network]{plotthis::Network}.
-\item For \code{ChordPlot}, see \link[plotthis:chordplot]{plotthis::ChordPlot}.
-\item For \code{Heatmap}, see \link[plotthis:Heatmap]{plotthis::Heatmap}.
-\item For \code{SankeyPlot}, see \link[plotthis:sankeyplot]{plotthis::SankeyPlot}.
-\item For \code{DotPlot}, see \link[plotthis:dotplot]{plotthis::DotPlot}.
+\item For \code{Network}, see \code{\link[plotthis:Network]{plotthis::Network()}}.
+\item For \code{ChordPlot}, see \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}.
+\item For \code{Heatmap}, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+\item For \code{SankeyPlot}, see \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}.
+\item For \code{DotPlot}, see \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}.
 }}
 }
 \value{

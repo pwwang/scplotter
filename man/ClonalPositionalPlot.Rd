@@ -78,11 +78,11 @@ See also \link[scRepertoire:percentAA]{scRepertoire::percentAA}, \link[scReperto
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For "bar", \link[plotthis:barplot]{plotthis::BarPlot}
-\item For "line", \link[plotthis:LinePlot]{plotthis::LinePlot}
-\item For "heatmap", \link[plotthis:Heatmap]{plotthis::Heatmap}
-\item For "box", \link[plotthis:boxviolinplot]{plotthis::BoxPlot}
-\item For "violin", \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}
+\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For "line", \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}.
+\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+\item For "box", \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
+\item For "violin", \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
 }}
 }
 \value{

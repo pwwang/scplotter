@@ -97,13 +97,13 @@ See \link[plotthis:show_palettes]{plotthis::show_palettes} for available palette
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For "bar", \link[plotthis:barplot]{plotthis::BarPlot}
-\item For "dot", \link[plotthis:dotplot]{plotthis::DotPlot}
-\item For "lollipop", \link[plotthis:dotplot]{plotthis::LollipopPlot}
-\item For "network", \link[plotthis:enrichmap1]{plotthis::EnrichNetwork}
-\item For "enrichmap", \link[plotthis:enrichmap1]{plotthis::EnrichMap}
-\item For "wordcloud", \link[plotthis:WordCloudPlot]{plotthis::WordCloudPlot}
-\item For "comparison", \link[plotthis:dotplot]{plotthis::DotPlot}
+\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For "dot", \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}.
+\item For "lollipop", \code{\link[plotthis:dotplot]{plotthis::LollipopPlot()}}.
+\item For "network", \code{\link[plotthis:enrichmap1]{plotthis::EnrichNetwork()}}.
+\item For "enrichmap", \code{\link[plotthis:enrichmap1]{plotthis::EnrichMap()}}.
+\item For "wordcloud", \code{\link[plotthis:WordCloudPlot]{plotthis::WordCloudPlot()}}.
+\item For "comparison", \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}.
 }}
 }
 \description{

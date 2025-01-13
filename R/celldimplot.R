@@ -4,7 +4,7 @@
 #' @param object A seurat object
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot.
-#' @param ... Other arguments passed to [plotthis::DimPlot].
+#' @param ... Other arguments passed to [plotthis::DimPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions

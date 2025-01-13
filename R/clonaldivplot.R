@@ -104,9 +104,9 @@ ClonalDiversity <- function(
 #' @param xlab The x-axis label. Default is NULL.
 #' @param ylab The y-axis label. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot]
-#'  * For "box", [plotthis::BoxPlot]
-#'  * For "violin", [plotthis::ViolinPlot]
+#'  * For "bar", [plotthis::BarPlot()].
+#'  * For "box", [plotthis::BoxPlot()].
+#'  * For "violin", [plotthis::ViolinPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom tidyr separate
@@ -214,7 +214,7 @@ ClonalDiversityPlot <- function(
 #' @param nrow The number of rows in the combined plot. Default is NULL.
 #' @param ncol The number of columns in the combined plot. Default is NULL.
 #' @param byrow Whether to fill the combined plot by row. Default is TRUE.
-#' @param ... Other arguments passed to [plotthis::RarefactionPlot].
+#' @param ... Other arguments passed to [plotthis::RarefactionPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom plotthis RarefactionPlot
 #' @export

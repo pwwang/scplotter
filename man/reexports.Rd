@@ -8,6 +8,15 @@
 \alias{GSEAPlot}
 \alias{VolcanoPlot}
 \title{Objects exported from other packages}
+\seealso{
+\code{\link[plotthis:enrichmap1]{plotthis::PrepareEnrichrResult()}}
+
+\code{\link[plotthis:gsea]{plotthis::GSEASummaryPlot()}}
+
+\code{\link[plotthis:gsea]{plotthis::GSEAPlot()}}
+
+\code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}}
+}
 \keyword{internal}
 \description{
 These objects are imported from other packages. Follow the links

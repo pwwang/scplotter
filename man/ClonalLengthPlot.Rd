@@ -30,7 +30,7 @@ ClonalLengthPlot(
 "TRA", "TRB", "TRD", "TRG", "IGH", or "IGL" to specify a specific chain.}
 
 \item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "histogram" and "density".}
+Possible values are "box", "violin" and "density".}
 
 \item{x_nbreaks}{The number of breaks for the x-axis. Default is 10.}
 
@@ -51,7 +51,10 @@ It should be a list of values. The names are the column names, and the values ar
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For
+\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
+\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item For \code{density} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::DensityPlot()}}.
 }}
 }
 \value{

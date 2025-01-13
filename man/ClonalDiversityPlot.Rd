@@ -61,9 +61,9 @@ The last 3 methods are supported by \code{scplotter} only:
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For "bar", \link[plotthis:barplot]{plotthis::BarPlot}
-\item For "box", \link[plotthis:boxviolinplot]{plotthis::BoxPlot}
-\item For "violin", \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}
+\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For "box", \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
+\item For "violin", \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
 }}
 }
 \value{

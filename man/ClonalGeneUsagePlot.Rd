@@ -64,10 +64,10 @@ Should not be specified manually.}
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For "bar", \link[plotthis:barplot]{plotthis::BarPlot}
-\item For "heatmap", \link[plotthis:Heatmap]{plotthis::Heatmap}
-\item For "circos", \link[plotthis:chordplot]{plotthis::ChordPlot}
-\item For "chord", \link[plotthis:chordplot]{plotthis::ChordPlot}
+\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+\item For "circos", \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}.
+\item For "chord", \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}.
 }}
 }
 \value{

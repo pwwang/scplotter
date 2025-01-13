@@ -71,7 +71,7 @@ If NULL, it will be 1 for "raw" and 0.01 for other methods.}
 
 \item{show_column_names}{Whether to show the column names. Default is TRUE.}
 
-\item{...}{Other arguments passed to the specific plot function \link[plotthis:Heatmap]{plotthis::Heatmap}.}
+\item{...}{Other arguments passed to the specific plot function \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.}
 }
 \value{
 A ComplexHeatmap object or a list if \code{combine} is FALSE

@@ -66,15 +66,15 @@ If TRUE, the cells are split by the features.}
 
 \item{...}{Other arguments passed to the plot functions.
 \itemize{
-\item For \code{plot_type} "violin", the arguments are passed to \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}.
-\item For \code{plot_type} "box", the arguments are passed to \link[plotthis:boxviolinplot]{plotthis::BoxPlot}.
-\item For \code{plot_type} "bar", the arguments are passed to \link[plotthis:barplot]{plotthis::BarPlot}.
-\item For \code{plot_type} "ridge", the arguments are passed to \link[plotthis:RidgePlot]{plotthis::RidgePlot}.
-\item For \code{plot_type} "dim", the arguments are passed to \link[plotthis:dimplot]{plotthis::FeatureDimPlot}.
-\item For \code{plot_type} "heatmap", the arguments are passed to \link[plotthis:Heatmap]{plotthis::Heatmap}.
-\item For \code{plot_type} "cor" with 2 features, the arguments are passed to \link[plotthis:CorPlot]{plotthis::CorPlot}.
-\item For \code{plot_type} "cor" with more than 2 features, the arguments are passed to \link[plotthis:CorPairsPlot]{plotthis::CorPairsPlot}.
-\item For \code{plot_type} "dot", the arguments are passed to \link[plotthis:Heatmap]{plotthis::Heatmap} with \code{cell_type} set to "dot".
+\item For \code{plot_type} "violin", the arguments are passed to \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item For \code{plot_type} "box", the arguments are passed to \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
+\item For \code{plot_type} "bar", the arguments are passed to \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For \code{plot_type} "ridge", the arguments are passed to \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}.
+\item For \code{plot_type} "dim", the arguments are passed to \code{\link[plotthis:dimplot]{plotthis::FeatureDimPlot()}}.
+\item For \code{plot_type} "heatmap", the arguments are passed to \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+\item For \code{plot_type} "cor" with 2 features, the arguments are passed to \code{\link[plotthis:CorPlot]{plotthis::CorPlot()}}.
+\item For \code{plot_type} "cor" with more than 2 features, the arguments are passed to \code{\link[plotthis:CorPairsPlot]{plotthis::CorPairsPlot()}}.
+\item For \code{plot_type} "dot", the arguments are passed to \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} with \code{cell_type} set to "dot".
 }}
 }
 \value{

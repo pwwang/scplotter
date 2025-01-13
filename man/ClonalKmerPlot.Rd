@@ -56,9 +56,9 @@ ClonalKmerPlot(
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For "bar", \link[plotthis:barplot]{plotthis::BarPlot}
-\item For "line", \link[plotthis:LinePlot]{plotthis::LinePlot}
-\item For "heatmap", \link[plotthis:Heatmap]{plotthis::Heatmap}
+\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For "line", \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}.
+\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
 }}
 }
 \value{

@@ -45,13 +45,13 @@
 #' @param xlab The x-axis label. Default is NULL.
 #' @param ylab The y-axis label. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot]
-#'  * For "dot", [plotthis::DotPlot]
-#'  * For "lollipop", [plotthis::LollipopPlot]
-#'  * For "network", [plotthis::EnrichNetwork]
-#'  * For "enrichmap", [plotthis::EnrichMap]
-#'  * For "wordcloud", [plotthis::WordCloudPlot]
-#'  * For "comparison", [plotthis::DotPlot]
+#'  * For "bar", [plotthis::BarPlot()].
+#'  * For "dot", [plotthis::DotPlot()].
+#'  * For "lollipop", [plotthis::LollipopPlot()].
+#'  * For "network", [plotthis::EnrichNetwork()].
+#'  * For "enrichmap", [plotthis::EnrichMap()].
+#'  * For "wordcloud", [plotthis::WordCloudPlot()].
+#'  * For "comparison", [plotthis::DotPlot()].
 #' @importFrom rlang sym syms
 #' @importFrom stringr str_wrap
 #' @importFrom dplyr %>% group_by slice_min ungroup

@@ -75,10 +75,10 @@ It should be a list of values. The names are the column names, and the values ar
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{bar} plot, see \link[plotthis:barplot]{plotthis::BarPlot}.
-\item For \code{ring} plot, see \link[plotthis:RingPlot]{plotthis::RingPlot}.
-\item For \code{box} plot, see \link[plotthis:boxviolinplot]{plotthis::BoxPlot}.
-\item For \code{violin} plot, see \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}.
+\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
+\item For \code{ring} plot, see \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}.
+\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
+\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
 }}
 }
 \value{

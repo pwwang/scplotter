@@ -72,9 +72,9 @@ It should be a list of values. The names are the column names, and the values ar
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
-\item For \code{scatter} plot, see \link[plotthis:ScatterPlot]{plotthis::ScatterPlot}.
-\item For \code{venn} plot, see \link[plotthis:venndiagram1]{plotthis::VennDiagram}.
-\item For \code{upset} plot, see \link[plotthis:upsetplot1]{plotthis::UpsetPlot}.
+\item For \code{scatter} plot, see \code{\link[plotthis:ScatterPlot]{plotthis::ScatterPlot()}}.
+\item For \code{venn} plot, see \code{\link[plotthis:venndiagram1]{plotthis::VennDiagram()}}.
+\item For \code{upset} plot, see \code{\link[plotthis:upsetplot1]{plotthis::UpsetPlot()}}.
 }}
 }
 \value{
