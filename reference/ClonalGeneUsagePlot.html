@@ -132,10 +132,10 @@ Should not be specified manually.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other arguments passed to the specific plot function.</p><ul><li><p>For "bar", plotthis::BarPlot</p></li>
-<li><p>For "heatmap", <a href="https://pwwang.github.io/plotthis/reference/Heatmap.html" class="external-link">plotthis::Heatmap</a></p></li>
-<li><p>For "circos", plotthis::ChordPlot</p></li>
-<li><p>For "chord", plotthis::ChordPlot</p></li>
+<dd><p>Other arguments passed to the specific plot function.</p><ul><li><p>For "bar", <code><a href="https://pwwang.github.io/plotthis/reference/barplot.html" class="external-link">plotthis::BarPlot()</a></code>.</p></li>
+<li><p>For "heatmap", <code><a href="https://pwwang.github.io/plotthis/reference/Heatmap.html" class="external-link">plotthis::Heatmap()</a></code>.</p></li>
+<li><p>For "circos", <code><a href="https://pwwang.github.io/plotthis/reference/chordplot.html" class="external-link">plotthis::ChordPlot()</a></code>.</p></li>
+<li><p>For "chord", <code><a href="https://pwwang.github.io/plotthis/reference/chordplot.html" class="external-link">plotthis::ChordPlot()</a></code>.</p></li>
 </ul></dd>
 
 </dl></div>
@@ -171,8 +171,14 @@ Should not be specified manually.</p></dd>
 <span class="r-plt img"><img src="ClonalGeneUsagePlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">ClonalGeneUsagePlot</span><span class="op">(</span><span class="va">data</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRBV"</span>, <span class="st">"TRBJ"</span><span class="op">)</span>, group_by <span class="op">=</span> <span class="st">"Type"</span>, plot_type <span class="op">=</span> <span class="st">"chord"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ClonalGeneUsagePlot-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">ClonalGeneUsagePlot</span><span class="op">(</span><span class="va">data</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRBV"</span>, <span class="st">"TRBJ"</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"alluvial"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">ClonalGeneUsagePlot</span><span class="op">(</span><span class="va">data</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRBV"</span>, <span class="st">"TRBJ"</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"alluvial"</span>,</span></span>
+<span class="r-in"><span>     facet_scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing alluvia for some stratum combinations.</span>
 <span class="r-plt img"><img src="ClonalGeneUsagePlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">ClonalGeneUsagePlot</span><span class="op">(</span><span class="va">data</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRBV"</span>, <span class="st">"TRBJ"</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"alluvial"</span>,</span></span>
+<span class="r-in"><span>     group_by <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing alluvia for some stratum combinations.</span>
+<span class="r-plt img"><img src="ClonalGeneUsagePlot-8.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

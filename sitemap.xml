@@ -10,6 +10,7 @@
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalDiversity.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalKmerPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalLengthPlot.html</loc></url>
@@ -17,17 +18,19 @@
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalRarefactionPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.html</loc></url>
-<url><loc>https://pwwang.github.io/scplotter/reference/ClonalSizeData.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClustreePlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/DummyClonalScatterPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/FeatureStatPlot.html</loc></url>
-<url><loc>https://pwwang.github.io/scplotter/reference/MergeClonalGroupings.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/cellphonedb_res.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/clonal_size_data.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/clone_selectors.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ifnb_sub.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/index.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/merge_clonal_groupings.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/pancreas_sub.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/reexports.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/screp_subset.html</loc></url>
 </urlset>
 
