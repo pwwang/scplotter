@@ -96,5 +96,8 @@ ClonalGeneUsagePlot(data, top = 40, plot_type = "heatmap")
 ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "heatmap")
 ClonalGeneUsagePlot(data, genes = "TRBV", group_by = "Type", plot_type = "chord")
 ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), group_by = "Type", plot_type = "chord")
-ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial")
+ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
+     facet_scales = "free_y")
+ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
+     group_by = NULL)
 }

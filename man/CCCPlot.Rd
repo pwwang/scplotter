@@ -126,6 +126,7 @@ CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
 CCCPlot(cellphonedb_res, plot_type = "chord")
 CCCPlot(cellphonedb_res, plot_type = "heatmap")
 CCCPlot(cellphonedb_res, plot_type = "dot", weighted = FALSE)
+CCCPlot(cellphonedb_res, plot_type = "sankey")
 
 cellphonedb_res_sub <- cellphonedb_res[
   cellphonedb_res$source \%in\% c("Dendritic", "CD14+ Monocyte"),]

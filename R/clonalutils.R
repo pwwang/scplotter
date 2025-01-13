@@ -150,9 +150,9 @@ screp_subset <- function(screp, subset) {
 #' Under each grouping column, the value should be the size of the clone.
 #' By default, the data is assumed to be in the parent frame.
 #' @return A vector of selected clones.
-#' @importFrom rlang parse_expr
+#' @importFrom rlang parse_expr syms sym
 #' @importFrom dplyr group_by summarise filter reframe pull
-#' @keywords internal
+#' @export
 #' @rdname clone_selectors
 #' @examples
 #' data <- data.frame(
@@ -180,7 +180,7 @@ top <- function(n, groups = NULL, data = NULL) {
     }
     data %>%
         group_by(!!!syms(groups)) %>%
-        reframe(CloneID = CloneID[1:n])
+        reframe(CloneID = (!!sym("CloneID"))[1:n])
 }
 
 #' @rdname clone_selectors

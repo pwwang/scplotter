@@ -82,6 +82,7 @@
 #' CCCPlot(cellphonedb_res, plot_type = "chord")
 #' CCCPlot(cellphonedb_res, plot_type = "heatmap")
 #' CCCPlot(cellphonedb_res, plot_type = "dot", weighted = FALSE)
+#' CCCPlot(cellphonedb_res, plot_type = "sankey")
 #'
 #' cellphonedb_res_sub <- cellphonedb_res[
 #'   cellphonedb_res$source %in% c("Dendritic", "CD14+ Monocyte"),]
@@ -182,8 +183,8 @@ CCCPlot <- function(
                 name = link_weight_name, show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
         } else if (plot_type %in% c("sankey", "alluvial")) {
-            SankeyPlot(links, y = "interactionStrength", nodes_by = c(source_col, target_col),
-                ...)
+            SankeyPlot(links, y = "interactionStrength", x = c(source_col, target_col),
+                links_fill_by = source_col, flow = TRUE, xlab = "", ylab = "Strength", ...)
         } else if (plot_type == "dot") {
             if (!is.null(specificity)) {
                 DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",

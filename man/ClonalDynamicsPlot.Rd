@@ -29,7 +29,7 @@ ClonalDynamicsPlot(
 \item{clones}{The specific clones to track. This argument must be provided.
 If a single character value is provided, it will be evaluated as an expression to select the clones.
 If multiple character values are provided, they will be treated as clone IDs.
-For expression, see also \code{\link{clone_selectors}}.}
+For expression, see also \href{clone_selectors.html}{\code{clone_selectors}}.}
 
 \item{top}{The number of top clones to select. Default is 10.}
 
@@ -56,6 +56,10 @@ This argument is only supported for "sankey"/"alluvial" plot.
 If NULL, the nodes will be grouped/colored by the clones}
 
 \item{subgroups}{The subgroups to include in the plot. Default is NULL.}
+
+\item{relabel}{Whether to relabel the clones. Default is FALSE.
+The clone ids, especially using CDR3 sequences, can be long and hard to read.
+If TRUE, the clones will be relabeled as "clone1", "clone2", etc.}
 
 \item{facet_by}{The column name in the meta data to facet the plots. Default: NULL.
 This argument is not supported and will raise an error if provided.}

@@ -525,8 +525,8 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     )
     label_df <- plotdata %>% group_by(!!sym("TypeName")) %>%
         summarise(
-            x = first(!!sym("x")),
-            y = first(!!sym("y")),
+            x = first(!!sym(pair[1])),
+            y = first(!!sym(pair[2])),
             Type = mean(!!sym("Type"), na.rm = TRUE), .groups = "drop")
     label_df$TypeName <- factor(label_df$TypeName, levels = labels)
     label_df <- label_df[order(label_df$TypeName), , drop = FALSE]
@@ -737,7 +737,7 @@ ClonalResidencyPlot <- function(
                 .names = "{.col} Expanded",
                 .fns = ~ .x > 1
             )) %>%
-            select(!starts_with("count_") | ends_with(" Singlet") | ends_with(" Expanded")) %>%
+            dplyr::select(!starts_with("count_") | ends_with(" Singlet") | ends_with(" Expanded")) %>%
             rename_with(
                 function(x) substring(x, 7),
                 .cols = starts_with("count_")
@@ -1082,12 +1082,15 @@ ClonalOverlapPlot <- function(
 #' @param clones The specific clones to track. This argument must be provided.
 #'  If a single character value is provided, it will be evaluated as an expression to select the clones.
 #'  If multiple character values are provided, they will be treated as clone IDs.
-#'  For expression, see also \code{\link{clone_selectors}}.
+#'  For expression, see also [`clone_selectors`](clone_selectors.html).
 #' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
 #'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
 #'  in the data
 #' @param chain indicate if both or a specific chain should be used - e.g. "both",
 #'  "TRA", "TRG", "IGH", "IGL"
+#' @param relabel Whether to relabel the clones. Default is FALSE.
+#' The clone ids, especially using CDR3 sequences, can be long and hard to read.
+#' If TRUE, the clones will be relabeled as "clone1", "clone2", etc.
 #' @param plot_type The type of plot to use. Default is "sankey".
 #'  Possible values are "trend", "sankey", and "alluvial" (alias of "sankey").
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
@@ -1226,7 +1229,7 @@ ClonalDynamicsPlot <- function(
         dplyr::group_by(!!!syms(unique(c("CloneID", subgroup_by, facet_by, split_by)))) %>%
         summarise(across(groups, sum), .groups = "drop") %>%
         mutate(.order = !!parse_expr(orderby)) %>%
-        arrange(desc(.order))
+        arrange(desc(!!sym(".order")))
 
     if (clones_is_expr) {
         clones <- eval(parse(text = clones))
@@ -1234,7 +1237,7 @@ ClonalDynamicsPlot <- function(
             # apply topn to each split_by
             clones <- clones %>%
                 dplyr::group_by(!!!syms(c(facet_by, split_by))) %>%
-                reframe(CloneID = unique(CloneID)[1:topn])
+                reframe(CloneID = unique(!!sym("CloneID"))[1:topn])
         } else {
             clones <- unique(clones)[1:topn]
         }

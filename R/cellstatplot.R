@@ -118,6 +118,8 @@
 #'              links_alpha = .6)
 #' CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
 #'              group_by = c("stim", "seurat_annotations", "orig.ident"))
+#' CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
+#'              group_by = c("seurat_clusters", "stim", "seurat_annotations", "orig.ident"))
 #'
 #' # Area plot
 #' CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,
@@ -380,7 +382,6 @@ CellStatPlot <- function(
             stop("Cannot create a 'violin'/'box' plot with more than 2 'group_by'.")
         }
         fn <- ifelse(plot_type == "violin", ViolinPlot, BoxPlot)
-        d <<- data
         if (length(group_by) == 1) {
             fn(
                 data,

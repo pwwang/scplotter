@@ -54,7 +54,10 @@
 #' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "heatmap")
 #' ClonalGeneUsagePlot(data, genes = "TRBV", group_by = "Type", plot_type = "chord")
 #' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), group_by = "Type", plot_type = "chord")
-#' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial")
+#' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
+#'      facet_scales = "free_y")
+#' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
+#'      group_by = NULL)
 ClonalGeneUsagePlot <- function(
     data, genes = "TRBV", scale = TRUE, top = 20,
     plot_type = c("bar", "heatmap", "circos", "chord", "alluvial", "sankey"),
@@ -64,6 +67,7 @@ ClonalGeneUsagePlot <- function(
     row_annotation_agg = list(), ...
 ) {
     plot_type <- match.arg(plot_type)
+    if (plot_type == "alluvial") { plot_type <- "sankey" }
     if (!is.null(facet_by)) {
         stop("'facet_by' should not be specified in ClonalGeneUsagePlot.")
     }
@@ -79,6 +83,7 @@ ClonalGeneUsagePlot <- function(
     data <- merge_clonal_groupings(data, all_groupings)
     data <- vizGenes(data, x.axis = genes, y.axis = genes2, group.by = ".group", scale = scale, exportTable = TRUE)
     if (is.null(genes2)) {
+        stopifnot("[ClonalGeneUsagePlot] 'genes' must be of length 2." = plot_type != "sankey")
         axis1 <- genes
         axis2 <- group_by
 
@@ -96,7 +101,10 @@ ClonalGeneUsagePlot <- function(
         axis1 <- genes
         axis2 <- genes2
 
-        data <- separate(data, "element.names", into = all_groupings, sep = " // ") %>%
+        if (!is.null(all_groupings)) {
+            data <- separate(data, "element.names", into = all_groupings, sep = " // ")
+        }
+        data <- data %>%
             rename(!!sym(genes) := "x.axis", !!sym(genes2) := "y.axis") %>%
             unite("GenePairs", c(genes, genes2), sep = " // ", remove = FALSE)
 
@@ -149,7 +157,8 @@ ClonalGeneUsagePlot <- function(
         ChordPlot(data, from = axis1, to = axis2, y = ifelse(scale, "proportion", "count"),
             split_by = split_by, theme_args = theme_args, ...)
     } else {  # alluvial / sankey
-        SankeyPlot(data, links_by = axis1, nodes_by = c(axis1, axis2), y = ifelse(scale, "proportion", "count"),
+        SankeyPlot(data, x = c(axis1, axis2), y = ifelse(scale, "proportion", "count"),
+            links_fill_by = axis1, facet_by = group_by,
             split_by = split_by, theme_args = theme_args, ...)
     }
 }

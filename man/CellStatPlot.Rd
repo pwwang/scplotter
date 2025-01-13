@@ -160,6 +160,8 @@ CellStatPlot(ifnb_sub, plot_type = "sankey", group_by = c("seurat_clusters", "st
              links_alpha = .6)
 CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
              group_by = c("stim", "seurat_annotations", "orig.ident"))
+CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
+             group_by = c("seurat_clusters", "stim", "seurat_annotations", "orig.ident"))
 
 # Area plot
 CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,
