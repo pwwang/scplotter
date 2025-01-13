@@ -154,8 +154,16 @@ ClonalGeneUsagePlot <- function(
             row_annotation = row_annotation, row_annotation_type = row_annotation_type, row_annotation_agg = row_annotation_agg,
             split_rows_data = TRUE, row_annotation_side = row_annotation_side, ...)
     } else if (plot_type %in% c("circos", "chord")) {
-        ChordPlot(data, from = axis1, to = axis2, y = ifelse(scale, "proportion", "count"),
-            split_by = split_by, theme_args = theme_args, ...)
+        if (is.null(genes2)) {
+            ChordPlot(data, from = axis1, to = axis2, y = ifelse(scale, "proportion", "count"),
+                split_by = split_by, theme_args = theme_args, ...)
+        } else {
+            if (!is.null(split_by)) {
+                stop("[ClonalGeneUsagePlot] 'split_by' should not be specified when 'genes' has length 2, since the plot will be split by 'group_by'.")
+            }
+            ChordPlot(data, from = axis1, to = axis2, y = ifelse(scale, "proportion", "count"),
+                split_by = group_by, theme_args = theme_args, ...)
+        }
     } else {  # alluvial / sankey
         SankeyPlot(data, x = c(axis1, axis2), y = ifelse(scale, "proportion", "count"),
             links_fill_by = axis1, facet_by = group_by,
