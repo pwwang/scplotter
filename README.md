@@ -22,45 +22,45 @@ $ conda install pwwang::r-scplotter
 
 [`CellDimPlot`][3]
 
-![CellDimPlot](./man/figures/celldimplot.png)
+![](./man/figures/celldimplot.png)
 
 [`CellStatPlot`][4]
 
-![CellStatPlot](./man/figures/cellstatplot.png)
+![](./man/figures/cellstatplot.png)
 
 [`ClustreePlot`][5]
 
-![ClustreePlot](./man/figures/clustreeplot.png)
+![](./man/figures/clustreeplot.png)
 
 [`FeatureStatPlot`][6]
 
-![FeatureStatPlot](./man/figures/featurestatplot.png)
+![](./man/figures/featurestatplot.png)
 
 [`EnrichmentPlot`][7]
 
-![EnrichmentPlot](./man/figures/enrichmentplot.png)
+![](./man/figures/enrichmentplot.png)
 
 [`GSEASummaryPlot`][8] | [`GSEAPlot`][8]
 
-![GSEAPlot](./man/figures/gseaplot.png)
+![](./man/figures/gseaplot.png)
 
 [`VolcanoPlot`][9]
 
-![VolcanoPlot](./man/figures/volcanoplot.png)
+![](./man/figures/volcanoplot.png)
 
 [`CCCPlot`][10] (Cell-Cell Communication Plot)
 
-![CCCPlot](./man/figures/cccplot.png)
+![](./man/figures/cccplot.png)
 
 ### scTCR-seq/scBCR-seq
 
 [`ClonalVolumePlot`][11] | [`ClonalAbundancePlot`][12] | [`ClonalResidencyPlot`][13] | [`ClonalDynamicsPlot`][22] | [`ClonalCompositionPlot`][14] | [`ClonalOverlapPlot`][15] | [`ClonalGeneUsagePlot`][16]
 
-![clonalstat](./man/figures/clonalstat.png)
+![](./man/figures/clonalstat.png)
 
 [`ClonalRarefactionPlot`][17] | [`ClonalGeneUsagePlot`][18] | [`ClonalDiversityPlot`][19] | [`ClonalPositionalPlot`][20]
 
-![clonaldiv](./man/figures/clonaldiv.png)
+![](./man/figures/clonaldiv.png)
 
 [1]: https://github.com/pwwang/plotthis
 [2]: https://zhanghao-njmu.github.io/SCP/index.html
