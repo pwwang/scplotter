@@ -254,7 +254,7 @@ FeatureStatPlot <- function(
             data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
     } else if (plot_type == "bar") {
-        data <- data %>% group_by(!!!syms(unique(c(ident, split_by, ".features")))) %>%
+        data <- data %>% group_by(!!!syms(unique(c(ident, group_by, split_by, ".features")))) %>%
             summarise(.value = agg(!!sym(".value")))
         BarPlot(
             data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
