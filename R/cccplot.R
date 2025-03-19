@@ -165,12 +165,12 @@ CCCPlot <- function(
         }
 
         if (plot_type == "network") {
-            Network(links, from = source_col, to = target_col, node_fill_by = "name",
+            Network(links, from = source_col, to = target_col, node_fill_by = "name", split_by = split_by,
                 link_curvature = link_curvature, link_weight_name = link_weight_name, link_alpha = link_alpha,
                 node_fill_name = "Source/Target", link_weight_by = "interactionStrength", ...)
         } else if (plot_type %in% c("chord", "circos")) {
             ChordPlot(links, y = "interactionStrength", from = source_col, to = target_col,
-                ...)
+                split_by = split_by, ...)
         } else if (plot_type == "heatmap") {
             sources <- if (is.factor(links[[source_col]])) {
                 levels(links[[source_col]])
@@ -179,20 +179,20 @@ CCCPlot <- function(
             }
             links <- pivot_wider(links, names_from = source_col, values_from = "interactionStrength",
                 values_fill = 0)
-            Heatmap(links, rows = sources, columns_by = target_col, rows_name = "source",
+            Heatmap(links, rows = sources, columns_by = target_col, rows_name = "source", split_by = split_by,
                 name = link_weight_name, show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
         } else if (plot_type %in% c("sankey", "alluvial")) {
-            SankeyPlot(links, y = "interactionStrength", x = c(source_col, target_col),
+            SankeyPlot(links, y = "interactionStrength", x = c(source_col, target_col), split_by = split_by,
                 links_fill_by = source_col, flow = TRUE, xlab = "", ylab = "Strength", ...)
         } else if (plot_type == "dot") {
             if (!is.null(specificity)) {
                 DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
                     fill_by = ".specificity", fill_name = paste0(meta_specificity, "(", specificity, ")"),
-                    size_name = link_weight_name, x_text_angle = x_text_angle, ...)
+                    size_name = link_weight_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             } else {
                 DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
-                    size_name = link_weight_name, x_text_angle = x_text_angle, ...)
+                    size_name = link_weight_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             }
         }
     } else if (method == "interaction") {
@@ -203,19 +203,19 @@ CCCPlot <- function(
             data[[source_col]] <- paste0("source: ", data[[source_col]])
             DotPlot(data, x = target_col, y = c(ligand_col, receptor_col), y_sep = " -> ",
                 fill_by = specificity, fill_name = paste0("-log10(", specificity, ")"),
-                size_by = magnitude, x_text_angle = x_text_angle,
+                size_by = magnitude, x_text_angle = x_text_angle, split_by = split_by,
                 facet_by = source_col, ...)
         } else if (plot_type == "network") {
             data$source_target <- paste0(data[[source_col]], " -> ", data[[target_col]])
             Network(data, from = "ligand", to = "receptor",
                 link_weight_by = magnitude, link_alpha = link_alpha, link_color_by = "source_target",
-                link_color_name = "source -> target", ...)
+                link_color_name = "source -> target", split_by = split_by, ...)
         } else if (plot_type == "heatmap") {
             data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
             all_lrs <- unique(data$ligand_receptor)
             data <- pivot_wider(data, names_from = "ligand_receptor", values_from = magnitude,
                 values_fill = 0)
-            Heatmap(data, rows = all_lrs, rows_name = "Ligand -> Receptor",
+            Heatmap(data, rows = all_lrs, rows_name = "Ligand -> Receptor", split_by = split_by,
                 name = magnitude, columns_by = target_col, columns_split_by = source_col,
                 show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
