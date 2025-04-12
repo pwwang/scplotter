@@ -10,8 +10,8 @@ CCCPlot(
   method = c("aggregation", "interaction"),
   magnitude = waiver(),
   specificity = waiver(),
-  magnitude_agg = sum,
-  magnitude_name = "Total interaction strength",
+  magnitude_agg = length,
+  magnitude_name = "No. of interactions",
   meta_specificity = "sumlog",
   split_by = NULL,
   x_text_angle = 90,
@@ -71,10 +71,10 @@ By default, the last column will be used.
 If the method doesn't have a specificity, set it to NULL.}
 
 \item{magnitude_agg}{A function to aggregate the magnitude of the communication.
-Default is \code{sum}.}
+Default is \code{length}.}
 
 \item{magnitude_name}{The name of the magnitude in the plot.
-Default is "Total interaction strength".}
+Default is "No. of interactions".}
 
 \item{meta_specificity}{The method to calculate the specificity when there are multiple
 ligand-receptor pairs interactions. Default is "sumlog".
@@ -125,10 +125,11 @@ See also:
 set.seed(8525)
 data(cellphonedb_res)
 CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
- theme = "theme_blank", theme_args = list(add_coord = FALSE))
+  theme = "theme_blank", theme_args = list(add_coord = FALSE))
 CCCPlot(cellphonedb_res, plot_type = "chord")
 CCCPlot(cellphonedb_res, plot_type = "heatmap")
-CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean)
+CCCPlot(cellphonedb_res, plot_type = "dot",
+  magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
 CCCPlot(cellphonedb_res, plot_type = "sankey")
 
 cellphonedb_res_sub <- cellphonedb_res[

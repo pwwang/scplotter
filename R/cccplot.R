@@ -42,9 +42,9 @@
 #'  By default, the last column will be used.
 #'  If the method doesn't have a specificity, set it to NULL.
 #' @param magnitude_agg A function to aggregate the magnitude of the communication.
-#'  Default is `sum`.
+#'  Default is `length`.
 #' @param magnitude_name The name of the magnitude in the plot.
-#'  Default is "Total interaction strength".
+#'  Default is "No. of interactions".
 #' @param meta_specificity The method to calculate the specificity when there are multiple
 #'  ligand-receptor pairs interactions. Default is "sumlog".
 #'  It should be one of the methods in the `metap` package.
@@ -83,7 +83,7 @@
 #' CCCPlot(cellphonedb_res, plot_type = "chord")
 #' CCCPlot(cellphonedb_res, plot_type = "heatmap")
 #' CCCPlot(cellphonedb_res, plot_type = "dot",
-#'   magnitude_agg = mean, magnitude_name = "Average Interaction Length")
+#'   magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
 #' CCCPlot(cellphonedb_res, plot_type = "sankey")
 #'
 #' cellphonedb_res_sub <- cellphonedb_res[
@@ -98,8 +98,8 @@ CCCPlot <- function(
     method = c("aggregation", "interaction"),
     magnitude = waiver(),
     specificity = waiver(),
-    magnitude_agg = sum,
-    magnitude_name = "Total interaction strength",
+    magnitude_agg = length,
+    magnitude_name = "No. of interactions",
     meta_specificity = "sumlog",
     split_by = NULL,
     x_text_angle = 90,
@@ -148,7 +148,7 @@ CCCPlot <- function(
         links <- suppressWarnings({ links %>%
             filter(!is.na(!!sym(specificity))) %>%
             summarise(
-                interactionStrength = sum(!!sym(magnitude)),
+                interactionStrength = magnitude_agg(!!sym(magnitude)),
                 .specificity = if (is.null(specificity)) {
                     NA
                 } else if (n() == 1) {
