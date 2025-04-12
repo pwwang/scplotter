@@ -6,7 +6,8 @@
 \usage{
 CCCPlot(
   data,
-  plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial"),
+  plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial",
+    "box", "violin", "ridge"),
   method = c("aggregation", "interaction"),
   magnitude = waiver(),
   specificity = waiver(),
@@ -42,7 +43,9 @@ Depends on the \code{plot_type}, some columns are optional. But the \code{source
 }}
 
 \item{plot_type}{The type of plot to use. Default is "dot".
-Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial", and "dot".
+Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial", "dot",
+"box", "violin" and "ridge".
+For "box", "violin" and "ridge", the \code{method} should be "interaction".
 \itemize{
 \item network: A network plot with the source and target cells as the nodes and the communication as the edges.
 \item chord: A chord plot with the source and target cells as the nodes and the communication as the chords.
@@ -51,6 +54,12 @@ Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial
 \item sankey: A sankey plot with the source and target cells as the nodes and the communication as the flows.
 \item alluvial: Alias of "sankey".
 \item dot: A dot plot with the source and target cells as the nodes and the communication as the dots.
+\item box: Box plots for source cell types. Each x is a target cell type and the values will be
+the interaction strengths of the ligand-receptor pairs.
+\item violin: Violin plots for source cell types. Each x is a target cell type and the values will be
+the interaction strengths of the ligand-receptor pairs.
+\item ridge: Ridge plots for source cell types. Each row is a target cell type and the values will be
+the interaction strengths of the ligand-receptor pairs.
 }}
 
 \item{method}{The method to determine the plot entities.
@@ -138,4 +147,8 @@ CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")
 CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",
   node_size_by = 1)
 CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction")
+CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
+CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
+  add_box = TRUE)
+CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
 }

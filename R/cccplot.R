@@ -21,7 +21,9 @@
 #'  Depends on the `plot_type`, some columns are optional. But the `source`, `target`,
 #'  `ligand`, `receptor` and `<magnitude>` are required.
 #' @param plot_type The type of plot to use. Default is "dot".
-#'  Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial", and "dot".
+#'  Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial", "dot",
+#'  "box", "violin" and "ridge".
+#'  For "box", "violin" and "ridge", the `method` should be "interaction".
 #'  * network: A network plot with the source and target cells as the nodes and the communication as the edges.
 #'  * chord: A chord plot with the source and target cells as the nodes and the communication as the chords.
 #'  * circos: Alias of "chord".
@@ -29,6 +31,12 @@
 #'  * sankey: A sankey plot with the source and target cells as the nodes and the communication as the flows.
 #'  * alluvial: Alias of "sankey".
 #'  * dot: A dot plot with the source and target cells as the nodes and the communication as the dots.
+#'  * box: Box plots for source cell types. Each x is a target cell type and the values will be
+#'    the interaction strengths of the ligand-receptor pairs.
+#'  * violin: Violin plots for source cell types. Each x is a target cell type and the values will be
+#'    the interaction strengths of the ligand-receptor pairs.
+#'  * ridge: Ridge plots for source cell types. Each row is a target cell type and the values will be
+#'    the interaction strengths of the ligand-receptor pairs.
 #' @param method The method to determine the plot entities.
 #'  * aggregation: Aggregate the ligand-receptor pairs interactions for each source-target pair.
 #'    Only the source / target pairs will be plotted.
@@ -73,7 +81,7 @@
 #' @importFrom dplyr group_by summarise distinct filter n
 #' @importFrom tidyr replace_na pivot_wider
 #' @importFrom ggplot2 waiver
-#' @importFrom plotthis Network ChordPlot Heatmap SankeyPlot DotPlot
+#' @importFrom plotthis Network ChordPlot Heatmap SankeyPlot DotPlot BoxPlot ViolinPlot RidgePlot
 #' @export
 #' @examples
 #' set.seed(8525)
@@ -92,9 +100,14 @@
 #' CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",
 #'   node_size_by = 1)
 #' CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction")
+#' CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
+#' CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
+#'   add_box = TRUE)
+#' CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
 CCCPlot <- function(
     data,
-    plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial"),
+    plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial",
+        "box", "violin", "ridge"),
     method = c("aggregation", "interaction"),
     magnitude = waiver(),
     specificity = waiver(),
@@ -190,6 +203,8 @@ CCCPlot <- function(
                 DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
                     size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             }
+        } else {
+            stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'aggregation' yet.")
         }
     } else if (method == "interaction") {
         stopifnot("[CCCPlot] 'magnitude' is required when 'method' is 'interaction'." =
@@ -217,6 +232,21 @@ CCCPlot <- function(
             Heatmap(data, rows = all_lrs, rows_name = "Ligand -> Receptor", split_by = split_by,
                 name = magnitude, columns_by = target_col, columns_split_by = source_col,
                 show_row_names = show_row_names, show_column_names = show_column_names,
+                ...)
+        } else if (plot_type == "box") {
+            data[[source_col]] <- paste0("source: ", data[[source_col]])
+            BoxPlot(data, x = target_col, y = magnitude, facet_by = source_col,
+                xlab = "Target", ylab = "Interaction Strength", split_by = split_by,
+                x_text_angle = x_text_angle, ...)
+        } else if (plot_type == "violin") {
+            data[[source_col]] <- paste0("source: ", data[[source_col]])
+            ViolinPlot(data, x = target_col, y = magnitude, facet_by = source_col,
+                xlab = "Target", ylab = "Interaction Strength", split_by = split_by,
+                x_text_angle = x_text_angle, ...)
+        } else if (plot_type == "ridge") {
+            data[[source_col]] <- paste0("source: ", data[[source_col]])
+            RidgePlot(data, x = magnitude, group_by = target_col, facet_by = source_col,
+                xlab = "Interaction Strength", ylab = "", split_by = split_by,
                 ...)
         } else {
             stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'interaction' yet.")
