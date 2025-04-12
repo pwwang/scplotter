@@ -41,9 +41,10 @@
 #' @param specificity The column name in the data to use as the specificity of the communication.
 #'  By default, the last column will be used.
 #'  If the method doesn't have a specificity, set it to NULL.
-#' @param weighted Whether to use the magnitude as the weight of the aggregation interaction strength.
-#'  for source-target pairs. Default is TRUE. Otherwise, the number of interactions will be used.
-#'  Only used when `method` is "aggregation".
+#' @param magnitude_agg A function to aggregate the magnitude of the communication.
+#'  Default is `sum`.
+#' @param magnitude_name The name of the magnitude in the plot.
+#'  Default is "Total interaction strength".
 #' @param meta_specificity The method to calculate the specificity when there are multiple
 #'  ligand-receptor pairs interactions. Default is "sumlog".
 #'  It should be one of the methods in the `metap` package.
@@ -78,10 +79,11 @@
 #' set.seed(8525)
 #' data(cellphonedb_res)
 #' CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
-#'  theme = "theme_blank", theme_args = list(add_coord = FALSE))
+#'   theme = "theme_blank", theme_args = list(add_coord = FALSE))
 #' CCCPlot(cellphonedb_res, plot_type = "chord")
 #' CCCPlot(cellphonedb_res, plot_type = "heatmap")
-#' CCCPlot(cellphonedb_res, plot_type = "dot", weighted = FALSE)
+#' CCCPlot(cellphonedb_res, plot_type = "dot",
+#'   magnitude_agg = mean, magnitude_name = "Average Interaction Length")
 #' CCCPlot(cellphonedb_res, plot_type = "sankey")
 #'
 #' cellphonedb_res_sub <- cellphonedb_res[
@@ -96,7 +98,8 @@ CCCPlot <- function(
     method = c("aggregation", "interaction"),
     magnitude = waiver(),
     specificity = waiver(),
-    weighted = TRUE,
+    magnitude_agg = sum,
+    magnitude_name = "Total interaction strength",
     meta_specificity = "sumlog",
     split_by = NULL,
     x_text_angle = 90,
@@ -107,7 +110,7 @@ CCCPlot <- function(
     show_column_names = TRUE,
     ...
 ) {
-    stopifnot("'facet_by' is not supported in CCCPlot." = is.null(facet_by))
+    stopifnot("[CCCPlot] 'facet_by' is not supported." = is.null(facet_by))
 
     plot_type <- match.arg(plot_type)
     method <- match.arg(method)
@@ -116,57 +119,50 @@ CCCPlot <- function(
     ligand_col <- check_columns(data, "ligand", force_factor = TRUE)
     receptor_col <- check_columns(data, "receptor", force_factor = TRUE)
 
-    stopifnot("Columns 'source', 'target', 'ligand', and 'receptor' are required." =
+    stopifnot("[CCCPlot] Columns 'source', 'target', 'ligand', and 'receptor' are required." =
         !is.null(source_col) && !is.null(target_col) && !is.null(ligand_col) && !is.null(receptor_col))
 
     if (inherits(magnitude, "waiver")) {
         magnitude <- names(data)[ncol(data) - 1]
+        if (!is.numeric(data[[magnitude]])) {
+            stop("[CCCPlot] The column '", magnitude, "' is not numeric, specify it explicitly.")
+        }
     }
     if (inherits(specificity, "waiver")) {
         specificity <- names(data)[ncol(data)]
+        if (!is.numeric(data[[specificity]])) {
+            stop("[CCCPlot] The column '", specificity, "' is not numeric, specify it explicitly.")
+        }
     }
-    stopifnot("At least one of 'magnitude' and 'specificity' is required." =
+    stopifnot("[CCCPlot] At least one of 'magnitude' and 'specificity' is required." =
         !inherits(magnitude, "waiver") || !inherits(specificity, "waiver"))
 
     if (method == "aggregation") {
         links <- data %>% group_by(!!!syms(c(source_col, target_col, split_by)))
-        if (!weighted || is.null(magnitude)) {
-            link_weight_name = "No. of interactions"
-            if (!is.null(specificity)) {
-                metap_fn <- getFromNamespace(meta_specificity, "metap")
-                links <- suppressWarnings({ links %>%
-                    filter(!is.na(!!sym(specificity))) %>%
-                    summarise(
-                        interactionStrength = n(),
-                        .specificity = if (n() == 1) !!sym(specificity) else metap_fn(!!sym(specificity))$p,
-                        .groups = "drop")%>%
-                    replace_na(list(.specificity = 0))
-                })
-            } else {
-                links <- links %>%
-                    summarise(interactionStrength = n(),  .groups = "drop")
-            }
-        } else {
-            link_weight_name = "Interaction strength"
-            if (!is.null(specificity)) {
-                metap_fn <- getFromNamespace(meta_specificity, "metap")
-                links <- suppressWarnings({ links %>%
-                    filter(!is.na(!!sym(specificity))) %>%
-                    summarise(
-                        interactionStrength = sum(!!sym(magnitude)),
-                        .specificity = if (n() == 1) !!sym(specificity) else metap_fn(!!sym(specificity))$p,
-                        .groups = "drop") %>%
-                    replace_na(list(.specificity = 0))
-                })
-            } else {
-                links <- links %>%
-                    summarise(interactionStrength = sum(!!sym(magnitude)), .groups = "drop")
-            }
+        if (is.null(magnitude)) {
+            magnitiude <- "mag_score"
+            links[[magnitiude]] <- NA
         }
+
+        metap_fn <- getFromNamespace(meta_specificity, "metap")
+        links <- suppressWarnings({ links %>%
+            filter(!is.na(!!sym(specificity))) %>%
+            summarise(
+                interactionStrength = sum(!!sym(magnitude)),
+                .specificity = if (is.null(specificity)) {
+                    NA
+                } else if (n() == 1) {
+                    !!sym(specificity)
+                } else {
+                    metap_fn(!!sym(specificity))$p
+                },
+                .groups = "drop") %>%
+            replace_na(list(.specificity = 0))
+        })
 
         if (plot_type == "network") {
             Network(links, from = source_col, to = target_col, node_fill_by = "name", split_by = split_by,
-                link_curvature = link_curvature, link_weight_name = link_weight_name, link_alpha = link_alpha,
+                link_curvature = link_curvature, link_weight_name = magnitude_name, link_alpha = link_alpha,
                 node_fill_name = "Source/Target", link_weight_by = "interactionStrength", ...)
         } else if (plot_type %in% c("chord", "circos")) {
             ChordPlot(links, y = "interactionStrength", from = source_col, to = target_col,
@@ -180,7 +176,7 @@ CCCPlot <- function(
             links <- pivot_wider(links, names_from = source_col, values_from = "interactionStrength",
                 values_fill = 0)
             Heatmap(links, rows = sources, columns_by = target_col, rows_name = "source", split_by = split_by,
-                name = link_weight_name, show_row_names = show_row_names, show_column_names = show_column_names,
+                name = magnitude_name, show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
         } else if (plot_type %in% c("sankey", "alluvial")) {
             SankeyPlot(links, y = "interactionStrength", x = c(source_col, target_col), split_by = split_by,
@@ -189,13 +185,16 @@ CCCPlot <- function(
             if (!is.null(specificity)) {
                 DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
                     fill_by = ".specificity", fill_name = paste0(meta_specificity, "(", specificity, ")"),
-                    size_name = link_weight_name, x_text_angle = x_text_angle, split_by = split_by, ...)
+                    size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             } else {
                 DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
-                    size_name = link_weight_name, x_text_angle = x_text_angle, split_by = split_by, ...)
+                    size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             }
         }
     } else if (method == "interaction") {
+        stopifnot("[CCCPlot] 'magnitude' is required when 'method' is 'interaction'." =
+            !is.null(magnitude))
+
         if (plot_type == "dot") {
             if (!is.null(specificity)) {
                 data[[specificity]] <- -log10(data[[specificity]])
@@ -220,7 +219,7 @@ CCCPlot <- function(
                 show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
         } else {
-            stop("Plot type '", plot_type, "' is not supported for method 'interaction' in CCCPlot yet.")
+            stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'interaction' yet.")
         }
     }
 }

@@ -43,7 +43,7 @@ Suggests:
     scattermore,
     gridGraphics,
     iNEXT,
-    metap
+    metap (>= 1.11)
 LazyData: true
 LazyDataCompression: xz
 Remotes:

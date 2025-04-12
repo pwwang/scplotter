@@ -10,7 +10,8 @@ CCCPlot(
   method = c("aggregation", "interaction"),
   magnitude = waiver(),
   specificity = waiver(),
-  weighted = TRUE,
+  magnitude_agg = sum,
+  magnitude_name = "Total interaction strength",
   meta_specificity = "sumlog",
   split_by = NULL,
   x_text_angle = 90,
@@ -69,9 +70,11 @@ or \url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Til
 By default, the last column will be used.
 If the method doesn't have a specificity, set it to NULL.}
 
-\item{weighted}{Whether to use the magnitude as the weight of the aggregation interaction strength.
-for source-target pairs. Default is TRUE. Otherwise, the number of interactions will be used.
-Only used when \code{method} is "aggregation".}
+\item{magnitude_agg}{A function to aggregate the magnitude of the communication.
+Default is \code{sum}.}
+
+\item{magnitude_name}{The name of the magnitude in the plot.
+Default is "Total interaction strength".}
 
 \item{meta_specificity}{The method to calculate the specificity when there are multiple
 ligand-receptor pairs interactions. Default is "sumlog".
@@ -125,7 +128,7 @@ CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
  theme = "theme_blank", theme_args = list(add_coord = FALSE))
 CCCPlot(cellphonedb_res, plot_type = "chord")
 CCCPlot(cellphonedb_res, plot_type = "heatmap")
-CCCPlot(cellphonedb_res, plot_type = "dot", weighted = FALSE)
+CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean)
 CCCPlot(cellphonedb_res, plot_type = "sankey")
 
 cellphonedb_res_sub <- cellphonedb_res[
