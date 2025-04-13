@@ -228,6 +228,7 @@ FeatureStatPlot <- function(
     should_pivot <- !plot_type %in% c("dim", "heatmap", "dot", "cor")
 
     unlisted_features <- unname(unlist(features))
+    object = JoinLayers(object)
     assay_data <- GetAssayData(object, assay = assay, layer = layer)
     assay_feature <- intersect(unlisted_features, rownames(assay_data))
     assay_data <- t(as.matrix(assay_data[assay_feature, , drop = FALSE]))
