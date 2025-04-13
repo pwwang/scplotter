@@ -55,7 +55,10 @@
 #'    ident = "SubCellType", facet_scales = "free_y", add_stat = mean)
 #' FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
 #'    ident = "SubCellType", facet_scales = "free_y", group_by = "Phase")
-#' FeatureStatPlot(pancreas_sub, features = c("G2M_score"),
+#' FeatureStatPlot(
+#'    subset(pancreas_sub,
+#'        subset = SubCellType %in% c("Ductal", "Ngn3 low EP", "Ngn3 high EP")),
+#'    features = c("G2M_score"),
 #'    ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
 #' FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
 #'    add_bg = TRUE, add_box = TRUE, stack = TRUE)
