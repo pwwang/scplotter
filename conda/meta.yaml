@@ -1,10 +1,9 @@
 package:
   name: r-scplotter
-  version: 0.2.2
+  version: 0.3.0
 
 source:
-  git_url: https://github.com/pwwang/scplotter
-  git_rev: 0.2.2
+  path: ..
 
 build:
   number: 1
@@ -15,6 +14,7 @@ build:
 requirements:
   host:
     - r-base
+    - r-callr
     - r-circlize
     - r-clustree
     - r-concaveman
@@ -43,18 +43,22 @@ requirements:
     - r-stringr
     - r-tidyr
     - bioconda::bioconductor-complexheatmap
-    - pwwang::r-plotthis
     - pwwang::r-gglogger
+    - pwwang::r-plotthis
+    - pwwang::r-tidyprompt
     - pwwang::bioconductor-screpertoire
 
   run:
     - r-base
+    - r-callr
     - r-circlize
     - r-clustree
     - r-concaveman
     - r-dplyr
     - r-ggalluvial
     - r-ggforce
+    - r-ggnewscale
+    - r-ggplot2
     - r-ggpubr
     - r-ggraph
     - r-ggridges
@@ -66,11 +70,18 @@ requirements:
     - r-metap
     - r-igraph
     - r-inext
+    - r-r6
+    - r-rlang
+    - r-scales
     - r-scattermore
     - r-seurat
     - r-seuratobject
+    - r-stringr
+    - r-tidyr
     - bioconda::bioconductor-complexheatmap
+    - pwwang::r-gglogger
     - pwwang::r-plotthis
+    - pwwang::r-tidyprompt
     - pwwang::bioconductor-screpertoire
 
 test:

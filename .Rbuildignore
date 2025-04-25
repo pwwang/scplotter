@@ -2,6 +2,8 @@
 ^pkgdown\/.+
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$
+^vignettes\/articles$
+^vignettes\/Rplots\.pdf$
 ^docs/\.nojekyll$
 ^\.github\/.+
 ^\.github$

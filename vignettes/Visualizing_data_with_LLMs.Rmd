@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(scplotter)
+api_key_set <- !identical(Sys.getenv("OPENAI_API_KEY"), "")
 ```
 
 # Introduction
@@ -26,7 +27,7 @@ This vignette demonstrates how to use the `scplotter` package to visualize data 
 
 `scplotter` uses `tidyprompt` to provide a unified interface for different LLM providers. You can set up your preferred LLM provider using one of the [wrappers](https://tjarkvandemerwe.github.io/tidyprompt/reference/index.html#llm-providers-chat-history) provided by `tidyprompt`.
 
-```{r}
+```{r, eval = api_key_set}
 # Set up LLM provider
 provider <- tidyprompt::llm_provider_openai(
     parameters = list(model = "gpt-4o-mini", stream = getOption("tidyprompt.stream", TRUE)),
@@ -44,7 +45,7 @@ By default, `chat` will detects the data used for visualization from the `.Globa
 
 You can also ask to list the available data:
 
-```{r}
+```{r, eval = api_key_set}
 chat$ask("List the available data that can be used for visualization.")
 # or you can do it explicitly
 # chat$list_data()
@@ -52,7 +53,7 @@ chat$ask("List the available data that can be used for visualization.")
 
 To set up the data manually, you can use the `set_data()` method.
 
-```{r}
+```{r, eval = api_key_set}
 chat$set_data(scplotter::cellphonedb_res)
 # To let the LLM to detect the data from the prompt again:
 chat$set_data(NULL)
@@ -64,7 +65,7 @@ To use your own data, you can either set the data manually or use the `set_data(
 
 You can list the available functions by using the `list_tools()` method.
 
-```{r}
+```{r, eval = api_key_set}
 chat$list_tools()
 # or you can ask the LLM to list the available functions
 # chat$ask("List the available functions for visualizing data.")
@@ -75,20 +76,20 @@ The tool used for the visualization is determined by the LLM automatically from 
 # Visualize the data
 You can visualize the data by using the `ask()` method. The LLM will automatically detect the data and the function to be used for visualization.
 
-```{r fig.width=7, fig.height=5}
+```{r, eval = api_key_set, fig.width=7, fig.height=5}
 chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
 ```
 
-```{r fig.width=7, fig.height=6}
+```{r, eval = api_key_set, fig.width=7, fig.height=6}
 # Previous conversation is memorized
 chat$ask("Do a heatmap instead")
 ```
 
-```{r fig.width=7, fig.height=6}
+```{r, eval = api_key_set, fig.width=7, fig.height=6}
 chat$ask("Add a title to the plot: 'Cell-Cell Communication Plot'")
 ```
 
-```{r}
+```{r, eval = api_key_set}
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
@@ -101,7 +102,7 @@ chat$clear_history()
 
 You can set `verbose` to `TRUE` for all conversations when constructing the `chat` object. This will print the prompt and the response from the LLM.
 
-```{r fig.width=7, fig.height=5}
+```{r, eval = api_key_set, fig.width=7, fig.height=5}
 chat <- SCPlotterChat$new(
     provider = provider,
     verbose = TRUE
@@ -111,7 +112,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 
 To only debug a single conversation, you can set `verbose` to `TRUE` in the `ask()` method.
 
-```{r fig.width=7, fig.height=5}
+```{r, eval = api_key_set, fig.width=7, fig.height=5}
 chat <- SCPlotterChat$new(
     provider = provider,
     verbose = FALSE
