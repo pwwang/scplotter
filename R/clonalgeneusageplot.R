@@ -35,6 +35,7 @@
 #' @importFrom plotthis BarPlot Heatmap ChordPlot SankeyPlot
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -58,6 +59,7 @@
 #'      facet_scales = "free_y")
 #' ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
 #'      group_by = NULL)
+#' }
 ClonalGeneUsagePlot <- function(
     data, genes = "TRBV", scale = TRUE, top = 20,
     plot_type = c("bar", "heatmap", "circos", "chord", "alluvial", "sankey"),

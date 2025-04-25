@@ -10,6 +10,7 @@
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions
 #' @importFrom plotthis DimPlot
 #' @examples
+#' \donttest{
 #' data(pancreas_sub)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP")
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
@@ -113,7 +114,8 @@
 #'             lineages = paste0("Lineage", 1:3), lineages_whiskers = TRUE)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 #'             lineages = paste0("Lineage", 1:3), lineages_span = 0.1)
-CellDimPlot <- function(object, reduction = NULL, graph = NULL, ...) {
+#' }
+CellDimPlot <- function(object, reduction = NULL, graph = NULL, group_by = NULL, ...) {
     reduction <- reduction %||% DefaultDimReduc(object)
 
     if (!reduction %in% Reductions(object)) {

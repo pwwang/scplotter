@@ -71,6 +71,7 @@
 #' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot ViolinPlot BoxPlot
 #' @export
 #' @examples
+#' \donttest{
 #' # library(patchwork)
 #' data(ifnb_sub)
 #'
@@ -143,6 +144,7 @@
 #' pr <- CellStatPlot(ifnb_sub, plot_type = "radar", group_by = "stim")
 #' ps <- CellStatPlot(ifnb_sub, plot_type = "spider", group_by = "stim")
 #' pr | ps
+#' }
 CellStatPlot <- function(
     object, ident = "seurat_clusters", group_by = NULL, group_by_sep = "_",
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,

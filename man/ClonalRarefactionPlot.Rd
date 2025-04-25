@@ -71,6 +71,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the rarefaction curves
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -90,4 +91,5 @@ ClonalRarefactionPlot(data, type = 3, q = 0, n_boots = 2)
 ClonalRarefactionPlot(data, q = 1, n_boots = 2)
 ClonalRarefactionPlot(data, q = 1, n_boots = 2, group_by = "Type")
 ClonalRarefactionPlot(data, n_boots = 2, split_by = "Type")
+}
 }

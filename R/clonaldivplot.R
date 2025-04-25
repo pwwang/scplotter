@@ -219,6 +219,7 @@ ClonalDiversityPlot <- function(
 #' @importFrom plotthis RarefactionPlot
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -238,6 +239,7 @@ ClonalDiversityPlot <- function(
 #' ClonalRarefactionPlot(data, q = 1, n_boots = 2)
 #' ClonalRarefactionPlot(data, q = 1, n_boots = 2, group_by = "Type")
 #' ClonalRarefactionPlot(data, n_boots = 2, split_by = "Type")
+#' }
 ClonalRarefactionPlot <- function(
     data, clone_call = "aa", chain = "both",
     group_by = "Sample", group_by_sep = "_",

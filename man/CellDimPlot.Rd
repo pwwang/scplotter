@@ -4,7 +4,7 @@
 \alias{CellDimPlot}
 \title{DimPlot}
 \usage{
-CellDimPlot(object, reduction = NULL, graph = NULL, ...)
+CellDimPlot(object, reduction = NULL, graph = NULL, group_by = NULL, ...)
 }
 \arguments{
 \item{object}{A seurat object}
@@ -22,6 +22,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Dimension reduction plot
 }
 \examples{
+\donttest{
 data(pancreas_sub)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP")
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
@@ -125,4 +126,5 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             lineages = paste0("Lineage", 1:3), lineages_whiskers = TRUE)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             lineages = paste0("Lineage", 1:3), lineages_span = 0.1)
+}
 }

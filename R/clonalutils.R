@@ -152,7 +152,7 @@ screp_subset <- function(screp, subset) {
 #' @return A vector of selected clones.
 #' @importFrom rlang parse_expr syms sym
 #' @importFrom dplyr group_by summarise filter reframe pull
-#' @export
+#' @keywords internal
 #' @rdname clone_selectors
 #' @examples
 #' data <- data.frame(

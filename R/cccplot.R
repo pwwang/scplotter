@@ -84,6 +84,7 @@
 #' @importFrom plotthis Network ChordPlot Heatmap SankeyPlot DotPlot BoxPlot ViolinPlot RidgePlot
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(cellphonedb_res)
 #' CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
@@ -104,6 +105,7 @@
 #' CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
 #'   add_box = TRUE)
 #' CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
+#' }
 CCCPlot <- function(
     data,
     plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial",

@@ -113,6 +113,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the statistics of the cells.
 }
 \examples{
+\donttest{
 # library(patchwork)
 data(ifnb_sub)
 
@@ -185,4 +186,5 @@ CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
 pr <- CellStatPlot(ifnb_sub, plot_type = "radar", group_by = "stim")
 ps <- CellStatPlot(ifnb_sub, plot_type = "spider", group_by = "stim")
 pr | ps
+}
 }

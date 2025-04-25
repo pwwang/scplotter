@@ -92,6 +92,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Visualize the positional entropy, property or amino acid frequency of CDR3 sequences.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -106,4 +107,5 @@ ClonalPositionalPlot(data, method = "shannon")
 ClonalPositionalPlot(data, method = "norm.entropy", plot_type = "heatmap")
 ClonalPositionalPlot(data, method = "Atchley", group_by = "Type", plot_type = "bar")
 ClonalPositionalPlot(data, method = "Atchley", plot_type = "line")
+}
 }

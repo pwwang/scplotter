@@ -131,6 +131,7 @@ See also:
 }
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(cellphonedb_res)
 CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
@@ -151,4 +152,5 @@ CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
 CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
   add_box = TRUE)
 CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
+}
 }

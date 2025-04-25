@@ -615,6 +615,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' @importFrom scRepertoire clonalScatter
 #' @importFrom plotthis ScatterPlot VennDiagram UpsetPlot
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -633,6 +634,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"), group_by = "Type",
 #'  split_by = "Subject")
 #' ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
+#' }
 ClonalResidencyPlot <- function(
     data, clone_call = "aa", chain = "both", plot_type = c("scatter", "venn", "upset"),
     group_by = "Sample", groups = NULL, facet_by = NULL, split_by = NULL, split_by_sep = "_",
@@ -993,6 +995,7 @@ ClonalCompositionPlot <- function(
 #' @importFrom scRepertoire clonalOverlap
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -1011,6 +1014,7 @@ ClonalCompositionPlot <- function(
 #'   label_accuracy = 0.001, method = "morisita", full = FALSE)
 #' ClonalOverlapPlot(data, group_by = c("Subject", "Type"))
 #' ClonalOverlapPlot(data, group_by = "Type", split_by = "Subject")
+#' }
 ClonalOverlapPlot <- function(
     data, clone_call = "aa", chain = "both", group_by = "Sample", group_by_sep = "_", full = TRUE,
     split_by = NULL, order = list(), method = c("raw", "overlap", "morisita", "jaccard", "cosine"),

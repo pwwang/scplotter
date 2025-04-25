@@ -84,6 +84,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the residency of the clones in different samples.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -102,4 +103,5 @@ ClonalResidencyPlot(data, group_by = "Type", split_by = "Subject")
 ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"), group_by = "Type",
  split_by = "Subject")
 ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
+}
 }

@@ -84,6 +84,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Statistic plot for features
 }
 \examples{
+\donttest{
 data(pancreas_sub)
 
 FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
@@ -257,4 +258,5 @@ FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
    anno_items = c("eq", "r2", "spearman"))
 FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
    plot_type = "cor")
+}
 }

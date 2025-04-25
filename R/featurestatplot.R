@@ -37,6 +37,7 @@
 #' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs
 #' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
 #' @examples
+#' \donttest{
 #' data(pancreas_sub)
 #'
 #' FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
@@ -210,6 +211,7 @@
 #'    anno_items = c("eq", "r2", "spearman"))
 #' FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
 #'    plot_type = "cor")
+#' }
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",

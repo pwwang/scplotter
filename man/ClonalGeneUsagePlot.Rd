@@ -77,6 +77,7 @@ A ggplot object or a list if \code{combine} is FALSE
 ClonalGeneUsagePlot
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -100,4 +101,5 @@ ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
      facet_scales = "free_y")
 ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
      group_by = NULL)
+}
 }

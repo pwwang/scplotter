@@ -80,6 +80,7 @@ A ComplexHeatmap object or a list if \code{combine} is FALSE
 Plot the overlap of the clones in different samples/groups.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -98,4 +99,5 @@ ClonalOverlapPlot(data, clone_call = "strict", label_cutoff = 0,
   label_accuracy = 0.001, method = "morisita", full = FALSE)
 ClonalOverlapPlot(data, group_by = c("Subject", "Type"))
 ClonalOverlapPlot(data, group_by = "Type", split_by = "Subject")
+}
 }

@@ -46,6 +46,7 @@
 #' @importFrom scRepertoire percentAA positionalEntropy positionalProperty
 #' @importFrom plotthis BarPlot LinePlot Heatmap BoxPlot ViolinPlot
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -60,6 +61,7 @@
 #' ClonalPositionalPlot(data, method = "norm.entropy", plot_type = "heatmap")
 #' ClonalPositionalPlot(data, method = "Atchley", group_by = "Type", plot_type = "bar")
 #' ClonalPositionalPlot(data, method = "Atchley", plot_type = "line")
+#' }
 ClonalPositionalPlot <- function (
     data, chain = "TRB", aa_length = 20, group_by = "Sample", group_by_sep = "_", split_by = NULL,
     method = c("AA", "shannon", "inv.simpson", "norm.entropy", "Atchley",
