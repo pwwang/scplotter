@@ -149,7 +149,8 @@ It should be a list of values. The names are the column names, and the values ar
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8525</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8525</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">contig_list</span>, package <span class="op">=</span> <span class="st">"scRepertoire"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">scRepertoire</span><span class="fu">::</span><span class="fu"><a href="https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html" class="external-link">combineTCR</a></span><span class="op">(</span><span class="va">contig_list</span>,</span></span>
 <span class="r-in"><span>    samples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span>, <span class="st">"P18B"</span>, <span class="st">"P18L"</span>, <span class="st">"P19B"</span>,<span class="st">"P19L"</span>, <span class="st">"P20B"</span>, <span class="st">"P20L"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -195,6 +196,7 @@ It should be a list of values. The names are the column names, and the values ar
 <span class="r-plt img"><img src="ClonalCompositionPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">ClonalCompositionPlot</span><span class="op">(</span><span class="va">data</span>, method <span class="op">=</span> <span class="st">"rare"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ClonalCompositionPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
