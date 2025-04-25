@@ -254,12 +254,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                     </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
-<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                   </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
+<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
