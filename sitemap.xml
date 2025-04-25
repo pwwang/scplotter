@@ -1,6 +1,8 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://pwwang.github.io/scplotter/404.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/LICENSE.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/articles/Visualizing_data_with_LLMs.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/articles/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/authors.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/CCCPlot.html</loc></url>
@@ -23,6 +25,7 @@
 <url><loc>https://pwwang.github.io/scplotter/reference/DummyClonalScatterPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/FeatureStatPlot.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/SCPlotterChat.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/cellphonedb_res.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/clonal_size_data.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/clone_selectors.html</loc></url>

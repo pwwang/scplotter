@@ -16,6 +16,10 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Visualizing_data_with_LLMs.html">Visualizing data with LLMs</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/pwwang/scplotter/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -138,7 +142,8 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable<
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8525</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8525</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">contig_list</span>, package <span class="op">=</span> <span class="st">"scRepertoire"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">scRepertoire</span><span class="fu">::</span><span class="fu"><a href="https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html" class="external-link">combineTCR</a></span><span class="op">(</span><span class="va">contig_list</span>,</span></span>
 <span class="r-in"><span>    samples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span>, <span class="st">"P18B"</span>, <span class="st">"P18L"</span>, <span class="st">"P19B"</span>,<span class="st">"P19L"</span>, <span class="st">"P20B"</span>, <span class="st">"P20L"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -155,7 +160,7 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable<
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The shape palette can deal with a maximum of 6 discrete values because more</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> than 6 becomes difficult to discriminate</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> you have requested 8 values. Consider specifying shapes manually if you need</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many have them.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many of them.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="ClonalRarefactionPlot-1.png" alt="" width="700" height="433"></span>
@@ -163,7 +168,7 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable<
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The shape palette can deal with a maximum of 6 discrete values because more</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> than 6 becomes difficult to discriminate</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> you have requested 8 values. Consider specifying shapes manually if you need</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many have them.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many of them.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="ClonalRarefactionPlot-2.png" alt="" width="700" height="433"></span>
@@ -171,7 +176,7 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable<
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The shape palette can deal with a maximum of 6 discrete values because more</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> than 6 becomes difficult to discriminate</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> you have requested 8 values. Consider specifying shapes manually if you need</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many have them.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many of them.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="ClonalRarefactionPlot-3.png" alt="" width="700" height="433"></span>
@@ -179,7 +184,7 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable<
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The shape palette can deal with a maximum of 6 discrete values because more</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> than 6 becomes difficult to discriminate</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> you have requested 8 values. Consider specifying shapes manually if you need</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many have them.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   that many of them.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="ClonalRarefactionPlot-4.png" alt="" width="700" height="433"></span>
@@ -187,6 +192,7 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable<
 <span class="r-plt img"><img src="ClonalRarefactionPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">ClonalRarefactionPlot</span><span class="op">(</span><span class="va">data</span>, n_boots <span class="op">=</span> <span class="fl">2</span>, split_by <span class="op">=</span> <span class="st">"Type"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ClonalRarefactionPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
