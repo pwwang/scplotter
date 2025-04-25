@@ -88,6 +88,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the composition of the clones in different samples/groups.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -108,4 +109,5 @@ ClonalCompositionPlot(data, group_by = "Type", plot_type = "box", comparison = T
 ClonalCompositionPlot(data, group_by = "Type", plot_type = "violin", add_box = TRUE,
  add_bg = TRUE)
 ClonalCompositionPlot(data, method = "rare")
+}
 }

@@ -81,6 +81,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the count or density of the clones at different abundance levels.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list)
@@ -98,4 +99,5 @@ ClonalAbundancePlot(data, ytrans = "log10")
 ClonalAbundancePlot(data, plot_type = "histogram")
 ClonalAbundancePlot(data, plot_type = "histogram", add_trend = TRUE, trend_skip_zero = TRUE)
 ClonalAbundancePlot(data, plot_type = "density")
+}
 }

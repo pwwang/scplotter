@@ -153,6 +153,7 @@ ClonalVolumePlot <- function(
 #' @importFrom scRepertoire clonalAbundance
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list)
@@ -170,6 +171,7 @@ ClonalVolumePlot <- function(
 #' ClonalAbundancePlot(data, plot_type = "histogram")
 #' ClonalAbundancePlot(data, plot_type = "histogram", add_trend = TRUE, trend_skip_zero = TRUE)
 #' ClonalAbundancePlot(data, plot_type = "density")
+#' }
 ClonalAbundancePlot <- function(
     data, clone_call = "aa", chain = "both", xtrans = "log10", ytrans = "identity",
     plot_type = c("trend", "histogram", "density"), binwidth = 0.1, trend_skip_zero = TRUE,
@@ -801,6 +803,7 @@ ClonalResidencyPlot <- function(
 #' @importFrom scRepertoire clonalHomeostasis clonalProportion
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -821,6 +824,7 @@ ClonalResidencyPlot <- function(
 #' ClonalCompositionPlot(data, group_by = "Type", plot_type = "violin", add_box = TRUE,
 #'  add_bg = TRUE)
 #' ClonalCompositionPlot(data, method = "rare")
+#' }
 ClonalCompositionPlot <- function(
     data, clone_call = "aa", chain = "both", method = c("homeostasis", "homeo", "rel", "top", "rare"),
     clone_split = NULL, scale = TRUE, facet_by = NULL, group_by = NULL, split_by = NULL,
