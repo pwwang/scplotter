@@ -4,10 +4,11 @@
 #' @param object A seurat object
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot.
+#' @param group_by A character vector of column name(s) to group the data. Default is NULL.
 #' @param ... Other arguments passed to [plotthis::DimPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
-#' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions
+#' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions Idents
 #' @importFrom plotthis DimPlot
 #' @examples
 #' \donttest{
@@ -130,6 +131,10 @@ CellDimPlot <- function(object, reduction = NULL, graph = NULL, group_by = NULL,
     }
 
     data <- cbind(Embeddings(object, reduction = reduction), object@meta.data)
+    if (is.null(group_by)) {
+        group_by <- "Identity"
+        data[[group_by]] <- Idents(object)
+    }
 
-    DimPlot(data, graph = graph, ...)
+    DimPlot(data, graph = graph, group_by = group_by, ...)
 }

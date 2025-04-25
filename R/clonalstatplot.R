@@ -259,6 +259,7 @@ ClonalAbundancePlot <- function(
 #' @importFrom scRepertoire clonalLength
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list)
@@ -272,6 +273,7 @@ ClonalAbundancePlot <- function(
 #' ClonalLengthPlot(data, clone_call = "nt", plot_type = "violin", chain = "TRB",
 #'  group_by = "Type", comparisons = TRUE)
 #' ClonalLengthPlot(data, plot_type = "density", chain = "TRA")
+#' }
 ClonalLengthPlot <- function(
     data, clone_call = "aa", chain = "both", plot_type = c("bar", "box", "violin", "density"),
     x_nbreaks = 10, group_by = "Sample", order = list(), xlab = "Length", ylab = NULL,

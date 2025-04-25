@@ -13,6 +13,8 @@ CellDimPlot(object, reduction = NULL, graph = NULL, group_by = NULL, ...)
 
 \item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
 
+\item{group_by}{A character vector of column name(s) to group the data. Default is NULL.}
+
 \item{...}{Other arguments passed to \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.}
 }
 \value{

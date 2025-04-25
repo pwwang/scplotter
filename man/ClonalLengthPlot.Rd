@@ -64,6 +64,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Plot the length distribution of the CDR3 sequences
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list)
@@ -77,4 +78,5 @@ ClonalLengthPlot(data, plot_type = "box")
 ClonalLengthPlot(data, clone_call = "nt", plot_type = "violin", chain = "TRB",
  group_by = "Type", comparisons = TRUE)
 ClonalLengthPlot(data, plot_type = "density", chain = "TRA")
+}
 }
