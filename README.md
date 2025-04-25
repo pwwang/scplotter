@@ -62,6 +62,29 @@ $ conda install pwwang::r-scplotter
 
 ![](./man/figures/clonaldiv.png)
 
+## Visualization with LLMs
+
+```r
+provider <- tidyprompt::llm_provider_openai(api_key = Sys.getenv("OPENAI_API_KEY"))
+chat <- SCPlotterChat$new(provider = provider)
+chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
+# Tool identified:  CCCPlot
+# Data object identified:  cellphonedb_res
+# Running tool:  CCCPlot
+```
+
+![](./man/figures/scplotter-chat1.png)
+
+```r
+chat$ask("Do a heatmap instead")
+# Tool identified:  CCCPlot
+# Data object identified:  cellphonedb_res
+# Running tool:  CCCPlot
+```
+
+![](./man/figures/scplotter-chat2.png)
+
+
 [1]: https://github.com/pwwang/plotthis
 [2]: https://zhanghao-njmu.github.io/SCP/index.html
 [3]: https://pwwang.github.io/scplotter/reference/CellDimPlot.html

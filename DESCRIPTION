@@ -23,7 +23,8 @@ Imports:
     rlang,
     stringr,
     tidyr,
-    plotthis
+    plotthis,
+    R6
 Suggests:
     ComplexHeatmap,
     Seurat (>= 5.0.0),
@@ -43,7 +44,11 @@ Suggests:
     scattermore,
     gridGraphics,
     iNEXT,
-    metap (>= 1.11)
+    tidyprompt,
+    callr,
+    metap (>= 1.11),
+    knitr,
+    rmarkdown
 LazyData: true
 LazyDataCompression: xz
 Remotes:
@@ -53,3 +58,4 @@ URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/
 BugReports:
     https://github.com/pwwang/scplotter/issues
+VignetteBuilder: knitr

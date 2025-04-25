@@ -1,0 +1,120 @@
+---
+title: "Visualizing data with LLMs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualizing_data_with_AI}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(scplotter)
+```
+
+# Introduction
+
+This vignette demonstrates how to use the `scplotter` package to visualize data with AI. The package provides a variety of functions for visualizing single-cell sequencing data, including scRNA-seq and scTCR-seq/scBCR-seq data.
+
+# Setup LLM provider
+
+`scplotter` uses `tidyprompt` to provide a unified interface for different LLM providers. You can set up your preferred LLM provider using one of the [wrappers](https://tjarkvandemerwe.github.io/tidyprompt/reference/index.html#llm-providers-chat-history) provided by `tidyprompt`.
+
+```{r}
+# Set up LLM provider
+provider <- tidyprompt::llm_provider_openai(
+    parameters = list(model = "gpt-4o-mini", stream = getOption("tidyprompt.stream", TRUE)),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://api.openai.com/v1/chat/completions",
+    api_key = Sys.getenv("OPENAI_API_KEY")
+)
+
+chat <- SCPlotterChat$new(provider = provider)
+```
+
+# Setup the data for visualization
+
+By default, `chat` will detects the data used for visualization from the `.GlobalEnv` and data exported from the `Seurat`, `SeuratObject`, and `scRepertoire` packages.
+
+You can also ask to list the available data:
+
+```{r}
+chat$ask("List the available data that can be used for visualization.")
+# or you can do it explicitly
+# chat$list_data()
+```
+
+To set up the data manually, you can use the `set_data()` method.
+
+```{r}
+chat$set_data(scplotter::cellphonedb_res)
+# To let the LLM to detect the data from the prompt again:
+chat$set_data(NULL)
+```
+
+To use your own data, you can either set the data manually or use the `set_data()` method or you can load the data in the global environment and mention it in your prompt.
+
+# List the available tools
+
+You can list the available functions by using the `list_tools()` method.
+
+```{r}
+chat$list_tools()
+# or you can ask the LLM to list the available functions
+# chat$ask("List the available functions for visualizing data.")
+```
+
+The tool used for the visualization is determined by the LLM automatically from your prompt.
+
+# Visualize the data
+You can visualize the data by using the `ask()` method. The LLM will automatically detect the data and the function to be used for visualization.
+
+```{r fig.width=7, fig.height=5}
+chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
+```
+
+```{r fig.width=7, fig.height=6}
+# Previous conversation is memorized
+chat$ask("Do a heatmap instead")
+```
+
+```{r fig.width=7, fig.height=6}
+chat$ask("Add a title to the plot: 'Cell-Cell Communication Plot'")
+```
+
+```{r}
+# To fetch the previous conversation
+# Note that the response from the LLM is simplified in the history
+chat$get_history()
+
+# To clear the history
+chat$clear_history()
+```
+
+# Debug and improve the prompt
+
+You can set `verbose` to `TRUE` for all conversations when constructing the `chat` object. This will print the prompt and the response from the LLM.
+
+```{r fig.width=7, fig.height=5}
+chat <- SCPlotterChat$new(
+    provider = provider,
+    verbose = TRUE
+)
+chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
+```
+
+To only debug a single conversation, you can set `verbose` to `TRUE` in the `ask()` method.
+
+```{r fig.width=7, fig.height=5}
+chat <- SCPlotterChat$new(
+    provider = provider,
+    verbose = FALSE
+)
+chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.", verbose = TRUE)
+```

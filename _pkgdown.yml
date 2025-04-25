@@ -27,6 +27,10 @@ reference:
     - ClonalPositionalPlot
     - ClonalKmerPlot
     - ClonalRarefactionPlot
+  - title: Visualizing using LLMs
+    desc: Functions/Classes for visualizing using LLMs
+    contents:
+    - SCPlotterChat
   - title: data
     desc: Built-in data sets
     contents:

@@ -1,7 +1,5 @@
 ^LICENSE\.md$
 ^pkgdown\/.+
-^vignettes/articles$
-^vignettes$
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$
 ^docs/\.nojekyll$

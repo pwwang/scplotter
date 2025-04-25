@@ -3,3 +3,4 @@ docs/
 *.Rcheck/
 /*.tar.gz
 Rplots.pdf
+inst/doc

@@ -53,11 +53,13 @@ jobs:
           extra-packages: |
             any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
             any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
-            any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr,
+            any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
-            any::scattermore, any::ggupset, any::iNEXT, any::metap
+            any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt
 
       - uses: r-lib/actions/check-r-package@v2
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Install scplotter
         run: |
@@ -67,6 +69,8 @@ jobs:
         run: |
           devtools::document()
           pkgdown::build_site_github_pages(new_process = TRUE, install = TRUE)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Deploy to GitHub pages
         if: github.event_name != 'pull_request'
