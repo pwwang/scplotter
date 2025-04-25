@@ -15,49 +15,63 @@ build:
 requirements:
   host:
     - r-base
-    - r-seurat
-    - pwwang::r-plotthis
-    - bioconda::bioconductor-complexheatmap
-    - pwwang::bioconductor-screpertoire
+    - r-circlize
     - r-clustree
-    - r-ggwordcloud
+    - r-concaveman
+    - r-dplyr
     - r-ggalluvial
-    - r-ggvenndiagram
-    - r-ggupset
-    - r-ggpubr
     - r-ggforce
+    - r-ggnewscale
+    - r-ggplot2
+    - r-ggpubr
     - r-ggraph
     - r-ggridges
-    - r-hexbin
-    - r-igraph
-    - r-scattermore
-    - r-concaveman
+    - r-ggupset
+    - r-ggvenndiagram
+    - r-ggwordcloud
     - r-gridgraphics
-    - r-inext
+    - r-hexbin
     - r-metap
+    - r-igraph
+    - r-inext
+    - r-r6
+    - r-rlang
+    - r-scales
+    - r-scattermore
+    - r-seurat
+    - r-seuratobject
+    - r-stringr
+    - r-tidyr
+    - bioconda::bioconductor-complexheatmap
+    - pwwang::r-plotthis
+    - pwwang::r-gglogger
+    - pwwang::bioconductor-screpertoire
 
   run:
     - r-base
-    - r-seurat
-    - pwwang::r-plotthis
-    - bioconda::bioconductor-complexheatmap
-    - pwwang::bioconductor-screpertoire
+    - r-circlize
     - r-clustree
-    - r-ggwordcloud
+    - r-concaveman
+    - r-dplyr
     - r-ggalluvial
-    - r-ggvenndiagram
-    - r-ggupset
-    - r-ggpubr
     - r-ggforce
+    - r-ggpubr
     - r-ggraph
     - r-ggridges
-    - r-hexbin
-    - r-igraph
-    - r-scattermore
-    - r-concaveman
+    - r-ggupset
+    - r-ggvenndiagram
+    - r-ggwordcloud
     - r-gridgraphics
-    - r-inext
+    - r-hexbin
     - r-metap
+    - r-igraph
+    - r-inext
+    - r-scattermore
+    - r-seurat
+    - r-seuratobject
+    - bioconda::bioconductor-complexheatmap
+    - pwwang::r-plotthis
+    - pwwang::bioconductor-screpertoire
 
 test:
   commands:
