@@ -6,7 +6,7 @@
 \usage{
 CellStatPlot(
   object,
-  ident = "seurat_clusters",
+  ident = NULL,
   group_by = NULL,
   group_by_sep = "_",
   split_by = NULL,
@@ -27,7 +27,8 @@ CellStatPlot(
 \arguments{
 \item{object}{A Seurat object}
 
-\item{ident}{The column with the cell identities. i.e. clusters. Default: seurat_clusters
+\item{ident}{The column with the cell identities. i.e. clusters. Default: NULL
+If NULL, the active identity of the Seurat object and the name "Identity" will be used.
 For 'pies', this will be used as the \code{pie_group_by}.
 For 'heatmap' plot, this will be used as the rows of the heatmap.}
 

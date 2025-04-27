@@ -3,7 +3,8 @@
 #' @description Plot the statistics of the cells.
 #'
 #' @param object A Seurat object
-#' @param ident The column with the cell identities. i.e. clusters. Default: seurat_clusters
+#' @param ident The column with the cell identities. i.e. clusters. Default: NULL
+#'  If NULL, the active identity of the Seurat object and the name "Identity" will be used.
 #'  For 'pies', this will be used as the `pie_group_by`.
 #'  For 'heatmap' plot, this will be used as the rows of the heatmap.
 #' @param group_by The column name in the meta data to group the cells. Default: NULL
@@ -66,6 +67,7 @@
 #'
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang sym syms
+#' @importFrom SeuratObject Idents
 #' @importFrom dplyr %>% summarise mutate ungroup n
 #' @importFrom tidyr drop_na pivot_wider pivot_longer
 #' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot ViolinPlot BoxPlot
@@ -152,13 +154,17 @@
 #'    x_text_angle = 60, comparisons = TRUE, aspect.ratio = 0.8)
 #' }
 CellStatPlot <- function(
-    object, ident = "seurat_clusters", group_by = NULL, group_by_sep = "_",
+    object, ident = NULL, group_by = NULL, group_by_sep = "_",
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
     data <- object@meta.data
+    if (is.null(ident)) {
+        ident <- "Identity"
+        data[[ident]] <- Idents(object)
+    }
 
     plot_type <- match.arg(plot_type)
     if (plot_type == "donut") plot_type <- "ring"
