@@ -144,6 +144,12 @@
 #' pr <- CellStatPlot(ifnb_sub, plot_type = "radar", group_by = "stim")
 #' ps <- CellStatPlot(ifnb_sub, plot_type = "spider", group_by = "stim")
 #' pr | ps
+#'
+#' # Box/Violin plot
+#' ifnb_sub$group <- sample(paste0("g", 1:10), nrow(ifnb_sub), replace = TRUE)
+#' CellStatPlot(ifnb_sub, group_by = c("group", "stim"), frac = "group",
+#'    plot_type = "violin", add_box = TRUE, ident = "seurat_annotations",
+#'    x_text_angle = 60, comparisons = TRUE, aspect.ratio = 0.8)
 #' }
 CellStatPlot <- function(
     object, ident = "seurat_clusters", group_by = NULL, group_by_sep = "_",
