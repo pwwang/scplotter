@@ -40,7 +40,6 @@ reference:
   - title: Re-exports
     desc: Functions that are re-exported from plotthis
     contents:
-    - PrepareEnrichrResult
     - GSEASummaryPlot
     - GSEAPlot
     - VolcanoPlot

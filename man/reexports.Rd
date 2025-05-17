@@ -3,14 +3,11 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{PrepareEnrichrResult}
 \alias{GSEASummaryPlot}
 \alias{GSEAPlot}
 \alias{VolcanoPlot}
 \title{Objects exported from other packages}
 \seealso{
-\code{\link[plotthis:enrichmap1]{plotthis::PrepareEnrichrResult()}}
-
 \code{\link[plotthis:gsea]{plotthis::GSEASummaryPlot()}}
 
 \code{\link[plotthis:gsea]{plotthis::GSEAPlot()}}
@@ -23,6 +20,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{plotthis}{\code{\link[plotthis:gsea]{GSEAPlot}}, \code{\link[plotthis:gsea]{GSEASummaryPlot}}, \code{\link[plotthis:enrichmap1]{PrepareEnrichrResult}}, \code{\link[plotthis]{VolcanoPlot}}}
+  \item{plotthis}{\code{\link[plotthis:gsea]{GSEAPlot}}, \code{\link[plotthis:gsea]{GSEASummaryPlot}}, \code{\link[plotthis]{VolcanoPlot}}}
 }}
 

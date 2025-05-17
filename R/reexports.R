@@ -1,8 +1,3 @@
-#' @importFrom plotthis PrepareEnrichrResult
-#' @export
-#' @seealso [plotthis::PrepareEnrichrResult()]
-plotthis::PrepareEnrichrResult
-
 #' @importFrom plotthis GSEASummaryPlot
 #' @export
 #' @seealso [plotthis::GSEASummaryPlot()]
