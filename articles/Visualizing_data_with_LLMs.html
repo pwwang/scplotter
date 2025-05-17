@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Visualizing data with LLMs • scplotter</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -143,12 +142,6 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    Plot the overlap of the clones in different samples/groups.</span></span>
 <span><span class="co">#&gt; -  EnrichmentPlot :  Enrichment Plot     </span></span>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
-<span><span class="co">#&gt; -  PrepareEnrichrResult :  Objects exported from other packages     </span></span>
-<span><span class="co">#&gt;    These objects are imported from other packages. Follow the links</span></span>
-<span><span class="co">#&gt;    below to see their documentation.</span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; -  ClustreePlot :  Clustree plot     </span></span>
 <span><span class="co">#&gt;    This function generates a clustree plot from a data frame or a Seurat object.</span></span>
 <span><span class="co">#&gt; -  ClonalVolumePlot :  ClonalVolumePlot     </span></span>
@@ -160,7 +153,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; -  ClonalResidencyPlot :  ClonalResidencyPlot     </span></span>
 <span><span class="co">#&gt;    Plot the residency of the clones in different samples.</span></span>
 <span><span class="co">#&gt; -  ClonalLengthPlot :  ClonalLengthPlot     </span></span>
@@ -172,7 +165,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; -  ClonalKmerPlot :  ClonalKmerPlot     </span></span>
 <span><span class="co">#&gt;    Explore the k-mer frequency of CDR3 sequences.</span></span>
 <span><span class="co">#&gt; -  ClonalRarefactionPlot :  ClonalRarefactionPlot     </span></span>
@@ -182,7 +175,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; -  ClonalCompositionPlot :  ClonalCompositionPlot     </span></span>
 <span><span class="co">#&gt;    Plot the composition of the clones in different samples/groups.</span></span>
 <span><span class="co">#&gt; -  CellDimPlot :  DimPlot     </span></span>
@@ -255,12 +248,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
-<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                          </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                            </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                           </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                        </span></span>
+<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                        </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = 'Cell-Cell Communication Plot')"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -293,13 +286,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; - EnrichmentPlot: Enrichment Plot  </span></span>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - PrepareEnrichrResult: Objects exported from other packages  </span></span>
-<span><span class="co">#&gt;    These objects are imported from other packages. Follow the links</span></span>
-<span><span class="co">#&gt;    below to see their documentation.</span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClustreePlot: Clustree plot  </span></span>
 <span><span class="co">#&gt;    This function generates a clustree plot from a data frame or a Seurat object.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -314,7 +300,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalResidencyPlot: ClonalResidencyPlot  </span></span>
 <span><span class="co">#&gt;    Plot the residency of the clones in different samples.</span></span>
@@ -330,7 +316,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalKmerPlot: ClonalKmerPlot  </span></span>
 <span><span class="co">#&gt;    Explore the k-mer frequency of CDR3 sequences.</span></span>
@@ -343,7 +329,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalCompositionPlot: ClonalCompositionPlot  </span></span>
 <span><span class="co">#&gt;    Plot the composition of the clones in different samples/groups.</span></span>
@@ -1178,13 +1164,6 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; - EnrichmentPlot: Enrichment Plot  </span></span>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - PrepareEnrichrResult: Objects exported from other packages  </span></span>
-<span><span class="co">#&gt;    These objects are imported from other packages. Follow the links</span></span>
-<span><span class="co">#&gt;    below to see their documentation.</span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClustreePlot: Clustree plot  </span></span>
 <span><span class="co">#&gt;    This function generates a clustree plot from a data frame or a Seurat object.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1199,7 +1178,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalResidencyPlot: ClonalResidencyPlot  </span></span>
 <span><span class="co">#&gt;    Plot the residency of the clones in different samples.</span></span>
@@ -1215,7 +1194,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalKmerPlot: ClonalKmerPlot  </span></span>
 <span><span class="co">#&gt;    Explore the k-mer frequency of CDR3 sequences.</span></span>
@@ -1228,7 +1207,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    PrepareEnrichrResult   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalCompositionPlot: ClonalCompositionPlot  </span></span>
 <span><span class="co">#&gt;    Plot the composition of the clones in different samples/groups.</span></span>
@@ -2051,7 +2030,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
