@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalutils.R
 \name{top}
 \alias{top}
-\alias{select}
+\alias{sel}
 \alias{uniq}
 \alias{shared}
 \alias{larger}
@@ -12,7 +12,7 @@
 \usage{
 top(n, groups = NULL, data = NULL)
 
-select(expr, groups = NULL, data = NULL)
+sel(expr, groups = NULL, data = NULL)
 
 uniq(group1, group2, ..., groups = NULL, data = NULL)
 
@@ -76,7 +76,7 @@ data <- data.frame(
 data <- data[order(data$group1 + data$group2, decreasing = TRUE), ]
 scplotter:::top(3)
 scplotter:::top(3, groups = "groups")
-scplotter:::select(group1 == 0 | group2 == 0)
+scplotter:::sel(group1 == 0 | group2 == 0)
 scplotter:::uniq(group1, group2)
 scplotter:::shared(group1, group2)
 scplotter:::larger(group1, group2)

@@ -1182,11 +1182,11 @@ ClonalOverlapPlot <- function(
 #'
 #' # showing clones larger than 10 in P17L and ordered by the clone size in P17L descendingly
 #' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'      clones = "select(P17L > 10)", relabel = TRUE, top = 5, orderby = "P17L")
+#'      clones = "sel(P17L > 10)", relabel = TRUE, top = 5, orderby = "P17L")
 #'
 #' # using trend plot
 #' ClonalDynamicsPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = "intersect(select(P17L > 20), shared(P17L, P17B))", relabel = TRUE, orderby = "P17L",
+#'     clones = "intersect(sel(P17L > 20), shared(P17L, P17B))", relabel = TRUE, orderby = "P17L",
 #'     plot_type = "trend")
 #' }
 ClonalDynamicsPlot <- function(

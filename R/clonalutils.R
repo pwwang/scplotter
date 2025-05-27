@@ -164,7 +164,7 @@ screp_subset <- function(screp, subset) {
 #' data <- data[order(data$group1 + data$group2, decreasing = TRUE), ]
 #' scplotter:::top(3)
 #' scplotter:::top(3, groups = "groups")
-#' scplotter:::select(group1 == 0 | group2 == 0)
+#' scplotter:::sel(group1 == 0 | group2 == 0)
 #' scplotter:::uniq(group1, group2)
 #' scplotter:::shared(group1, group2)
 #' scplotter:::larger(group1, group2)
@@ -185,7 +185,7 @@ top <- function(n, groups = NULL, data = NULL) {
 
 #' @rdname clone_selectors
 #' @keywords internal
-select <- function(expr, groups = NULL, data = NULL) {
+sel <- function(expr, groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
     groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
     is_char <- tryCatch({
@@ -201,7 +201,7 @@ select <- function(expr, groups = NULL, data = NULL) {
     }
     data %>%
         group_by(!!!syms(groups)) %>%
-        reframe(CloneID = select(expr, FALSE, data), .groups = "drop")
+        reframe(CloneID = sel(expr, FALSE, data), .groups = "drop")
 }
 
 #' @rdname clone_selectors
@@ -216,7 +216,7 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL) {
     for (g in other_groups) {
         expr <- paste0(expr, " & `", g, "` == 0")
     }
-    return(select(expr, groups, data))
+    return(sel(expr, groups, data))
 }
 
 #' @rdname clone_selectors
@@ -231,7 +231,7 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL) {
     for (g in other_groups) {
         expr <- paste0(expr, " & `", g, "` > 0")
     }
-    return(select(expr, groups, data))
+    return(sel(expr, groups, data))
 }
 
 #' @rdname clone_selectors
@@ -246,7 +246,7 @@ larger <- function(group1, group2, include_eq = FALSE, shared = FALSE, groups = 
     if (shared) {
         expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
     }
-    return(select(expr, groups, data))
+    return(sel(expr, groups, data))
 }
 
 #' @rdname clone_selectors
@@ -261,7 +261,7 @@ smaller <- function(group1, group2, include_eq = FALSE, shared = FALSE, groups =
     if (shared) {
         expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
     }
-    return(select(expr, groups, data))
+    return(sel(expr, groups, data))
 }
 
 #' @rdname clone_selectors
@@ -275,5 +275,5 @@ eq <- function(group1, group2, groups = NULL, shared = FALSE, data = NULL) {
     if (shared) {
         expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
     }
-    return(select(expr, groups, data))
+    return(sel(expr, groups, data))
 }
