@@ -23,7 +23,7 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
     } else {
         # clonalScatter only returns data for each sample
         # need to re-organize the data to get the data for each group
-        all_gvalues <- unique(sapply(data, function(x) x$.group[1]))
+        all_gvalues <- unique(unlist(sapply(data, function(x) x$.group)))
         newdata <- list()
         for (d in data) {
             nd <- split(d, d$.group)
@@ -40,26 +40,26 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
 
     gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
     do.call(rbind, lapply(gv_pairs, function(gv) {
-        d <- clonalScatter(data,
-            cloneCall = clone_call, chain = chain,
-            x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
-        )
-        d$class <- NULL
-        d$sum <- NULL
-        d$size <- NULL
-        names(d)[2:3] <- paste(names(d)[2:3], "count", sep = ".")
-        d <- pivot_longer(
-            d,
-            cols = -"Var1",
-            names_to = c(".group", ".value"),
-            names_sep = "\\."
-        )
-        d
-    })) %>%
-    distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
-    separate(".group", into = groupings, sep = " // ") %>%
-    filter(!!sym("count") > 0) %>%
-    rename(CloneID = "Var1")
+            d <- clonalScatter(data,
+                cloneCall = clone_call, chain = chain,
+                x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
+            )
+            d$class <- NULL
+            d$sum <- NULL
+            d$size <- NULL
+            names(d)[2:3] <- paste(names(d)[2:3], "count", sep = ".")
+            d <- pivot_longer(
+                d,
+                cols = -"Var1",
+                names_to = c(".group", ".value"),
+                names_sep = "\\."
+            )
+            d
+        })) %>%
+        distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
+        separate(".group", into = groupings, sep = " // ") %>%
+        filter(!!sym("count") > 0) %>%
+        rename(CloneID = "Var1")
 }
 
 #' merge_clonal_groupings
@@ -74,7 +74,6 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
 #' @return The data with the combined groupings (`.group`)
 #' @importFrom rlang syms
 #' @importFrom tidyr unite
-#' @importFrom scRepertoire addVariable
 #' @keywords internal
 merge_clonal_groupings <- function(data, groupings, sep = " // ") {
     if (inherits(data, "Seurat")) {
@@ -88,15 +87,20 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
         data@meta.data <- unite(data@meta.data, ".group", !!!syms(groupings), sep = sep, remove = FALSE)
     } else {
         samples <- names(data)
-        data <- addVariable(data, variable.name = "Sample", variables = samples)
+        data <- lapply(samples, function(s) {
+            if (nrow(data[[s]]) == 0) {
+                data[[s]]$Sample <- character()
+            } else {
+                data[[s]]$Sample <- s
+            }
+            data[[s]]
+        })
+        names(data) <- samples
         # combine Sample and group_by so that the count/frequency is calculated for each
         # combined group
-        vs <- sapply(samples, function(s) {
-            paste0(sapply(groupings, function(group) {
-                data[[s]][, group, drop = TRUE][1]
-            }), collapse = sep)
+        data <- lapply(data, function(d) {
+            unite(d, ".group", !!!syms(groupings), sep = sep, remove = TRUE)
         })
-        data <- addVariable(data, variable.name = ".group", variables = vs)
     }
 
     data
@@ -125,10 +129,14 @@ screp_subset <- function(screp, subset) {
     } else {
         screp <- sapply(names(screp), function(x) {
             y <- screp[[x]]
-            y$Sample <- x
+            if (nrow(y) == 0) {
+                y$Sample <- character()
+            } else {
+                y$Sample <- x
+            }
             filter(y, !!parse_expr(subset))
         }, simplify = FALSE, USE.NAMES = TRUE)
-        screp[sapply(screp, nrow) > 0]
+        screp[unlist(sapply(screp, nrow)) > 0]
     }
 }
 
@@ -142,16 +150,19 @@ screp_subset <- function(screp, subset) {
 #' @param group1 The first group to compare.
 #' @param group2 The second group to compare.
 #' @param ... More groups to compare.
-#' @param include_eq Whether to include equal-sized clones.
+#' @param include_zeros Whether to include clones with zero size in the comparison.
+#' If TRUE, in a comparison (s1 > s2) for a clone to be selected, both s1 and s2 must be greater than 0.
+#' If FALSE, only the first group must be greater than the second group.
 #' @param groups The column names in the meta data to group the cells.
 #' By default, it is assumed `facet_by` and `split_by` to be in the parent frame.
 #' @param data The data frame containing clone information. Default is NULL. If NULL, it will get data from parent.frame.
 #' A typical `data` should have a column named `CloneID` and other columns for the groupings.
+#' Supposingly it should be a grouped data frame with the grouping columns.
 #' Under each grouping column, the value should be the size of the clone.
 #' By default, the data is assumed to be in the parent frame.
 #' @return A vector of selected clones.
 #' @importFrom rlang parse_expr syms sym
-#' @importFrom dplyr group_by summarise filter reframe pull
+#' @importFrom dplyr group_by summarise filter reframe pull slice_head
 #' @keywords internal
 #' @rdname clone_selectors
 #' @examples
@@ -167,27 +178,26 @@ screp_subset <- function(screp, subset) {
 #' scplotter:::sel(group1 == 0 | group2 == 0)
 #' scplotter:::uniq(group1, group2)
 #' scplotter:::shared(group1, group2)
-#' scplotter:::larger(group1, group2)
-#' scplotter:::smaller(group1, group2)
-#' scplotter:::smaller(group1, group2, include_eq = TRUE)
-#' scplotter:::smaller(group1, group2, shared = TRUE)
+#' scplotter:::gt(group1, group2)
+#' scplotter:::lt(group1, group2)
+#' scplotter:::le(group1, group2)
+#' scplotter:::lt(group1, group2, include_zeros = FALSE)
 #' scplotter:::eq(group1, group2)
 top <- function(n, groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
-    if (is.null(groups)) {
-        return(data$CloneID[1:n])
+    if (!is.null(groups)) {
+        data <- data %>% dplyr::group_by(!!!syms(groups))
     }
-    data %>%
-        group_by(!!!syms(groups)) %>%
-        reframe(CloneID = (!!sym("CloneID"))[1:n])
+    slice_head(data, n = n)
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
 sel <- function(expr, groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
+    if (!is.null(groups)) {
+        data <- data %>% dplyr::group_by(!!!syms(groups))
+    }
     is_char <- tryCatch({
         is.character(expr)
     }, error = function(e) {
@@ -196,19 +206,13 @@ sel <- function(expr, groups = NULL, data = NULL) {
     if (!is_char) {
         expr <- deparse(substitute(expr))
     }
-    if (is.null(groups) || isFALSE(groups)) {
-        return(data %>% filter(!!parse_expr(expr)) %>% pull("CloneID"))
-    }
-    data %>%
-        group_by(!!!syms(groups)) %>%
-        reframe(CloneID = sel(expr, FALSE, data), .groups = "drop")
+    data %>% filter(!!parse_expr(expr))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
 uniq <- function(group1, group2, ..., groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     other_groups <- as.character(substitute(list(...)))[-1]
@@ -223,7 +227,6 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL) {
 #' @keywords internal
 shared <- function(group1, group2, ..., groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     other_groups <- as.character(substitute(list(...)))[-1]
@@ -236,43 +239,74 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL) {
 
 #' @rdname clone_selectors
 #' @keywords internal
-larger <- function(group1, group2, include_eq = FALSE, shared = FALSE, groups = NULL, data = NULL) {
+gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
-    expr <- ifelse(include_eq, ">=", ">")
-    expr <- paste0("`", group1, "` ", expr, " `", group2, "`")
-    if (shared) {
-        expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
+    expr <- paste0("`", group1, "` > `", group2, "`")
+    if (!include_zeros) {
+        expr <- paste0("`", group2, "` > 0 & ", expr)
     }
     return(sel(expr, groups, data))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-smaller <- function(group1, group2, include_eq = FALSE, shared = FALSE, groups = NULL, data = NULL) {
+ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
-    expr <- ifelse(include_eq, "<=", "<")
-    expr <- paste0("`", group1, "` ", expr, " `", group2, "`")
-    if (shared) {
-        expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
+    expr <- paste0("`", group1, "` >= `", group2, "`")
+    if (!include_zeros) {
+        expr <- paste0("`", group2, "` > 0 & ", expr)
     }
     return(sel(expr, groups, data))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-eq <- function(group1, group2, groups = NULL, shared = FALSE, data = NULL) {
+lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
     data <- data %||% parent.frame()$data
-    groups <- groups %||% c(parent.frame()$split_by, parent.frame()$facet_by)
+    group1 <- as.character(substitute(group1))
+    group2 <- as.character(substitute(group2))
+    expr <- paste0("`", group1, "` < `", group2, "`")
+    if (!include_zeros) {
+        expr <- paste0("`", group1, "` > 0 & ", expr)
+    }
+    return(sel(expr, groups, data))
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
+    data <- data %||% parent.frame()$data
+    group1 <- as.character(substitute(group1))
+    group2 <- as.character(substitute(group2))
+    expr <- paste0("`", group1, "` <= `", group2, "`")
+    if (!include_zeros) {
+        expr <- paste0("`", group1, "` > 0 & ", expr)
+    }
+    return(sel(expr, groups, data))
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+eq <- function(group1, group2, groups = NULL, data = NULL) {
+    data <- data %||% parent.frame()$data
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` == `", group2, "`")
-    if (shared) {
+    return(sel(expr, groups, data))
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
+    data <- data %||% parent.frame()$data
+    group1 <- as.character(substitute(group1))
+    group2 <- as.character(substitute(group2))
+    expr <- paste0("`", group1, "` != `", group2, "`")
+    if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
     }
     return(sel(expr, groups, data))

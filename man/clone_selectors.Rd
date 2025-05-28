@@ -5,9 +5,12 @@
 \alias{sel}
 \alias{uniq}
 \alias{shared}
-\alias{larger}
-\alias{smaller}
+\alias{gt}
+\alias{ge}
+\alias{lt}
+\alias{le}
 \alias{eq}
+\alias{ne}
 \title{Helper functions to select clones based on various criteria}
 \usage{
 top(n, groups = NULL, data = NULL)
@@ -18,25 +21,17 @@ uniq(group1, group2, ..., groups = NULL, data = NULL)
 
 shared(group1, group2, ..., groups = NULL, data = NULL)
 
-larger(
-  group1,
-  group2,
-  include_eq = FALSE,
-  shared = FALSE,
-  groups = NULL,
-  data = NULL
-)
+gt(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL)
 
-smaller(
-  group1,
-  group2,
-  include_eq = FALSE,
-  shared = FALSE,
-  groups = NULL,
-  data = NULL
-)
+ge(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL)
 
-eq(group1, group2, groups = NULL, shared = FALSE, data = NULL)
+lt(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL)
+
+le(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL)
+
+eq(group1, group2, groups = NULL, data = NULL)
+
+ne(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL)
 }
 \arguments{
 \item{n}{The number of top clones to select or the threshold size.}
@@ -46,6 +41,7 @@ By default, it is assumed \code{facet_by} and \code{split_by} to be in the paren
 
 \item{data}{The data frame containing clone information. Default is NULL. If NULL, it will get data from parent.frame.
 A typical \code{data} should have a column named \code{CloneID} and other columns for the groupings.
+Supposingly it should be a grouped data frame with the grouping columns.
 Under each grouping column, the value should be the size of the clone.
 By default, the data is assumed to be in the parent frame.}
 
@@ -58,7 +54,9 @@ By default, the data is assumed to be in the parent frame.}
 
 \item{...}{More groups to compare.}
 
-\item{include_eq}{Whether to include equal-sized clones.}
+\item{include_zeros}{Whether to include clones with zero size in the comparison.
+If TRUE, in a comparison (s1 > s2) for a clone to be selected, both s1 and s2 must be greater than 0.
+If FALSE, only the first group must be greater than the second group.}
 }
 \value{
 A vector of selected clones.
@@ -79,10 +77,10 @@ scplotter:::top(3, groups = "groups")
 scplotter:::sel(group1 == 0 | group2 == 0)
 scplotter:::uniq(group1, group2)
 scplotter:::shared(group1, group2)
-scplotter:::larger(group1, group2)
-scplotter:::smaller(group1, group2)
-scplotter:::smaller(group1, group2, include_eq = TRUE)
-scplotter:::smaller(group1, group2, shared = TRUE)
+scplotter:::gt(group1, group2)
+scplotter:::lt(group1, group2)
+scplotter:::le(group1, group2)
+scplotter:::lt(group1, group2, include_zeros = FALSE)
 scplotter:::eq(group1, group2)
 }
 \keyword{internal}
