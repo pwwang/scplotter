@@ -64,6 +64,7 @@ A ggplot object or a list if \code{combine} is FALSE
 ClonalVolumePlot
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list)
@@ -98,4 +99,5 @@ ClonalVolumePlot(sobj)
 ClonalVolumePlot(sobj, x = "seurat_clusters")
 ClonalVolumePlot(sobj, group_by = "seurat_clusters")
 ClonalVolumePlot(sobj, x = "seurat_clusters", plot_type = "box")
+}
 }

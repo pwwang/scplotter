@@ -81,10 +81,14 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
             warning("The 'Sample' column is not found in the meta data, 'orig.indent' will be used instead.")
             data$Sample <- data$orig.ident
         }
-        samples <- unique(data$Sample)
-        # combine Sample and group_by so that the count/frequency is calculated for each
-        # combined group
-        data@meta.data <- unite(data@meta.data, ".group", !!!syms(groupings), sep = sep, remove = FALSE)
+        # samples <- unique(data$Sample)
+        if (length(groupings) == 0) {
+            data@meta.data$.group <- ""
+        } else {
+            # combine Sample and group_by so that the count/frequency is calculated for each
+            # combined group
+            data@meta.data <- unite(data@meta.data, ".group", !!!syms(groupings), sep = sep, remove = FALSE)
+        }
     } else {
         samples <- names(data)
         data <- lapply(samples, function(s) {
@@ -99,7 +103,12 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
         # combine Sample and group_by so that the count/frequency is calculated for each
         # combined group
         data <- lapply(data, function(d) {
-            unite(d, ".group", !!!syms(groupings), sep = sep, remove = TRUE)
+            if (length(groupings) == 0) {
+                d$.group <- ""
+            } else {
+                d <- unite(d, ".group", !!!syms(groupings), sep = sep, remove = TRUE)
+            }
+            d
         })
     }
 

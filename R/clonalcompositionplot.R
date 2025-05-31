@@ -29,6 +29,7 @@
 #' @importFrom scRepertoire clonalQuant
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list)
@@ -63,6 +64,7 @@
 #' ClonalVolumePlot(sobj, x = "seurat_clusters")
 #' ClonalVolumePlot(sobj, group_by = "seurat_clusters")
 #' ClonalVolumePlot(sobj, x = "seurat_clusters", plot_type = "box")
+#' }
 ClonalVolumePlot <- function(
     data, clone_call = "aa", chain = "both", scale = FALSE,
     plot_type = c("bar", "box", "violin"), x = "Sample", group_by = NULL,

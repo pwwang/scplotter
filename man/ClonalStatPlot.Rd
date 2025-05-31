@@ -70,6 +70,8 @@ If NULL, the nodes will be grouped/colored by the clones}
 
 \item{subgroups}{The subgroups to include in the plot. Default is NULL.}
 
+\item{within_subgroup}{Whether to select the clones within each subgroup.}
+
 \item{relabel}{Whether to relabel the clones. Default is FALSE.
 The clone ids, especially using CDR3 sequences, can be long and hard to read.
 If TRUE, the clones will be relabeled as "clone1", "clone2", etc.
@@ -84,6 +86,10 @@ This argument is not supported and will raise an error if provided.}
 \itemize{
 \item For \code{bar} plot, Either "TotalSize" or "Count" can be used, representing the total size (# cells) of the selected clones or the number of selected clones, respectively.
 }}
+
+\item{xlab}{The x-axis label. Default is NULL.}
+
+\item{ylab}{The y-axis label. Default is NULL.}
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{

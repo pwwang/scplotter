@@ -39,6 +39,7 @@
 #' If NULL, all the subgroups in `subgroup_by` will be included.
 #' If a vector, the subgroups will be included in the order of the vector for all `groups`.
 #' If a list, the subgroups will be used for each `groups`, with `groups` as the names.
+#' @param within_subgroup Whether to select the clones within each subgroup.
 #' @param subgroups The subgroups to include in the plot. Default is NULL.
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL.
 #'  This argument is not supported and will raise an error if provided.
@@ -47,6 +48,8 @@
 #' Note that the clones will be ordered by the value of this expression in descending order.
 #' @param y The y-axis variable to use for the plot. Default is NULL.
 #' * For `bar` plot, Either "TotalSize" or "Count" can be used, representing the total size (# cells) of the selected clones or the number of selected clones, respectively.
+#' @param xlab The x-axis label. Default is NULL.
+#' @param ylab The y-axis label. Default is NULL.
 #' @param ... Other arguments passed to the specific plot function.
 #' * For `bar` plot, see [plotthis::BarPlot()].
 #' * For `trend` plot, see [plotthis::TrendPlot()].
@@ -219,7 +222,7 @@ ClonalStatPlot <- function(
         if (length(clones_expr) == 1 && grepl("(", clones_expr, fixed = TRUE) && grepl(")", clones_expr, fixed = TRUE)) {
             selected <- eval(parse(text = clones_expr))
         } else {
-            selected <- filter(data, CloneID %in% clones_expr)
+            selected <- filter(data, !!sym("CloneID") %in% clones_expr)
         }
         if (!is.null(topn)) {
             selected <- slice_head(selected, n = topn)
@@ -278,7 +281,7 @@ ClonalStatPlot <- function(
             pivot_longer(cols = groups, names_to = group_by, values_to = "Size") %>%
             dplyr::filter(!!sym("Size") > 0) %>%
             dplyr::group_by(!!!syms(unique(c("CloneGroups", group_by, subgroup_by, facet_by, split_by)))) %>%
-            summarise(TotalSize = sum(Size), Count = n(), .groups = "drop")
+            summarise(TotalSize = sum(!!sym("Size")), Count = n(), .groups = "drop")
 
         BarPlot(data, x = group_by, y = y %||% "TotalSize", group_by = "CloneGroups", group_name = clone_groups_name,
             facet_by = facet_by, split_by = split_by, xlab = xlab, ylab = ylab, ...)
@@ -322,7 +325,7 @@ ClonalStatPlot <- function(
         data <- data %>% pivot_longer(cols = groups, names_to = group_by, values_to = "Size") %>%
             dplyr::filter(!!sym("Size") > 0) %>%
             dplyr::group_by(!!!syms(unique(c("CloneGroups", group_by, subgroup_by, facet_by, split_by)))) %>%
-            summarise(TotalSize = sum(Size), .groups = "drop")
+            summarise(TotalSize = sum(!!sym("Size")), .groups = "drop")
         TrendPlot(data, x = group_by, y = "TotalSize", group_by = "CloneGroups", group_name = clone_groups_name,
             facet_by = facet_by, split_by = split_by, xlab = xlab, ylab = ylab, ...)
     }
