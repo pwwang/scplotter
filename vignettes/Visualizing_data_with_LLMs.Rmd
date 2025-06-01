@@ -2,7 +2,7 @@
 title: "Visualizing data with LLMs"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Visualizing_data_with_AI}
+  %\VignetteIndexEntry{Visualizing data with LLMs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
