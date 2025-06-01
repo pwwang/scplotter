@@ -48,6 +48,7 @@ Suggests:
     callr,
     metap (>= 1.11),
     knitr,
+    terra,
     rmarkdown
 LazyData: true
 LazyDataCompression: xz

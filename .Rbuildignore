@@ -11,12 +11,13 @@
 ^pkgdown$
 ^conda\/.+
 ^conda$
+^notebooks\/.+
+^notebooks$
 ^docs\/.+
 ^docs$
 ^test\.ipynb$
 ^.+\.Rcheck/.+$
 ^.+\.tar\.gz$
 ^\.github\/.+$
-^conda\/.+
 ^Makefile$
 ^Rplots\.pdf$

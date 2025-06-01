@@ -140,7 +140,8 @@ SpatialPlot.Seurat.VisiumV2 <- function(
                 points_args$label_segment_color <- label_segment_color
                 points_args$label_insitu <- label_insitu
             } else if (!is.null(features)) {
-                cells <- unique(Seurat:::CellsByImage(object, images = if(isFALSE(image)) NULL else image, unlist = TRUE))
+                cells_by_image <- utils::getFromNamespace("CellsByImage", "Seurat")
+                cells <- unique(cells_by_image(object, images = if(isFALSE(image)) NULL else image, unlist = TRUE))
                 featdata <- Seurat::FetchData(
                     object = object,
                     vars = features,
@@ -160,7 +161,6 @@ SpatialPlot.Seurat.VisiumV2 <- function(
                     facet_by <- ".facet_var"
                 }
             }
-            d <<- points_args$data
             points_args$highlight <- highlight
             points_args$highlight_alpha <- highlight_alpha
             points_args$highlight_size <- highlight_size

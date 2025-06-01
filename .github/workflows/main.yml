@@ -55,7 +55,8 @@ jobs:
             any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
             any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
-            any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt
+            any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
+            any::terra
 
       - uses: r-lib/actions/check-r-package@v2
         env:
