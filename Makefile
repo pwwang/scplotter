@@ -12,4 +12,9 @@ install:
 test:
 	Rscript <(echo "devtools::test()")
 
-.PHONY: readme docs install test
+notebooks:
+	jupyter nbconvert --to html notebooks/spatial/*.ipynb --output-dir=pkgdown/assets
+
+notebook: notebooks
+
+.PHONY: readme docs install test notebooks notebook

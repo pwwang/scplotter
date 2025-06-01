@@ -2,6 +2,16 @@ url: https://pwwang.github.io/scplotter/
 template:
   bootstrap: 5
   bootswatch: lumen
+navbar:
+  structure:
+    left: [intro, reference, articles, spatial, tutorials, news]
+    right: [search, github]
+  components:
+    spatial:
+      text: Spatial
+      menu:
+      - text: "Visualizing 10x Visum data prepared with Seurat"
+        href: Seurat.10x_Visium.html
 reference:
   - title: scRNA-seq
     desc: Functions for plotting single cell RNA-seq data
@@ -28,6 +38,11 @@ reference:
     - ClonalPositionalPlot
     - ClonalKmerPlot
     - ClonalRarefactionPlot
+  - title: Spatial data visualization
+    desc: Functions for plotting spatial data
+    contents:
+    - SpatialDimPlot
+    - SpatialFeaturePlot
   - title: Visualizing using LLMs
     desc: Functions/Classes for visualizing using LLMs
     contents:
