@@ -4,3 +4,4 @@ docs/
 /*.tar.gz
 Rplots.pdf
 inst/doc
+notebooks/spatial/data/

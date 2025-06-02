@@ -12,6 +12,8 @@ navbar:
       menu:
       - text: "Visualizing 10x Visum data prepared with Seurat"
         href: Seurat.10x_Visium.html
+      - text: "Visualizing SlideSeq data prepared with Seurat"
+        href: Seurat.SlideSeq.html
 reference:
   - title: scRNA-seq
     desc: Functions for plotting single cell RNA-seq data

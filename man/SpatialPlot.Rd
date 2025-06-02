@@ -4,6 +4,7 @@
 \alias{SpatialPlot}
 \alias{SpatialPlot.Seurat}
 \alias{SpatialPlot.Seurat.VisiumV2}
+\alias{SpatialPlot.Seurat.SlideSeq}
 \alias{SpatialFeaturePlot}
 \alias{SpatialFeaturePlot.Seurat}
 \alias{SpatialDimPlot}
@@ -28,7 +29,7 @@ SpatialPlot(object, ...)
   layer = "data",
   layers = NULL,
   flip_y = TRUE,
-  theme = "plotthis::theme_box",
+  theme = "theme_box",
   theme_args = list(),
   label = FALSE,
   label_size = 4,
@@ -51,6 +52,58 @@ SpatialPlot(object, ...)
   highlight_stroke = 0.8,
   legend.position = "right",
   legend.direction = "vertical",
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  facet_scales = "fixed",
+  facet_nrow = NULL,
+  facet_ncol = NULL,
+  facet_byrow = TRUE,
+  ...
+)
+
+\method{SpatialPlot}{Seurat.SlideSeq}(
+  object,
+  image = NULL,
+  masks = NULL,
+  shapes = NULL,
+  points = NULL,
+  ext = NULL,
+  image_scale = NULL,
+  crop = TRUE,
+  group_by = NULL,
+  features = NULL,
+  layer = "data",
+  layers = NULL,
+  flip_y = TRUE,
+  theme = "theme_box",
+  theme_args = list(),
+  label = FALSE,
+  label_size = 4,
+  label_fg = "white",
+  label_bg = "black",
+  label_bg_r = 0.1,
+  label_repel = FALSE,
+  label_repulsion = 20,
+  label_pt_size = 1,
+  label_pt_color = "black",
+  label_segment_color = "black",
+  label_insitu = FALSE,
+  palette = NULL,
+  palette_reverse = FALSE,
+  palcolor = NULL,
+  highlight = NULL,
+  highlight_alpha = 1,
+  highlight_size = 1,
+  highlight_color = "black",
+  highlight_stroke = 0.8,
+  legend.position = "right",
+  legend.direction = "vertical",
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
   facet_scales = "fixed",
   facet_nrow = NULL,
   facet_ncol = NULL,
@@ -68,6 +121,10 @@ SpatialDimPlot(object, ...)
 }
 \arguments{
 \item{object}{A Seurat object or a Giotto object.}
+
+\item{...}{Additional arguments passed to the plotting functions.}
+
+\item{image}{The name of the image to plot. If NULL, the first image in the object will be used.}
 }
 \value{
 A ggplot object
