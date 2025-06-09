@@ -34,7 +34,7 @@
 #' @importFrom rlang %||% syms
 #' @importFrom dplyr group_by summarise
 #' @importFrom tidyr pivot_longer
-#' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs
+#' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs Reductions Idents
 #' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
 #' @examples
 #' \donttest{
@@ -215,7 +215,7 @@
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = "seurat_clusters", assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
@@ -223,7 +223,9 @@ FeatureStatPlot <- function(
         stop("Cannot facet plots because the plots are facetted by the 'features'.")
     }
 
-    reduction <- reduction %||% DefaultDimReduc(object)
+    reduction <- reduction %||% (
+        if(is.null(Reductions(object))) NULL else DefaultDimReduc(object)
+    )
     # dim plot may use expression for highlighting cells
     # Heatmap may use other variables as annotations, but shrinking only includes minimal columns
     should_shrink <- !plot_type %in% c("dim", "heatmap", "dot")
@@ -233,11 +235,24 @@ FeatureStatPlot <- function(
     assay_data <- GetAssayData(object, assay = assay, layer = layer)
     assay_feature <- intersect(unlisted_features, rownames(assay_data))
     assay_data <- t(as.matrix(assay_data[assay_feature, , drop = FALSE]))
-    data <- cbind(Embeddings(object, reduction = reduction), object@meta.data, assay_data)
+    if (is.null(reduction)) {
+        data <- cbind(object@meta.data, assay_data)
+    } else {
+        data <- cbind(Embeddings(object, reduction = reduction), object@meta.data, assay_data)
+    }
 
+    if (is.null(ident)) {
+        ident <- "Identity"
+        data$Identity <- Idents(object)
+    }
     if (should_shrink) {
         dims <- if (is.null(dims)) NULL else colnames(data)[dims]
-        data <- data[, c(dims, ident, unlisted_features, group_by, if (isTRUE(split_by)) NULL else split_by), drop = FALSE]
+        selected_columns <- c(dims, ident, unlisted_features, group_by, if (!isTRUE(split_by)) split_by)
+        nonexisting_columns <- setdiff(selected_columns, colnames(data))
+        if (length(nonexisting_columns) > 0) {
+            stop("[FeatureStatPlot] The following columns are not found in the object: ", paste(nonexisting_columns, collapse = ", "))
+        }
+        data <- data[, selected_columns, drop = FALSE]
     }
     if (should_pivot) {
         data <- pivot_longer(data, cols = unlisted_features, names_to = ".features", values_to = ".value")

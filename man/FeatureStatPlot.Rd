@@ -13,7 +13,7 @@ FeatureStatPlot(
   bg_cutoff = 0,
   dims = 1:2,
   rows_name = "Features",
-  ident = "seurat_clusters",
+  ident = NULL,
   assay = NULL,
   layer = NULL,
   agg = mean,
