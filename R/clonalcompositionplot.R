@@ -1084,9 +1084,8 @@ ClonalOverlapPlot <- function(
     Heatmap(data, rows = rows, columns_by = columns_by, split_by = split_by,
         clustering_distance_rows = function(m) { clustering_distance(t(m)) },
         clustering_distance_columns = clustering_distance, rows_name = columns_by,
-        name = name, palette = palette, label = function(x) {
-            ifelse(x > label_cutoff, scales::number(x, accuracy = label_accuracy), NA)
-        },
-        cluster_rows = cluster_rows, cluster_columns = cluster_columns, cell_type = "label",
+        name = name, palette = palette, label_cutoff = label_cutoff, 
+        label_accuracy = label_accuracy cluster_rows = cluster_rows, 
+        cluster_columns = cluster_columns, cell_type = "label",
         show_row_names = show_row_names, show_column_names = show_column_names, ...)
 }
