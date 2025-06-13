@@ -11,7 +11,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/Needs/website: rmarkdown
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.2.0)
 Imports:
     SeuratObject,
     scRepertoire (>= 2.0.8), scRepertoire (< 2.3.2),
