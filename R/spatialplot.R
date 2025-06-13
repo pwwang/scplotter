@@ -117,10 +117,6 @@
             layers <- c(layers, list(ggnewscale::new_scale_fill()))
         } else if (scale == "color") {
             layers <- c(layers, list(ggnewscale::new_scale_color()))
-        } else if (scale == "size") {
-            layers <- c(layers, list(ggnewscale::new_scale_size()))
-        } else if (scale == "shape") {
-            layers <- c(layers, list(ggnewscale::new_scale_shape()))
         } else {
             stop(paste("Unknown scale:", scale))
         }
@@ -619,7 +615,7 @@ SpatPlot.giotto <- function(
     )
 
     if (is.null(spat_loc_name)) {
-        if (!is.null(slot(object, "spatial_locs"))) {
+        if (!is.null(methods::slot(object, "spatial_locs"))) {
             spat_loc_name <- GiottoClass::list_spatial_locations_names(object, spat_unit = spat_unit)[[1]]
         } else {
             stop("[SpatPlot] No spatial locations found in the Giotto object. ")
@@ -797,7 +793,7 @@ SpatPlot.giotto <- function(
             } else if (!is.null(features)) {
                 expr_df <- t(
                     as.data.frame(
-                        getExpression(
+                        GiottoClass::getExpression(
                             gobject = object,
                             spat_unit = spat_unit,
                             feat_type = feat_type,
