@@ -54,7 +54,8 @@ Suggests:
 LazyData: true
 LazyDataCompression: xz
 Remotes:
-    pwwang/plotthis
+    pwwang/plotthis,
+    drieslab/GiottoClass
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/
 BugReports:
