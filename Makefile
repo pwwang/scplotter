@@ -13,8 +13,9 @@ test:
 	Rscript <(echo "devtools::test()")
 
 notebooks:
-	jupyter nbconvert --to html notebooks/spatial/*.ipynb --output-dir=pkgdown/assets
+	jupyter nbconvert -y --to html notebooks/spatial/*.ipynb --output-dir=pkgdown/assets
 
 notebook: notebooks
+nb: notebooks
 
-.PHONY: readme docs install test notebooks notebook
+.PHONY: readme docs install test notebooks notebook nb

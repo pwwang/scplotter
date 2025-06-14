@@ -28,6 +28,8 @@ Imports:
 Suggests:
     ComplexHeatmap,
     Seurat (>= 5.0.0),
+    data.table,
+    methods,
     ggalluvial,
     ggforce,
     gglogger,

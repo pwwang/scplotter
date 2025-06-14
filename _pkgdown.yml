@@ -12,8 +12,12 @@ navbar:
       menu:
       - text: "Visualizing 10x Visum data prepared with Seurat"
         href: Seurat.10x_Visium.html
+      - text: "Visualizing Visium HD data prepared with Seurat"
+        href: Seurat.10x_VisiumHD.html
       - text: "Visualizing SlideSeq data prepared with Seurat"
         href: Seurat.SlideSeq.html
+      - text: "Visualizing Xenium data prepared with Giotto"
+        href: Giotto.XeniumInsitu.html
 reference:
   - title: scRNA-seq
     desc: Functions for plotting single cell RNA-seq data
@@ -43,8 +47,8 @@ reference:
   - title: Spatial data visualization
     desc: Functions for plotting spatial data
     contents:
-    - SpatialDimPlot
-    - SpatialFeaturePlot
+    - SpatDimPlot
+    - SpatFeaturePlot
   - title: Visualizing using LLMs
     desc: Functions/Classes for visualizing using LLMs
     contents:

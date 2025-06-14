@@ -1,20 +1,3 @@
-#' Convert a data.frame to a terra SpatVector polygon
-#' @keywords internal
-.df_to_polygon_spatvector <- function(
-    df, id, x, y,
-    attrs = NULL
-) {
-    shapes <- split(df[, c(x, y), drop = FALSE], df[[id]])
-    sv <- terra::vect(lapply(shapes, as.matrix), type = "polygons")
-    if (!is.null(attrs)) {
-        for (attr in attrs) {
-            # only get the first value of each polygon
-            sv[[attr]] <- sapply(split(df[[attr]], df[[id]]), function(x) x[1])
-        }
-    }
-    sv
-}
-
 #' Process points layer for Seurat spatial plots
 #' @keywords internal
 .seurat_points_layer <- function(
@@ -103,7 +86,7 @@
     points_args$legend.direction <- legend.direction
     points_args$flip_y <- points_args$flip_y
     points_args$return_layer <- TRUE
-    player <- do.call(SpatialPointsPlot, points_args)
+    player <- do.call(SpatPointsPlot, points_args)
 
     list(player = player, facet_by = facet_by)
 }
@@ -133,13 +116,13 @@
 #' @param ... Additional arguments passed to the plotting functions.
 #' @return A ggplot object
 #' @keywords internal
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatPlot <- function(object, ...) {
     UseMethod("SpatPlot", object)
 }
 
 #' @keywords internal
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatPlot.Seurat <- function(object, image = NULL, ...) {
     first_image <- Seurat::Images(object)[1]
     if (is.null(first_image)) {
@@ -161,8 +144,8 @@ SpatPlot.Seurat <- function(object, image = NULL, ...) {
 }
 
 #' @keywords internal
-#' @rdname SpatialPlot
-#' @importFrom plotthis SpatialImagePlot SpatialMasksPlot SpatialShapesPlot SpatialPointsPlot
+#' @rdname SpatPlot
+#' @importFrom plotthis SpatImagePlot SpatMasksPlot SpatShapesPlot SpatPointsPlot
 SpatPlot.Seurat.Visium <- function(
     object, image = NULL, masks = NULL, shapes = NULL, points = NULL, ext = NULL, points_x = "x", points_y = "y",
     image_scale = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = "data", scale_factor = NULL,
@@ -235,7 +218,7 @@ SpatPlot.Seurat.Visium <- function(
             image_args$flip_y <- flip_y
             image_args$return_layer <- TRUE
             image_args$ext <- if (!is.null(ext_unscaled)) ext_unscaled * the_scale_factor
-            player <- do.call(SpatialImagePlot, image_args)
+            player <- do.call(SpatImagePlot, image_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -302,7 +285,7 @@ SpatPlot.Seurat.Visium <- function(
 }
 
 #' @keywords internal
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatPlot.Seurat.SlideSeq <- function(
     object, image = NULL, masks = NULL, shapes = NULL, points = NULL, ext = NULL,
     image_scale = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = "data",
@@ -425,8 +408,8 @@ SpatPlot.Seurat.SlideSeq <- function(
 }
 
 #' @keywords internal
-#' @rdname SpatialPlot
-#' @importFrom plotthis SpatialImagePlot SpatialMasksPlot SpatialShapesPlot SpatialPointsPlot
+#' @rdname SpatPlot
+#' @importFrom plotthis SpatImagePlot SpatMasksPlot SpatShapesPlot SpatPointsPlot
 SpatPlot.Seurat.FOV <- function(
     object, image = NULL, masks = NULL, shapes = NULL, points = NULL, ext = NULL, points_x = "x", points_y = "y",
     image_scale = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = "data", scale_factor = NULL,
@@ -499,7 +482,7 @@ SpatPlot.Seurat.FOV <- function(
             image_args$flip_y <- flip_y
             image_args$return_layer <- TRUE
             image_args$ext <- if (!is.null(ext_unscaled)) ext_unscaled * the_scale_factor
-            player <- do.call(SpatialImagePlot, image_args)
+            player <- do.call(SpatImagePlot, image_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -566,18 +549,19 @@ SpatPlot.Seurat.FOV <- function(
 }
 
 #' @keywords internal
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatPlot.giotto <- function(
     object,
     image = NULL,
     masks = NULL,
     shapes = NULL,
     points = NULL,
+    graph = NULL,
     ext = NULL,
     layer = c("normalized", "scaled", "custom", "raw"),
     layers = NULL,
     flip_y = FALSE,
-    group_by = "shapes",
+    group_by = NULL,
     feat_type = "rna",
     features = NULL,
     nmols = 1000,
@@ -625,6 +609,9 @@ SpatPlot.giotto <- function(
     if (isTRUE(image)) {
         image <- names(object@images)[1]
     }
+    if (is.null(points) && !is.null(graph)) {
+        points <- TRUE
+    }
     points <- points %||% TRUE
     shapes <- shapes %||% (if(identical(group_by, "shapes") || !is.null(shapes_fill_by)) TRUE)
     layers <- intersect(
@@ -645,20 +632,37 @@ SpatPlot.giotto <- function(
     shapes_alpha <- shapes_alpha %||% ifelse("image" %in% layers, 0.5, 1)
     for (element in layers) {
         if (element == "image") {
-            image_obj <- GiottoClass::getGiottoImage(gobject = object, name = image)
-            ext <- ext %||% as.vector(terra::ext(image_obj))
-            image_args <- args[startsWith(names(args), "image_")]
-            names(image_args) <- sub("^image_", "", names(image_args))
-            image_args$data <- image_obj@raster_object
-            image_args$flip_y <- flip_y
-            image_args$return_layer <- TRUE
-            image_args$ext <- ext
-            image_colors <- attr(image_obj, "colors")
-            if (!is.null(image_colors)) { image_args$palcolor <- image_colors }
-            player <- do.call(SpatialImagePlot, image_args)
-            scales_reused <- intersect(scales_used, attr(player, "scales"))
-            players <- c(players, .new_scale_layers(scales_reused), list(player))
-            scales_used <- unique(c(scales_used, attr(player, "scales")))
+            if (image %in% names(object@images)) {
+                image_obj <- GiottoClass::getGiottoImage(gobject = object, name = image)
+                ext <- ext %||% as.vector(terra::ext(image_obj))
+                image_args <- args[startsWith(names(args), "image_")]
+                names(image_args) <- sub("^image_", "", names(image_args))
+                image_args$data <- image_obj@raster_object
+                image_args$flip_y <- flip_y
+                image_args$return_layer <- TRUE
+                image_args$ext <- ext
+                image_colors <- attr(image_obj, "colors")
+                if (!is.null(image_colors)) { image_args$palcolor <- image_colors }
+                player <- do.call(SpatImagePlot, image_args)
+                scales_reused <- intersect(scales_used, attr(player, "scales"))
+                players <- c(players, .new_scale_layers(scales_reused), list(player))
+                scales_used <- unique(c(scales_used, attr(player, "scales")))
+            } else {
+                # use as a color to plot a background rect
+                image_args <- args[startsWith(names(args), "image_")]
+                names(image_args) <- sub("^image_", "", names(image_args))
+                image_args$data = data.frame(x = 0, y = 0)  # dummy data
+                image_args$xmin = -Inf
+                image_args$xmax = Inf
+                image_args$ymin = -Inf
+                image_args$ymax = Inf
+                image_args$fill <- image
+                image_args$color <- NA
+                player <- do.call(ggplot2::geom_rect, image_args)
+                scales_reused <- intersect(scales_used, "fill")
+                players <- c(players, .new_scale_layers(scales_reused), list(player))
+                scales_used <- unique(c(scales_used, attr(player, "scales")))
+            }
         } else if (element == "masks") {
             stop("[SpatPlot] 'masks' is not supported for Giotto objects yet.")
         } else if (element == "shapes") {
@@ -693,32 +697,39 @@ SpatPlot.giotto <- function(
             shapes_args <- args[startsWith(names(args), "shapes_")]
             names(shapes_args) <- sub("^shapes_", "", names(shapes_args))
 
+            shapes_args$x <- "x"
+            shapes_args$y <- "y"
+            shapes_args$group <- "cell_ID"
+
             if (!is.null(shapes_fill_by)) {
-                shapes_dt <- merge(
-                    shapes_dt,
-                    suppressMessages(GiottoClass::spatValues(
-                        object,
-                        feats = shapes_fill_by,
-                        spat_unit = shapes_feat_type,
-                        feat_type = feat_type,
-                        spat_enr_name = spat_enr_names
-                    )),
-                    by = "cell_ID",
-                    all.x = TRUE,
-                    suffixes = c(".x", "")
-                )
-                shapes_args$data <- .df_to_polygon_spatvector(shapes_dt, "cell_ID", "x", "y", attrs = shapes_fill_by)
+                # It should be a color name
+                if (length(shapes_fill_by) > 1 || shapes_fill_by %in% GiottoClass::featIDs(object, feat_type = shapes_feat_type)) {
+                    shapes_dt <- merge(
+                        shapes_dt,
+                        suppressMessages(GiottoClass::spatValues(
+                            object,
+                            feats = shapes_fill_by,
+                            spat_unit = shapes_feat_type,
+                            feat_type = feat_type,
+                            spat_enr_name = spat_enr_names
+                        )),
+                        by = "cell_ID",
+                        all.x = TRUE,
+                        suffixes = c(".x", "")
+                    )
+                }
+                shapes_args$data <- shapes_dt
                 shapes_args$fill_by <- shapes_fill_by
                 shapes_args$legend.position <- shapes_args$legend.position %||% "right"
                 shapes_args$legend.direction <- shapes_args$legend.direction %||% "vertical"
             } else {
-                shapes_args$data <- .df_to_polygon_spatvector(shapes_dt, "cell_ID", "x", "y")
+                shapes_args$data <- shapes_dt
             }
             shapes_args$flip_y <- flip_y
             shapes_args$return_layer <- TRUE
             shapes_args$alpha <- shapes_alpha
-            shapes_args$ext <- ext %||% as.vector(terra::ext(shapes_args$data))
-            player <- do.call(SpatialShapesPlot, shapes_args)
+            shapes_args$ext <- ext %||% c(range(shapes_dt$x, na.rm = TRUE), range(shapes_dt$y, na.rm = TRUE))
+            player <- do.call(SpatShapesPlot, shapes_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, .new_scale_layers(scales_reused), list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -759,6 +770,13 @@ SpatPlot.giotto <- function(
                 points_args$data <- data.table::rbindlist(points_args$data, fill = TRUE)
             } else if (!is.null(group_by)) {
                 # prepare the cell metadata
+                points_args$data <- GiottoClass::combineCellData(
+                    gobject = object,
+                    feat_type = feat_type,
+                    spat_loc_name = spat_loc_name,
+                    spat_enr_name = spat_enr_names,
+                    include_spat_locs = FALSE
+                )[[feat_type]]
             } else {  # expression or just locations
                 points_args$data <- GiottoClass::getSpatialLocations(
                     gobject = object,
@@ -766,6 +784,21 @@ SpatPlot.giotto <- function(
                     name = spat_loc_name,
                     output = "data.table"
                 )
+            }
+
+            if (!is.null(graph)) {
+                points_args$graph <- GiottoClass::getSpatialNetwork(
+                    gobject = object,
+                    spat_unit = spat_unit,
+                    name = if(!isTRUE(graph)) graph,
+                    output = "networkDT",
+                    verbose = FALSE
+                )
+                points_args$graph_x <- "sdimx_begin"
+                points_args$graph_y <- "sdimy_begin"
+                points_args$graph_xend <- "sdimx_end"
+                points_args$graph_yend <- "sdimy_end"
+                points_args$graph_value <- "weight"
             }
 
             if (identical(group_by, "shapes")) {
@@ -812,11 +845,16 @@ SpatPlot.giotto <- function(
                 }
                 points_args$legend.position <- points_args$legend.position %||% "right"
                 points_args$legend.direction <- points_args$legend.direction %||% "vertical"
+            } else if (!is.null(group_by)) {
+                points_args$color_by <- group_by
+                points_args$color_name <- points_args$color_name %||% group_by
+                points_args$legend.position <- points_args$legend.position %||% "right"
+                points_args$legend.direction <- points_args$legend.direction %||% "vertical"
             }
             points_args$flip_y <- flip_y
             points_args$return_layer <- TRUE
             points_args$ext <- ext
-            player <- do.call(SpatialPointsPlot, points_args)
+            player <- do.call(SpatPointsPlot, points_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, .new_scale_layers(scales_reused), list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -854,19 +892,19 @@ SpatPlot.giotto <- function(
 #' @param object A Seurat object or a Giotto object.
 #' @return A ggplot object
 #' @export
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatFeaturePlot <- function(object, ...) {
     UseMethod("SpatFeaturePlot", object)
 }
 
 #' @export
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatFeaturePlot.Seurat <- function(object, image = NULL, ...) {
     SpatPlot(object, image = image, ...)
 }
 
 #' @export
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatFeaturePlot.giotto <- function(object, image = NULL, group_by = NULL, ...) {
     stopifnot(
         "[SpatFeaturePlot] 'group_by' is not supported for Giotto objects. Use 'SpatDimPlot' instead." =
@@ -880,13 +918,13 @@ SpatFeaturePlot.giotto <- function(object, image = NULL, group_by = NULL, ...) {
 #' @param object A Seurat object or a Giotto object.
 #' @return A ggplot object
 #' @export
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatDimPlot <- function(object, ...) {
     UseMethod("SpatDimPlot", object)
 }
 
 #' @export
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatDimPlot.Seurat <- function(object, image = NULL, group_by = NULL, ...) {
     if (is.null(group_by)) {
         group_by <- "Identity"
@@ -896,8 +934,8 @@ SpatDimPlot.Seurat <- function(object, image = NULL, group_by = NULL, ...) {
 }
 
 #' @export
-#' @rdname SpatialPlot
+#' @rdname SpatPlot
 SpatDimPlot.giotto <- function(object, image = NULL, group_by = NULL, ...) {
-    group_by <- group_by %||% "shapes"
+    group_by <- group_by %||% "molecules"
     SpatPlot.giotto(object, image = image, group_by = group_by, ...)
 }

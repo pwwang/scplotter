@@ -179,7 +179,7 @@ SpatPlot(object, ...)
   layer = c("normalized", "scaled", "custom", "raw"),
   layers = NULL,
   flip_y = FALSE,
-  group_by = "shapes",
+  group_by = NULL,
   feat_type = "rna",
   features = NULL,
   nmols = 1000,
