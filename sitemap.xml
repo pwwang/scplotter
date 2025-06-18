@@ -1,8 +1,19 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://pwwang.github.io/scplotter/404.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.Nanostring_CosMx.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.SlideSeq.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.Spatial_CITE-Seq.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.Visium.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.VisiumHD.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.Xenium.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.XeniumInSitu.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/LICENSE.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.10x_Visium.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Seurat.10x_VisiumHD.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Seurat.Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.SlideSeq.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Seurat.Xenium.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Seurat.XeniumInSitu.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Visualizing_data_with_LLMs.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/authors.html</loc></url>
@@ -29,15 +40,23 @@
 <url><loc>https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/FeatureStatPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/SCPlotterChat.html</loc></url>
-<url><loc>https://pwwang.github.io/scplotter/reference/SpatialPlot.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/SpatDimPlot.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/SpatPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/cellphonedb_res.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/clonal_size_data.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/clone_selectors.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/dot-new_scale_layers.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/dot-points_args.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/dot-rect_bg_image.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/dot-seurat_points_layer.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/dot-seurat_points_layer_molecules.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ifnb_sub.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/merge_clonal_groupings.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/pancreas_sub.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/reexports.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/screp_subset.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/spatialplot_args.html</loc></url>
 </urlset>
 
