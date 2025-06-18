@@ -16,8 +16,22 @@ navbar:
         href: Seurat.10x_VisiumHD.html
       - text: "Visualizing SlideSeq data prepared with Seurat"
         href: Seurat.SlideSeq.html
+      - text: "Visualizing Xenium data prepared with Seurat"
+        href: Seurat.Xenium.html
+      - text: "Visualizing Nanostring CosMx data prepared with Seurat"
+        href: Seurat.Nanostring_CosMx.html
+      - text: "Visualizing Visium data prepared with Giotto"
+        href: Giotto.Visium.html
+      - text: "Visualizing VisiumHD data prepared with Giotto"
+        href: Giotto.VisiumHD.html
       - text: "Visualizing Xenium data prepared with Giotto"
-        href: Giotto.XeniumInsitu.html
+        href: Giotto.Xenium.html
+      - text: "Visualizing SlideSeq data prepared with Giotto"
+        href: Giotto.SlideSeq.html
+      - text: "Visualizing Spatial CITE-Seq data prepared with Giotto"
+        href: Giotto.Spatial_CITE-Seq.html
+      - text: "Visualizing Nanostirng CosMx data prepared with Giotto"
+        href: Giotto.Nanostring_CosMx.html
 reference:
   - title: scRNA-seq
     desc: Functions for plotting single cell RNA-seq data

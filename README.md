@@ -62,6 +62,12 @@ $ conda install pwwang::r-scplotter
 
 ![](./man/figures/clonaldiv.png)
 
+## Spatial data
+
+[`SpatDimPlot`][23] | [`SpatFeaturePlot`][24]
+
+![](./man/figures/spatialplot.png)
+
 ## Visualization with LLMs
 
 ```r
@@ -107,3 +113,5 @@ chat$ask("Do a heatmap instead")
 [20]: https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html
 [21]: https://github.com/ncborcherding/scRepertoire
 [22]: https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html
+[23]: https://pwwang.github.io/scplotter/reference/SpatDimPlot.html
+[24]: https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.html

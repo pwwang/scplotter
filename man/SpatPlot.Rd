@@ -2,238 +2,195 @@
 % Please edit documentation in R/spatialplot.R
 \name{SpatPlot}
 \alias{SpatPlot}
-\alias{SpatPlot.Seurat}
-\alias{SpatPlot.Seurat.Visium}
-\alias{SpatPlot.Seurat.SlideSeq}
-\alias{SpatPlot.Seurat.FOV}
-\alias{SpatPlot.giotto}
-\alias{SpatFeaturePlot}
-\alias{SpatFeaturePlot.Seurat}
-\alias{SpatFeaturePlot.giotto}
-\alias{SpatDimPlot}
-\alias{SpatDimPlot.Seurat}
-\alias{SpatDimPlot.giotto}
 \title{Plot features for spatial data}
 \usage{
-SpatPlot(object, ...)
-
-\method{SpatPlot}{Seurat}(object, image = NULL, ...)
-
-\method{SpatPlot}{Seurat.Visium}(
+SpatPlot(
   object,
+  fov = NULL,
+  boundaries = NULL,
   image = NULL,
   masks = NULL,
   shapes = NULL,
   points = NULL,
   ext = NULL,
-  points_x = "x",
-  points_y = "y",
-  image_scale = NULL,
   crop = TRUE,
   group_by = NULL,
   features = NULL,
-  layer = "data",
+  layer = NULL,
   scale_factor = NULL,
   layers = NULL,
-  flip_y = TRUE,
-  theme = "theme_box",
-  theme_args = list(),
-  label = FALSE,
-  label_size = 4,
-  label_fg = "white",
-  label_bg = "black",
-  label_bg_r = 0.1,
-  label_repel = FALSE,
-  label_repulsion = 20,
-  label_pt_size = 1,
-  label_pt_color = "black",
-  label_segment_color = "black",
-  label_insitu = FALSE,
-  palette = NULL,
-  palette_reverse = FALSE,
-  palcolor = NULL,
-  highlight = NULL,
-  highlight_alpha = 1,
-  highlight_size = 1,
-  highlight_color = "black",
-  highlight_stroke = 0.8,
-  legend.position = "right",
-  legend.direction = "vertical",
-  title = NULL,
-  subtitle = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  facet_scales = "fixed",
-  facet_nrow = NULL,
-  facet_ncol = NULL,
-  facet_byrow = TRUE,
-  ...
-)
-
-\method{SpatPlot}{Seurat.SlideSeq}(
-  object,
-  image = NULL,
-  masks = NULL,
-  shapes = NULL,
-  points = NULL,
-  ext = NULL,
+  flip_y = NULL,
+  padding = NULL,
   image_scale = NULL,
-  crop = TRUE,
-  group_by = NULL,
-  features = NULL,
-  layer = "data",
-  layers = NULL,
-  flip_y = TRUE,
-  theme = "theme_box",
-  theme_args = list(),
-  label = FALSE,
-  label_size = 4,
-  label_fg = "white",
-  label_bg = "black",
-  label_bg_r = 0.1,
-  label_repel = FALSE,
-  label_repulsion = 20,
-  label_pt_size = 1,
-  label_pt_color = "black",
-  label_segment_color = "black",
-  label_insitu = FALSE,
-  palette = NULL,
-  palette_reverse = FALSE,
-  palcolor = NULL,
-  highlight = NULL,
-  highlight_alpha = 1,
-  highlight_size = 1,
-  highlight_color = "black",
-  highlight_stroke = 0.8,
-  legend.position = "right",
-  legend.direction = "vertical",
-  title = NULL,
-  subtitle = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  facet_scales = "fixed",
-  facet_nrow = NULL,
-  facet_ncol = NULL,
-  facet_byrow = TRUE,
-  ...
-)
-
-\method{SpatPlot}{Seurat.FOV}(
-  object,
-  image = NULL,
-  masks = NULL,
-  shapes = NULL,
-  points = NULL,
-  ext = NULL,
-  points_x = "x",
-  points_y = "y",
-  image_scale = NULL,
-  crop = TRUE,
-  group_by = NULL,
-  features = NULL,
-  layer = "data",
-  scale_factor = NULL,
-  layers = NULL,
-  flip_y = TRUE,
-  theme = "theme_box",
-  theme_args = list(),
-  label = FALSE,
-  label_size = 4,
-  label_fg = "white",
-  label_bg = "black",
-  label_bg_r = 0.1,
-  label_repel = FALSE,
-  label_repulsion = 20,
-  label_pt_size = 1,
-  label_pt_color = "black",
-  label_segment_color = "black",
-  label_insitu = FALSE,
-  palette = NULL,
-  palette_reverse = FALSE,
-  palcolor = NULL,
-  highlight = NULL,
-  highlight_alpha = 1,
-  highlight_size = 1,
-  highlight_color = "black",
-  highlight_stroke = 0.8,
-  legend.position = "right",
-  legend.direction = "vertical",
-  title = NULL,
-  subtitle = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  facet_scales = "fixed",
-  facet_nrow = NULL,
-  facet_ncol = NULL,
-  facet_byrow = TRUE,
-  ...
-)
-
-\method{SpatPlot}{giotto}(
-  object,
-  image = NULL,
-  masks = NULL,
-  shapes = NULL,
-  points = NULL,
-  ext = NULL,
-  layer = c("normalized", "scaled", "custom", "raw"),
-  layers = NULL,
-  flip_y = FALSE,
-  group_by = NULL,
-  feat_type = "rna",
-  features = NULL,
+  x = "x",
+  y = "y",
   nmols = 1000,
+  shapes_fill_by = NULL,
+  graph = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  theme = "theme_box",
+  theme_args = list(),
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  facet_scales = "fixed",
+  facet_nrow = NULL,
+  facet_ncol = NULL,
+  facet_byrow = TRUE,
+  feat_type = "rna",
   use_overlap = FALSE,
+  shapes_feat_type = "cell",
+  shapes_alpha = NULL,
   spat_unit = NULL,
   spat_loc_name = NULL,
   spat_enr_names = NULL,
-  shapes_feat_type = "cell",
-  shapes_fill_by = NULL,
-  shapes_alpha = NULL,
-  theme = "theme_box",
-  theme_args = list(),
-  legend.position = "right",
-  legend.direction = "vertical",
-  title = NULL,
-  subtitle = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  facet_scales = "fixed",
-  facet_nrow = NULL,
-  facet_ncol = NULL,
-  facet_byrow = TRUE,
   ...
 )
-
-SpatFeaturePlot(object, ...)
-
-\method{SpatFeaturePlot}{Seurat}(object, image = NULL, ...)
-
-\method{SpatFeaturePlot}{giotto}(object, image = NULL, group_by = NULL, ...)
-
-SpatDimPlot(object, ...)
-
-\method{SpatDimPlot}{Seurat}(object, image = NULL, group_by = NULL, ...)
-
-\method{SpatDimPlot}{giotto}(object, image = NULL, group_by = NULL, ...)
 }
 \arguments{
 \item{object}{A Seurat object or a Giotto object.}
 
-\item{...}{Additional arguments passed to the plotting functions.}
+\item{fov}{The name of the field of view (FOV) to plot, only works for Seurat objects.}
 
-\item{image}{The name of the image to plot. If NULL, the first image in the object will be used.}
+\item{boundaries}{The name of the boundaries to plot, only works for Seurat objects.}
+
+\item{image}{The name of the image to plot. Possible values are:
+\itemize{
+\item NULL: For Seurat objects with Visium data, the first image will be used.
+For Giotto objects and Seurat objects with other spatial data, no image will be plotted.
+\item image name(s): the name of the image(s) to plot.
+\item color name: a color to use as a background for the plot.
+\item TRUE: For Seurat objects with Visium data, the first image will be used.
+For Seurat objects with other spatial data, an error will be raised.
+For Giotto objects with FOV, all (non-overlapping) images will be plotted; otherwise first image will be used.
+\item FALSE: disable image plotting.
+}}
+
+\item{masks}{Logical, whether to plot masks. Not supported for Seurat or Giotto objects for now.}
+
+\item{shapes}{Plot shapes on the spatial plot.
+Not supported for Seurat objects with Visium or SlideSeq data.
+For Seurat objects with FOV, when TRUE, \code{boundaries} will be
+used as boundaries for the shapes. Otherwise itself will be used as boundaries.
+For Giotto objects or Seurat objects with FOV, this defaults to TRUE when \code{shapes_fill_by} is provided.
+Set to FALSE to disable shapes plotting.}
+
+\item{points}{Logical, whether to plot points. If TRUE, the points will be plotted using the coordinates from the object.
+Defaults to TRUE.}
+
+\item{ext}{The extent of the plot. If NULL, the extent will be calculated from the data.
+If a numeric vector of length 4, it should be in the format c(xmin, xmax, ymin, ymax).
+It can also be an object created by \code{\link[terra:ext]{terra::ext()}}.}
+
+\item{crop}{Whether to crop the plot to the extent of the available data. Similar to \code{crop} argument in
+\code{\link[Seurat:SpatialPlot]{Seurat::SpatialDimPlot()}}. Defaults to TRUE.}
+
+\item{group_by}{The name of the metadata column to group the points by. Should be a character or factor column.
+A special value "molecules" can be used to plot molecules in the FOV.}
+
+\item{features}{A character vector of feature names to plot. If provided, the points will be colored by the features.
+For \code{SpatDimPlot()}, this will be used to plot the molecules in the FOV.
+For \code{SpatFeaturePlot()}, the plots will be faceted by the features.}
+
+\item{layer}{The layer to use for the feature expression data.
+Applicable for both Seurat and Giotto objects.
+Defaults to "data" for Seurat objects, and "normalized" for Giotto objects.
+For Giotto objects, it can also be "scaled", "raw", "counts", or "custom".
+For Seurat objects, it can be "data", "scale.data", or "counts".}
+
+\item{scale_factor}{Internal use only. The scale factor to use for the image, which will be extracted from the object.}
+
+\item{layers}{A character vector of layers to plot. Possible values are:
+\itemize{
+\item "image": plot the image as a background, which should be the first layer if provided.
+\item "masks": plot the masks
+\item "shapes": plot the shapes
+\item "points": plot the points
+The order of the layers matters, as the first layer will be plotted first.
+You can also use it to disable some layers by excluding them from the vector.
+}}
+
+\item{flip_y}{Internal use mostly, unless you want to flip the y-axis of the plot.}
+
+\item{padding}{The padding to add to the extent of the plot, only available when \code{crop = TRUE} and \code{ext = NULL}.
+For Seurat objects with FOV, this defaults to 0. In other cases, this defaults to 0 when image is plotted, and 0.05 otherwise.}
+
+\item{image_scale}{Choose the scale factor ("lowres"/"hires") to apply in order to matchthe plot with the specified \code{image}.
+Similar to \code{image.scale} argument in \code{\link[Seurat:SpatialPlot]{Seurat::SpatialDimPlot()}}.}
+
+\item{x}{Internal use only, the name of the x coordinate column in the data. Used to adopt different data types.}
+
+\item{y}{Internal use only, the name of the y coordinate column in the data. Used to adopt different data types.}
+
+\item{nmols}{Max number of each molecule specified in \code{features} for dim plot
+Similar to \code{nmols} argument in \code{\link[Seurat:ImageDimPlot]{Seurat::ImageDimPlot()}}. It also applied to Giotto objects.}
+
+\item{shapes_fill_by}{The name of the variable to fill the shapes by.
+It can also be a color name, in which case the shapes will be filled with that color.
+When this is provided, the \code{shapes} argument will be set to TRUE by default.}
+
+\item{graph}{The name of the graph to use for the spatial plot. Currently only supported for Giotto objects.
+The graph data is obtained using \code{\link[GiottoClass:getSpatialNetwork]{GiottoClass::getSpatialNetwork()}}.
+When TRUE, the default graph will be used.
+When given as a character, it should be the name of the graph to use.
+If there is ":" in the name, the first part will be used as spat_unit, and the second part as the graph name.}
+
+\item{legend.position}{The position of the legend. Defaults to "right".}
+
+\item{legend.direction}{The direction of the legend. Defaults to "vertical".}
+
+\item{theme}{The theme to use for the plot. Defaults to \code{"theme_box"}.
+It can be the name of the theme (e.g. "ggplot2::theme_bw") or the function itself.
+There are three themes that can be passed without namespace: "theme_box", "theme_this" and "theme_blank", which
+are actually aliases of \code{\link[plotthis:theme_box]{plotthis::theme_box()}}, \code{\link[plotthis:theme_this]{plotthis::theme_this()}} and \code{\link[ggplot2:ggtheme]{ggplot2::theme_void()}} (without braces).}
+
+\item{theme_args}{A list of arguments to pass to the theme function.}
+
+\item{title}{The title of the plot. If NULL, no title will be added.}
+
+\item{subtitle}{The subtitle of the plot. If NULL, no subtitle will be added.}
+
+\item{xlab}{The label for the x-axis. If NULL, no label will be added.}
+
+\item{ylab}{The label for the y-axis. If NULL, no label will be added.}
+
+\item{facet_scales}{The scales to use for the facets. Defaults to "free". Can be "free", "fixed", "free_x", "free_y".}
+
+\item{facet_nrow}{The number of rows to use for the facets. Defaults to NULL, which means the number of rows will be calculated automatically.}
+
+\item{facet_ncol}{The number of columns to use for the facets. Defaults to NULL, which means the number of columns will be calculated automatically.}
+
+\item{facet_byrow}{Logical, whether to facet by row. Defaults to FALSE.}
+
+\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
+
+\item{use_overlap}{use polygon and feature coordinates overlap results, only applied to Giotto objects.}
+
+\item{shapes_feat_type}{feature type of the features to use for shapes (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
+
+\item{shapes_alpha}{The alpha value to use for the shapes.
+When "points" are plotted, this defaults to 0.5; otherwise it defaults to 1.}
+
+\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
+
+\item{spat_loc_name}{The name of the spatial location to use for the plot. Only applied to Giotto objects.}
+
+\item{spat_enr_names}{The names of the spatial enrichment results to use for the plot. Only applied to Giotto objects.}
+
+\item{...}{Additional arguments that will be passed to the spatial plot function.
+With the \code{image_} prefix, these arguments will be used to plot the image (\code{\link[plotthis:spatialplots]{plotthis::SpatImagePlot()}}).
+With the \code{masks_} prefix, these arguments will be used to plot the masks (\code{\link[plotthis:spatialplots]{plotthis::SpatMasksPlot()}}).
+With the \code{shapes_} prefix, these arguments will be used to plot the shapes (\code{\link[plotthis:spatialplots]{plotthis::SpatShapesPlot()}}).
+With the \code{points_} prefix, these arguments will be used to plot the points (\code{\link[plotthis:spatialplots]{plotthis::SpatPointsPlot()}}).
+If the prefix is not provided, the arguments will be used as points arguments, but
+with lower priority than the \code{points_} prefixed arguments.}
 }
 \value{
 A ggplot object
-
-A ggplot object
-
-A ggplot object
 }
 \description{
-The features can include  expression, dimension reduction components, metadata, etc
-
 The features can include  expression, dimension reduction components, metadata, etc
 }
 \keyword{internal}
