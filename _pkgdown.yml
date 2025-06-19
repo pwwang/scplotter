@@ -46,6 +46,10 @@ navbar:
           href: articles/Giotto_Nanostring_CosMx.html
         - text: "Visualizing CODEX data prepared with Giotto"
           href: articles/Giotto_CODEX.html
+        - text: "Visualizing vizgen data prepared with Giotto"
+          href: articles/Giotto_vizgen.html
+        - text: "Visualizing seqFISH data prepared with Giotto"
+          href: articles/Giotto_seqFISH.html
 
 reference:
   - title: scRNA-seq

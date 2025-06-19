@@ -101,6 +101,7 @@ It is hard to provide in-situ plots for Seurat objects by design. For giotto obj
 - [Visualizing SlideSeq data prepared with Seurat](Seurat_SlideSeq.html)
 - [Visualizing Xenium data prepared with Seurat](Seurat_Xenium.html)
 - [Visualizing Nanostring CosMx data prepared with Seurat](Seurat_Nanostring_CosMx.html)
+- [Visualizing Akoya_CODEX data prepared with Seurat](Seurat_Akoya_CODEX.html)
 - [Visualizing Visium data prepared with Giotto](Giotto_Visium.html)
 - [Visualizing VisiumHD data prepared with Giotto](Giotto_VisiumHD.html)
 - [Visualizing Xenium data prepared with Giotto](Giotto_Xenium.html)
@@ -108,6 +109,8 @@ It is hard to provide in-situ plots for Seurat objects by design. For giotto obj
 - [Visualizing Spatial CITE-Seq data prepared with Giotto](Giotto_Spatial_CITE-Seq.html)
 - [Visualizing Nanostirng CosMx data prepared with Giotto](Giotto_Nanostring_CosMx.html)
 - [Visualizing CODEX data prepared with Giotto](Giotto_CODEX.html)
+- [Visualizing vizgen data prepared with Giotto](Giotto_vizgen.html)
+- [Visualizing seqFISH data prepared with Giotto](Giotto_seqFISH.html)
 
 [1]: https://spatialdata.scverse.org/en/stable/index.html
 [2]: https://spatialdata.scverse.org/en/stable/tutorials/notebooks/notebooks/examples/intro.html#key-terms-and-data-model
