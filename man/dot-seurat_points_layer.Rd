@@ -18,6 +18,7 @@
   ext_unscaled,
   scale_factor,
   group_by,
+  shape,
   features,
   layer,
   legend.position,
@@ -60,6 +61,9 @@ For Giotto objects with FOV, all (non-overlapping) images will be plotted; other
 
 \item{group_by}{The name of the metadata column to group the points by. Should be a character or factor column.
 A special value "molecules" can be used to plot molecules in the FOV.}
+
+\item{shape}{The shape of the points, alias of \code{points_shape}.
+See \url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html} for more details.}
 
 \item{features}{A character vector of feature names to plot. If provided, the points will be colored by the features.
 For \code{SpatDimPlot()}, this will be used to plot the molecules in the FOV.

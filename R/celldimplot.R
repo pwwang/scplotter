@@ -1,4 +1,4 @@
-#' DimPlot
+#' CellDimPlot
 #'
 #' @description Dimension reduction plot
 #' @param object A seurat object

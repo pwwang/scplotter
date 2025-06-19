@@ -62,6 +62,8 @@
 #' When TRUE, the default graph will be used.
 #' When given as a character, it should be the name of the graph to use.
 #' If there is ":" in the name, the first part will be used as spat_unit, and the second part as the graph name.
+#' @param shape The shape of the points, alias of `points_shape`.
+#' See \url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html} for more details.
 #' @param legend.position The position of the legend. Defaults to "right".
 #' @param legend.direction The direction of the legend. Defaults to "vertical".
 #' @param theme The theme to use for the plot. Defaults to `"theme_box"`.
@@ -119,7 +121,11 @@ NULL
 #' @param ... Additional arguments that will be parsed.
 #' @return A list of points arguments.
 .points_args <- function(args, ...) {
-    args <- c(args, rlang::dots_list(...))
+    args <- c(args, rlang::dots_list(..., .named = TRUE))
+    if (length(args) == 0) {
+        return(list())
+    }
+
     # The arguments without prefices are assumed to be the points arguments
     points_args <- args[
         !startsWith(names(args), "image_") & !startsWith(names(args), "masks_") &
@@ -131,13 +137,19 @@ NULL
     names(points_args2) <- sub("^points_", "", names(points_args2))
     conflicts <- intersect(names(points_args), names(points_args2))
     if (length(conflicts) > 0) {
-        warning(paste(
-            "[SpatPlot] The following arguments are defined as points_* arguments:",
+        warning(paste0(
+            "[SpatPlot] The following arguments are defined as points_* arguments: ",
             paste(conflicts, collapse = ", "),
             ", and also passed directly (without 'points_' prefix). The points_* arguments will be used."
         ))
     }
-    c(points_args2, points_args)
+    out <- c(points_args2, points_args)
+    dup_names <- duplicated(names(out))
+    if (any(dup_names)) {
+        out[-which(dup_names)]
+    } else {
+        out
+    }
 }
 
 #' Process points layer for Seurat spatial plots
@@ -149,11 +161,16 @@ NULL
 #' @return A list containing the ggplot2 layer object and the facet_by variable if applicable.
 .seurat_points_layer <- function(
     object, fov = NULL, boundaries = NULL, x = "x", y = "y", swap_xy = TRUE,
-    image, args, crop, points_data, ext_unscaled, scale_factor, group_by,
+    image, args, crop, points_data, ext_unscaled, scale_factor, group_by, shape,
     features, layer, legend.position, legend.direction, flip_y, ext
 ) {
     # The arguments passed as points_* are collected in args
-    points_args <- .points_args(args, x = x, y = y)
+    if (shape != 16) {
+        points_args <- .points_args(args, x = x, y = y, shape = shape)
+    } else {
+        # allow shape to be overridden by points_shape without warning
+        points_args <- .points_args(args, x = x, y = y)
+    }
     get_cells <- if (is.null(fov)) rownames else function(x) x$cell
 
     if (crop) {
@@ -237,11 +254,11 @@ NULL
 #' @return A list containing the ggplot2 layer object and the facet_by variable if applicable.
 .seurat_points_layer_molecules <- function(
     object, fov, boundaries, x = "x", y = "y", swap_xy = TRUE,
-    image, args, nmols, crop, points_data, ext_unscaled, scale_factor, group_by,
+    image, args, nmols, crop, points_data, ext_unscaled, scale_factor, group_by, shape,
     features, layer, legend.position, legend.direction, flip_y, ext
 ) {
 
-    points_args <- .points_args(args, x = x, y = y)
+    points_args <- .points_args(args, x = x, y = y, shape = shape)
 
     points_args$data <- Seurat::FetchData(object[[fov]], vars = features, nmols = nmols)
     if (swap_xy) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/celldimplot.R
 \name{CellDimPlot}
 \alias{CellDimPlot}
-\title{DimPlot}
+\title{CellDimPlot}
 \usage{
 CellDimPlot(object, reduction = NULL, graph = NULL, group_by = NULL, ...)
 }

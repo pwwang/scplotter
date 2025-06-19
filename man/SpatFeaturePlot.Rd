@@ -22,11 +22,12 @@ SpatFeaturePlot(
   flip_y = NULL,
   padding = NULL,
   image_scale = NULL,
-  x = "x",
-  y = "y",
+  x = NULL,
+  y = NULL,
   nmols = 1000,
   shapes_fill_by = NULL,
   graph = NULL,
+  shape = 16,
   legend.position = "right",
   legend.direction = "vertical",
   theme = "theme_box",
@@ -136,6 +137,9 @@ The graph data is obtained using \code{\link[GiottoClass:getSpatialNetwork]{Giot
 When TRUE, the default graph will be used.
 When given as a character, it should be the name of the graph to use.
 If there is ":" in the name, the first part will be used as spat_unit, and the second part as the graph name.}
+
+\item{shape}{The shape of the points, alias of \code{points_shape}.
+See \url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html} for more details.}
 
 \item{legend.position}{The position of the legend. Defaults to "right".}
 

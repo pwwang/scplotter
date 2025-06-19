@@ -232,6 +232,7 @@ ClonalPositionalPlot <- function (
 #' @importFrom scRepertoire percentKmer
 #' @importFrom plotthis BarPlot Heatmap
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list,
@@ -249,6 +250,7 @@ ClonalPositionalPlot <- function (
 #' ClonalKmerPlot(data, group_by = "Type")
 #' ClonalKmerPlot(data, group_by = "Type", plot_type = "line")
 #' ClonalKmerPlot(data, group_by = "Type", plot_type = "heatmap")
+#' }
 ClonalKmerPlot <- function (
     data, chain = "TRB", clone_call = "aa", k = 3, top = 25, group_by = "Sample",
     group_by_sep = "_", facet_by = NULL, split_by = NULL,

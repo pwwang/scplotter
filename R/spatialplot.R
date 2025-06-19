@@ -10,7 +10,7 @@ SpatPlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -26,7 +26,7 @@ SpatPlot.Seurat <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -39,6 +39,7 @@ SpatPlot.Seurat <- function(
         stop("[SpatPlot] No images found in the Seurat object. Is this an object with spatial data? ")
     }
     stype <- class(object@images[[first_image]])
+
     if ("VisiumV1" %in% stype) {
         if (!is.null(fov) || !is.null(boundaries)) {
             stop("[SpatPlot] 'fov' and 'boundaries' are not supported for Seurat objects with Visium data.")
@@ -47,9 +48,17 @@ SpatPlot.Seurat <- function(
             image <- first_image
         }
         SpatPlot.Seurat.Visium(
-            object, image = image, masks = masks, shapes = shapes, points = points,
-            ext = ext,
-            x = "imagerow", y = "imagecol", scale_factor = 1, ...)
+            object, fov = fov, boundaries = boundaries, image = image, masks = masks, shapes = shapes, points = points,
+            ext = ext, crop = crop, group_by = group_by, features = features, layer = layer, scale_factor = 1,
+            layers = layers, flip_y = flip_y, padding = padding, image_scale = image_scale,
+            x = "imagerow", y = "imagecol", nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
+            legend.position = legend.position, legend.direction = legend.direction, theme = theme, theme_args = theme_args,
+            title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
+            facet_scales = facet_scales, facet_nrow = facet_nrow, facet_ncol = facet_ncol, facet_byrow = facet_byrow,
+            feat_type = feat_type, use_overlap = use_overlap, shapes_feat_type = shapes_feat_type, shapes_alpha = shapes_alpha,
+            spat_unit = spat_unit, spat_loc_name = spat_loc_name, spat_enr_names = spat_enr_names,
+            ...
+        )
     } else if ("VisiumV2" %in% stype) {
         if (!is.null(fov) || !is.null(boundaries)) {
             stop("[SpatPlot] 'fov' and 'boundaries' are not supported for Seurat objects with Visium data.")
@@ -58,14 +67,28 @@ SpatPlot.Seurat <- function(
             image <- first_image
         }
         SpatPlot.Seurat.Visium(
-            object, image = image, masks = masks, shapes = shapes, points = points,
-            ext = ext,
+            object, fov = fov, boundaries = boundaries, image = image, masks = masks, shapes = shapes, points = points,
+            ext = ext, crop = crop, group_by = group_by, features = features, layer = layer, scale_factor = scale_factor,
+            layers = layers, flip_y = flip_y, padding = padding %||% 0.05, image_scale = image_scale,
+            x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
+            legend.position = legend.position, legend.direction = legend.direction, theme = theme, theme_args = theme_args,
+            title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
+            facet_scales = facet_scales, facet_nrow = facet_nrow, facet_ncol = facet_ncol, facet_byrow = facet_byrow,
+            feat_type = feat_type, use_overlap = use_overlap, shapes_feat_type = shapes_feat_type, shapes_alpha = shapes_alpha,
+            spat_unit = spat_unit, spat_loc_name = spat_loc_name, spat_enr_names = spat_enr_names,
             ...
         )
     } else if ("FOV" %in% stype) {
         SpatPlot.Seurat.FOV(
             object, fov = fov, boundaries = boundaries, image = image, masks = masks, shapes = shapes, points = points,
-            ext = ext,
+            ext = ext, crop = crop, group_by = group_by, features = features, layer = layer, scale_factor = scale_factor,
+            layers = layers, flip_y = flip_y, padding = padding, image_scale = image_scale,
+            x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
+            legend.position = legend.position, legend.direction = legend.direction, theme = theme, theme_args = theme_args,
+            title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
+            facet_scales = facet_scales, facet_nrow = facet_nrow, facet_ncol = facet_ncol, facet_byrow = facet_byrow,
+            feat_type = feat_type, use_overlap = use_overlap, shapes_feat_type = shapes_feat_type, shapes_alpha = shapes_alpha,
+            spat_unit = spat_unit, spat_loc_name = spat_loc_name, spat_enr_names = spat_enr_names,
             ...
         )
     } else if ("SlideSeq" %in% stype) {
@@ -73,8 +96,15 @@ SpatPlot.Seurat <- function(
             stop("[SpatPlot] 'fov' and 'boundaries' are not supported for Seurat objects with SlideSeq data.")
         }
         SpatPlot.Seurat.SlideSeq(
-            object, image = image, masks = masks, shapes = shapes, points = points,
-            ext = ext,
+            object, fov = fov, boundaries = boundaries, image = image, masks = masks, shapes = shapes, points = points,
+            ext = ext, crop = crop, group_by = group_by, features = features, layer = layer, scale_factor = scale_factor,
+            layers = layers, flip_y = flip_y, padding = padding, image_scale = image_scale,
+            x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
+            legend.position = legend.position, legend.direction = legend.direction, theme = theme, theme_args = theme_args,
+            title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
+            facet_scales = facet_scales, facet_nrow = facet_nrow, facet_ncol = facet_ncol, facet_byrow = facet_byrow,
+            feat_type = feat_type, use_overlap = use_overlap, shapes_feat_type = shapes_feat_type, shapes_alpha = shapes_alpha,
+            spat_unit = spat_unit, spat_loc_name = spat_loc_name, spat_enr_names = spat_enr_names,
             ...
         )
     } else {
@@ -88,7 +118,7 @@ SpatPlot.Seurat.Visium <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -103,6 +133,8 @@ SpatPlot.Seurat.Visium <- function(
         theme <- utils::getFromNamespace(theme, "plotthis")
     }
 
+    x <- x %||% "x"
+    y <- y %||% "y"
     flip_y <- flip_y %||% TRUE
     layer <- layer %||% "data"
     points <- points %||% TRUE
@@ -178,7 +210,7 @@ SpatPlot.Seurat.Visium <- function(
         if (element == "points") {
             points_layer <- .seurat_points_layer(
                 object = object, image = image, args = args, crop = crop, points_data = points_data,
-                x = x, y = y,
+                x = x, y = y, shape = shape,
                 ext_unscaled = ext_unscaled, scale_factor = the_scale_factor, group_by = group_by,
                 features = features, layer = layer, legend.position = legend.position,
                 legend.direction = legend.direction, flip_y = flip_y, ext = ext
@@ -229,7 +261,7 @@ SpatPlot.Seurat.SlideSeq <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -295,7 +327,7 @@ SpatPlot.Seurat.SlideSeq <- function(
         if (element == "points") {
             points_layer <- .seurat_points_layer(
                 object = object, image = image, args = args, crop = crop, points_data = points_data,
-                ext_unscaled = ext_unscaled, scale_factor = scale_factor, group_by = group_by,
+                ext_unscaled = ext_unscaled, scale_factor = scale_factor, group_by = group_by, shape = shape,
                 features = features, layer = layer, legend.position = legend.position,
                 legend.direction = legend.direction, flip_y = flip_y, ext = ext
             )
@@ -347,7 +379,7 @@ SpatPlot.Seurat.FOV <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -363,6 +395,8 @@ SpatPlot.Seurat.FOV <- function(
         theme <- utils::getFromNamespace(theme, "plotthis")
     }
 
+    x <- x %||% "y"
+    y <- y %||% "x"
     flip_y <- flip_y %||% FALSE
     layer <- layer %||% "data"
     points <- points %||% TRUE
@@ -429,7 +463,7 @@ SpatPlot.Seurat.FOV <- function(
                 points_layer <- .seurat_points_layer_molecules(
                     object = object, image = image, args = args, crop = crop,
                     points_data = points_data, nmols = nmols, swap_xy = FALSE,
-                    fov = fov, boundaries = boundaries, x = x, y = y,
+                    fov = fov, boundaries = boundaries, x = x, y = y, shape = shape,
                     ext_unscaled = ext_unscaled, scale_factor = the_scale_factor, group_by = group_by,
                     features = features, layer = layer, legend.position = legend.position,
                     legend.direction = legend.direction, flip_y = flip_y, ext = ext
@@ -438,7 +472,7 @@ SpatPlot.Seurat.FOV <- function(
                 points_layer <- .seurat_points_layer(
                     object = object, image = if (is.character(image) && image %in% names(object@images)) image,
                     args = args, crop = crop, points_data = points_data, swap_xy = FALSE,
-                    fov = fov, boundaries = boundaries, x = x, y = y,
+                    fov = fov, boundaries = boundaries, x = x, y = y, shape = shape,
                     ext_unscaled = ext_unscaled, scale_factor = the_scale_factor, group_by = group_by,
                     features = features, layer = layer, legend.position = legend.position,
                     legend.direction = legend.direction, flip_y = flip_y, ext = ext
@@ -519,7 +553,7 @@ SpatPlot.giotto <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -533,6 +567,8 @@ SpatPlot.giotto <- function(
             is.null(group_by) || is.null(features))
     }
 
+    x <- x %||% "x"
+    y <- y %||% "y"
     flip_y <- flip_y %||% FALSE
     layer <- layer %||% "normalized"
 
@@ -593,7 +629,10 @@ SpatPlot.giotto <- function(
 
     if (isTRUE(crop) && is.null(ext)) {
         # set the ext to the range of the spatial locations
-        ext <- GiottoClass::ext(object)
+        ext <- GiottoClass::ext(GiottoClass::getSpatialLocations(
+            gobject = object,
+            spat_unit = spat_unit
+        ))
         if (is.null(padding)) {
             padding <- if ("image" %in% layers) 0 else 0.05
         }
@@ -721,8 +760,11 @@ SpatPlot.giotto <- function(
             scales_used <- unique(c(scales_used, attr(player, "scales")))
 
         } else if (element == "points") {
-            points_args <- args[startsWith(names(args), "points_")]
-            names(points_args) <- sub("^points_", "", names(points_args))
+            if (shape != 16) {
+                points_args <- .points_args(args, shape = shape)
+            } else {
+                points_args <- .points_args(args)
+            }
 
             # prepare the data
             if (identical(group_by, "molecules")) {
@@ -923,11 +965,13 @@ SpatPlot.giotto <- function(
 #' @inheritParams SpatPlot
 #' @return A ggplot object
 #' @export
+#' @details
+#' See <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details.
 SpatFeaturePlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -943,7 +987,7 @@ SpatFeaturePlot.Seurat <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -956,9 +1000,8 @@ SpatFeaturePlot.Seurat <- function(
         points = points, ext = ext, crop = crop, group_by = group_by, features = features,
         layer = layer, scale_factor = scale_factor, layers = layers, flip_y = flip_y,
         padding = padding, image_scale = image_scale,
-        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph,
-        legend.position = legend.position, legend.direction = legend.direction,
-        theme = theme, theme_args = theme_args,
+        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
+        legend.position = legend.position, legend.direction = legend.direction, theme = theme, theme_args = theme_args,
         title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
         facet_scales = facet_scales, facet_nrow = facet_nrow,
         facet_ncol = facet_ncol, facet_byrow = facet_byrow,
@@ -975,7 +1018,7 @@ SpatFeaturePlot.giotto <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -992,7 +1035,7 @@ SpatFeaturePlot.giotto <- function(
         points = points, ext = ext, crop = crop, group_by = group_by, features = features,
         layer = layer, scale_factor = scale_factor, layers = layers, flip_y = flip_y,
         padding = padding, image_scale = image_scale,
-        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph,
+        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
         legend.position = legend.position, legend.direction = legend.direction,
         theme = theme, theme_args = theme_args,
         title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
@@ -1011,11 +1054,13 @@ SpatFeaturePlot.giotto <- function(
 #' @inheritParams SpatPlot
 #' @return A ggplot object
 #' @export
+#' @details
+#' See <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details.
 SpatDimPlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -1031,7 +1076,7 @@ SpatDimPlot.Seurat <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -1055,7 +1100,7 @@ SpatDimPlot.Seurat <- function(
         points = points, ext = ext, crop = crop, group_by = group_by, features = features,
         layer = layer, scale_factor = scale_factor, layers = layers, flip_y = flip_y,
         padding = padding, image_scale = image_scale,
-        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph,
+        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
         legend.position = legend.position, legend.direction = legend.direction,
         theme = theme, theme_args = theme_args,
         title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
@@ -1074,7 +1119,7 @@ SpatDimPlot.giotto <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
     layers = NULL, flip_y = NULL, padding = NULL, image_scale = NULL,
-    x = "x", y = "y", nmols = 1000, shapes_fill_by = NULL, graph = NULL,
+    x = NULL, y = NULL, nmols = 1000, shapes_fill_by = NULL, graph = NULL, shape = 16,
     legend.position = "right", legend.direction = "vertical", theme = "theme_box", theme_args = list(),
     title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
     facet_scales = "fixed", facet_nrow = NULL, facet_ncol = NULL, facet_byrow = TRUE,
@@ -1090,7 +1135,7 @@ SpatDimPlot.giotto <- function(
         points = points, ext = ext, crop = crop, group_by = group_by, features = features,
         layer = layer, scale_factor = scale_factor, layers = layers, flip_y = flip_y,
         padding = padding, image_scale = image_scale,
-        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph,
+        x = x, y = y, nmols = nmols, shapes_fill_by = shapes_fill_by, graph = graph, shape = shape,
         legend.position = legend.position, legend.direction = legend.direction,
         theme = theme, theme_args = theme_args,
         title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,

@@ -21,3 +21,4 @@
 ^\.github\/.+$
 ^Makefile$
 ^Rplots\.pdf$
+^vignettes/articles$

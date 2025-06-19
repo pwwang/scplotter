@@ -12,8 +12,12 @@ install:
 test:
 	Rscript <(echo "devtools::test()")
 
+# make notebooks EXECUTE=true to run the notebooks
 notebooks:
-	jupyter nbconvert -y --to html notebooks/spatial/*.ipynb --output-dir=pkgdown/assets
+	jupyter nbconvert $(if $(DEBUG),--execute) -y \
+		--to html notebooks/spatial/*.ipynb \
+		--output-dir=pkgdown/assets $(if $(EXECUTE),--execute) \
+		--template lab
 
 notebook: notebooks
 nb: notebooks

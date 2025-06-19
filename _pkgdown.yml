@@ -1,37 +1,48 @@
 url: https://pwwang.github.io/scplotter/
 template:
   bootstrap: 5
-  bootswatch: lumen
+  light-switch: true
+  bslib:
+    bootswatch: litera
+    pkgdown-nav-height: 80px
 navbar:
   structure:
-    left: [intro, reference, articles, spatial, tutorials, news]
     right: [search, github]
+    left: [intro, reference, articles, spatial-examples]
   components:
-    spatial:
-      text: Spatial
+    articles:
+      text: "Articles"
       menu:
-      - text: "Visualizing 10x Visum data prepared with Seurat"
-        href: Seurat.10x_Visium.html
-      - text: "Visualizing Visium HD data prepared with Seurat"
-        href: Seurat.10x_VisiumHD.html
-      - text: "Visualizing SlideSeq data prepared with Seurat"
-        href: Seurat.SlideSeq.html
-      - text: "Visualizing Xenium data prepared with Seurat"
-        href: Seurat.Xenium.html
-      - text: "Visualizing Nanostring CosMx data prepared with Seurat"
-        href: Seurat.Nanostring_CosMx.html
-      - text: "Visualizing Visium data prepared with Giotto"
-        href: Giotto.Visium.html
-      - text: "Visualizing VisiumHD data prepared with Giotto"
-        href: Giotto.VisiumHD.html
-      - text: "Visualizing Xenium data prepared with Giotto"
-        href: Giotto.Xenium.html
-      - text: "Visualizing SlideSeq data prepared with Giotto"
-        href: Giotto.SlideSeq.html
-      - text: "Visualizing Spatial CITE-Seq data prepared with Giotto"
-        href: Giotto.Spatial_CITE-Seq.html
-      - text: "Visualizing Nanostirng CosMx data prepared with Giotto"
-        href: Giotto.Nanostring_CosMx.html
+        - text: "Visualizing data with LLMs"
+          href: articles/Visualizing_data_with_LLMs.html
+        - text: "Knowing your spatial data and visualization"
+          href: articles/Knowing_your_spatial_data_and_visualization.html
+    spatial-examples:
+      text: "Spatial Examples"
+      menu:
+        - text: "Visualizing 10x Visium data prepared with Seurat"
+          href: articles/Seurat_10x_Visium.html
+        - text: "Visualizing 10x VisiumHD data prepared with Seurat"
+          href: articles/Seurat_10x_VisiumHD.html
+        - text: "Visualizing SlideSeq data prepared with Seurat"
+          href: articles/Seurat_SlideSeq.html
+        - text: "Visualizing Xenium data prepared with Seurat"
+          href: articles/Seurat_Xenium.html
+        - text: "Visualizing Nanostring CosMx data prepared with Seurat"
+          href: articles/Seurat_Nanostring_CosMx.html
+        - text: "Visualizing Visium data prepared with Giotto"
+          href: articles/Giotto_Visium.html
+        - text: "Visualizing VisiumHD data prepared with Giotto"
+          href: articles/Giotto_VisiumHD.html
+        - text: "Visualizing Xenium data prepared with Giotto"
+          href: articles/Giotto_Xenium.html
+        - text: "Visualizing SlideSeq data prepared with Giotto"
+          href: articles/Giotto_SlideSeq.html
+        - text: "Visualizing Spatial CITE-Seq data prepared with Giotto"
+          href: articles/Giotto_Spatial_CITE-Seq.html
+        - text: "Visualizing Nanostirng CosMx data prepared with Giotto"
+          href: articles/Giotto_Nanostring_CosMx.html
+
 reference:
   - title: scRNA-seq
     desc: Functions for plotting single cell RNA-seq data

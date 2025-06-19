@@ -1,0 +1,21 @@
+---
+title: "Use scplotter with Giotto Spatial CITE-Seq data"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<div id="loading1">Loading notebook ...</div>
+<iframe
+  src="../Giotto.Spatial_CITE-Seq.html"
+  width="100%"
+  style="height: auto; min-height: 1000px; overflow: hidden;"
+  frameborder="0"
+  allowfullscreen
+  scrolling="no"
+  onload="document.getElementById('loading1').style.display = 'none'; document.getElementById('loading2').style.display = 'none'; this.style.height=this.contentWindow.document.documentElement.scrollHeight+'px';"></iframe>
+<div id="loading2">Loading notebook ...</div>

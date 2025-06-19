@@ -40,6 +40,7 @@ Suggests:
     ggwordcloud,
     ggVennDiagram (>= 1.5.0),
     GiottoClass,
+    GiottoData,
     hexbin,
     igraph,
     clustree,
@@ -52,12 +53,14 @@ Suggests:
     metap (>= 1.11),
     knitr,
     terra,
-    rmarkdown
+    rmarkdown,
+    learnr
 LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
-    drieslab/GiottoClass
+    drieslab/GiottoClass,
+    drieslab/GiottoData
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/
 BugReports:

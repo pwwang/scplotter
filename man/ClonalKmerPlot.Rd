@@ -68,6 +68,7 @@ A ggplot object or a list if \code{combine} is FALSE
 Explore the k-mer frequency of CDR3 sequences.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list,
@@ -85,4 +86,5 @@ ClonalKmerPlot(data)
 ClonalKmerPlot(data, group_by = "Type")
 ClonalKmerPlot(data, group_by = "Type", plot_type = "line")
 ClonalKmerPlot(data, group_by = "Type", plot_type = "heatmap")
+}
 }
