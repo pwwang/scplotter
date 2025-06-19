@@ -50,12 +50,14 @@
     <li><a class="dropdown-item" href="../articles/Seurat_SlideSeq.html">Visualizing SlideSeq data prepared with Seurat</a></li>
     <li><a class="dropdown-item" href="../articles/Seurat_Xenium.html">Visualizing Xenium data prepared with Seurat</a></li>
     <li><a class="dropdown-item" href="../articles/Seurat_Nanostring_CosMx.html">Visualizing Nanostring CosMx data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="../articles/Seurat_Akoya_CODEX.html">Visualizing Akoya_CODEX data prepared with Seurat</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Visium.html">Visualizing Visium data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_VisiumHD.html">Visualizing VisiumHD data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Xenium.html">Visualizing Xenium data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_SlideSeq.html">Visualizing SlideSeq data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Spatial_CITE-Seq.html">Visualizing Spatial CITE-Seq data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostirng CosMx data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="../articles/Giotto_CODEX.html">Visualizing CODEX data prepared with Giotto</a></li>
   </ul>
 </li>
       </ul>
@@ -85,13 +87,51 @@
 
     
     
-<div id="loading1">
-Loading notebook …
+<style>
+.nb-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  color: #555;
+  font-size: 18px;
+  padding: 15px;
+}
+.nb-loading p {
+  margin: 0;
+  margin-right: 10px;
+}
+.nb-loading div {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<div id="loading1" class="nb-loading">
+<p>
+Loading notebook
+</p>
+<div>
+
+</div>
 </div>
 <iframe src="../Seurat.10x_Visium.html" width="100%" style="height: auto; min-height: 1000px; overflow: hidden;" frameborder="0" allowfullscreen scrolling="no" onload="document.getElementById('loading1').style.display = 'none'; document.getElementById('loading2').style.display = 'none'; this.style.height=this.contentWindow.document.documentElement.scrollHeight+'px';">
 </iframe>
-<div id="loading2">
-Loading notebook …
+<div id="loading2" class="nb-loading">
+<p>
+Loading notebook
+</p>
+<div>
+
+</div>
 </div>
   </main>
 </div>

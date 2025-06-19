@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://pwwang.github.io/scplotter/404.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.Spatial_CITE-Seq.html</loc></url>
@@ -10,10 +11,12 @@
 <url><loc>https://pwwang.github.io/scplotter/LICENSE.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.10x_Visium.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.10x_VisiumHD.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Seurat.Akoya_CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.Xenium.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.XeniumInSitu.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_Spatial_CITE-Seq.html</loc></url>
@@ -23,6 +26,7 @@
 <url><loc>https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_10x_Visium.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_10x_VisiumHD.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/articles/Seurat_Akoya_CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_Xenium.html</loc></url>

@@ -50,12 +50,14 @@
     <li><a class="dropdown-item" href="../articles/Seurat_SlideSeq.html">Visualizing SlideSeq data prepared with Seurat</a></li>
     <li><a class="dropdown-item" href="../articles/Seurat_Xenium.html">Visualizing Xenium data prepared with Seurat</a></li>
     <li><a class="dropdown-item" href="../articles/Seurat_Nanostring_CosMx.html">Visualizing Nanostring CosMx data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="../articles/Seurat_Akoya_CODEX.html">Visualizing Akoya_CODEX data prepared with Seurat</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Visium.html">Visualizing Visium data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_VisiumHD.html">Visualizing VisiumHD data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Xenium.html">Visualizing Xenium data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_SlideSeq.html">Visualizing SlideSeq data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Spatial_CITE-Seq.html">Visualizing Spatial CITE-Seq data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostirng CosMx data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="../articles/Giotto_CODEX.html">Visualizing CODEX data prepared with Giotto</a></li>
   </ul>
 </li>
       </ul>
@@ -111,6 +113,12 @@ Other types of elements are plotted by different functions from <a href="https:/
 <ul>
 <li>Images are plotted using <a href="https://pwwang.github.io/plotthis/reference/spatialplots.html" class="external-link"><code>plotthis::SpatImagePlot()</code></a>:</li>
 </ul>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pwwang/plotthis" class="external-link">plotthis</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu">GiottoData</span><span class="fu">::</span><span class="fu"><a href="https://drieslab.github.io/GiottoData/reference/loadGiottoMini.html" class="external-link">loadGiottoMini</a></span><span class="op">(</span><span class="st">"vizgen"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://pwwang.github.io/plotthis/reference/spatialplots.html" class="external-link">SpatImagePlot</a></span><span class="op">(</span><span class="fu">GiottoClass</span><span class="fu">::</span><span class="fu"><a href="https://drieslab.github.io/GiottoClass/reference/getGiottoImage.html" class="external-link">getGiottoImage</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">@</span><span class="va">raster_object</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Knowing_your_spatial_data_and_visualization_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 <ul>
 <li>Masks are generally not plotted by <code>scplotter</code>, but can
@@ -118,10 +126,14 @@ be plotted manually using <a href="https://pwwang.github.io/plotthis/reference/s
 </li>
 <li>Shapes are plotted using <a href="https://pwwang.github.io/plotthis/reference/spatialplots.html" class="external-link"><code>plotthis::SpatShapesPlot()</code></a>:</li>
 </ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://pwwang.github.io/plotthis/reference/spatialplots.html" class="external-link">SpatShapesPlot</a></span><span class="op">(</span><span class="fu">GiottoClass</span><span class="fu">::</span><span class="fu"><a href="https://drieslab.github.io/GiottoClass/reference/getPolygonInfo.html" class="external-link">getPolygonInfo</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Knowing_your_spatial_data_and_visualization_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <ul>
 <li>Points are plotted using <a href="https://pwwang.github.io/plotthis/reference/spatialplots.html" class="external-link"><code>plotthis::SpatPointsPlot()</code></a>:</li>
 </ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://pwwang.github.io/plotthis/reference/spatialplots.html" class="external-link">SpatPointsPlot</a></span><span class="op">(</span><span class="fu">GiottoClass</span><span class="fu">::</span><span class="fu"><a href="https://drieslab.github.io/GiottoClass/reference/getSpatialLocations.html" class="external-link">getSpatialLocations</a></span><span class="op">(</span><span class="va">g</span>, output <span class="op">=</span> <span class="st">"data.table"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Knowing_your_spatial_data_and_visualization_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 </div>
 <div class="section level2">
@@ -253,6 +265,8 @@ with Giotto</a></li>
 data prepared with Giotto</a></li>
 <li><a href="Giotto_Nanostring_CosMx.html">Visualizing Nanostirng CosMx
 data prepared with Giotto</a></li>
+<li><a href="Giotto_CODEX.html">Visualizing CODEX data prepared with
+Giotto</a></li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
