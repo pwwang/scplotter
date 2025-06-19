@@ -180,7 +180,12 @@ NULL
         if (ncol(points_args$data) > 0) {
             points_args$data <- points_args$data[, colnames(points_args$data)[!is.na(colnames(points_args$data))], drop = FALSE]
         }
-        points_args$data <- cbind(points_args$data, points_data)
+        points_args$data <- cbind(points_data, points_args$data)
+        # check if there is duplicated columns
+        dup_cols <- duplicated(colnames(points_args$data))
+        if (any(dup_cols)) {
+            points_args$data <- points_args$data[, !dup_cols, drop = FALSE]
+        }
         # x and y are already handled in points_data, we don't need to handle the swapping here
         points_args$data[[points_args$x]] <- points_args$data[[points_args$x]] * scale_factor
         points_args$data[[points_args$y]] <- points_args$data[[points_args$y]] * scale_factor
@@ -209,7 +214,6 @@ NULL
     }
 
     facet_by <- NULL
-
     if (!is.null(group_by)) {
         if (nrow(object@meta.data) == nrow(points_args$data)) {
             points_args$data[[group_by]] <- object@meta.data[[group_by]]
@@ -238,7 +242,6 @@ NULL
             facet_by <- ".facet_var"
         }
     }
-
     points_args$legend.position <- legend.position
     points_args$legend.direction <- legend.direction
     points_args$flip_y <- flip_y

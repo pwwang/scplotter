@@ -8076,6 +8076,151 @@ Setting dimension reduction [cell][rna] tsne
 </div>
 </div>
 </div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d493a096">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sessionInfo</span><span class="p">()</span>
+<span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">capture.output</span><span class="p">(</span><span class="nf">print</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="c1"># hide the BLAS/LAPACK paths</span>
+<span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="o">!</span><span class="nf">startsWith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="s">"BLAS/LAPACK:"</span><span class="p">)]</span>
+<span class="nf">cat</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">collapse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"\n"</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>R version 4.4.3 (2025-02-28)
+Platform: x86_64-conda-linux-gnu
+Running under: Red Hat Enterprise Linux 8.10 (Ootpa)
+
+Matrix products: default
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=C              
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: America/Chicago
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] scplotter_0.4.0   Giotto_4.2.1      GiottoClass_0.4.7
+
+loaded via a namespace (and not attached):
+  [1] fs_1.6.6                    matrixStats_1.5.0          
+  [3] spatstat.sparse_3.1-0       bitops_1.0-9               
+  [5] devtools_2.4.5              httr_1.4.7                 
+  [7] RColorBrewer_1.1-3          repr_1.1.7                 
+  [9] profvis_0.4.0               tools_4.4.3                
+ [11] sctransform_0.4.2           backports_1.5.0            
+ [13] R6_2.6.1                    uwot_0.2.3                 
+ [15] lazyeval_0.2.2              urlchecker_1.0.1           
+ [17] withr_3.0.2                 sp_2.2-0                   
+ [19] gridExtra_2.3               GiottoUtils_0.2.5          
+ [21] progressr_0.15.1            quantreg_6.00              
+ [23] cli_3.6.5                   Biobase_2.62.0             
+ [25] spatstat.explore_3.4-3      fastDummies_1.7.5          
+ [27] iNEXT_3.0.1                 Seurat_5.3.0               
+ [29] spatstat.data_3.1-6         ggridges_0.5.6             
+ [31] pbapply_1.7-2               pbdZMQ_0.3-14              
+ [33] stringdist_0.9.15           parallelly_1.45.0          
+ [35] sessioninfo_1.2.3           VGAM_1.1-13                
+ [37] rstudioapi_0.17.1           generics_0.1.4             
+ [39] shape_1.4.6.1               gtools_3.9.5               
+ [41] ica_1.0-3                   spatstat.random_3.4-1      
+ [43] dplyr_1.1.4                 Matrix_1.7-3               
+ [45] S4Vectors_0.40.2            abind_1.4-5                
+ [47] terra_1.8-42                lifecycle_1.0.4            
+ [49] SummarizedExperiment_1.32.0 SparseArray_1.2.4          
+ [51] Rtsne_0.17                  grid_4.4.3                 
+ [53] promises_1.3.2              crayon_1.5.3               
+ [55] miniUI_0.1.2                lattice_0.22-7             
+ [57] cowplot_1.1.3               pillar_1.10.2              
+ [59] GenomicRanges_1.54.1        rjson_0.2.23               
+ [61] future.apply_1.20.0         codetools_0.2-20           
+ [63] glue_1.8.0                  spatstat.univar_3.1-3      
+ [65] data.table_1.17.4           remotes_2.5.0              
+ [67] vctrs_0.6.5                 png_0.1-8                  
+ [69] spam_2.11-1                 gtable_0.3.6               
+ [71] assertthat_0.2.1            cachem_1.1.0               
+ [73] S4Arrays_1.2.1              mime_0.13                  
+ [75] tidygraph_1.3.0             survival_3.8-3             
+ [77] SingleCellExperiment_1.24.0 ellipsis_0.3.2             
+ [79] scRepertoire_2.2.1          fitdistrplus_1.2-2         
+ [81] ROCR_1.0-11                 nlme_3.1-168               
+ [83] usethis_3.1.0               RcppAnnoy_0.0.22           
+ [85] evd_2.3-7.1                 GenomeInfoDb_1.38.8        
+ [87] rprojroot_2.0.4             irlba_2.3.5.1              
+ [89] KernSmooth_2.23-26          plotthis_0.7.0             
+ [91] colorspace_2.1-1            BiocGenerics_0.48.1        
+ [93] tidyselect_1.2.1            compiler_4.4.3             
+ [95] SparseM_1.84-2              xml2_1.3.8                 
+ [97] desc_1.4.3                  ggdendro_0.2.0             
+ [99] DelayedArray_0.28.0         plotly_4.10.4              
+[101] checkmate_2.3.2             scales_1.4.0               
+[103] lmtest_0.9-40               rappdirs_0.3.3             
+[105] stringr_1.5.1               digest_0.6.37              
+[107] goftest_1.2-3               spatstat.utils_3.1-4       
+[109] XVector_0.42.0              htmltools_0.5.8.1          
+[111] GiottoVisuals_0.2.12        pkgconfig_2.0.3            
+[113] base64enc_0.1-3             MatrixGenerics_1.14.0      
+[115] fastmap_1.2.0               rlang_1.1.6                
+[117] GlobalOptions_0.1.2         htmlwidgets_1.6.4          
+[119] shiny_1.10.0                farver_2.1.2               
+[121] zoo_1.8-14                  jsonlite_2.0.0             
+[123] RCurl_1.98-1.17             magrittr_2.0.3             
+[125] GenomeInfoDbData_1.2.11     dotCall64_1.2              
+[127] patchwork_1.3.0             IRkernel_1.3.2             
+[129] Rcpp_1.0.14                 evmix_2.12                 
+[131] ggnewscale_0.5.1            viridis_0.6.5              
+[133] reticulate_1.42.0           truncdist_1.0-2            
+[135] stringi_1.8.7               ggalluvial_0.12.5          
+[137] ggraph_2.2.1                zlibbioc_1.48.2            
+[139] MASS_7.3-64                 plyr_1.8.9                 
+[141] pkgbuild_1.4.8              parallel_4.4.3             
+[143] listenv_0.9.1               ggrepel_0.9.6              
+[145] forcats_1.0.0               deldir_2.0-4               
+[147] graphlayouts_1.2.2          IRdisplay_1.1              
+[149] splines_4.4.3               gridtext_0.1.5             
+[151] tensor_1.5                  circlize_0.4.16            
+[153] colorRamp2_0.1.0            igraph_2.0.3               
+[155] uuid_1.2-1                  spatstat.geom_3.4-1        
+[157] cubature_2.1.4              RcppHNSW_0.6.0             
+[159] reshape2_1.4.4              stats4_4.4.3               
+[161] pkgload_1.4.0               evaluate_1.0.3             
+[163] SeuratObject_5.1.0          tweenr_2.0.3               
+[165] httpuv_1.6.15               MatrixModels_0.5-4         
+[167] RANN_2.6.2                  tidyr_1.3.1                
+[169] purrr_1.0.4                 polyclip_1.10-7            
+[171] future_1.58.0               scattermore_1.2            
+[173] ggplot2_3.5.2               ggforce_0.4.2              
+[175] xtable_1.8-4                RSpectra_0.16-2            
+[177] later_1.4.2                 viridisLite_0.4.2          
+[179] gsl_2.1-8                   tibble_3.2.1               
+[181] memoise_2.0.1               IRanges_2.36.0             
+[183] cluster_2.1.8.1             globals_0.18.0             </pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </main>
 </body>

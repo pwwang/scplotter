@@ -30,6 +30,8 @@ navbar:
           href: articles/Seurat_Xenium.html
         - text: "Visualizing Nanostring CosMx data prepared with Seurat"
           href: articles/Seurat_Nanostring_CosMx.html
+        - text: "Visualizing Akoya_CODEX data prepared with Seurat"
+          href: articles/Seurat_Akoya_CODEX.html
         - text: "Visualizing Visium data prepared with Giotto"
           href: articles/Giotto_Visium.html
         - text: "Visualizing VisiumHD data prepared with Giotto"
@@ -42,6 +44,8 @@ navbar:
           href: articles/Giotto_Spatial_CITE-Seq.html
         - text: "Visualizing Nanostirng CosMx data prepared with Giotto"
           href: articles/Giotto_Nanostring_CosMx.html
+        - text: "Visualizing CODEX data prepared with Giotto"
+          href: articles/Giotto_CODEX.html
 
 reference:
   - title: scRNA-seq

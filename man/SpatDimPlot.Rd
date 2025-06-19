@@ -197,3 +197,6 @@ A ggplot object
 \description{
 Plot categories for spatial data
 }
+\details{
+See \url{https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html} for more details.
+}

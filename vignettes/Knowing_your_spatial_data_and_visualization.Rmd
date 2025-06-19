@@ -30,10 +30,9 @@ The metadata is interpolated with other elements whiled plotted. Other types of 
 
 - Images are plotted using [`plotthis::SpatImagePlot()`][4]:
 
-```{r, echo = FALSE, message = FALSE}
+```{r, message = FALSE}
 library(plotthis)
 
-# don't load python
 g <- suppressWarnings(GiottoData::loadGiottoMini("vizgen"))
 
 SpatImagePlot(GiottoClass::getGiottoImage(g)@raster_object)
@@ -42,13 +41,13 @@ SpatImagePlot(GiottoClass::getGiottoImage(g)@raster_object)
 - Masks are generally not plotted by `scplotter`, but can be plotted manually using [`plotthis::SpatMasksPlot()`][4]
 - Shapes are plotted using [`plotthis::SpatShapesPlot()`][4]:
 
-```{r, echo = FALSE, message = FALSE}
+```{r, message = FALSE}
 SpatShapesPlot(GiottoClass::getPolygonInfo(g))
 ```
 
 - Points are plotted using [`plotthis::SpatPointsPlot()`][4]:
 
-```{r, echo = FALSE, message = FALSE}
+```{r, message = FALSE}
 SpatPointsPlot(GiottoClass::getSpatialLocations(g, output = "data.table"))
 ```
 
@@ -108,6 +107,7 @@ It is hard to provide in-situ plots for Seurat objects by design. For giotto obj
 - [Visualizing SlideSeq data prepared with Giotto](Giotto_SlideSeq.html)
 - [Visualizing Spatial CITE-Seq data prepared with Giotto](Giotto_Spatial_CITE-Seq.html)
 - [Visualizing Nanostirng CosMx data prepared with Giotto](Giotto_Nanostring_CosMx.html)
+- [Visualizing CODEX data prepared with Giotto](Giotto_CODEX.html)
 
 [1]: https://spatialdata.scverse.org/en/stable/index.html
 [2]: https://spatialdata.scverse.org/en/stable/tutorials/notebooks/notebooks/examples/intro.html#key-terms-and-data-model
