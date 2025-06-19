@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="https://pwwang.github.io/scplotter/apple-touch-icon.png">
 <link rel="icon" sizes="any" href="https://pwwang.github.io/scplotter/favicon.ico">
 <link rel="manifest" href="https://pwwang.github.io/scplotter/site.webmanifest">
-<script src="https://pwwang.github.io/scplotter/deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="https://pwwang.github.io/scplotter/lightswitch.js"></script><script src="https://pwwang.github.io/scplotter/deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="https://pwwang.github.io/scplotter/deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="https://pwwang.github.io/scplotter/deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="https://pwwang.github.io/scplotter/deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://pwwang.github.io/scplotter/deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -22,7 +22,7 @@
     <a href="https://pwwang.github.io/scplotter/#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="https://pwwang.github.io/scplotter/index.html">scplotter</a>
 
@@ -40,22 +40,23 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Visualizing_data_with_LLMs.html">Visualizing data with LLMs</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html">Knowing your spatial data and visualization</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-spatial" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Spatial</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-spatial">
-<li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Seurat.10x_Visium.html">Visualizing 10x Visum data prepared with Seurat</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Seurat.10x_VisiumHD.html">Visualizing Visium HD data prepared with Seurat</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Seurat.SlideSeq.html">Visualizing SlideSeq data prepared with Seurat</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Seurat.Xenium.html">Visualizing Xenium data prepared with Seurat</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Seurat.Nanostring_CosMx.html">Visualizing Nanostring CosMx data prepared with Seurat</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Giotto.Visium.html">Visualizing Visium data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Giotto.VisiumHD.html">Visualizing VisiumHD data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Giotto.Xenium.html">Visualizing Xenium data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Giotto.SlideSeq.html">Visualizing SlideSeq data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Giotto.Spatial_CITE-Seq.html">Visualizing Spatial CITE-Seq data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/Giotto.Nanostring_CosMx.html">Visualizing Nanostirng CosMx data prepared with Giotto</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-spatial-examples" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Spatial Examples</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-spatial-examples">
+<li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Seurat_10x_Visium.html">Visualizing 10x Visium data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Seurat_10x_VisiumHD.html">Visualizing 10x VisiumHD data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Seurat_SlideSeq.html">Visualizing SlideSeq data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Seurat_Xenium.html">Visualizing Xenium data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Seurat_Nanostring_CosMx.html">Visualizing Nanostring CosMx data prepared with Seurat</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Giotto_Visium.html">Visualizing Visium data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.html">Visualizing VisiumHD data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html">Visualizing Xenium data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.html">Visualizing SlideSeq data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Giotto_Spatial_CITE-Seq.html">Visualizing Spatial CITE-Seq data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostirng CosMx data prepared with Giotto</a></li>
   </ul>
 </li>
       </ul>

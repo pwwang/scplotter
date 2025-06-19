@@ -2,8 +2,20 @@ pandoc: 3.1.3
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
+  articles/Giotto_Nanostring_CosMx: Giotto_Nanostring_CosMx.html
+  articles/Giotto_SlideSeq: Giotto_SlideSeq.html
+  articles/Giotto_Spatial_CITE-Seq: Giotto_Spatial_CITE-Seq.html
+  articles/Giotto_Visium: Giotto_Visium.html
+  articles/Giotto_VisiumHD: Giotto_VisiumHD.html
+  articles/Giotto_Xenium: Giotto_Xenium.html
+  Knowing_your_spatial_data_and_visualization: Knowing_your_spatial_data_and_visualization.html
+  articles/Seurat_10x_Visium: Seurat_10x_Visium.html
+  articles/Seurat_10x_VisiumHD: Seurat_10x_VisiumHD.html
+  articles/Seurat_Nanostring_CosMx: Seurat_Nanostring_CosMx.html
+  articles/Seurat_SlideSeq: Seurat_SlideSeq.html
+  articles/Seurat_Xenium: Seurat_Xenium.html
   Visualizing_data_with_LLMs: Visualizing_data_with_LLMs.html
-last_built: 2025-06-18T05:09Z
+last_built: 2025-06-19T07:51Z
 urls:
   reference: https://pwwang.github.io/scplotter/reference
   article: https://pwwang.github.io/scplotter/articles
