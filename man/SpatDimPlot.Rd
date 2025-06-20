@@ -198,5 +198,9 @@ A ggplot object
 Plot categories for spatial data
 }
 \details{
-See \url{https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html} for more details.
+See:
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html} for more details, and
+\item \url{https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html#examples} for examples.
+}
 }

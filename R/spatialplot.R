@@ -966,7 +966,9 @@ SpatPlot.giotto <- function(
 #' @return A ggplot object
 #' @export
 #' @details
-#' See <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details.
+#' See:
+#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details, and
+#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html#examples> for examples.
 SpatFeaturePlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -1055,7 +1057,9 @@ SpatFeaturePlot.giotto <- function(
 #' @return A ggplot object
 #' @export
 #' @details
-#' See <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details.
+#' See:
+#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details, and
+#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html#examples> for examples.
 SpatDimPlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
