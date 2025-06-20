@@ -1,6 +1,6 @@
 package:
   name: r-scplotter
-  version: 0.3.0
+  version: 0.4.0
 
 source:
   path: ..
@@ -13,76 +13,55 @@ build:
 
 requirements:
   host:
-    - r-base
+    # commented requirements are already required by plotthis
+
+    # Imports:
+    # - r-base
     - r-callr
-    - r-circlize
-    - r-clustree
-    - r-concaveman
-    - r-dplyr
-    - r-ggalluvial
-    - r-ggforce
-    - r-ggnewscale
-    - r-ggplot2
-    - r-ggpubr
-    - r-ggraph
-    - r-ggridges
-    - r-ggupset
-    - r-ggvenndiagram
-    - r-ggwordcloud
-    - r-gridgraphics
-    - r-hexbin
-    - r-metap
-    - r-igraph
-    - r-inext
-    - r-r6
-    - r-rlang
-    - r-scales
-    - r-scattermore
-    - r-seurat
     - r-seuratobject
-    - r-stringr
-    - r-tidyr
-    - bioconda::bioconductor-complexheatmap
-    - pwwang::r-gglogger
-    - pwwang::r-plotthis
-    - pwwang::r-tidyprompt
     - pwwang::bioconductor-screpertoire
+    # - r-circlize
+    # - r-dplyr
+    # - r-scales
+    # - r-ggnewscale
+    # - r-ggplot2
+    # - r-rlang
+    # - r-stringr
+    # - r-tidyr
+    - pwwang::r-plotthis
+    # - r-r6
+
+    # Suggests:
+    # - r-clustree
+    # - r-concaveman
+    # - r-ggalluvial
+    # - r-ggforce
+    # - r-ggpubr
+    # - r-ggraph
+    # - r-ggridges
+    # - r-ggupset
+    # - r-ggvenndiagram
+    # - r-ggwordcloud
+    - r-gridgraphics
+    # - r-hexbin
+    - r-metap
+    # - r-igraph
+    # - r-inext
+    # - r-scattermore
+    - r-seurat
+    # - bioconda::bioconductor-complexheatmap
+    # - pwwang::r-gglogger
+    - pwwang::r-tidyprompt
 
   run:
-    - r-base
     - r-callr
-    - r-circlize
-    - r-clustree
-    - r-concaveman
-    - r-dplyr
-    - r-ggalluvial
-    - r-ggforce
-    - r-ggnewscale
-    - r-ggplot2
-    - r-ggpubr
-    - r-ggraph
-    - r-ggridges
-    - r-ggupset
-    - r-ggvenndiagram
-    - r-ggwordcloud
-    - r-gridgraphics
-    - r-hexbin
-    - r-metap
-    - r-igraph
-    - r-inext
-    - r-r6
-    - r-rlang
-    - r-scales
-    - r-scattermore
-    - r-seurat
     - r-seuratobject
-    - r-stringr
-    - r-tidyr
-    - bioconda::bioconductor-complexheatmap
-    - pwwang::r-gglogger
-    - pwwang::r-plotthis
-    - pwwang::r-tidyprompt
     - pwwang::bioconductor-screpertoire
+    - pwwang::r-plotthis
+    - r-gridgraphics
+    - r-metap
+    - r-seurat
+    - r-tidyprompt
 
 test:
   commands:
