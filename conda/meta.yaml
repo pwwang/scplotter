@@ -16,7 +16,7 @@ requirements:
     # commented requirements are already required by plotthis
 
     # Imports:
-    # - r-base
+    - r-base
     - r-callr
     - r-seuratobject
     - pwwang::bioconductor-screpertoire
@@ -28,7 +28,7 @@ requirements:
     # - r-rlang
     # - r-stringr
     # - r-tidyr
-    - pwwang::r-plotthis
+    - pwwang::r-plotthis>=0.7.1
     # - r-r6
 
     # Suggests:
@@ -54,10 +54,11 @@ requirements:
     - pwwang::r-tidyprompt
 
   run:
+    - r-base
     - r-callr
     - r-seuratobject
     - pwwang::bioconductor-screpertoire
-    - pwwang::r-plotthis
+    - pwwang::r-plotthis>=0.7.1
     - r-gridgraphics
     - r-metap
     - r-seurat
