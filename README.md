@@ -12,10 +12,6 @@ devtools::install_github("pwwang/scplotter")
 $ conda install pwwang::r-scplotter
 ```
 
-## Credits
-
-`scplotter` draws significant inspiration from the [`SCP`][2] package, which separates visualization from analysis and implements it in the [`plotthis`][1] package. Building on `plotthis`, `scplotter` offers advanced functions for visualizing single-cell sequencing data. Special thanks to the [`scRepertoire`][21] package for its APIs that facilitate the analysis of single-cell TCR/BCR sequencing data.
-
 ## Gallery
 
 ### scRNA-seq
