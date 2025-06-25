@@ -12,6 +12,13 @@ A \code{Seurat} object.
 \description{
 Human PBMC control/IFNB-stimulated dataset
 }
+\details{
+After processing, this object is further slimmed by:
+\itemize{
+\item removing the other layers than "data" of the RNA assay
+\item reducing the dimension of reductions (pca and umap) to 2
+}
+}
 \examples{
 \dontrun{
 if (interactive()) {
