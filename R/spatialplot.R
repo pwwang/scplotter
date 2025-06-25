@@ -79,6 +79,15 @@ SpatPlot.Seurat <- function(
             ...
         )
     } else if ("FOV" %in% stype) {
+        assay <- object@images[[first_image]]@assay
+        if (identical(assay, "Nanostring")) {
+            x <- x %||% "x"
+            y <- y %||% "y"
+        } else {
+            x <- x %||% "y"
+            y <- y %||% "x"
+        }
+
         SpatPlot.Seurat.FOV(
             object, fov = fov, boundaries = boundaries, image = image, masks = masks, shapes = shapes, points = points,
             ext = ext, crop = crop, group_by = group_by, features = features, layer = layer, scale_factor = scale_factor,
