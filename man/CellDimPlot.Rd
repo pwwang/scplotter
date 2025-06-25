@@ -163,6 +163,14 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             lineages = paste0("Lineage", 1:3), lineages_whiskers = TRUE)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             lineages = paste0("Lineage", 1:3), lineages_span = 0.1)
+
+# Velocity
+CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
+  velocity = "stochastic_PCA")
+CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
+  velocity = "stochastic_PCA", velocity_plot_type = "grid", pt_alpha = 0.5)
+CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
+  velocity = "stochastic_PCA", velocity_plot_type = "stream", pt_alpha = 0.5)
 }
 }
 \seealso{

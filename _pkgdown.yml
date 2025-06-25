@@ -57,9 +57,10 @@ reference:
     contents:
     - CellDimPlot
     - CellStatPlot
+    - CellVelocityPlot
+    - FeatureStatPlot
     - ClustreePlot
     - EnrichmentPlot
-    - FeatureStatPlot
     - CCCPlot
   - title: scTCR-seq/scBCR-seq
     desc: Functions for plotting single cell TCR-seq/BCR-seq data

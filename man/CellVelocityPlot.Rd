@@ -10,6 +10,7 @@ CellVelocityPlot(
   v_reduction,
   spat_unit = NULL,
   feat_type = NULL,
+  group_by = NULL,
   ...
 )
 }
@@ -25,6 +26,8 @@ It should be the same as the reduction used to calculate the velocity.}
 
 \item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
 
+\item{group_by}{A character vector of metadata column name(s) to group (color) the data. Default is NULL.}
+
 \item{...}{Other arguments passed to \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.}
 }
 \value{
@@ -38,6 +41,19 @@ This function is a wrapper around \code{\link[plotthis:VelocityPlot]{plotthis::V
 flexible way to visualize cell velocities in reduced dimensions. This function
 extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object
 and passes them to \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.
+}
+\examples{
+\donttest{
+data(pancreas_sub)
+
+CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA")
+CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
+ plot_type = "grid")
+CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
+ plot_type = "stream")
+CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
+ group_by = "SubCellType")
+}
 }
 \seealso{
 \code{\link[=CellDimPlot]{CellDimPlot()}}

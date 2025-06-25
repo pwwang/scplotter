@@ -136,6 +136,14 @@
 #'             lineages = paste0("Lineage", 1:3), lineages_whiskers = TRUE)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 #'             lineages = paste0("Lineage", 1:3), lineages_span = 0.1)
+#'
+#' # Velocity
+#' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
+#'   velocity = "stochastic_PCA")
+#' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
+#'   velocity = "stochastic_PCA", velocity_plot_type = "grid", pt_alpha = 0.5)
+#' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
+#'   velocity = "stochastic_PCA", velocity_plot_type = "stream", pt_alpha = 0.5)
 #' }
 CellDimPlot <- function(
     object, reduction = NULL, graph = NULL, group_by = NULL,
@@ -278,21 +286,34 @@ CellDimPlot.Seurat <- function(
 #' It should be the same as the reduction used to calculate the velocity.
 #' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
 #' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
+#' @param group_by A character vector of metadata column name(s) to group (color) the data. Default is NULL.
 #' @param ... Other arguments passed to [plotthis::VelocityPlot()].
 #' @return A ggplot object
 #' @export
 #' @seealso [CellDimPlot()]
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Reductions
 #' @importFrom plotthis VelocityPlot
+#' @examples
+#' \donttest{
+#' data(pancreas_sub)
+#'
+#' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA")
+#' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
+#'  plot_type = "grid")
+#' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
+#'  plot_type = "stream")
+#' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
+#'  group_by = "SubCellType")
+#' }
 CellVelocityPlot <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
 ) {
     UseMethod("CellVelocityPlot")
 }
 
 #' @export
 CellVelocityPlot.giotto <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
 ) {
     spat_unit <- GiottoClass::set_default_spat_unit(
         gobject = object,
@@ -313,10 +334,23 @@ CellVelocityPlot.giotto <- function(
     )
 
     if (!reduction %in% reduc_info$name) {
-        stop("The object does not have reduction:", reduction)
+        stop("[CellVelocityPlot] The object does not have reduction:", reduction)
     }
     if (!v_reduction %in% reduc_info$name) {
-        stop("The object does not have velocity reduction:", v_reduction)
+        stop("[CellVelocityPlot] The object does not have velocity reduction:", v_reduction)
+    }
+
+    if (!is.null(group_by)) {
+        metadata <- GiottoClass::getCellMetadata(
+            gobject = object,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            output = "data.table"
+        )
+        if (!group_by %in% colnames(metadata)) {
+            stop("[CellVelocityPlot] The object does not have metadata column:", group_by)
+        }
+        group_by <- metadata[[group_by]]
     }
 
     VelocityPlot(
@@ -328,7 +362,7 @@ CellVelocityPlot.giotto <- function(
             feat_type = feat_type,
             output = "matrix"
         )[, 1:2, drop = FALSE],
-        velocity_embedding = GiottoClass::getDimReduction(
+        v_embedding = GiottoClass::getDimReduction(
             gobject = object,
             reduction = "cells",
             reduction_method = v_reduction,
@@ -336,27 +370,35 @@ CellVelocityPlot.giotto <- function(
             feat_type = feat_type,
             output = "matrix"
         )[, 1:2, drop = FALSE],
+        group_by = group_by,
         ...
     )
 }
 
 #' @export
 CellVelocityPlot.Seurat <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
 ) {
     stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
         is.null(spat_unit) && is.null(feat_type))
 
     if (!reduction %in% Reductions(object)) {
-        stop("The object does not have reduction:", reduction)
+        stop("[CellVelocityPlot] The object does not have reduction:", reduction)
     }
     if (!v_reduction %in% Reductions(object)) {
-        stop("The object does not have velocity reduction:", v_reduction)
+        stop("[CellVelocityPlot] The object does not have velocity reduction:", v_reduction)
+    }
+
+    if (!is.null(group_by) && !group_by %in% colnames(object@meta.data)) {
+        stop("[CellVelocityPlot] The object does not have metadata column:", group_by)
+    } else if (!is.null(group_by)) {
+        group_by <- object@meta.data[[group_by]]
     }
 
     VelocityPlot(
         embedding = Embeddings(object, reduction = reduction)[, 1:2, drop = FALSE],
         v_embedding = Embeddings(object, reduction = v_reduction)[, 1:2, drop = FALSE],
+        group_by = group_by,
         ...
     )
 }

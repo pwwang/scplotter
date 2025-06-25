@@ -24,7 +24,7 @@ $ conda install pwwang::r-scplotter
 
 ![](./man/figures/cellstatplot.png)
 
-[`ClustreePlot`][5]
+[`ClustreePlot`][5] | [`CellVelocityPlot`][2]
 
 ![](./man/figures/clustreeplot.png)
 
@@ -88,7 +88,7 @@ chat$ask("Do a heatmap instead")
 
 
 [1]: https://github.com/pwwang/plotthis
-[2]: https://zhanghao-njmu.github.io/SCP/index.html
+[2]: https://pwwang.github.io/scplotter/reference/CellVelocityPlot.html
 [3]: https://pwwang.github.io/scplotter/reference/CellDimPlot.html
 [4]: https://pwwang.github.io/scplotter/reference/CellStatPlot.html
 [5]: https://pwwang.github.io/scplotter/reference/ClustreePlot.html
@@ -107,7 +107,6 @@ chat$ask("Do a heatmap instead")
 [18]: https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html
 [19]: https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html
 [20]: https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html
-[21]: https://github.com/ncborcherding/scRepertoire
 [22]: https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html
 [23]: https://pwwang.github.io/scplotter/reference/SpatDimPlot.html
 [24]: https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.html
