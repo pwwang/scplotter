@@ -928,6 +928,9 @@ SpatPlot.giotto <- function(
                 points_args$legend.position <- points_args$legend.position %||% "right"
                 points_args$legend.direction <- points_args$legend.direction %||% "vertical"
             } else if (!is.null(group_by)) {
+                if (group_by %in% names(points_args$data)) {
+                    points_args$data[[group_by]] <- as.factor(points_args$data[[group_by]])
+                }
                 points_args$color_by <- group_by
                 points_args$color_name <- points_args$color_name %||% group_by
                 points_args$legend.position <- points_args$legend.position %||% "right"

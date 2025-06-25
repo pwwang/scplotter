@@ -2,12 +2,21 @@
 % Please edit documentation in R/celldimplot.R
 \name{CellDimPlot}
 \alias{CellDimPlot}
-\title{CellDimPlot}
+\title{Cell Dimension Reduction Plot}
 \usage{
-CellDimPlot(object, reduction = NULL, graph = NULL, group_by = NULL, ...)
+CellDimPlot(
+  object,
+  reduction = NULL,
+  graph = NULL,
+  group_by = NULL,
+  spat_unit = NULL,
+  feat_type = NULL,
+  velocity = NULL,
+  ...
+)
 }
 \arguments{
-\item{object}{A seurat object}
+\item{object}{A seurat object or a giotto object.}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap").}
 
@@ -15,13 +24,39 @@ CellDimPlot(object, reduction = NULL, graph = NULL, group_by = NULL, ...)
 
 \item{group_by}{A character vector of column name(s) to group the data. Default is NULL.}
 
+\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
+
+\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
+
+\item{velocity}{The name of velocity reduction to plot cell velocities.
+It is typically "stochastic_\if{html}{\out{<reduction>}}", "deterministic_\if{html}{\out{<reduction>}}", or "dynamical_\if{html}{\out{<reduction>}}".}
+
 \item{...}{Other arguments passed to \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.}
 }
 \value{
 A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
-Dimension reduction plot
+This function creates a dimension reduction plot for a Seurat object
+or a Giotto object. It allows for various customizations such as grouping by metadata,
+adding edges between cell neighbors, highlighting specific cells, and more.
+This function is a wrapper around \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}, which provides a
+flexible way to visualize cell clusters in reduced dimensions. This function
+extracts the necessary data from the Seurat or Giotto object and passes it to
+\code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.
+}
+\details{
+See
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_seqFISH.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Spatial_CITE-Seq.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Visium.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
+for examples of using this function with a Giotto object.
+}
 }
 \examples{
 \donttest{
@@ -129,4 +164,7 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             lineages = paste0("Lineage", 1:3), lineages_span = 0.1)
 }
+}
+\seealso{
+\code{\link[=CellStatPlot]{CellStatPlot()}} \code{\link[=CellVelocityPlot]{CellVelocityPlot()}}
 }

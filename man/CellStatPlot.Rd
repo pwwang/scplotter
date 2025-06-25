@@ -9,6 +9,8 @@ CellStatPlot(
   ident = NULL,
   group_by = NULL,
   group_by_sep = "_",
+  spat_unit = NULL,
+  feat_type = NULL,
   split_by = NULL,
   split_by_sep = "_",
   facet_by = NULL,
@@ -25,7 +27,7 @@ CellStatPlot(
 )
 }
 \arguments{
-\item{object}{A Seurat object}
+\item{object}{A Seurat object, a Giotto object, or a data frame (for internal use) containing cell metadata.}
 
 \item{ident}{The column with the cell identities. i.e. clusters. Default: NULL
 If NULL, the active identity of the Seurat object and the name "Identity" will be used.
@@ -40,6 +42,10 @@ argument in \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}/\link[plotthis:b
 
 \item{group_by_sep}{The separator to use when combining multiple columns in \code{group_by}. Default: "_"
 For 'sankey'/'heatmap' plot, multiple columns will not be combined, and each of them will be used as a node.}
+
+\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
+
+\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
 
 \item{split_by}{The column name in the meta data to split the cells. Default: NULL
 Each split will be plotted in a separate plot.}
@@ -111,7 +117,18 @@ Note that this is different from \code{flip}. \code{flip} is used to transpose t
 A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
-Plot the statistics of the cells.
+This function creates a plot to visualize the statistics of cells in a Seurat object or a Giotto object.
+It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots
+area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.
+The function allows for grouping, splitting, and faceting the data based on metadata columns.
+It also supports calculating fractions of cells based on specified groupings.#'
+}
+\details{
+See
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
+for examples of using this function with a Giotto object.
+}
 }
 \examples{
 \donttest{

@@ -1,8 +1,107 @@
-#' FeatureStatPlot
-#' @description Statistic plot for features
+#' Feature statistic plot when given a composed data frame
+#'
+#' @inheritParams FeatureStatPlot
+#' @inheritDotParams FeatureStatPlot
+#' @param data A data frame containing the feature data and metadata.
+#' @return A ggplot object or a list if `combine` is FALSE
+#' @keywords internal
+#' @importFrom rlang %||% syms sym
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr summarise %>%
+.feature_stat_plot <- function(
+    data, features, plot_type, should_shrink, should_pivot,
+    graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    ident = NULL, agg = mean, group_by = NULL,
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
+    ...
+) {
+    unlisted_features <- unname(unlist(features))
+    if (should_shrink) {
+        dims <- if (is.null(dims)) NULL else colnames(data)[dims]
+        selected_columns <- c(dims, ident, unlisted_features, group_by, if (!isTRUE(split_by)) split_by)
+        nonexisting_columns <- setdiff(selected_columns, colnames(data))
+        if (length(nonexisting_columns) > 0) {
+            stop("[FeatureStatPlot] The following columns are not found in the object: ", paste(nonexisting_columns, collapse = ", "))
+        }
+        data <- data[, selected_columns, drop = FALSE]
+    }
+    if (should_pivot) {
+        data <- pivot_longer(data, cols = unlisted_features, names_to = ".features", values_to = ".value")
+
+        if (isTRUE(split_by)) {
+            split_by <- ".features"
+            facet_by <- NULL
+        } else {
+            facet_by <- ".features"
+        }
+    }
+
+    if (plot_type == "violin") {
+        ViolinPlot(
+            data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
+            xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
+    } else if (plot_type == "box") {
+        BoxPlot(
+            data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
+            xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
+    } else if (plot_type == "bar") {
+        data <- data %>% dplyr::group_by(!!!syms(unique(c(ident, group_by, split_by, ".features")))) %>%
+            summarise(.value = agg(!!sym(".value")))
+        BarPlot(
+            data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
+            xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
+    } else if (plot_type == "ridge") {
+        RidgePlot(
+            data, x = ".value", group_by = ident, split_by = split_by, facet_by = facet_by,
+            xlab = xlab %||% "", ylab = ylab %||% "", ...)
+    } else if (plot_type == "dim") {
+        FeatureDimPlot(
+            data, dims = dims, features = unlisted_features, graph = graph, bg_cutoff = bg_cutoff,
+            split_by = split_by, facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
+    } else if (plot_type == "heatmap") {
+        Heatmap(data, rows = features, columns_by = ident, rows_name = rows_name, split_by = split_by, ...)
+    } else if (plot_type == "dot") {
+        args <- rlang::dots_list(...)
+        args$data <- data
+        args$rows <- features
+        args$columns_by <- ident
+        args$rows_name <- rows_name
+        args$split_by <- split_by
+        args$cell_type <- "dot"
+        args$name <- args$name %||% "Expression Level"
+        args$dot_size <- args$dot_size %||% function(x) sum(x > 0) / length(x)
+        args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
+        args$row_name_annotation <- FALSE
+        args$column_name_annotation <- FALSE
+        args$cluster_rows <- args$cluster_rows %||% FALSE
+        args$cluster_columns <- args$cluster_columns %||% FALSE
+        args$row_names_side <- args$row_names_side %||% "left"
+        do.call(Heatmap, args)
+    } else if (plot_type == "cor") {
+        if (length(unlisted_features) < 2) {
+            stop("The number of features should be at least 2 for correlation plot.")
+        }
+        if (length(unlisted_features) == 2) {
+            CorPlot(data, x = unlisted_features[1], y = unlisted_features[2], group_by = ident, split_by = split_by,
+                facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
+        } else {
+            CorPairsPlot(
+                data, columns = unlisted_features, group_by = ident, split_by = split_by, facet_by = facet_by, ...)
+        }
+    }
+}
+
+#' Feature statistic plot
+#'
+#' @description This function creates various types of feature statistic plots for a Seurat object or a Giotto object.
+#' It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.
+#' The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.
+#' It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.
 #' @param object A seurat object
 #' @param features A character vector of feature names
 #' @param plot_type Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"
+#' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
+#' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
 #' @param reduction Name of the reduction to plot (for example, "umap"), only used when `plot_type` is "dim" or you can to use the reduction as feature.
 #' @param dims Dimensions to plot, only used when `plot_type` is "dim".
 #' @param rows_name The name of the rows in the heatmap, only used when `plot_type` is "heatmap".
@@ -31,11 +130,14 @@
 #'  * For `plot_type` "dot", the arguments are passed to [plotthis::Heatmap()] with `cell_type` set to "dot".
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
-#' @importFrom rlang %||% syms
-#' @importFrom dplyr group_by summarise
-#' @importFrom tidyr pivot_longer
+#' @importFrom rlang %||%
 #' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs Reductions Idents
 #' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
+#' @details
+#' See
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_Visium.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
+#' for examples of using this function with a Giotto object.
 #' @examples
 #' \donttest{
 #' data(pancreas_sub)
@@ -214,6 +316,18 @@
 #' }
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
+    spat_unit = NULL, feat_type = NULL,
+    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+) {
+    UseMethod("FeatureStatPlot")
+}
+
+#' @export
+FeatureStatPlot.giotto <- function(
+    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
+    spat_unit = NULL, feat_type = NULL,
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -222,6 +336,119 @@ FeatureStatPlot <- function(
     if (!is.null(facet_by) && plot_type != "dim") {
         stop("Cannot facet plots because the plots are facetted by the 'features'.")
     }
+    stopifnot("[FeatureStatPlot] 'assay' should not be used for Giotto object." = is.null(assay))
+    # dim plot may use expression for highlighting cells
+    # Heatmap may use other variables as annotations, but shrinking only includes minimal columns
+    should_shrink <- !plot_type %in% c("dim", "heatmap", "dot")
+    should_pivot <- !plot_type %in% c("dim", "heatmap", "dot", "cor")
+
+    spat_unit <- GiottoClass::set_default_spat_unit(
+        gobject = object,
+        spat_unit = spat_unit
+    )
+
+    feat_type <- GiottoClass::set_default_feat_type(
+        gobject = object,
+        spat_unit = spat_unit,
+        feat_type = feat_type
+    )
+
+    unlisted_features <- unname(unlist(features))
+    assay_data <- GiottoClass::getExpression(
+        object, values = layer,
+        spat_unit = spat_unit, feat_type = feat_type,
+        output = "matrix"
+    )
+
+    assay_feature <- intersect(unlisted_features, rownames(assay_data))
+    assay_data <- t(as.matrix(assay_data[assay_feature, , drop = FALSE]))
+
+    if (is.null(reduction) && plot_type != "dim") {
+        data <- cbind(
+            GiottoClass::getCellMetadata(
+                gobject = object,
+                spat_unit = spat_unit,
+                feat_type = feat_type,
+                output = "data.table"
+            ),
+            assay_data
+        )
+    } else {
+        data <- cbind(
+            GiottoClass::getDimReduction(
+                gobject = object,
+                reduction = "cells",
+                reduction_method = reduction,
+                spat_unit = spat_unit,
+                feat_type = feat_type,
+                output = "matrix"
+            ),
+            GiottoClass::getCellMetadata(
+                gobject = object,
+                spat_unit = spat_unit,
+                feat_type = feat_type,
+                output = "data.table"
+            ),
+            assay_data
+        )
+    }
+
+    if (plot_type == "dim" && !is.null(graph)) {
+        # spat_unit	feat_type	nn_type	name
+        # cell	rna	sNN	sNN.pca
+        graph_info <- GiottoClass::list_nearest_networks(
+            gobject = object,
+            spat_unit = spat_unit,
+            feat_type = feat_type
+        )
+        if (is.null(graph_info)) {
+            stop(
+                "[CellDimPlot] The object does not have any nearest networks with given ",
+                "spat_unit (", spat_unit, ") and feat_type (", feat_type, ")."
+            )
+        }
+        if (isTRUE(graph)) { graph <- graph_info$name[1] }
+        graph_info <- graph_info[, graph_info$name == graph, drop = FALSE]
+        if (nrow(graph_info) == 0) {
+            stop(
+                "[CellDimPlot] The object does not have network: ", graph,
+                " with given spat_unit (", spat_unit, ") and feat_type (", feat_type, ")."
+            )
+        }
+        graph_info <- graph_info[1, , drop = FALSE]
+        graph <- igraph::as_adjacency_matrix(GiottoClass::getNearestNetwork(
+            object,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            nn_type = graph_info$nn_type,
+            name = graph_info$name,
+            output = "igraph"
+        ))
+    }
+
+    .feature_stat_plot(
+        data = data, features = features, plot_type = plot_type,
+        should_shrink = should_shrink, should_pivot = should_pivot,
+        graph = graph, bg_cutoff = bg_cutoff,
+        dims = dims, rows_name = rows_name, ident = ident, agg = agg,
+        group_by = group_by, split_by = split_by, facet_by = facet_by,
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+    )
+}
+
+#' @export
+FeatureStatPlot.Seurat <- function(
+    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
+    spat_unit = NULL, feat_type = NULL,
+    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+) {
+    plot_type <- match.arg(plot_type)
+    if (!is.null(facet_by) && plot_type != "dim") {
+        stop("Cannot facet plots because the plots are facetted by the 'features'.")
+    }
+    stopifnot("[FeatureStatPlot] 'spat_unit' and 'feat_type' should not be used for Seurat object." = is.null(spat_unit) && is.null(feat_type))
 
     reduction <- reduction %||% (
         if(is.null(Reductions(object))) NULL else DefaultDimReduc(object)
@@ -245,83 +472,20 @@ FeatureStatPlot <- function(
         ident <- "Identity"
         data$Identity <- Idents(object)
     }
-    if (should_shrink) {
-        dims <- if (is.null(dims)) NULL else colnames(data)[dims]
-        selected_columns <- c(dims, ident, unlisted_features, group_by, if (!isTRUE(split_by)) split_by)
-        nonexisting_columns <- setdiff(selected_columns, colnames(data))
-        if (length(nonexisting_columns) > 0) {
-            stop("[FeatureStatPlot] The following columns are not found in the object: ", paste(nonexisting_columns, collapse = ", "))
-        }
-        data <- data[, selected_columns, drop = FALSE]
-    }
-    if (should_pivot) {
-        data <- pivot_longer(data, cols = unlisted_features, names_to = ".features", values_to = ".value")
 
-        if (isTRUE(split_by)) {
-            split_by <- ".features"
-            facet_by <- NULL
-        } else {
-            facet_by <- ".features"
+    if (plot_type == "dim" && !is.null(graph)) {
+        if (!graph %in% Graphs(object)) {
+            stop("The object does not have graph:", graph)
         }
+        graph <- object@graphs[[graph]]
     }
 
-    if (plot_type == "violin") {
-        ViolinPlot(
-            data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
-            xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
-    } else if (plot_type == "box") {
-        BoxPlot(
-            data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
-            xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
-    } else if (plot_type == "bar") {
-        data <- data %>% group_by(!!!syms(unique(c(ident, group_by, split_by, ".features")))) %>%
-            summarise(.value = agg(!!sym(".value")))
-        BarPlot(
-            data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
-            xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
-    } else if (plot_type == "ridge") {
-        RidgePlot(
-            data, x = ".value", group_by = ident, split_by = split_by, facet_by = facet_by,
-            xlab = xlab %||% "", ylab = ylab %||% "", ...)
-    } else if (plot_type == "dim") {
-        if (!is.null(graph)) {
-            if (!graph %in% Graphs(object)) {
-                stop("The object does not have graph:", graph)
-            }
-            graph <- object@graphs[[graph]]
-        }
-        FeatureDimPlot(
-            data, dims = dims, features = unlisted_features, graph = graph, bg_cutoff = bg_cutoff,
-            split_by = split_by, facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
-    } else if (plot_type == "heatmap") {
-        Heatmap(data, rows = features, columns_by = ident, rows_name = rows_name, split_by = split_by, ...)
-    } else if (plot_type == "dot") {
-        args <- list(...)
-        args$data <- data
-        args$rows <- features
-        args$columns_by <- ident
-        args$rows_name <- rows_name
-        args$split_by <- split_by
-        args$cell_type <- "dot"
-        args$name <- args$name %||% "Expression Level"
-        args$dot_size <- args$dot_size %||% function(x) sum(x > 0) / length(x)
-        args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
-        args$row_name_annotation <- FALSE
-        args$column_name_annotation <- FALSE
-        args$cluster_rows <- args$cluster_rows %||% FALSE
-        args$cluster_columns <- args$cluster_columns %||% FALSE
-        args$row_names_side <- args$row_names_side %||% "left"
-        do.call(Heatmap, args)
-    } else if (plot_type == "cor") {
-        if (length(unlisted_features) < 2) {
-            stop("The number of features should be at least 2 for correlation plot.")
-        }
-        if (length(unlisted_features) == 2) {
-            CorPlot(data, x = unlisted_features[1], y = unlisted_features[2], group_by = ident, split_by = split_by,
-                facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
-        } else {
-            CorPairsPlot(
-                data, columns = unlisted_features, group_by = ident, split_by = split_by, facet_by = facet_by, ...)
-        }
-    }
+    .feature_stat_plot(
+        data = data, features = features, plot_type = plot_type,
+        should_shrink = should_shrink, should_pivot = should_pivot,
+        graph = graph, bg_cutoff = bg_cutoff,
+        dims = dims, rows_name = rows_name, ident = ident, agg = agg,
+        group_by = group_by, split_by = split_by, facet_by = facet_by,
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+    )
 }

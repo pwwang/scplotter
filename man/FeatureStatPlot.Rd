@@ -2,12 +2,14 @@
 % Please edit documentation in R/featurestatplot.R
 \name{FeatureStatPlot}
 \alias{FeatureStatPlot}
-\title{FeatureStatPlot}
+\title{Feature statistic plot}
 \usage{
 FeatureStatPlot(
   object,
   features,
   plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
+  spat_unit = NULL,
+  feat_type = NULL,
   reduction = NULL,
   graph = NULL,
   bg_cutoff = 0,
@@ -32,6 +34,10 @@ FeatureStatPlot(
 \item{features}{A character vector of feature names}
 
 \item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"}
+
+\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
+
+\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}
 
@@ -81,7 +87,18 @@ If TRUE, the cells are split by the features.}
 A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
-Statistic plot for features
+This function creates various types of feature statistic plots for a Seurat object or a Giotto object.
+It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.
+The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.
+It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.
+}
+\details{
+See
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Visium.html}
+\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
+for examples of using this function with a Giotto object.
+}
 }
 \examples{
 \donttest{

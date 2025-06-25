@@ -1,15 +1,36 @@
-#' CellDimPlot
+#' Cell Dimension Reduction Plot
 #'
-#' @description Dimension reduction plot
-#' @param object A seurat object
+#' @description This function creates a dimension reduction plot for a Seurat object
+#' or a Giotto object. It allows for various customizations such as grouping by metadata,
+#' adding edges between cell neighbors, highlighting specific cells, and more.
+#' This function is a wrapper around [plotthis::DimPlot()], which provides a
+#' flexible way to visualize cell clusters in reduced dimensions. This function
+#' extracts the necessary data from the Seurat or Giotto object and passes it to
+#' [plotthis::DimPlot()].
+#' @param object A seurat object or a giotto object.
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot.
+#' @param velocity The name of velocity reduction to plot cell velocities.
+#' It is typically "stochastic_<reduction>", "deterministic_<reduction>", or "dynamical_<reduction>".
 #' @param group_by A character vector of column name(s) to group the data. Default is NULL.
+#' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
+#' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
 #' @param ... Other arguments passed to [plotthis::DimPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
+#' @seealso [CellStatPlot()] [CellVelocityPlot()]
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions Idents
 #' @importFrom plotthis DimPlot
+#' @details
+#' See
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_seqFISH.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_Spatial_CITE-Seq.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_Visium.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.html>
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
+#' for examples of using this function with a Giotto object.
 #' @examples
 #' \donttest{
 #' data(pancreas_sub)
@@ -116,7 +137,106 @@
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 #'             lineages = paste0("Lineage", 1:3), lineages_span = 0.1)
 #' }
-CellDimPlot <- function(object, reduction = NULL, graph = NULL, group_by = NULL, ...) {
+CellDimPlot <- function(
+    object, reduction = NULL, graph = NULL, group_by = NULL,
+    spat_unit = NULL, feat_type = NULL, velocity = NULL, ...
+) {
+    UseMethod("CellDimPlot")
+}
+
+#' @export
+CellDimPlot.giotto <- function(
+    object, reduction = NULL, graph = NULL, group_by = NULL,
+    spat_unit = NULL, feat_type = NULL, velocity = NULL, ...
+) {
+    stopifnot("[CellDimPlot] 'group_by' is required." = !is.null(group_by))
+
+    spat_unit <- GiottoClass::set_default_spat_unit(
+        gobject = object,
+        spat_unit = spat_unit
+    )
+
+    feat_type <- GiottoClass::set_default_feat_type(
+        gobject = object,
+        spat_unit = spat_unit,
+        feat_type = feat_type
+    )
+
+    if (!is.null(graph)) {
+        # spat_unit	feat_type	nn_type	name
+        # cell	rna	sNN	sNN.pca
+        graph_info <- GiottoClass::list_nearest_networks(
+            gobject = object,
+            spat_unit = spat_unit,
+            feat_type = feat_type
+        )
+        if (is.null(graph_info)) {
+            stop(
+                "[CellDimPlot] The object does not have any nearest networks with given ",
+                "spat_unit (", spat_unit, ") and feat_type (", feat_type, ")."
+            )
+        }
+        if (isTRUE(graph)) { graph <- graph_info$name[1] }
+        graph_info <- graph_info[, graph_info$name == graph, drop = FALSE]
+        if (nrow(graph_info) == 0) {
+            stop(
+                "[CellDimPlot] The object does not have network: ", graph,
+                " with given spat_unit (", spat_unit, ") and feat_type (", feat_type, ")."
+            )
+        }
+        graph_info <- graph_info[1, , drop = FALSE]
+        graph <- igraph::as_adjacency_matrix(GiottoClass::getNearestNetwork(
+            object,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            nn_type = graph_info$nn_type,
+            name = graph_info$name,
+            output = "igraph"
+        ))
+    }
+
+    data <- cbind(
+        GiottoClass::getDimReduction(
+            gobject = object,
+            reduction = "cells",
+            reduction_method = reduction,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            output = "matrix"
+        ),
+        GiottoClass::getCellMetadata(
+            gobject = object,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            output = "data.table"
+        )
+    )
+
+    if (!is.null(velocity)) {
+        velocity <- GiottoClass::getDimReduction(
+            gobject = object,
+            reduction = "cells",
+            reduction_method = velocity,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            output = "matrix"
+        )[, 1:2, drop = FALSE]
+    }
+
+    rownames(data) <- data$cell_ID
+
+    DimPlot(data, graph = graph, group_by = group_by, velocity = velocity, ...)
+}
+
+#' @export
+CellDimPlot.Seurat <- function(
+    object, reduction = NULL, graph = NULL, group_by = NULL,
+    spat_unit = NULL, feat_type = NULL, velocity = NULL,
+    ...
+) {
+    stopifnot("[CellDimPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
+        is.null(spat_unit) && is.null(feat_type))
+
     reduction <- reduction %||% DefaultDimReduc(object)
 
     if (!reduction %in% Reductions(object)) {

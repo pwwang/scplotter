@@ -1,8 +1,11 @@
 #' Cell statistics plot
 #'
-#' @description Plot the statistics of the cells.
-#'
-#' @param object A Seurat object
+#' @description This function creates a plot to visualize the statistics of cells in a Seurat object or a Giotto object.
+#' It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots
+#' area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.
+#' The function allows for grouping, splitting, and faceting the data based on metadata columns.
+#' It also supports calculating fractions of cells based on specified groupings.#'
+#' @param object A Seurat object, a Giotto object, or a data frame (for internal use) containing cell metadata.
 #' @param ident The column with the cell identities. i.e. clusters. Default: NULL
 #'  If NULL, the active identity of the Seurat object and the name "Identity" will be used.
 #'  For 'pies', this will be used as the `pie_group_by`.
@@ -14,6 +17,8 @@
 #'  argument in [plotthis::ViolinPlot]/[plotthis::BoxPlot].
 #' @param group_by_sep The separator to use when combining multiple columns in `group_by`. Default: "_"
 #'  For 'sankey'/'heatmap' plot, multiple columns will not be combined, and each of them will be used as a node.
+#' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
+#' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
 #' @param split_by The column name in the meta data to split the cells. Default: NULL
 #'  Each split will be plotted in a separate plot.
 #' @param split_by_sep The separator to use when combining multiple columns in `split_by`. Default: "_"
@@ -71,6 +76,9 @@
 #' @importFrom dplyr %>% summarise mutate ungroup n
 #' @importFrom tidyr drop_na pivot_wider pivot_longer
 #' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot ViolinPlot BoxPlot
+#' @details See
+#' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
+#' for examples of using this function with a Giotto object.
 #' @export
 #' @examples
 #' \donttest{
@@ -154,7 +162,55 @@
 #'    x_text_angle = 60, comparisons = TRUE, aspect.ratio = 0.8)
 #' }
 CellStatPlot <- function(
-    object, ident = NULL, group_by = NULL, group_by_sep = "_",
+    object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
+    swap = FALSE, ylab = NULL, ...
+) {
+    UseMethod("CellStatPlot")
+}
+
+#' @export
+CellStatPlot.giotto <- function(
+    object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
+    swap = FALSE, ylab = NULL, ...
+) {
+    stopifnot("[CellStatPlot] 'ident' is required for Giotto object." = !is.null(ident))
+
+    spat_unit <- GiottoClass::set_default_spat_unit(
+        gobject = object,
+        spat_unit = spat_unit
+    )
+
+    feat_type <- GiottoClass::set_default_feat_type(
+        gobject = object,
+        spat_unit = spat_unit,
+        feat_type = feat_type
+    )
+
+    data <- GiottoClass::getCellMetadata(
+        gobject = object,
+        spat_unit = spat_unit,
+        feat_type = feat_type,
+        output = "data.table"
+    )
+
+    CellStatPlot.data.frame(
+        data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
+        split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
+        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_name = rows_name, name = name, plot_type = plot_type,
+        swap = swap, ylab = ylab, ...
+    )
+}
+
+#' @export
+CellStatPlot.Seurat <- function(
+    object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
@@ -166,21 +222,38 @@ CellStatPlot <- function(
         data[[ident]] <- Idents(object)
     }
 
+    CellStatPlot.data.frame(
+        data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
+        split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
+        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_name = rows_name, name = name, plot_type = plot_type,
+        swap = swap, ylab = ylab, ...
+    )
+}
+
+#' @export
+CellStatPlot.data.frame <- function(
+    object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
+    swap = FALSE, ylab = NULL, ...
+) {
     plot_type <- match.arg(plot_type)
     if (plot_type == "donut") plot_type <- "ring"
     if (plot_type == "alluvial") plot_type <- "sankey"
     if (isFALSE(swap) && plot_type %in% c("sankey", "heatmap", "violin", "box")) {
-        group_by <- check_columns(data, group_by, force_factor = TRUE,
+        group_by <- check_columns(object, group_by, force_factor = TRUE,
             allow_multi = TRUE)
     } else {
-        group_by <- check_columns(data, group_by, force_factor = TRUE,
+        group_by <- check_columns(object, group_by, force_factor = TRUE,
             allow_multi = TRUE, concat_multi = TRUE, concat_sep = group_by_sep)
     }
-    split_by <- check_columns(data, split_by, force_factor = TRUE,
+    split_by <- check_columns(object, split_by, force_factor = TRUE,
         allow_multi = TRUE, concat_multi = TRUE, concat_sep = split_by_sep)
-    facet_by <- check_columns(data, facet_by, force_factor = TRUE,
+    facet_by <- check_columns(object, facet_by, force_factor = TRUE,
         allow_multi = TRUE)
-    rows <- check_columns(data, rows, force_factor = TRUE,
+    rows <- check_columns(object, rows, force_factor = TRUE,
         allow_multi = TRUE)
 
     frac <- match.arg(frac)
@@ -197,29 +270,29 @@ CellStatPlot <- function(
         stop("Cannot swap the 'ident' and 'group_by' without specifying 'group_by'.")
     }
 
-    data <- data %>% drop_na(!!sym(ident))
-    if (nrow(data) == 0) {
+    object <- object %>% drop_na(!!sym(ident))
+    if (nrow(object) == 0) {
         stop("No cells found with ident:'", ident, "'")
     }
 
     if (plot_type != "pies") {
         # Heatmap itself will handle the data for cell_type = pie
         if (is.null(group_by)) {
-            data <- data %>%
+            object <- object %>%
                 dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
                 summarise(.n = n(), .groups = "drop")
 
             if (frac != "none") {
-                data <- data %>%
+                object <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n")))
             } else {
-                data <- data %>% mutate(.frac = 1)  # not used
+                object <- object %>% mutate(.frac = 1)  # not used
             }
         } else if (length(group_by) > 1 && !plot_type %in% c("sankey", "violin", "box")) {
             # calculate the frac for each group. we don't want them to be concatenated.
-            data <- do.call(rbind, lapply(group_by, function(g) {
-                dat <- data %>%
+            object <- do.call(rbind, lapply(group_by, function(g) {
+                dat <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident, g)))) %>%
                     summarise(.n = n(), .groups = "drop")
                 dat <- dat[!is.na(dat[[g]]), , drop = FALSE]
@@ -247,27 +320,27 @@ CellStatPlot <- function(
                 dat
             }))
         } else {
-            data <- data %>%
+            object <- object %>%
                 dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by, ident)))) %>%
                 summarise(.n = n(), .groups = "drop")
 
             if (frac == "group") {
-                data <- data %>%
+                object <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else if (frac == "ident") {
-                data <- data %>%
+                object <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else if (frac == "all") {
-                data <- data %>%
+                object <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else {
-                data <- data %>% mutate(.frac = 1)  # not used
+                object <- object %>% mutate(.frac = 1)  # not used
             }
         }
     }
@@ -276,11 +349,11 @@ CellStatPlot <- function(
     if (plot_type == "bar") {
         if (is.null(group_by)) {
             BarPlot(
-                data, x = ident, y = ifelse(identical(frac, "none"), ".n", ".frac"),
+                object, x = ident, y = ifelse(identical(frac, "none"), ".n", ".frac"),
                 split_by = split_by, facet_by = facet_by, ylab = ylab, ...)
         } else {
             BarPlot(
-                data,
+                object,
                 x = ifelse(swap, group_by, ident),
                 y = ifelse(identical(frac, "none"), ".n", ".frac"),
                 group_by = ifelse(swap, ident, group_by),
@@ -291,7 +364,7 @@ CellStatPlot <- function(
             stop("Cannot create a circos plot without specifying 'group_by'.")
         }
         CircosPlot(
-            data,
+            object,
             from = ifelse(swap, ident, group_by),
             to = ifelse(swap, group_by, ident),
             split_by = split_by, facet_by = facet_by, ...)
@@ -300,14 +373,14 @@ CellStatPlot <- function(
             stop("Cannot create a pie plot with 'group_by'. You may want to use 'ring' plot instead.")
         }
         PieChart(
-            data, x = ident, y = ifelse(identical(frac, "none"), ".n", ".frac"),
+            object, x = ident, y = ifelse(identical(frac, "none"), ".n", ".frac"),
             split_by = split_by, facet_by = facet_by, ...)
     } else if (plot_type == "ring") {
         if (!identical(frac, "group")) {
             stop("'frac' must be 'group' for 'ring' plot.")
         }
         RingPlot(
-            data,
+            object,
             x = ifelse(swap, ident, group_by),
             y = ifelse(identical(frac, "none"), ".n", ".frac"),
             group_by = ifelse(swap, group_by, ident),
@@ -317,7 +390,7 @@ CellStatPlot <- function(
             stop("Cannot create a trend plot without specifying 'group_by'.")
         }
         TrendPlot(
-            data,
+            object,
             x = ifelse(swap, ident, group_by),
             y = ifelse(identical(frac, "none"), ".n", ".frac"),
             group_by = ifelse(swap, group_by, ident),
@@ -327,7 +400,7 @@ CellStatPlot <- function(
             stop("Cannot create an area plot without specifying 'group_by'.")
         }
         AreaPlot(
-            data,
+            object,
             x = ifelse(swap, ident, group_by),
             y = ifelse(identical(frac, "none"), ".n", ".frac"),
             group_by = ifelse(swap, group_by, ident),
@@ -343,7 +416,7 @@ CellStatPlot <- function(
             stop("'swap = TRUE' is not supported for 'sankey' plot.")
         }
         SankeyPlot(
-            data, x = group_by, links_fill_by = ident, xlab = "", ylab = "", flow = TRUE,
+            object, x = group_by, links_fill_by = ident, xlab = "", ylab = "", flow = TRUE,
             y = ifelse(identical(frac, "none"), ".n", ".frac"),
             split_by = split_by, facet_by = facet_by, ...)
     } else if (plot_type == "pies") {
@@ -361,7 +434,7 @@ CellStatPlot <- function(
         name <- name %||% "value"
 
         Heatmap(
-            data, rows = rows, cell_type = "pie", rows_name = rows_name, name = name,
+            object, rows = rows, cell_type = "pie", rows_name = rows_name, name = name,
             columns_by = if (swap) ident else group_by,
             pie_group_by = if (swap) group_by else ident,
             columns_split_by = columns_split_by, split_by = split_by, ...)
@@ -375,8 +448,8 @@ CellStatPlot <- function(
         if (swap && is.null(columns_split_by)) {
             stop("Cannot swap between 'group_by' and 'columns_split_by' without specifying 'columns_split_by'.")
         }
-        idents <- if (is.factor(data[[ident]])) levels(data[[ident]]) else unique(data[[ident]])
-        data <- pivot_wider(data, id_cols = unique(c(split_by, group_by, columns_split_by)),
+        idents <- if (is.factor(object[[ident]])) levels(object[[ident]]) else unique(object[[ident]])
+        object <- pivot_wider(object, id_cols = unique(c(split_by, group_by, columns_split_by)),
             names_from = ident, values_fill = 0,
             values_from = if (identical(frac, "none")) ".n" else ".frac")
 
@@ -384,7 +457,7 @@ CellStatPlot <- function(
         name <- name %||% ifelse(identical(frac, "none"), "Number of cells", "Fraction of cells")
 
         Heatmap(
-            data, rows = idents, rows_name = rows_name, name = name,
+            object, rows = idents, rows_name = rows_name, name = name,
             columns_by = if (swap) columns_split_by else group_by,
             columns_split_by = if (swap) group_by else columns_split_by,
             split_by = split_by, ...)
@@ -398,14 +471,14 @@ CellStatPlot <- function(
         fn <- ifelse(plot_type == "violin", ViolinPlot, BoxPlot)
         if (length(group_by) == 1) {
             fn(
-                data,
+                object,
                 x = ifelse(swap, group_by, ident),
                 y = ifelse(identical(frac, "none"), ".n", ".frac"),
                 in_form = "long",
                 ylab = ylab, split_by = split_by, facet_by = facet_by, ...)
         } else {
             fn(
-                data,
+                object,
                 x = ifelse(swap, group_by[2], ident),
                 y = ifelse(identical(frac, "none"), ".n", ".frac"),
                 group_by = ifelse(swap, ident, group_by[2]),
@@ -417,14 +490,14 @@ CellStatPlot <- function(
         }
         if (plot_type == "radar") {
             RadarPlot(
-                data,
+                object,
                 x = ifelse(swap, group_by, ident),
                 y = ifelse(identical(frac, "none"), ".n", ".frac"),
                 group_by = ifelse(swap, ident, group_by),
                 split_by = split_by, facet_by = facet_by, ...)
         } else if (plot_type == "spider") {
             SpiderPlot(
-                data,
+                object,
                 x = ifelse(swap, group_by, ident),
                 y = ifelse(identical(frac, "none"), ".n", ".frac"),
                 group_by = ifelse(swap, ident, group_by),
