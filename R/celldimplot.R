@@ -356,7 +356,7 @@ CellVelocityPlot.Seurat <- function(
 
     VelocityPlot(
         embedding = Embeddings(object, reduction = reduction)[, 1:2, drop = FALSE],
-        velocity_embedding = Embeddings(object, reduction = v_reduction)[, 1:2, drop = FALSE],
+        v_embedding = Embeddings(object, reduction = v_reduction)[, 1:2, drop = FALSE],
         ...
     )
 }
