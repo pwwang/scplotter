@@ -256,5 +256,107 @@ CellDimPlot.Seurat <- function(
         data[[group_by]] <- Idents(object)
     }
 
-    DimPlot(data, graph = graph, group_by = group_by, ...)
+    if (!is.null(velocity)) {
+        velocity <- Embeddings(object, reduction = velocity)[, 1:2, drop = FALSE]
+    }
+
+    DimPlot(data, graph = graph, group_by = group_by, velocity = velocity, ...)
+}
+
+#' Cell Velocity Plot
+#'
+#' @description This function creates a cell velocity plot for a Seurat object
+#' or a Giotto object. It allows for various customizations such as grouping by metadata,
+#' adding edges between cell neighbors, highlighting specific cells, and more.
+#' This function is a wrapper around [plotthis::VelocityPlot()], which provides a
+#' flexible way to visualize cell velocities in reduced dimensions. This function
+#' extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object
+#' and passes them to [plotthis::VelocityPlot()].
+#' @param object A seurat object or a giotto object.
+#' @param reduction Name of the reduction to plot (for example, "umap").
+#' @param v_reduction Name of the velocity reduction to plot (for example, "stochastic_umap").
+#' It should be the same as the reduction used to calculate the velocity.
+#' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
+#' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
+#' @param ... Other arguments passed to [plotthis::VelocityPlot()].
+#' @return A ggplot object
+#' @export
+#' @seealso [CellDimPlot()]
+#' @importFrom SeuratObject DefaultDimReduc Embeddings Reductions
+#' @importFrom plotthis VelocityPlot
+CellVelocityPlot <- function(
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, ...
+) {
+    UseMethod("CellVelocityPlot")
+}
+
+#' @export
+CellVelocityPlot.giotto <- function(
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, ...
+) {
+    spat_unit <- GiottoClass::set_default_spat_unit(
+        gobject = object,
+        spat_unit = spat_unit
+    )
+
+    feat_type <- GiottoClass::set_default_feat_type(
+        gobject = object,
+        spat_unit = spat_unit,
+        feat_type = feat_type
+    )
+
+    reduc_info <- GiottoClass::list_dim_reductions(
+        gobject = object,
+        data_type = "cells",
+        spat_unit = spat_unit,
+        feat_type = feat_type
+    )
+
+    if (!reduction %in% reduc_info$name) {
+        stop("The object does not have reduction:", reduction)
+    }
+    if (!v_reduction %in% reduc_info$name) {
+        stop("The object does not have velocity reduction:", v_reduction)
+    }
+
+    VelocityPlot(
+        embedding = GiottoClass::getDimReduction(
+            gobject = object,
+            reduction = "cells",
+            reduction_method = reduction,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            output = "matrix"
+        )[, 1:2, drop = FALSE],
+        velocity_embedding = GiottoClass::getDimReduction(
+            gobject = object,
+            reduction = "cells",
+            reduction_method = v_reduction,
+            spat_unit = spat_unit,
+            feat_type = feat_type,
+            output = "matrix"
+        )[, 1:2, drop = FALSE],
+        ...
+    )
+}
+
+#' @export
+CellVelocityPlot.Seurat <- function(
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, ...
+) {
+    stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
+        is.null(spat_unit) && is.null(feat_type))
+
+    if (!reduction %in% Reductions(object)) {
+        stop("The object does not have reduction:", reduction)
+    }
+    if (!v_reduction %in% Reductions(object)) {
+        stop("The object does not have velocity reduction:", v_reduction)
+    }
+
+    VelocityPlot(
+        embedding = Embeddings(object, reduction = reduction)[, 1:2, drop = FALSE],
+        velocity_embedding = Embeddings(object, reduction = v_reduction)[, 1:2, drop = FALSE],
+        ...
+    )
 }
