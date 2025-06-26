@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Visualizing_data_with_LLMs.html">Visualizing data with LLMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Working_with_anndata_h5ad_files.html">Working with anndata (.h5ad) files</a></li>
     <li><a class="dropdown-item" href="../articles/Knowing_your_spatial_data_and_visualization.html">Knowing your spatial data and visualization</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -67,6 +68,11 @@
     <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
     <p><a href="https://www.nature.com/articles/nbt.4042" class="external-link">https://www.nature.com/articles/nbt.4042</a></p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>After processing, this object is further slimmed by:</p><ul><li><p>removing the other layers than "data" of the RNA assay</p></li>
+<li><p>reducing the dimension of reductions (pca and umap) to 2</p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

@@ -18,6 +18,7 @@
 <url><loc>https://pwwang.github.io/scplotter/Seurat.SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.Xenium.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.XeniumInSitu.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Working_with_anndata_h5ad.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.html</loc></url>
@@ -35,12 +36,14 @@
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Seurat_Xenium.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Visualizing_data_with_LLMs.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/authors.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/CCCPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/CellDimPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/CellStatPlot.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/CellVelocityPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ClonalDiversity.html</loc></url>
@@ -66,11 +69,14 @@
 <url><loc>https://pwwang.github.io/scplotter/reference/cellphonedb_res.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/clonal_size_data.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/clone_selectors.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/dot-feature_stat_plot.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/dot-new_scale_layers.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/dot-points_args.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/dot-rect_bg_image.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/dot-seurat_points_layer.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/dot-seurat_points_layer_molecules.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/h5group_to_dataframe.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/reference/h5group_to_matrix.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/ifnb_sub.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/index.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/reference/merge_clonal_groupings.html</loc></url>

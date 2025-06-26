@@ -39,6 +39,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/Visualizing_data_with_LLMs.html">Visualizing data with LLMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Working_with_anndata_h5ad_files.html">Working with anndata (.h5ad) files</a></li>
     <li><a class="dropdown-item" href="../articles/Knowing_your_spatial_data_and_visualization.html">Knowing your spatial data and visualization</a></li>
   </ul>
 </li>
@@ -160,7 +161,12 @@ environment and mention it in your prompt.</p>
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">list_tools</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Available tools:</span></span>
 <span><span class="co">#&gt; -  CellStatPlot :  Cell statistics plot     </span></span>
-<span><span class="co">#&gt;    Plot the statistics of the cells.</span></span>
+<span><span class="co">#&gt;    This function creates a plot to visualize the statistics of cells in a Seurat object, a Giotto object,</span></span>
+<span><span class="co">#&gt;    a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots</span></span>
+<span><span class="co">#&gt;    area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.</span></span>
+<span><span class="co">#&gt;    The function allows for grouping, splitting, and faceting the data based on metadata columns.</span></span>
+<span><span class="co">#&gt;    It also supports calculating fractions of cells based on specified groupings.#'</span></span>
 <span><span class="co">#&gt; -  EnrichmentPlot :  Enrichment Plot     </span></span>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
 <span><span class="co">#&gt; -  ClonalPositionalPlot :  ClonalPositionalPlot     </span></span>
@@ -199,8 +205,21 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    Visualize the statistics of the clones.</span></span>
 <span><span class="co">#&gt; -  ClonalDynamicsPlot :  ClonalDynamicsPlot     </span></span>
 <span><span class="co">#&gt;    This function is deprecated. Please use    ClonalStatPlot()    instead.</span></span>
-<span><span class="co">#&gt; -  FeatureStatPlot :  FeatureStatPlot     </span></span>
-<span><span class="co">#&gt;    Statistic plot for features</span></span>
+<span><span class="co">#&gt; -  CellVelocityPlot :  Cell Velocity Plot     </span></span>
+<span><span class="co">#&gt;    This function creates a cell velocity plot for a Seurat object,</span></span>
+<span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for various customizations such as grouping by metadata,</span></span>
+<span><span class="co">#&gt;    adding edges between cell neighbors, highlighting specific cells, and more.</span></span>
+<span><span class="co">#&gt;    This function is a wrapper around    plotthis::VelocityPlot()   , which provides a</span></span>
+<span><span class="co">#&gt;    flexible way to visualize cell velocities in reduced dimensions. This function</span></span>
+<span><span class="co">#&gt;    extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object</span></span>
+<span><span class="co">#&gt;    and passes them to    plotthis::VelocityPlot()   .</span></span>
+<span><span class="co">#&gt; -  FeatureStatPlot :  Feature statistic plot     </span></span>
+<span><span class="co">#&gt;    This function creates various types of feature statistic plots for a Seurat object, a Giotto object,</span></span>
+<span><span class="co">#&gt;    a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.</span></span>
+<span><span class="co">#&gt;    The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.</span></span>
+<span><span class="co">#&gt;    It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.</span></span>
 <span><span class="co">#&gt; -  ClonalGeneUsagePlot :  ClonalGeneUsagePlot     </span></span>
 <span><span class="co">#&gt;    ClonalGeneUsagePlot</span></span>
 <span><span class="co">#&gt; -  ClonalAbundancePlot :  ClonalAbundancePlot     </span></span>
@@ -221,8 +240,15 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
-<span><span class="co">#&gt; -  CellDimPlot :  CellDimPlot     </span></span>
-<span><span class="co">#&gt;    Dimension reduction plot</span></span>
+<span><span class="co">#&gt; -  CellDimPlot :  Cell Dimension Reduction Plot     </span></span>
+<span><span class="co">#&gt;    This function creates a dimension reduction plot for a Seurat object</span></span>
+<span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for various customizations such as grouping by metadata,</span></span>
+<span><span class="co">#&gt;    adding edges between cell neighbors, highlighting specific cells, and more.</span></span>
+<span><span class="co">#&gt;    This function is a wrapper around    plotthis::DimPlot()   , which provides a</span></span>
+<span><span class="co">#&gt;    flexible way to visualize cell clusters in reduced dimensions. This function</span></span>
+<span><span class="co">#&gt;    extracts the necessary data from the Seurat or Giotto object and passes it to</span></span>
+<span><span class="co">#&gt;    plotthis::DimPlot()   .</span></span>
 <span><span class="co">#&gt; -  ClustreePlot :  Clustree plot     </span></span>
 <span><span class="co">#&gt;    This function generates a clustree plot from a data frame or a Seurat object.</span></span>
 <span><span class="co">#&gt; -  ListTools :  List all available tools</span></span>
@@ -308,7 +334,12 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --- Available Tools ---</span></span>
 <span><span class="co">#&gt; - CellStatPlot: Cell statistics plot  </span></span>
-<span><span class="co">#&gt;    Plot the statistics of the cells.</span></span>
+<span><span class="co">#&gt;    This function creates a plot to visualize the statistics of cells in a Seurat object, a Giotto object,</span></span>
+<span><span class="co">#&gt;    a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots</span></span>
+<span><span class="co">#&gt;    area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.</span></span>
+<span><span class="co">#&gt;    The function allows for grouping, splitting, and faceting the data based on metadata columns.</span></span>
+<span><span class="co">#&gt;    It also supports calculating fractions of cells based on specified groupings.#'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - EnrichmentPlot: Enrichment Plot  </span></span>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
@@ -360,8 +391,22 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; - ClonalDynamicsPlot: ClonalDynamicsPlot  </span></span>
 <span><span class="co">#&gt;    This function is deprecated. Please use    ClonalStatPlot()    instead.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - FeatureStatPlot: FeatureStatPlot  </span></span>
-<span><span class="co">#&gt;    Statistic plot for features</span></span>
+<span><span class="co">#&gt; - CellVelocityPlot: Cell Velocity Plot  </span></span>
+<span><span class="co">#&gt;    This function creates a cell velocity plot for a Seurat object,</span></span>
+<span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for various customizations such as grouping by metadata,</span></span>
+<span><span class="co">#&gt;    adding edges between cell neighbors, highlighting specific cells, and more.</span></span>
+<span><span class="co">#&gt;    This function is a wrapper around    plotthis::VelocityPlot()   , which provides a</span></span>
+<span><span class="co">#&gt;    flexible way to visualize cell velocities in reduced dimensions. This function</span></span>
+<span><span class="co">#&gt;    extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object</span></span>
+<span><span class="co">#&gt;    and passes them to    plotthis::VelocityPlot()   .</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; - FeatureStatPlot: Feature statistic plot  </span></span>
+<span><span class="co">#&gt;    This function creates various types of feature statistic plots for a Seurat object, a Giotto object,</span></span>
+<span><span class="co">#&gt;    a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.</span></span>
+<span><span class="co">#&gt;    The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.</span></span>
+<span><span class="co">#&gt;    It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalGeneUsagePlot: ClonalGeneUsagePlot  </span></span>
 <span><span class="co">#&gt;    ClonalGeneUsagePlot</span></span>
@@ -391,8 +436,15 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - CellDimPlot: CellDimPlot  </span></span>
-<span><span class="co">#&gt;    Dimension reduction plot</span></span>
+<span><span class="co">#&gt; - CellDimPlot: Cell Dimension Reduction Plot  </span></span>
+<span><span class="co">#&gt;    This function creates a dimension reduction plot for a Seurat object</span></span>
+<span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for various customizations such as grouping by metadata,</span></span>
+<span><span class="co">#&gt;    adding edges between cell neighbors, highlighting specific cells, and more.</span></span>
+<span><span class="co">#&gt;    This function is a wrapper around    plotthis::DimPlot()   , which provides a</span></span>
+<span><span class="co">#&gt;    flexible way to visualize cell clusters in reduced dimensions. This function</span></span>
+<span><span class="co">#&gt;    extracts the necessary data from the Seurat or Giotto object and passes it to</span></span>
+<span><span class="co">#&gt;    plotthis::DimPlot()   .</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClustreePlot: Clustree plot  </span></span>
 <span><span class="co">#&gt;    This function generates a clustree plot from a data frame or a Seurat object.</span></span>
@@ -1194,7 +1246,12 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; --- Available Tools ---</span></span>
 <span><span class="co">#&gt; - CellStatPlot: Cell statistics plot  </span></span>
-<span><span class="co">#&gt;    Plot the statistics of the cells.</span></span>
+<span><span class="co">#&gt;    This function creates a plot to visualize the statistics of cells in a Seurat object, a Giotto object,</span></span>
+<span><span class="co">#&gt;    a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots</span></span>
+<span><span class="co">#&gt;    area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.</span></span>
+<span><span class="co">#&gt;    The function allows for grouping, splitting, and faceting the data based on metadata columns.</span></span>
+<span><span class="co">#&gt;    It also supports calculating fractions of cells based on specified groupings.#'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - EnrichmentPlot: Enrichment Plot  </span></span>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
@@ -1246,8 +1303,22 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; - ClonalDynamicsPlot: ClonalDynamicsPlot  </span></span>
 <span><span class="co">#&gt;    This function is deprecated. Please use    ClonalStatPlot()    instead.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - FeatureStatPlot: FeatureStatPlot  </span></span>
-<span><span class="co">#&gt;    Statistic plot for features</span></span>
+<span><span class="co">#&gt; - CellVelocityPlot: Cell Velocity Plot  </span></span>
+<span><span class="co">#&gt;    This function creates a cell velocity plot for a Seurat object,</span></span>
+<span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for various customizations such as grouping by metadata,</span></span>
+<span><span class="co">#&gt;    adding edges between cell neighbors, highlighting specific cells, and more.</span></span>
+<span><span class="co">#&gt;    This function is a wrapper around    plotthis::VelocityPlot()   , which provides a</span></span>
+<span><span class="co">#&gt;    flexible way to visualize cell velocities in reduced dimensions. This function</span></span>
+<span><span class="co">#&gt;    extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object</span></span>
+<span><span class="co">#&gt;    and passes them to    plotthis::VelocityPlot()   .</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; - FeatureStatPlot: Feature statistic plot  </span></span>
+<span><span class="co">#&gt;    This function creates various types of feature statistic plots for a Seurat object, a Giotto object,</span></span>
+<span><span class="co">#&gt;    a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.</span></span>
+<span><span class="co">#&gt;    The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.</span></span>
+<span><span class="co">#&gt;    It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalGeneUsagePlot: ClonalGeneUsagePlot  </span></span>
 <span><span class="co">#&gt;    ClonalGeneUsagePlot</span></span>
@@ -1277,8 +1348,15 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - CellDimPlot: CellDimPlot  </span></span>
-<span><span class="co">#&gt;    Dimension reduction plot</span></span>
+<span><span class="co">#&gt; - CellDimPlot: Cell Dimension Reduction Plot  </span></span>
+<span><span class="co">#&gt;    This function creates a dimension reduction plot for a Seurat object</span></span>
+<span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
+<span><span class="co">#&gt;    It allows for various customizations such as grouping by metadata,</span></span>
+<span><span class="co">#&gt;    adding edges between cell neighbors, highlighting specific cells, and more.</span></span>
+<span><span class="co">#&gt;    This function is a wrapper around    plotthis::DimPlot()   , which provides a</span></span>
+<span><span class="co">#&gt;    flexible way to visualize cell clusters in reduced dimensions. This function</span></span>
+<span><span class="co">#&gt;    extracts the necessary data from the Seurat or Giotto object and passes it to</span></span>
+<span><span class="co">#&gt;    plotthis::DimPlot()   .</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClustreePlot: Clustree plot  </span></span>
 <span><span class="co">#&gt;    This function generates a clustree plot from a data frame or a Seurat object.</span></span>
