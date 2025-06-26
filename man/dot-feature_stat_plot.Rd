@@ -60,7 +60,7 @@ If TRUE, the cells are split by the features.}
 \item{...}{
   Arguments passed on to \code{\link[=FeatureStatPlot]{FeatureStatPlot}}
   \describe{
-    \item{\code{object}}{A seurat object}
+    \item{\code{object}}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
     \item{\code{spat_unit}}{The spatial unit to use for the plot. Only applied to Giotto objects.}
     \item{\code{feat_type}}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
     \item{\code{reduction}}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}

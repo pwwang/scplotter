@@ -27,7 +27,7 @@ CellStatPlot(
 )
 }
 \arguments{
-\item{object}{A Seurat object, a Giotto object, or a data frame (for internal use) containing cell metadata.}
+\item{object}{A Seurat object, a Giotto object, a path to h5ad file or an opened \code{H5File} (from \code{hdf5r} package) object a data frame (for internal use) containing cell metadata.}
 
 \item{ident}{The column with the cell identities. i.e. clusters. Default: NULL
 If NULL, the active identity of the Seurat object and the name "Identity" will be used.
@@ -117,18 +117,27 @@ Note that this is different from \code{flip}. \code{flip} is used to transpose t
 A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
-This function creates a plot to visualize the statistics of cells in a Seurat object or a Giotto object.
+This function creates a plot to visualize the statistics of cells in a Seurat object, a Giotto object,
+a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
 It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots
 area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.
 The function allows for grouping, splitting, and faceting the data based on metadata columns.
 It also supports calculating fractions of cells based on specified groupings.#'
 }
 \details{
-See
+See:
 \itemize{
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
-for examples of using this function with a Giotto object.
 }
+
+for examples of using this function with a Giotto object.
+
+And see:
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}
+}
+
+for examples of using this function with .h5ad files.
 }
 \examples{
 \donttest{

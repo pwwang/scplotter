@@ -16,7 +16,7 @@ CellDimPlot(
 )
 }
 \arguments{
-\item{object}{A seurat object or a giotto object.}
+\item{object}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap").}
 
@@ -38,7 +38,8 @@ A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
 This function creates a dimension reduction plot for a Seurat object
-or a Giotto object. It allows for various customizations such as grouping by metadata,
+a Giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
+It allows for various customizations such as grouping by metadata,
 adding edges between cell neighbors, highlighting specific cells, and more.
 This function is a wrapper around \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}, which provides a
 flexible way to visualize cell clusters in reduced dimensions. This function
@@ -55,8 +56,16 @@ See
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_Visium.html}
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.html}
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
-for examples of using this function with a Giotto object.
 }
+
+for examples of using this function with a Giotto object.
+
+And see:
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}
+}
+
+for examples of using this function with .h5ad files.
 }
 \examples{
 \donttest{

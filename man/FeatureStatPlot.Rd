@@ -29,7 +29,7 @@ FeatureStatPlot(
 )
 }
 \arguments{
-\item{object}{A seurat object}
+\item{object}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
 
 \item{features}{A character vector of feature names}
 
@@ -87,18 +87,27 @@ If TRUE, the cells are split by the features.}
 A ggplot object or a list if \code{combine} is FALSE
 }
 \description{
-This function creates various types of feature statistic plots for a Seurat object or a Giotto object.
+This function creates various types of feature statistic plots for a Seurat object, a Giotto object,
+a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
 It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.
 The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.
 It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.
 }
 \details{
-See
+See:
 \itemize{
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_Visium.html}
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
-for examples of using this function with a Giotto object.
 }
+
+for examples of using this function with Giotto objects.
+
+And see:
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}
+}
+
+for examples of using this function with .h5ad files.
 }
 \examples{
 \donttest{

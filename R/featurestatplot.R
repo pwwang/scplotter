@@ -93,11 +93,12 @@
 
 #' Feature statistic plot
 #'
-#' @description This function creates various types of feature statistic plots for a Seurat object or a Giotto object.
+#' @description This function creates various types of feature statistic plots for a Seurat object, a Giotto object,
+#' a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
 #' It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.
 #' The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.
 #' It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.
-#' @param object A seurat object
+#' @param object A seurat object, a giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
 #' @param features A character vector of feature names
 #' @param plot_type Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"
 #' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
@@ -134,10 +135,16 @@
 #' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs Reductions Idents
 #' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
 #' @details
-#' See
+#' See:
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_Visium.html>
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
-#' for examples of using this function with a Giotto object.
+#'
+#' for examples of using this function with Giotto objects.
+#'
+#' And see:
+#' * <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>
+#'
+#' for examples of using this function with .h5ad files.
 #' @examples
 #' \donttest{
 #' data(pancreas_sub)
@@ -337,6 +344,9 @@ FeatureStatPlot.giotto <- function(
         stop("Cannot facet plots because the plots are facetted by the 'features'.")
     }
     stopifnot("[FeatureStatPlot] 'assay' should not be used for Giotto object." = is.null(assay))
+    if (plot_type != "dim" && is.null(ident)) {
+        stop("[FeatureStatPlot] 'ident' should be provided for non-dim plot for giotto object.")
+    }
     # dim plot may use expression for highlighting cells
     # Heatmap may use other variables as annotations, but shrinking only includes minimal columns
     should_shrink <- !plot_type %in% c("dim", "heatmap", "dot")
@@ -403,7 +413,7 @@ FeatureStatPlot.giotto <- function(
         )
         if (is.null(graph_info)) {
             stop(
-                "[CellDimPlot] The object does not have any nearest networks with given ",
+                "[FeatureStatPlot] The object does not have any nearest networks with given ",
                 "spat_unit (", spat_unit, ") and feat_type (", feat_type, ")."
             )
         }
@@ -411,7 +421,7 @@ FeatureStatPlot.giotto <- function(
         graph_info <- graph_info[, graph_info$name == graph, drop = FALSE]
         if (nrow(graph_info) == 0) {
             stop(
-                "[CellDimPlot] The object does not have network: ", graph,
+                "[FeatureStatPlot] The object does not have network: ", graph,
                 " with given spat_unit (", spat_unit, ") and feat_type (", feat_type, ")."
             )
         }
@@ -478,6 +488,111 @@ FeatureStatPlot.Seurat <- function(
             stop("The object does not have graph:", graph)
         }
         graph <- object@graphs[[graph]]
+    }
+
+    .feature_stat_plot(
+        data = data, features = features, plot_type = plot_type,
+        should_shrink = should_shrink, should_pivot = should_pivot,
+        graph = graph, bg_cutoff = bg_cutoff,
+        dims = dims, rows_name = rows_name, ident = ident, agg = agg,
+        group_by = group_by, split_by = split_by, facet_by = facet_by,
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+    )
+}
+
+#' @export
+FeatureStatPlot.character <- function(
+    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
+    spat_unit = NULL, feat_type = NULL,
+    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+) {
+    if (!endsWith(object, ".h5ad")) {
+        stop("[FeatureStatPlot] Currently only supports .h5ad files when called with a string/path.")
+    }
+
+    object <- hdf5r::H5File$new(object, mode = "r")
+    on.exit(object$close_all())
+
+    FeatureStatPlot.H5File(
+        object, features = features, plot_type = plot_type,
+        spat_unit = spat_unit, feat_type = feat_type,
+        reduction = reduction, graph = graph, bg_cutoff = bg_cutoff,
+        dims = dims, rows_name = rows_name, ident = ident,
+        assay = assay, layer = layer, agg = agg,
+        group_by = group_by, split_by = split_by, facet_by = facet_by,
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+    )
+}
+
+#' @export
+FeatureStatPlot.H5File <- function(
+    object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
+    spat_unit = NULL, feat_type = NULL,
+    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+) {
+    plot_type <- match.arg(plot_type)
+    if (!is.null(facet_by) && plot_type != "dim") {
+        stop("Cannot facet plots because the plots are facetted by the 'features'.")
+    }
+    stopifnot("[FeatureStatPlot] 'spat_unit' and 'feat_type' should not be used for H5File object." = is.null(spat_unit) && is.null(feat_type))
+
+    # dim plot may use expression for highlighting cells
+    # Heatmap may use other variables as annotations, but shrinking only includes minimal columns
+    should_shrink <- !plot_type %in% c("dim", "heatmap", "dot")
+    should_pivot <- !plot_type %in% c("dim", "heatmap", "dot", "cor")
+    if (plot_type != "dim" && is.null(ident)) {
+        stop("[FeatureStatPlot] 'ident' should be provided for non-dim plot for H5File object.")
+    }
+
+    unlisted_features <- unname(unlist(features))
+    assay <- assay %||% "RNA"
+    assay_key <- ifelse(identical(assay, "RNA"), "X", paste0("layers/", assay))
+    assay_data <- h5group_to_matrix(object[[assay_key]])
+
+    feature_key <- hdf5r::h5attr(object[["var"]], "_index")  # index
+    assay_features <- object[["var"]][[feature_key]]$read()
+    rownames(assay_data) <- assay_features
+    assay_features <- intersect(unlisted_features, assay_features)
+    assay_data <- t(as.matrix(assay_data[assay_features, , drop = FALSE]))
+
+    if (is.null(reduction) && plot_type != "dim") {
+        data <- cbind(h5group_to_dataframe(object[["obs"]]), assay_data)
+    } else {
+        reductions <- names(object[['obsm']])
+        if (is.null(reductions) || length(reductions) == 0) {
+            stop("[FeatureStatPlot] The object does not have any reductions.")
+        }
+
+        reduction <- reduction %||% reductions[1]
+        if (!startsWith(reduction, "X_") && !reduction %in% reductions) {
+            reduction <- paste0("X_", reduction)
+        }
+        if (!reduction %in% reductions) {
+            stop("[FeatureStatPlot] The object does not have reduction:", reduction)
+        }
+
+        data <- cbind(
+            t(object[["obsm"]][[reduction]]$read()),
+            h5group_to_dataframe(object[["obs"]]),
+            assay_data
+        )
+    }
+
+    if (plot_type == "dim" && !is.null(graph)) {
+        ggrp <- object[['obsp']][['connectivities']]
+        if (is.null(ggrp)) {
+            stop("[FeatureStatPlot] The object does not have any graph/connectivities.")
+        }
+
+        graph <- h5group_to_matrix(ggrp)
+        graph <- igraph::graph_from_adjacency_matrix(graph, mode = "undirected", weighted = TRUE)
+        graph <- igraph::as_adjacency_matrix(graph, attr = "weight", sparse = TRUE)
+        colnames(graph) <- rownames(graph) <- object[['obs']][['index']]$read()
+        rownames(data) <- rownames(graph)
     }
 
     .feature_stat_plot(

@@ -1,11 +1,12 @@
 #' Cell statistics plot
 #'
-#' @description This function creates a plot to visualize the statistics of cells in a Seurat object or a Giotto object.
+#' @description This function creates a plot to visualize the statistics of cells in a Seurat object, a Giotto object,
+#' a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
 #' It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots
 #' area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.
 #' The function allows for grouping, splitting, and faceting the data based on metadata columns.
 #' It also supports calculating fractions of cells based on specified groupings.#'
-#' @param object A Seurat object, a Giotto object, or a data frame (for internal use) containing cell metadata.
+#' @param object A Seurat object, a Giotto object, a path to h5ad file or an opened `H5File` (from `hdf5r` package) object a data frame (for internal use) containing cell metadata.
 #' @param ident The column with the cell identities. i.e. clusters. Default: NULL
 #'  If NULL, the active identity of the Seurat object and the name "Identity" will be used.
 #'  For 'pies', this will be used as the `pie_group_by`.
@@ -76,9 +77,15 @@
 #' @importFrom dplyr %>% summarise mutate ungroup n
 #' @importFrom tidyr drop_na pivot_wider pivot_longer
 #' @importFrom plotthis BarPlot CircosPlot PieChart RingPlot TrendPlot AreaPlot SankeyPlot Heatmap RadarPlot SpiderPlot ViolinPlot BoxPlot
-#' @details See
+#' @details See:
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
+#'
 #' for examples of using this function with a Giotto object.
+#'
+#' And see:
+#' * <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>
+#'
+#' for examples of using this function with .h5ad files.
 #' @export
 #' @examples
 #' \donttest{
@@ -224,6 +231,53 @@ CellStatPlot.Seurat <- function(
 
     CellStatPlot.data.frame(
         data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
+        split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
+        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_name = rows_name, name = name, plot_type = plot_type,
+        swap = swap, ylab = ylab, ...
+    )
+}
+
+#' @export
+CellStatPlot.character <- function(
+    object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
+    swap = FALSE, ylab = NULL, ...
+) {
+    if (!endsWith(object, ".h5ad")) {
+        stop("[CellStatPlot] Currently only supports .h5ad files when called with a string/path.")
+    }
+
+    object <- hdf5r::H5File$new(object, mode = "r")
+    on.exit(object$close_all())
+
+    CellStatPlot.H5File(
+        object, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
+        spat_unit = spat_unit, feat_type = feat_type,
+        split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
+        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_name = rows_name, name = name, plot_type = plot_type,
+        swap = swap, ylab = ylab, ...
+    )
+}
+
+#' @export
+CellStatPlot.H5File <- function(
+    object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
+    swap = FALSE, ylab = NULL, ...
+) {
+    stopifnot("[CellStatPlot] 'ident' is required for anndata (h5ad) object." = !is.null(ident))
+
+    object <- h5group_to_dataframe(object[["obs"]])
+
+    CellStatPlot.data.frame(
+        object, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
+        spat_unit = spat_unit, feat_type = feat_type,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
         rows = rows, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,

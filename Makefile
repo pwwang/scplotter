@@ -15,7 +15,7 @@ test:
 # make notebooks EXECUTE=true to run the notebooks
 notebooks:
 	jupyter nbconvert $(if $(DEBUG),--execute) -y \
-		--to html notebooks/spatial/*.ipynb \
+		--to html notebooks/*.ipynb notebooks/spatial/*.ipynb \
 		--output-dir=pkgdown/assets $(if $(EXECUTE),--execute) \
 		--template lab
 

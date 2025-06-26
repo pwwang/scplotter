@@ -15,7 +15,7 @@ CellVelocityPlot(
 )
 }
 \arguments{
-\item{object}{A seurat object or a giotto object.}
+\item{object}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap").}
 
@@ -34,13 +34,22 @@ It should be the same as the reduction used to calculate the velocity.}
 A ggplot object
 }
 \description{
-This function creates a cell velocity plot for a Seurat object
-or a Giotto object. It allows for various customizations such as grouping by metadata,
+This function creates a cell velocity plot for a Seurat object,
+a Giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
+It allows for various customizations such as grouping by metadata,
 adding edges between cell neighbors, highlighting specific cells, and more.
 This function is a wrapper around \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}, which provides a
 flexible way to visualize cell velocities in reduced dimensions. This function
 extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object
 and passes them to \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.
+}
+\details{
+See:
+\itemize{
+\item \url{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}
+}
+
+for examples of using this function with .h5ad files.
 }
 \examples{
 \donttest{

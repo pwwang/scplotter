@@ -29,6 +29,7 @@ Suggests:
     ComplexHeatmap,
     Seurat (>= 5.0.0),
     data.table,
+    Matrix,
     methods,
     ggalluvial,
     ggforce,
@@ -54,7 +55,8 @@ Suggests:
     knitr,
     terra,
     rmarkdown,
-    learnr
+    learnr,
+    hdf5r
 LazyData: true
 LazyDataCompression: xz
 Remotes:

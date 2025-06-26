@@ -15,6 +15,8 @@ navbar:
       menu:
         - text: "Visualizing data with LLMs"
           href: articles/Visualizing_data_with_LLMs.html
+        - text: "Working with anndata (.h5ad) files"
+          href: articles/Working_with_anndata_h5ad_files.html
         - text: "Knowing your spatial data and visualization"
           href: articles/Knowing_your_spatial_data_and_visualization.html
     spatial-examples:

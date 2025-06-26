@@ -56,7 +56,8 @@ jobs:
             any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
-            any::terra, any::GiottoClass, any::GiottoData, any::proxyC, any::metR
+            any::terra, any::GiottoClass, any::GiottoData, any::proxyC, any::metR,
+            any::hdf5r
 
       - uses: r-lib/actions/check-r-package@v2
         env:

@@ -1,13 +1,14 @@
 #' Cell Dimension Reduction Plot
 #'
 #' @description This function creates a dimension reduction plot for a Seurat object
-#' or a Giotto object. It allows for various customizations such as grouping by metadata,
+#' a Giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
+#' It allows for various customizations such as grouping by metadata,
 #' adding edges between cell neighbors, highlighting specific cells, and more.
 #' This function is a wrapper around [plotthis::DimPlot()], which provides a
 #' flexible way to visualize cell clusters in reduced dimensions. This function
 #' extracts the necessary data from the Seurat or Giotto object and passes it to
 #' [plotthis::DimPlot()].
-#' @param object A seurat object or a giotto object.
+#' @param object A seurat object, a giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot.
 #' @param velocity The name of velocity reduction to plot cell velocities.
@@ -30,7 +31,13 @@
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_Visium.html>
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.html>
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
+#'
 #' for examples of using this function with a Giotto object.
+#'
+#' And see:
+#' * <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>
+#'
+#' for examples of using this function with .h5ad files.
 #' @examples
 #' \donttest{
 #' data(pancreas_sub)
@@ -157,7 +164,7 @@ CellDimPlot.giotto <- function(
     object, reduction = NULL, graph = NULL, group_by = NULL,
     spat_unit = NULL, feat_type = NULL, velocity = NULL, ...
 ) {
-    stopifnot("[CellDimPlot] 'group_by' is required." = !is.null(group_by))
+    stopifnot("[CellDimPlot] 'group_by' is required for giotto objects." = !is.null(group_by))
 
     spat_unit <- GiottoClass::set_default_spat_unit(
         gobject = object,
@@ -271,16 +278,84 @@ CellDimPlot.Seurat <- function(
     DimPlot(data, graph = graph, group_by = group_by, velocity = velocity, ...)
 }
 
+#' @export
+CellDimPlot.character <- function(
+    object, reduction = NULL, graph = NULL, group_by = NULL,
+    spat_unit = NULL, feat_type = NULL, velocity = NULL,
+    ...
+) {
+    if (!endsWith(object, ".h5ad")) {
+        stop("[CellDimPlot] Currently only supports .h5ad files when called with a string/path.")
+    }
+
+    object <- hdf5r::H5File$new(object, mode = "r")
+    on.exit(object$close_all())
+
+    CellDimPlot.H5File(
+        object = object, reduction = reduction, graph = graph,
+        group_by = group_by, spat_unit = spat_unit, feat_type = feat_type,
+        velocity = velocity, ...
+    )
+}
+
+#' @export
+CellDimPlot.H5File <- function(
+    object, reduction = NULL, graph = NULL, group_by = NULL,
+    spat_unit = NULL, feat_type = NULL, velocity = NULL,
+    ...
+) {
+    stopifnot("[CellDimPlot] 'spat_unit' and 'feat_type' are not used for anndata." =
+        is.null(spat_unit) && is.null(feat_type))
+    stopifnot("[CellDimPlot] 'group_by' is required for anndata (h5ad) objects." = !is.null(group_by))
+
+    reductions <- names(object[['obsm']])
+    if (is.null(reductions) || length(reductions) == 0) {
+        stop("[CellDimPlot] The object does not have any reductions.")
+    }
+
+    reduction <- reduction %||% reductions[1]
+    if (!startsWith(reduction, "X_") && !reduction %in% reductions) {
+        reduction <- paste0("X_", reduction)
+    }
+
+    if (!reduction %in% reductions) {
+        stop("[CellDimPlot] The object does not have reduction:", reduction)
+    }
+
+    if (!is.null(graph)) {
+        ggrp <- object[['obsp']][['connectivities']]
+        if (is.null(ggrp)) {
+            stop("[CellDimPlot] The object does not have any graph/connectivities.")
+        }
+
+        graph <- h5group_to_matrix(ggrp)
+        graph <- igraph::graph_from_adjacency_matrix(graph, mode = "undirected", weighted = TRUE)
+        graph <- igraph::as_adjacency_matrix(graph, attr = "weight", sparse = TRUE)
+        colnames(graph) <- rownames(graph) <- object[['obs']][['index']]$read()
+    }
+
+    data <- cbind(t(object[["obsm"]][[reduction]]$read()), h5group_to_dataframe(object[['obs']]))
+    rownames(data) <- object[['obs']][['index']]$read()
+
+    if (!is.null(velocity)) {
+        velocity <- t(object[["obsm"]][[velocity]]$read())
+    }
+
+    DimPlot(data, graph = graph, group_by = group_by, velocity = velocity, ...)
+}
+
+
 #' Cell Velocity Plot
 #'
-#' @description This function creates a cell velocity plot for a Seurat object
-#' or a Giotto object. It allows for various customizations such as grouping by metadata,
+#' @description This function creates a cell velocity plot for a Seurat object,
+#' a Giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
+#' It allows for various customizations such as grouping by metadata,
 #' adding edges between cell neighbors, highlighting specific cells, and more.
 #' This function is a wrapper around [plotthis::VelocityPlot()], which provides a
 #' flexible way to visualize cell velocities in reduced dimensions. This function
 #' extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object
 #' and passes them to [plotthis::VelocityPlot()].
-#' @param object A seurat object or a giotto object.
+#' @param object A seurat object, a giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param v_reduction Name of the velocity reduction to plot (for example, "stochastic_umap").
 #' It should be the same as the reduction used to calculate the velocity.
@@ -293,6 +368,10 @@ CellDimPlot.Seurat <- function(
 #' @seealso [CellDimPlot()]
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Reductions
 #' @importFrom plotthis VelocityPlot
+#' @details See:
+#' * <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>
+#'
+#' for examples of using this function with .h5ad files.
 #' @examples
 #' \donttest{
 #' data(pancreas_sub)
@@ -398,6 +477,73 @@ CellVelocityPlot.Seurat <- function(
     VelocityPlot(
         embedding = Embeddings(object, reduction = reduction)[, 1:2, drop = FALSE],
         v_embedding = Embeddings(object, reduction = v_reduction)[, 1:2, drop = FALSE],
+        group_by = group_by,
+        ...
+    )
+}
+
+
+#' @export
+CellVelocityPlot.character <- function(
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+) {
+    if (!endsWith(object, ".h5ad")) {
+        stop("[CellVelocityPlot] Currently only supports .h5ad files when called with a string/path.")
+    }
+
+    object <- hdf5r::H5File$new(object, mode = "r")
+    on.exit(object$close_all())
+
+    CellVelocityPlot.H5File(
+        object = object, reduction = reduction, v_reduction = v_reduction,
+        spat_unit = spat_unit, feat_type = feat_type, group_by = group_by, ...
+    )
+}
+
+#' @export
+CellVelocityPlot.H5File <- function(
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+) {
+    stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for anndata." =
+        is.null(spat_unit) && is.null(feat_type))
+
+    reduc_info <- names(object[['obsm']])
+    if (is.null(reduc_info) || length(reduc_info) == 0) {
+        stop("[CellVelocityPlot] The object does not have any reductions.")
+    }
+
+    if (!startsWith(reduction, "X_") && !reduction %in% reduc_info) {
+        reduction <- paste0("X_", reduction)
+    }
+
+    if (!reduction %in% reduc_info) {
+        stop("[CellVelocityPlot] The object does not have reduction:", reduction)
+    }
+    if (!v_reduction %in% reduc_info) {
+        stop("[CellVelocityPlot] The object does not have velocity reduction:", v_reduction)
+    }
+
+    if (!is.null(group_by)) {
+        metakeys <- names(object[['obs']])
+        if (!group_by %in% metakeys) {
+            stop("[CellVelocityPlot] The object does not have metadata column:", group_by)
+        }
+        if (inherits(object[['obs']][[group_by]], "H5Group") &&
+            setequal(names(object[['obs']][[group_by]]), c("categories", "codes"))) {
+            codes <- object[['obs']][[group_by]][['codes']]$read()
+            categories <- object[['obs']][[group_by]][['categories']]$read()
+            group_by <- factor(categories[codes + 1], levels = categories)
+        } else if (inherits(object[['obs']][[group_by]], "H5Group")) {
+            stop("[CellVelocityPlot] Complex data structure detected in metadata (obs) column:", group_by)
+        } else {
+            # Read the metadata column directly
+            group_by <- object[['obs']][[group_by]]$read()
+        }
+    }
+
+    VelocityPlot(
+        embedding = t(object[["obsm"]][[reduction]]$read())[, 1:2, drop = FALSE],
+        v_embedding = t(object[["obsm"]][[v_reduction]]$read())[, 1:2, drop = FALSE],
         group_by = group_by,
         ...
     )
