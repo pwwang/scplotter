@@ -56,7 +56,9 @@ Suggests:
     terra,
     rmarkdown,
     learnr,
-    hdf5r
+    hdf5r,
+    proxyC,
+    metR
 LazyData: true
 LazyDataCompression: xz
 Remotes:
