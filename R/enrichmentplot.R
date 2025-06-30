@@ -87,6 +87,18 @@ EnrichmentPlot <- function(
     palette = "Spectral", xlab = NULL, ylab = NULL,
     ...
 ) {
+    if (all(c("pvalue", "p.adjust", "qvalue") %in% colnames(data))) {
+        in_form <- "clusterProfiler"
+    } else if (all(c("P.value", "Adjusted.P.value") %in% colnames(data))) {
+        in_form <- "enrichr"
+    } else {
+        stop("[EnrichmentPlot] Cannot infer the input data format. The data should be the output of either 'clusterProfiler' or 'enrichr'.")
+    }
+
+    if (in_form == "enrichr") {
+        data <- utils::getFromNamespace("prepare_enrichr_result", "plotthis")(data)
+    }
+
     descr_col <- "Description"
     plot_type <- match.arg(plot_type)
     split_by <- check_columns(
@@ -203,14 +215,14 @@ EnrichmentPlot <- function(
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment network plot. Use 'facet_by'/'split_by' to split the plots.")
         }
-        EnrichNetwork(data, character_width = character_width, split_by = split_by, facet_by = facet_by,
-            facet_scales = facet_scales, metric = metric, palette = palette, xlab = xlab, ylab = ylab, ...)
+        EnrichNetwork(data, in_form = "clusterProfiler", character_width = character_width, split_by = split_by,
+            facet_by = facet_by, facet_scales = facet_scales, metric = metric, palette = palette, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "enrichmap") {
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment enrichmap plot. Use 'facet_by'/'split_by' to split the plots.")
         }
-        EnrichMap(data, character_width = character_width, split_by = split_by, facet_by = facet_by,
-            facet_scales = facet_scales, metric = metric, palette = palette, xlab = xlab, ylab = ylab, ...)
+        EnrichMap(data, in_form = "clusterProfiler", character_width = character_width, split_by = split_by,
+            facet_by = facet_by, facet_scales = facet_scales, metric = metric, palette = palette, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "wordcloud") {
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment wordcloud plot. Use 'facet_by'/'split_by' to split the plots.")
