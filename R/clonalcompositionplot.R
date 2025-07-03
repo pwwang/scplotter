@@ -822,7 +822,8 @@ ClonalResidencyPlot <- function(
 #' ClonalCompositionPlot(data)
 #' ClonalCompositionPlot(data, method = "top")
 #' ClonalCompositionPlot(data, plot_type = "ring")
-#' ClonalCompositionPlot(data, group_by = "Type", plot_type = "box", comparison = TRUE)
+#' ClonalCompositionPlot(data, group_by = "Type", plot_type = "box", comparison = TRUE,
+#'  clone_split = list(Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1))
 #' ClonalCompositionPlot(data, group_by = "Type", plot_type = "violin", add_box = TRUE,
 #'  add_bg = TRUE)
 #' ClonalCompositionPlot(data, method = "rare")
