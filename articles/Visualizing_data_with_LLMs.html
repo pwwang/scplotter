@@ -274,7 +274,7 @@ for visualization.</p>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; [1] "list(source = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, ..."</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "list(x = c(1, 0.809016994374947, 0.309016994374947, -0.309016994374947, -0.809016994374947, -1, -..."</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -301,12 +301,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                   </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                            </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                    </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                        </span></span>
-<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                 </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = 'Cell-Cell Communication Plot')"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                          </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
+<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -792,77 +792,92 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;   For Heatmap, see plotthis::Heatmap().</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;       [...] can be:</span></span>
-<span><span class="co">#&gt;       - rows: A character string/vector of the column name(s) to plot for the rows</span></span>
-<span><span class="co">#&gt;       Multiple columns in the data frame can be used as the rows. It can be:</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;        A vector of column names: The columns will be used as the rows.</span></span>
-<span><span class="co">#&gt;        A list of column names: The names will be used as row_split_by.</span></span>
-<span><span class="co">#&gt;        A formula: ~ col1 + col2 + ... The columns will be excluded from the data frame and used as the rows.</span></span>
-<span><span class="co">#&gt;        NULL (default): The column names other than columns_by, rows_split_by, columns_split_by and pie_group_by will be used as the rows.</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;       - columns_by: A character string of the column name to plot for the columns</span></span>
-<span><span class="co">#&gt;       A character/factor column is expected.</span></span>
-<span><span class="co">#&gt;       Multiple columns are also supported. If so, NAs can be used to exclude rows in that group.</span></span>
-<span><span class="co">#&gt;       If there is a single value in each group (other than NA), the group name, rather than the value,</span></span>
-<span><span class="co">#&gt;       will be shown in the column group annotation.</span></span>
-<span><span class="co">#&gt;       - rows_name: A character string specifying the name of rows, which will be shown in the</span></span>
-<span><span class="co">#&gt;       row group annotation and the legend of it.</span></span>
-<span><span class="co">#&gt;       - columns_name: A character string specifying the name of columns, which will be shown in the</span></span>
-<span><span class="co">#&gt;       column group annotation and the legend of it.</span></span>
-<span><span class="co">#&gt;       Only used when columns_by has multiple columns.</span></span>
-<span><span class="co">#&gt;       - split_by_sep: The separator for multiple split_by columns. See split_by</span></span>
-<span><span class="co">#&gt;       - split_rows_data: A logical value indicating whether to split the rows data as well using 'split_by' and 'split_by_sep'.</span></span>
-<span><span class="co">#&gt;       - name: A character string specifying the name of the main legend of the heatmap</span></span>
-<span><span class="co">#&gt;       - border: A logical value indicating whether to draw the border of the heatmap.</span></span>
-<span><span class="co">#&gt;       If TRUE, the borders of the slices will be also drawn.</span></span>
+<span><span class="co">#&gt;       - values_by: A character of column name in data that contains the values to be plotted.</span></span>
+<span><span class="co">#&gt;       This is required when in_form is "long". For other formats, the values are pivoted into a column named by values_by.</span></span>
+<span><span class="co">#&gt;       - values_fill: A value to fill in the missing values in the heatmap.</span></span>
+<span><span class="co">#&gt;       When there is missing value in the data, the cluster_rows and cluster_columns will fail.</span></span>
+<span><span class="co">#&gt;       - name: A character string to name the heatmap (will be used to rename values_by).</span></span>
+<span><span class="co">#&gt;       - in_form: The format of the data. Can be one of "matrix", "long", "wide-rows", "wide-columns", or "auto".</span></span>
+<span><span class="co">#&gt;       Defaults to "auto".</span></span>
+<span><span class="co">#&gt;       - split_by_sep: A character string to concat multiple columns in split_by.</span></span>
+<span><span class="co">#&gt;       - rows_by: A vector of column names in data that contains the row information.</span></span>
+<span><span class="co">#&gt;       This is used to create the rows of the heatmap.</span></span>
+<span><span class="co">#&gt;       When in_form is "long" or "wide-columns", this is requied, and multiple columns can be specified,</span></span>
+<span><span class="co">#&gt;       which will be concatenated by rows_by_sep into a single column.</span></span>
+<span><span class="co">#&gt;       - rows_by_sep: A character string to concat multiple columns in rows_by.</span></span>
+<span><span class="co">#&gt;       - rows_split_by: A character of column name in data that contains the split information for rows.</span></span>
+<span><span class="co">#&gt;       - rows_split_by_sep: A character string to concat multiple columns in rows_split_by.</span></span>
+<span><span class="co">#&gt;       - columns_by: A vector of column names in data that contains the column information.</span></span>
+<span><span class="co">#&gt;       This is used to create the columns of the heatmap.</span></span>
+<span><span class="co">#&gt;       When in_form is "long" or "wide-rows", this is required, and multiple columns can be specified,</span></span>
+<span><span class="co">#&gt;       which will be concatenated by columns_by_sep into a single column.</span></span>
+<span><span class="co">#&gt;       - columns_by_sep: A character string to concat multiple columns in columns_by.</span></span>
+<span><span class="co">#&gt;       - columns_split_by: A character of column name in data that contains the split information for columns.</span></span>
+<span><span class="co">#&gt;       - columns_split_by_sep: A character string to concat multiple columns in columns_split_by.</span></span>
+<span><span class="co">#&gt;       - rows_data: A data frame containing additional data for rows, which can be used to add annotations to the heatmap.</span></span>
+<span><span class="co">#&gt;       It will be joined to the main data by rows_by and split_by if split_by exists in rows_data.</span></span>
+<span><span class="co">#&gt;       This is useful for adding additional information to the rows of the heatmap.</span></span>
+<span><span class="co">#&gt;       - columns_data: A data frame containing additional data for columns, which can be used to add annotations to the heatmap.</span></span>
+<span><span class="co">#&gt;       It will be joined to the main data by columns_by and split_by if split_by exists in columns_data.</span></span>
+<span><span class="co">#&gt;       This is useful for adding additional information to the columns of the heatmap.</span></span>
+<span><span class="co">#&gt;       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - palette: A character string specifying the palette of the heatmap cells.</span></span>
+<span><span class="co">#&gt;       - palcolor: A character vector of colors to override the palette of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - rows_palette: A character string specifying the palette of the row group annotation.</span></span>
 <span><span class="co">#&gt;       The default is "Paired".</span></span>
 <span><span class="co">#&gt;       - rows_palcolor: A character vector of colors to override the palette of the row group annotation.</span></span>
-<span><span class="co">#&gt;       - title: A character string specifying the title of the plot.</span></span>
-<span><span class="co">#&gt;       A function can be used to generate the title based on the default title.</span></span>
-<span><span class="co">#&gt;       This is useful when split_by is used and the title needs to be dynamic.</span></span>
-<span><span class="co">#&gt;       - pie_group_by: A character string of the column name to group the data for the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_group_by_sep: A character string to concatenate the columns in pie_group_by if there are multiple columns.</span></span>
-<span><span class="co">#&gt;       - pie_palette: A character string specifying the palette of the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
-<span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
-<span><span class="co">#&gt;       - pie_name: A character string specifying the name of the legend for the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
-<span><span class="co">#&gt;       - pie_values: How to calculate the values for the pie chart. Default is "count".</span></span>
-<span><span class="co">#&gt;       Other options are "value" and a function.</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;        "count": Count the number of instances in pie_group_by.</span></span>
-<span><span class="co">#&gt;        "sum": Use the values in the columns specified by rows as the values.</span></span>
-<span><span class="co">#&gt;       The sum of the values will be used.</span></span>
-<span><span class="co">#&gt;        A function: The function should take a vector of values as the argument and return a single value, for each</span></span>
-<span><span class="co">#&gt;       group in pie_group_by.</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;       - legend_items: A numeric vector with names to specifiy the items in the main legend.</span></span>
-<span><span class="co">#&gt;       The names will be working as the labels of the legend items.</span></span>
-<span><span class="co">#&gt;       - legend_discrete: A logical value indicating whether the main legend is discrete.</span></span>
-<span><span class="co">#&gt;       - lower_quantile, upper_quantile, lower_cutoff, upper_cutoff: Vector of minimum and maximum cutoff values or quantile values for each feature.</span></span>
-<span><span class="co">#&gt;       It's applied to aggregated values when aggregated values are used (e.g. plot_type tile, label, etc).</span></span>
-<span><span class="co">#&gt;       It's applied to raw values when raw values are used (e.g. plot_type bars, etc).</span></span>
-<span><span class="co">#&gt;       - columns_by_sep: A character string to concatenate the columns in columns_by if there are multiple columns.</span></span>
-<span><span class="co">#&gt;       - columns_split_by: A character string of the column name to split the heatmap columns into slices.</span></span>
-<span><span class="co">#&gt;       A character/factor column or multiple columns are expected.</span></span>
-<span><span class="co">#&gt;       - columns_split_name: A character string specifying the name of the column split annotation.</span></span>
-<span><span class="co">#&gt;       - columns_palette: A character string specifying the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       The default is "Paired".</span></span>
-<span><span class="co">#&gt;       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       - columns_split_by_sep: A character string to concatenate the columns in columns_split_by if there are multiple columns.</span></span>
-<span><span class="co">#&gt;       - columns_split_palette: A character string specifying the palette of the column split annotation.</span></span>
-<span><span class="co">#&gt;       The default is "simspec".</span></span>
-<span><span class="co">#&gt;       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.</span></span>
-<span><span class="co">#&gt;       - rows_data: A character string of the column name to use as the data for the row group annotation.</span></span>
-<span><span class="co">#&gt;       If it starts with "@", it will be treated as an attribute of the data.</span></span>
-<span><span class="co">#&gt;       - rows_split_by: A character string of the column name to split the heatmap rows into slices.</span></span>
-<span><span class="co">#&gt;       A character/factor column or multiple columns are expected.</span></span>
-<span><span class="co">#&gt;       - rows_split_by_sep: A character string to concatenate the columns in rows_split_by if there are multiple columns.</span></span>
 <span><span class="co">#&gt;       - rows_split_palette: A character string specifying the palette of the row split annotation.</span></span>
 <span><span class="co">#&gt;       The default is "simspec".</span></span>
 <span><span class="co">#&gt;       - rows_split_palcolor: A character vector of colors to override the palette of the row split annotation.</span></span>
+<span><span class="co">#&gt;       - columns_palette: A character string specifying the palette of the column group annotation.</span></span>
+<span><span class="co">#&gt;       The default is "Paired".</span></span>
+<span><span class="co">#&gt;       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.</span></span>
+<span><span class="co">#&gt;       - columns_split_palette: A character string specifying the palette of the column split annotation.</span></span>
+<span><span class="co">#&gt;       The default is "simspec".</span></span>
+<span><span class="co">#&gt;       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.</span></span>
+<span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
+<span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
+<span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
+<span><span class="co">#&gt;       - pie_values: A function or character that can be converted to a function by match.arg()</span></span>
+<span><span class="co">#&gt;       to calculate the values for the pie chart. Default is "length".</span></span>
+<span><span class="co">#&gt;       The function should take a vector of values as the argument and return a single value, for each</span></span>
+<span><span class="co">#&gt;       group in pie_group_by.</span></span>
+<span><span class="co">#&gt;       - pie_name: A character string to rename the column created by pie_group_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - pie_group_by: A character of column name in data that contains the group information for pie charts.</span></span>
+<span><span class="co">#&gt;       This is used to create pie charts in the heatmap when cell_type is "pie".</span></span>
+<span><span class="co">#&gt;       - pie_group_by_sep: A character string to concat multiple columns in pie_group_by.</span></span>
+<span><span class="co">#&gt;       - pie_palette: A character string specifying the palette of the pie chart.</span></span>
+<span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
+<span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
+<span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
+<span><span class="co">#&gt;       It takes the aggregated values as the argument and returns the labels to be shown in the heatmap.</span></span>
+<span><span class="co">#&gt;       No labels will be shown for the NA the returned values.</span></span>
+<span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
+<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
+<span><span class="co">#&gt;       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.</span></span>
+<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
+<span><span class="co">#&gt;       - dot_size: A numeric value specifying the size of the dot or a function to calculate the size</span></span>
+<span><span class="co">#&gt;       from the values in the cell or a function to calculate the size from the values in the cell.</span></span>
+<span><span class="co">#&gt;       - dot_size_name: A character string specifying the name of the legend for the dot size.</span></span>
+<span><span class="co">#&gt;       If NULL, the dot size legend will not be shown.</span></span>
+<span><span class="co">#&gt;       - legend_items: A numeric vector with names to specifiy the items in the main legend.</span></span>
+<span><span class="co">#&gt;       The names will be working as the labels of the legend items.</span></span>
+<span><span class="co">#&gt;       - legend_discrete: A logical value indicating whether the main legend is discrete.</span></span>
+<span><span class="co">#&gt;       - legend.position: A character string specifying the position of the legend.</span></span>
+<span><span class="co">#&gt;       if waiver(), for single groups, the legend will be "none", otherwise "right".</span></span>
+<span><span class="co">#&gt;       - legend.direction: A character string specifying the direction of the legend.</span></span>
+<span><span class="co">#&gt;       - lower_quantile, upper_quantile, lower_cutoff, upper_cutoff: Vector of minimum and maximum cutoff values or quantile values for each feature.</span></span>
+<span><span class="co">#&gt;       It's applied to aggregated values when aggregated values are used (e.g. plot_type tile, label, etc).</span></span>
+<span><span class="co">#&gt;       It's applied to raw values when raw values are used (e.g. plot_type bars, etc).</span></span>
+<span><span class="co">#&gt;       - add_bg: A logical value indicating whether to add a background to the heatmap.</span></span>
+<span><span class="co">#&gt;       Does not work with cell_type = "bars" or cell_type = "tile".</span></span>
+<span><span class="co">#&gt;       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.</span></span>
+<span><span class="co">#&gt;       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.</span></span>
+<span><span class="co">#&gt;       - reticle_color: A character string specifying the color of the reticle.</span></span>
 <span><span class="co">#&gt;       - column_name_annotation: A logical value indicating whether to add the column annotation for the column names.</span></span>
 <span><span class="co">#&gt;       which is a simple annotaion indicating the column names.</span></span>
 <span><span class="co">#&gt;       - column_name_legend: A logical value indicating whether to show the legend of the column name annotation.</span></span>
@@ -873,6 +888,9 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       If TRUE and columns_split_by is provided, the clustering will only be applied to the columns within the same split.</span></span>
 <span><span class="co">#&gt;       - cluster_rows: A logical value indicating whether to cluster the rows.</span></span>
 <span><span class="co">#&gt;       If TRUE and rows_split_by is provided, the clustering will only be applied to the rows within the same split.</span></span>
+<span><span class="co">#&gt;       - border: A logical value indicating whether to draw the border of the heatmap.</span></span>
+<span><span class="co">#&gt;       If TRUE, the borders of the slices will be also drawn.</span></span>
+<span><span class="co">#&gt;       - title: The global (column) title of the heatmap</span></span>
 <span><span class="co">#&gt;       - column_title: A character string/vector of the column name(s) to use as the title of the column group annotation.</span></span>
 <span><span class="co">#&gt;       - row_title: A character string/vector of the column name(s) to use as the title of the row group annotation.</span></span>
 <span><span class="co">#&gt;       - na_col: A character string specifying the color for missing values.</span></span>
@@ -881,31 +899,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       The default is "right".</span></span>
 <span><span class="co">#&gt;       - column_names_side: A character string specifying the side of the column names.</span></span>
 <span><span class="co">#&gt;       The default is "bottom".</span></span>
-<span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
-<span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
-<span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
-<span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
-<span><span class="co">#&gt;       It takes the aggregated values as the argument and returns the labels to be shown in the heatmap.</span></span>
-<span><span class="co">#&gt;       No labels will be shown for the NA the returned values.</span></span>
-<span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
-<span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
-<span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
-<span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".</span></span>
-<span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
-<span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
-<span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
-<span><span class="co">#&gt;       The default is mean.</span></span>
-<span><span class="co">#&gt;       - add_bg: A logical value indicating whether to add a background to the heatmap.</span></span>
-<span><span class="co">#&gt;       Does not work with cell_type = "bars" or cell_type = "tile".</span></span>
-<span><span class="co">#&gt;       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.</span></span>
-<span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
-<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
-<span><span class="co">#&gt;       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.</span></span>
-<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
-<span><span class="co">#&gt;       - dot_size: A numeric value specifying the size of the dot or a function to calculate the size</span></span>
-<span><span class="co">#&gt;       from the values in the cell.</span></span>
-<span><span class="co">#&gt;       - dot_size_name: A character string specifying the name of the legend for the dot size.</span></span>
 <span><span class="co">#&gt;       - column_annotation: A character string/vector of the column name(s) to use as the column annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
 <span><span class="co">#&gt;       - column_annotation_side: A character string specifying the side of the column annotation.</span></span>
@@ -938,18 +931,21 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
 <span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
-<span><span class="co">#&gt;       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.</span></span>
-<span><span class="co">#&gt;       - reticle_color: A character string specifying the color of the reticle.</span></span>
-<span><span class="co">#&gt;       - palette: A character string specifying the palette to use.</span></span>
-<span><span class="co">#&gt;       A named list or vector can be used to specify the palettes for different split_by values.</span></span>
-<span><span class="co">#&gt;       - palcolor: A character string specifying the color to use in the palette.</span></span>
-<span><span class="co">#&gt;       A named list can be used to specify the colors for different split_by values.</span></span>
-<span><span class="co">#&gt;       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).</span></span>
-<span><span class="co">#&gt;       - alpha: A numeric value specifying the transparency of the plot.</span></span>
-<span><span class="co">#&gt;       - legend.position: A character string specifying the position of the legend.</span></span>
-<span><span class="co">#&gt;       if waiver(), for single groups, the legend will be "none", otherwise "right".</span></span>
-<span><span class="co">#&gt;       - legend.direction: A character string specifying the direction of the legend.</span></span>
+<span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
+<span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
+<span><span class="co">#&gt;       You don't need to swap the arguments related to rows and columns, except those you specify via ...</span></span>
+<span><span class="co">#&gt;       that are passed to ComplexHeatmap::Heatmap() directly.</span></span>
+<span><span class="co">#&gt;       - alpha: A numeric value between 0 and 1 specifying the transparency of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - seed: The random seed to use. Default is 8525.</span></span>
+<span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
+<span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
+<span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
+<span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
+<span><span class="co">#&gt;       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".</span></span>
+<span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
+<span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
+<span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
+<span><span class="co">#&gt;       The default is mean.</span></span>
 <span><span class="co">#&gt;       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.</span></span>
 <span><span class="co">#&gt;       - nrow: A numeric value specifying the number of rows in the facet.</span></span>
 <span><span class="co">#&gt;       - ncol: A numeric value specifying the number of columns in the facet.</span></span>
@@ -1202,7 +1198,8 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")</span></span>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",</span></span>
 <span><span class="co">#&gt;     node_size_by = 1)</span></span>
-<span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction")</span></span>
+<span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction",</span></span>
+<span><span class="co">#&gt;     palette = "Reds")</span></span>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")</span></span>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",</span></span>
 <span><span class="co">#&gt;     add_box = TRUE)</span></span>
@@ -1704,77 +1701,92 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;   For Heatmap, see plotthis::Heatmap().</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;       [...] can be:</span></span>
-<span><span class="co">#&gt;       - rows: A character string/vector of the column name(s) to plot for the rows</span></span>
-<span><span class="co">#&gt;       Multiple columns in the data frame can be used as the rows. It can be:</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;        A vector of column names: The columns will be used as the rows.</span></span>
-<span><span class="co">#&gt;        A list of column names: The names will be used as row_split_by.</span></span>
-<span><span class="co">#&gt;        A formula: ~ col1 + col2 + ... The columns will be excluded from the data frame and used as the rows.</span></span>
-<span><span class="co">#&gt;        NULL (default): The column names other than columns_by, rows_split_by, columns_split_by and pie_group_by will be used as the rows.</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;       - columns_by: A character string of the column name to plot for the columns</span></span>
-<span><span class="co">#&gt;       A character/factor column is expected.</span></span>
-<span><span class="co">#&gt;       Multiple columns are also supported. If so, NAs can be used to exclude rows in that group.</span></span>
-<span><span class="co">#&gt;       If there is a single value in each group (other than NA), the group name, rather than the value,</span></span>
-<span><span class="co">#&gt;       will be shown in the column group annotation.</span></span>
-<span><span class="co">#&gt;       - rows_name: A character string specifying the name of rows, which will be shown in the</span></span>
-<span><span class="co">#&gt;       row group annotation and the legend of it.</span></span>
-<span><span class="co">#&gt;       - columns_name: A character string specifying the name of columns, which will be shown in the</span></span>
-<span><span class="co">#&gt;       column group annotation and the legend of it.</span></span>
-<span><span class="co">#&gt;       Only used when columns_by has multiple columns.</span></span>
-<span><span class="co">#&gt;       - split_by_sep: The separator for multiple split_by columns. See split_by</span></span>
-<span><span class="co">#&gt;       - split_rows_data: A logical value indicating whether to split the rows data as well using 'split_by' and 'split_by_sep'.</span></span>
-<span><span class="co">#&gt;       - name: A character string specifying the name of the main legend of the heatmap</span></span>
-<span><span class="co">#&gt;       - border: A logical value indicating whether to draw the border of the heatmap.</span></span>
-<span><span class="co">#&gt;       If TRUE, the borders of the slices will be also drawn.</span></span>
+<span><span class="co">#&gt;       - values_by: A character of column name in data that contains the values to be plotted.</span></span>
+<span><span class="co">#&gt;       This is required when in_form is "long". For other formats, the values are pivoted into a column named by values_by.</span></span>
+<span><span class="co">#&gt;       - values_fill: A value to fill in the missing values in the heatmap.</span></span>
+<span><span class="co">#&gt;       When there is missing value in the data, the cluster_rows and cluster_columns will fail.</span></span>
+<span><span class="co">#&gt;       - name: A character string to name the heatmap (will be used to rename values_by).</span></span>
+<span><span class="co">#&gt;       - in_form: The format of the data. Can be one of "matrix", "long", "wide-rows", "wide-columns", or "auto".</span></span>
+<span><span class="co">#&gt;       Defaults to "auto".</span></span>
+<span><span class="co">#&gt;       - split_by_sep: A character string to concat multiple columns in split_by.</span></span>
+<span><span class="co">#&gt;       - rows_by: A vector of column names in data that contains the row information.</span></span>
+<span><span class="co">#&gt;       This is used to create the rows of the heatmap.</span></span>
+<span><span class="co">#&gt;       When in_form is "long" or "wide-columns", this is requied, and multiple columns can be specified,</span></span>
+<span><span class="co">#&gt;       which will be concatenated by rows_by_sep into a single column.</span></span>
+<span><span class="co">#&gt;       - rows_by_sep: A character string to concat multiple columns in rows_by.</span></span>
+<span><span class="co">#&gt;       - rows_split_by: A character of column name in data that contains the split information for rows.</span></span>
+<span><span class="co">#&gt;       - rows_split_by_sep: A character string to concat multiple columns in rows_split_by.</span></span>
+<span><span class="co">#&gt;       - columns_by: A vector of column names in data that contains the column information.</span></span>
+<span><span class="co">#&gt;       This is used to create the columns of the heatmap.</span></span>
+<span><span class="co">#&gt;       When in_form is "long" or "wide-rows", this is required, and multiple columns can be specified,</span></span>
+<span><span class="co">#&gt;       which will be concatenated by columns_by_sep into a single column.</span></span>
+<span><span class="co">#&gt;       - columns_by_sep: A character string to concat multiple columns in columns_by.</span></span>
+<span><span class="co">#&gt;       - columns_split_by: A character of column name in data that contains the split information for columns.</span></span>
+<span><span class="co">#&gt;       - columns_split_by_sep: A character string to concat multiple columns in columns_split_by.</span></span>
+<span><span class="co">#&gt;       - rows_data: A data frame containing additional data for rows, which can be used to add annotations to the heatmap.</span></span>
+<span><span class="co">#&gt;       It will be joined to the main data by rows_by and split_by if split_by exists in rows_data.</span></span>
+<span><span class="co">#&gt;       This is useful for adding additional information to the rows of the heatmap.</span></span>
+<span><span class="co">#&gt;       - columns_data: A data frame containing additional data for columns, which can be used to add annotations to the heatmap.</span></span>
+<span><span class="co">#&gt;       It will be joined to the main data by columns_by and split_by if split_by exists in columns_data.</span></span>
+<span><span class="co">#&gt;       This is useful for adding additional information to the columns of the heatmap.</span></span>
+<span><span class="co">#&gt;       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - palette: A character string specifying the palette of the heatmap cells.</span></span>
+<span><span class="co">#&gt;       - palcolor: A character vector of colors to override the palette of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - rows_palette: A character string specifying the palette of the row group annotation.</span></span>
 <span><span class="co">#&gt;       The default is "Paired".</span></span>
 <span><span class="co">#&gt;       - rows_palcolor: A character vector of colors to override the palette of the row group annotation.</span></span>
-<span><span class="co">#&gt;       - title: A character string specifying the title of the plot.</span></span>
-<span><span class="co">#&gt;       A function can be used to generate the title based on the default title.</span></span>
-<span><span class="co">#&gt;       This is useful when split_by is used and the title needs to be dynamic.</span></span>
-<span><span class="co">#&gt;       - pie_group_by: A character string of the column name to group the data for the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_group_by_sep: A character string to concatenate the columns in pie_group_by if there are multiple columns.</span></span>
-<span><span class="co">#&gt;       - pie_palette: A character string specifying the palette of the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
-<span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
-<span><span class="co">#&gt;       - pie_name: A character string specifying the name of the legend for the pie chart.</span></span>
-<span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
-<span><span class="co">#&gt;       - pie_values: How to calculate the values for the pie chart. Default is "count".</span></span>
-<span><span class="co">#&gt;       Other options are "value" and a function.</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;        "count": Count the number of instances in pie_group_by.</span></span>
-<span><span class="co">#&gt;        "sum": Use the values in the columns specified by rows as the values.</span></span>
-<span><span class="co">#&gt;       The sum of the values will be used.</span></span>
-<span><span class="co">#&gt;        A function: The function should take a vector of values as the argument and return a single value, for each</span></span>
-<span><span class="co">#&gt;       group in pie_group_by.</span></span>
-<span><span class="co">#&gt;       </span></span>
-<span><span class="co">#&gt;       - legend_items: A numeric vector with names to specifiy the items in the main legend.</span></span>
-<span><span class="co">#&gt;       The names will be working as the labels of the legend items.</span></span>
-<span><span class="co">#&gt;       - legend_discrete: A logical value indicating whether the main legend is discrete.</span></span>
-<span><span class="co">#&gt;       - lower_quantile, upper_quantile, lower_cutoff, upper_cutoff: Vector of minimum and maximum cutoff values or quantile values for each feature.</span></span>
-<span><span class="co">#&gt;       It's applied to aggregated values when aggregated values are used (e.g. plot_type tile, label, etc).</span></span>
-<span><span class="co">#&gt;       It's applied to raw values when raw values are used (e.g. plot_type bars, etc).</span></span>
-<span><span class="co">#&gt;       - columns_by_sep: A character string to concatenate the columns in columns_by if there are multiple columns.</span></span>
-<span><span class="co">#&gt;       - columns_split_by: A character string of the column name to split the heatmap columns into slices.</span></span>
-<span><span class="co">#&gt;       A character/factor column or multiple columns are expected.</span></span>
-<span><span class="co">#&gt;       - columns_split_name: A character string specifying the name of the column split annotation.</span></span>
-<span><span class="co">#&gt;       - columns_palette: A character string specifying the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       The default is "Paired".</span></span>
-<span><span class="co">#&gt;       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       - columns_split_by_sep: A character string to concatenate the columns in columns_split_by if there are multiple columns.</span></span>
-<span><span class="co">#&gt;       - columns_split_palette: A character string specifying the palette of the column split annotation.</span></span>
-<span><span class="co">#&gt;       The default is "simspec".</span></span>
-<span><span class="co">#&gt;       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.</span></span>
-<span><span class="co">#&gt;       - rows_data: A character string of the column name to use as the data for the row group annotation.</span></span>
-<span><span class="co">#&gt;       If it starts with "@", it will be treated as an attribute of the data.</span></span>
-<span><span class="co">#&gt;       - rows_split_by: A character string of the column name to split the heatmap rows into slices.</span></span>
-<span><span class="co">#&gt;       A character/factor column or multiple columns are expected.</span></span>
-<span><span class="co">#&gt;       - rows_split_by_sep: A character string to concatenate the columns in rows_split_by if there are multiple columns.</span></span>
 <span><span class="co">#&gt;       - rows_split_palette: A character string specifying the palette of the row split annotation.</span></span>
 <span><span class="co">#&gt;       The default is "simspec".</span></span>
 <span><span class="co">#&gt;       - rows_split_palcolor: A character vector of colors to override the palette of the row split annotation.</span></span>
+<span><span class="co">#&gt;       - columns_palette: A character string specifying the palette of the column group annotation.</span></span>
+<span><span class="co">#&gt;       The default is "Paired".</span></span>
+<span><span class="co">#&gt;       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.</span></span>
+<span><span class="co">#&gt;       - columns_split_palette: A character string specifying the palette of the column split annotation.</span></span>
+<span><span class="co">#&gt;       The default is "simspec".</span></span>
+<span><span class="co">#&gt;       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.</span></span>
+<span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
+<span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
+<span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
+<span><span class="co">#&gt;       - pie_values: A function or character that can be converted to a function by match.arg()</span></span>
+<span><span class="co">#&gt;       to calculate the values for the pie chart. Default is "length".</span></span>
+<span><span class="co">#&gt;       The function should take a vector of values as the argument and return a single value, for each</span></span>
+<span><span class="co">#&gt;       group in pie_group_by.</span></span>
+<span><span class="co">#&gt;       - pie_name: A character string to rename the column created by pie_group_by, which will be reflected in the name of the annotation or legend.</span></span>
+<span><span class="co">#&gt;       - pie_group_by: A character of column name in data that contains the group information for pie charts.</span></span>
+<span><span class="co">#&gt;       This is used to create pie charts in the heatmap when cell_type is "pie".</span></span>
+<span><span class="co">#&gt;       - pie_group_by_sep: A character string to concat multiple columns in pie_group_by.</span></span>
+<span><span class="co">#&gt;       - pie_palette: A character string specifying the palette of the pie chart.</span></span>
+<span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
+<span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
+<span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
+<span><span class="co">#&gt;       It takes the aggregated values as the argument and returns the labels to be shown in the heatmap.</span></span>
+<span><span class="co">#&gt;       No labels will be shown for the NA the returned values.</span></span>
+<span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
+<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
+<span><span class="co">#&gt;       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.</span></span>
+<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
+<span><span class="co">#&gt;       - dot_size: A numeric value specifying the size of the dot or a function to calculate the size</span></span>
+<span><span class="co">#&gt;       from the values in the cell or a function to calculate the size from the values in the cell.</span></span>
+<span><span class="co">#&gt;       - dot_size_name: A character string specifying the name of the legend for the dot size.</span></span>
+<span><span class="co">#&gt;       If NULL, the dot size legend will not be shown.</span></span>
+<span><span class="co">#&gt;       - legend_items: A numeric vector with names to specifiy the items in the main legend.</span></span>
+<span><span class="co">#&gt;       The names will be working as the labels of the legend items.</span></span>
+<span><span class="co">#&gt;       - legend_discrete: A logical value indicating whether the main legend is discrete.</span></span>
+<span><span class="co">#&gt;       - legend.position: A character string specifying the position of the legend.</span></span>
+<span><span class="co">#&gt;       if waiver(), for single groups, the legend will be "none", otherwise "right".</span></span>
+<span><span class="co">#&gt;       - legend.direction: A character string specifying the direction of the legend.</span></span>
+<span><span class="co">#&gt;       - lower_quantile, upper_quantile, lower_cutoff, upper_cutoff: Vector of minimum and maximum cutoff values or quantile values for each feature.</span></span>
+<span><span class="co">#&gt;       It's applied to aggregated values when aggregated values are used (e.g. plot_type tile, label, etc).</span></span>
+<span><span class="co">#&gt;       It's applied to raw values when raw values are used (e.g. plot_type bars, etc).</span></span>
+<span><span class="co">#&gt;       - add_bg: A logical value indicating whether to add a background to the heatmap.</span></span>
+<span><span class="co">#&gt;       Does not work with cell_type = "bars" or cell_type = "tile".</span></span>
+<span><span class="co">#&gt;       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.</span></span>
+<span><span class="co">#&gt;       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.</span></span>
+<span><span class="co">#&gt;       - reticle_color: A character string specifying the color of the reticle.</span></span>
 <span><span class="co">#&gt;       - column_name_annotation: A logical value indicating whether to add the column annotation for the column names.</span></span>
 <span><span class="co">#&gt;       which is a simple annotaion indicating the column names.</span></span>
 <span><span class="co">#&gt;       - column_name_legend: A logical value indicating whether to show the legend of the column name annotation.</span></span>
@@ -1785,6 +1797,9 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       If TRUE and columns_split_by is provided, the clustering will only be applied to the columns within the same split.</span></span>
 <span><span class="co">#&gt;       - cluster_rows: A logical value indicating whether to cluster the rows.</span></span>
 <span><span class="co">#&gt;       If TRUE and rows_split_by is provided, the clustering will only be applied to the rows within the same split.</span></span>
+<span><span class="co">#&gt;       - border: A logical value indicating whether to draw the border of the heatmap.</span></span>
+<span><span class="co">#&gt;       If TRUE, the borders of the slices will be also drawn.</span></span>
+<span><span class="co">#&gt;       - title: The global (column) title of the heatmap</span></span>
 <span><span class="co">#&gt;       - column_title: A character string/vector of the column name(s) to use as the title of the column group annotation.</span></span>
 <span><span class="co">#&gt;       - row_title: A character string/vector of the column name(s) to use as the title of the row group annotation.</span></span>
 <span><span class="co">#&gt;       - na_col: A character string specifying the color for missing values.</span></span>
@@ -1793,31 +1808,6 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       The default is "right".</span></span>
 <span><span class="co">#&gt;       - column_names_side: A character string specifying the side of the column names.</span></span>
 <span><span class="co">#&gt;       The default is "bottom".</span></span>
-<span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
-<span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
-<span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
-<span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
-<span><span class="co">#&gt;       It takes the aggregated values as the argument and returns the labels to be shown in the heatmap.</span></span>
-<span><span class="co">#&gt;       No labels will be shown for the NA the returned values.</span></span>
-<span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
-<span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
-<span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
-<span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".</span></span>
-<span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
-<span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
-<span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
-<span><span class="co">#&gt;       The default is mean.</span></span>
-<span><span class="co">#&gt;       - add_bg: A logical value indicating whether to add a background to the heatmap.</span></span>
-<span><span class="co">#&gt;       Does not work with cell_type = "bars" or cell_type = "tile".</span></span>
-<span><span class="co">#&gt;       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.</span></span>
-<span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
-<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
-<span><span class="co">#&gt;       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.</span></span>
-<span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
-<span><span class="co">#&gt;       - dot_size: A numeric value specifying the size of the dot or a function to calculate the size</span></span>
-<span><span class="co">#&gt;       from the values in the cell.</span></span>
-<span><span class="co">#&gt;       - dot_size_name: A character string specifying the name of the legend for the dot size.</span></span>
 <span><span class="co">#&gt;       - column_annotation: A character string/vector of the column name(s) to use as the column annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
 <span><span class="co">#&gt;       - column_annotation_side: A character string specifying the side of the column annotation.</span></span>
@@ -1850,18 +1840,21 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
 <span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
-<span><span class="co">#&gt;       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.</span></span>
-<span><span class="co">#&gt;       - reticle_color: A character string specifying the color of the reticle.</span></span>
-<span><span class="co">#&gt;       - palette: A character string specifying the palette to use.</span></span>
-<span><span class="co">#&gt;       A named list or vector can be used to specify the palettes for different split_by values.</span></span>
-<span><span class="co">#&gt;       - palcolor: A character string specifying the color to use in the palette.</span></span>
-<span><span class="co">#&gt;       A named list can be used to specify the colors for different split_by values.</span></span>
-<span><span class="co">#&gt;       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).</span></span>
-<span><span class="co">#&gt;       - alpha: A numeric value specifying the transparency of the plot.</span></span>
-<span><span class="co">#&gt;       - legend.position: A character string specifying the position of the legend.</span></span>
-<span><span class="co">#&gt;       if waiver(), for single groups, the legend will be "none", otherwise "right".</span></span>
-<span><span class="co">#&gt;       - legend.direction: A character string specifying the direction of the legend.</span></span>
+<span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
+<span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
+<span><span class="co">#&gt;       You don't need to swap the arguments related to rows and columns, except those you specify via ...</span></span>
+<span><span class="co">#&gt;       that are passed to ComplexHeatmap::Heatmap() directly.</span></span>
+<span><span class="co">#&gt;       - alpha: A numeric value between 0 and 1 specifying the transparency of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - seed: The random seed to use. Default is 8525.</span></span>
+<span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
+<span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
+<span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
+<span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
+<span><span class="co">#&gt;       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".</span></span>
+<span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
+<span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
+<span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
+<span><span class="co">#&gt;       The default is mean.</span></span>
 <span><span class="co">#&gt;       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.</span></span>
 <span><span class="co">#&gt;       - nrow: A numeric value specifying the number of rows in the facet.</span></span>
 <span><span class="co">#&gt;       - ncol: A numeric value specifying the number of columns in the facet.</span></span>
@@ -2114,7 +2107,8 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")</span></span>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",</span></span>
 <span><span class="co">#&gt;     node_size_by = 1)</span></span>
-<span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction")</span></span>
+<span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction",</span></span>
+<span><span class="co">#&gt;     palette = "Reds")</span></span>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")</span></span>
 <span><span class="co">#&gt;   CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",</span></span>
 <span><span class="co">#&gt;     add_box = TRUE)</span></span>
@@ -2135,7 +2129,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; [1] "list(source = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, ..."</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
