@@ -107,7 +107,7 @@ ClonalPositionalPlot <- function (
                 pivot_wider(names_from = ".group", values_from = "value") %>%
                 rename(Position = "variable")
 
-            Heatmap(data, columns_by = "Position", rows = allgroups, rows_name = paste(group_by, collapse = group_by_sep),
+            Heatmap(data, columns_by = "Position", rows_by = allgroups, rows_name = paste(group_by, collapse = group_by_sep),
                 cell_type = "pie", pie_group_by = "AA", cluster_rows = FALSE, cluster_columns = FALSE,
                 pie_values = "sum", ...)
         } else {
@@ -146,7 +146,7 @@ ClonalPositionalPlot <- function (
             allgroups <- unique(data[[group_by]])
             data <- data %>% pivot_wider(names_from = group_by, values_from = "value")
 
-            Heatmap(data, columns_by = "Position", rows = allgroups, rows_name = group_by,
+            Heatmap(data, columns_by = "Position", rows_by = allgroups, rows_name = group_by,
                 name = method, cluster_columns = FALSE, show_column_names = TRUE, show_row_names = TRUE,
                 ...)
         } else if (plot_type == "box") {
@@ -297,7 +297,14 @@ ClonalKmerPlot <- function (
             aspect.ratio = aspect.ratio %||% (8 / length(motifs)), theme_args = theme_args, ...
         )
     } else if (plot_type == "heatmap") {
-        Heatmap(data, columns_by = group_by, rows = motifs, rows_name = "Motifs", name = "Frequency",
-            ...)
+        args <- rlang::dots_list(...)
+        args$data <- data
+        args$columns_by <- group_by
+        args$rows_by <- motifs
+        args$rows_name <- "Motifs"
+        args$name <- "Frequency"
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
+        do.call(Heatmap, args)
     }
 }

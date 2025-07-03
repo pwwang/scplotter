@@ -14,7 +14,7 @@ CellStatPlot(
   split_by = NULL,
   split_by_sep = "_",
   facet_by = NULL,
-  rows = NULL,
+  rows_by = NULL,
   columns_split_by = NULL,
   frac = c("none", "group", "ident", "cluster", "all"),
   rows_name = NULL,
@@ -32,7 +32,7 @@ CellStatPlot(
 \item{ident}{The column with the cell identities. i.e. clusters. Default: NULL
 If NULL, the active identity of the Seurat object and the name "Identity" will be used.
 For 'pies', this will be used as the \code{pie_group_by}.
-For 'heatmap' plot, this will be used as the rows of the heatmap.}
+For 'heatmap' plot, this will be used as the rows_by of the heatmap.}
 
 \item{group_by}{The column name in the meta data to group the cells. Default: NULL
 This should work as the columns of the plot_type: heatmap.
@@ -55,7 +55,7 @@ Each split will be plotted in a separate plot.}
 \item{facet_by}{The column name in the meta data to facet the plots. Default: NULL
 Not available for 'circos', 'sankey', and 'heatmap' plots.}
 
-\item{rows}{The column names in the data used as the rows of the 'pies' (heatmap with cell_type = 'pie').
+\item{rows_by}{The column names in the data used as the rows of the 'pies' (heatmap with cell_type = 'pie').
 Default: NULL. Only available for 'pies' plot.
 The values don't matter, and they only indicate the cells overlapping with the columns and distributed in different \code{ident} values.}
 
@@ -196,13 +196,14 @@ CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,
              group_by = "seurat_annotations", split_by = "stim")
 
 # Pies
-ifnb_sub$r1 <- sample(c(1, NA), ncol(ifnb_sub), replace = TRUE)
-ifnb_sub$r2 <- sample(c(1, NA), ncol(ifnb_sub), replace = TRUE)
-ifnb_sub$r3 <- sample(c(1, NA), ncol(ifnb_sub), replace = TRUE)
-CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim",
-   rows = c("r1", "r2", "r3"), show_row_names = TRUE,
+# Simulate some sets of cells (e.g. clones)
+ifnb_sub$r1 <- ifelse(ifnb_sub$seurat_clusters \%in\% c("0", "1", "2"), 1, 0)
+ifnb_sub$r2 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.5, 0.5), replace = TRUE)
+ifnb_sub$r3 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.7, 0.3), replace = TRUE)
+CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim", rows_name = "Clones",
+   rows_by = c("r1", "r2", "r3"), show_row_names = TRUE, add_reticle = TRUE,
    show_column_names = TRUE, column_names_side = "top", cluster_columns = FALSE,
-   row_names_side = "left", pie_size = sqrt)
+   row_names_side = "right", pie_size = "identity", pie_values = "sum")
 
 # Heatmap
 CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")

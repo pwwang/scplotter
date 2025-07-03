@@ -147,7 +147,8 @@ cellphonedb_res_sub <- cellphonedb_res[
 CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")
 CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",
   node_size_by = 1)
-CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction")
+CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction",
+  palette = "Reds")
 CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
 CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
   add_box = TRUE)

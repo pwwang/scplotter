@@ -221,7 +221,7 @@ features <- c(
    "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
 )
 rows_data <- data.frame(
-   features = features,
+   Features = features,  # 'rows_name' default is "Features"
    group = c(
        "Ductal", "Ductal", "Ductal", "EPs", "EPs", "Pre-endocrine",
        "Pre-endocrine", "Endocrine", "Endocrine", "Beta", "Alpha", "Delta", "Epsilon"),
@@ -238,8 +238,8 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
    plot_type = "heatmap", cell_type = "bars", name = "Expression Level")
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
-   dot_size_name = "Percent Expressed", add_bg = TRUE,
-   rows_data = rows_data, show_row_names = TRUE, rows_split_by = "group", cluster_rows = FALSE,
+   dot_size_name = "Percent Expressed", add_bg = TRUE, rows_data = rows_data,
+   show_row_names = TRUE, rows_split_by = "group", cluster_rows = FALSE,
    column_annotation = c("Phase", "G2M_score"),
    column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
    column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
@@ -265,6 +265,29 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    dot_size_name = "Percent Expressed", palette = "viridis", add_reticle = TRUE,
    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
    rows_split_by = "group")
+# Visualize the markers for each sub-cell type (the markers can overlap)
+# Say: markers <- Seurat::FindAllMarkers(pancreas_sub, ident = "SubCellType")
+markers <- data.frame(
+    avg_log2FC = c(
+         3.44, 2.93, 2.72, 2.63, 2.13, 1.97, 2.96, 1.92, 5.22, 3.91, 3.64, 4.52,
+         3.45, 2.45, 1.75, 2.08, 9.10, 4.45, 3.61, 6.30, 4.96, 3.49, 3.91, 3.90,
+         10.58, 5.84, 4.73, 3.34, 7.22, 4.52, 10.10, 4.25),
+    cluster = factor(rep(
+         c("Ductal", "Ngn3 low EP", "Ngn3 high EP", "Pre-endocrine", "Beta",
+           "Alpha", "Delta", "Epsilon"), each = 4),
+         levels = levels(pancreas_sub$SubCellType)),
+    gene = c(
+         "Cyr61", "Adamts1", "Anxa2", "Bicc1", "1700011H14Rik", "Gsta3", "8430408G22Rik",
+         "Anxa2", "Ppp1r14a", "Btbd17", "Neurog3", "Gadd45a", "Fev", "Runx1t1", "Hmgn3",
+         "Cryba2", "Ins2", "Ppp1r1a", "Gng12", "Sytl4", "Irx1", "Tmem27", "Peg10", "Irx2",
+         "Sst", "Ptprz1", "Arg1", "Frzb", "Irs4", "Mboat4", "Ghrl", "Arg1"
+    )
+)
+FeatureStatPlot(pancreas_sub,
+  features = unique(markers$gene), ident = "SubCellType", cell_type = "bars",
+  plot_type = "heatmap", rows_data = markers, rows_name = "gene", rows_split_by = "cluster",
+  show_row_names = TRUE, show_column_names = TRUE, name = "Expression Level",
+  cluster_rows = FALSE, cluster_columns = FALSE, rows_split_palette = "Paired")
 
 # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", plot_type = "dot")

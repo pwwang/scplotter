@@ -1036,18 +1036,18 @@ ClonalOverlapPlot <- function(
     data <- clonalOverlap(data, cloneCall = clone_call, chain = chain, group.by = ".group",
         method = method, exportTable = TRUE)
     if (isTRUE(full)) {
-        data[lower.tri(data)] <- data[upper.tri(data)]
+        data[lower.tri(data)] <- t(data)[lower.tri(data)]
     }
     #          B // P17 B // P18 B // P19
     # B // P17       NA        0    0.117
     # B // P18       NA       NA    0.001
     # B // P19       NA       NA       NA
     data$.group <- rownames(data)
-    data <- separate(data, ".group", into = all_groupings, sep = " // ")
     data <- data %>%
-        pivot_longer(cols = -all_groupings, names_to = ".names", values_to = ".values")
+        separate(".group", into = all_groupings, sep = " // ") %>%
+        pivot_longer(cols = -all_groupings, names_to = ".names", values_to = ".values") %>%
+        separate(".names", into = paste(".names", all_groupings, sep = "_"), sep = " // ")
 
-    data <- separate(data, ".names", into = paste(".names", all_groupings, sep = "_"), sep = " // ")
     if (!is.null(split_by)) {
         data <- data %>%
             unite(".split", split_by, sep = " // ", remove = FALSE) %>%
@@ -1061,8 +1061,7 @@ ClonalOverlapPlot <- function(
     data <- data %>%
         unite("rows", !!!syms(paste(".names", group_by, sep = "_")), sep = group_by_sep) %>%
         unite(!!sym(columns_by), !!!syms(group_by), sep = group_by_sep)
-    rows <- unique(data$rows)
-    data <- data %>% pivot_wider(names_from = "rows", values_from = ".values", values_fill = 0)
+
     name <- switch(method,
         overlap = "Overlap Coefficient",
         morisita = "Morisita's Overlap Index",
@@ -1081,9 +1080,12 @@ ClonalOverlapPlot <- function(
         as.dist(m)
     }
 
-    Heatmap(data, rows = rows, columns_by = columns_by, split_by = split_by,
-        clustering_distance_rows = function(m) { clustering_distance(t(m)) },
-        clustering_distance_columns = clustering_distance, rows_name = columns_by,
+    Heatmap(
+        data, rows_by = "rows", columns_by = columns_by, values_by = ".values", split_by = split_by,
+        clustering_distance_rows = function(m) { clustering_distance(t(m)) }, values_fill = 0,
+        clustering_distance_columns = clustering_distance,
+        # same rows_name as columns_name (inferred from columns_by) will cause an error
+        rows_name = paste0(" ", columns_by),
         name = name, palette = palette, label = function(x) {
             ifelse(x > label_cutoff, scales::number(x, accuracy = label_accuracy), NA)
         },

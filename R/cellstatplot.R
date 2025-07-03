@@ -10,7 +10,7 @@
 #' @param ident The column with the cell identities. i.e. clusters. Default: NULL
 #'  If NULL, the active identity of the Seurat object and the name "Identity" will be used.
 #'  For 'pies', this will be used as the `pie_group_by`.
-#'  For 'heatmap' plot, this will be used as the rows of the heatmap.
+#'  For 'heatmap' plot, this will be used as the rows_by of the heatmap.
 #' @param group_by The column name in the meta data to group the cells. Default: NULL
 #'  This should work as the columns of the plot_type: heatmap.
 #'  For violin/box plot, at most 2 `group_by` columns are allowed and they will not be concatenated.
@@ -24,7 +24,7 @@
 #'  Each split will be plotted in a separate plot.
 #' @param split_by_sep The separator to use when combining multiple columns in `split_by`. Default: "_"
 #' @param columns_split_by The column name in the meta data to split the columns of the 'pies'/'heatmap' plot. Default: NULL
-#' @param rows The column names in the data used as the rows of the 'pies' (heatmap with cell_type = 'pie').
+#' @param rows_by The column names in the data used as the rows of the 'pies' (heatmap with cell_type = 'pie').
 #'  Default: NULL. Only available for 'pies' plot.
 #'  The values don't matter, and they only indicate the cells overlapping with the columns and distributed in different `ident` values.
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
@@ -144,13 +144,14 @@
 #'              group_by = "seurat_annotations", split_by = "stim")
 #'
 #' # Pies
-#' ifnb_sub$r1 <- sample(c(1, NA), ncol(ifnb_sub), replace = TRUE)
-#' ifnb_sub$r2 <- sample(c(1, NA), ncol(ifnb_sub), replace = TRUE)
-#' ifnb_sub$r3 <- sample(c(1, NA), ncol(ifnb_sub), replace = TRUE)
-#' CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim",
-#'    rows = c("r1", "r2", "r3"), show_row_names = TRUE,
+#' # Simulate some sets of cells (e.g. clones)
+#' ifnb_sub$r1 <- ifelse(ifnb_sub$seurat_clusters %in% c("0", "1", "2"), 1, 0)
+#' ifnb_sub$r2 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.5, 0.5), replace = TRUE)
+#' ifnb_sub$r3 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.7, 0.3), replace = TRUE)
+#' CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim", rows_name = "Clones",
+#'    rows_by = c("r1", "r2", "r3"), show_row_names = TRUE, add_reticle = TRUE,
 #'    show_column_names = TRUE, column_names_side = "top", cluster_columns = FALSE,
-#'    row_names_side = "left", pie_size = sqrt)
+#'    row_names_side = "right", pie_size = "identity", pie_values = "sum")
 #'
 #' # Heatmap
 #' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
@@ -170,7 +171,7 @@
 #' }
 CellStatPlot <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
-    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
@@ -181,7 +182,7 @@ CellStatPlot <- function(
 #' @export
 CellStatPlot.giotto <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
-    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
@@ -209,7 +210,7 @@ CellStatPlot.giotto <- function(
     CellStatPlot.data.frame(
         data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
-        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,
         swap = swap, ylab = ylab, ...
     )
@@ -218,7 +219,7 @@ CellStatPlot.giotto <- function(
 #' @export
 CellStatPlot.Seurat <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
-    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
@@ -232,7 +233,7 @@ CellStatPlot.Seurat <- function(
     CellStatPlot.data.frame(
         data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
-        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,
         swap = swap, ylab = ylab, ...
     )
@@ -241,7 +242,7 @@ CellStatPlot.Seurat <- function(
 #' @export
 CellStatPlot.character <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
-    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
@@ -257,7 +258,7 @@ CellStatPlot.character <- function(
         object, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
         spat_unit = spat_unit, feat_type = feat_type,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
-        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,
         swap = swap, ylab = ylab, ...
     )
@@ -266,7 +267,7 @@ CellStatPlot.character <- function(
 #' @export
 CellStatPlot.H5File <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
-    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
@@ -279,7 +280,7 @@ CellStatPlot.H5File <- function(
         object, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
         spat_unit = spat_unit, feat_type = feat_type,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
-        rows = rows, columns_split_by = columns_split_by, frac = frac,
+        rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,
         swap = swap, ylab = ylab, ...
     )
@@ -288,7 +289,7 @@ CellStatPlot.H5File <- function(
 #' @export
 CellStatPlot.data.frame <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
-    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows = NULL, columns_split_by = NULL,
+    split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
     frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
@@ -307,8 +308,7 @@ CellStatPlot.data.frame <- function(
         allow_multi = TRUE, concat_multi = TRUE, concat_sep = split_by_sep)
     facet_by <- check_columns(object, facet_by, force_factor = TRUE,
         allow_multi = TRUE)
-    rows <- check_columns(object, rows, force_factor = TRUE,
-        allow_multi = TRUE)
+    rows_by <- check_columns(object, rows_by, allow_multi = TRUE)
 
     frac <- match.arg(frac)
     if (frac == "cluster") frac <- "ident"
@@ -477,19 +477,16 @@ CellStatPlot.data.frame <- function(
         if (is.null(group_by)) {
             stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'group_by'.")
         }
-        if (is.null(rows)) {
-            stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'rows'.")
+        if (is.null(rows_by)) {
+            stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'rows_by'.")
         }
         if (!is.null(facet_by)) {
             stop("Cannot create a heatmap (cell_type = 'pie') plot with 'facet_by'.")
         }
 
-        rows_name <- rows_name %||% "rows"
-        name <- name %||% "value"
-
         Heatmap(
-            object, rows = rows, cell_type = "pie", rows_name = rows_name, name = name,
-            columns_by = if (swap) ident else group_by,
+            object, rows_by = rows_by, cell_type = "pie", rows_name = rows_name, values_by = name,
+            columns_by = if (swap) ident else group_by, values_fill = 0,
             pie_group_by = if (swap) group_by else ident,
             columns_split_by = columns_split_by, split_by = split_by, ...)
     } else if (plot_type == "heatmap") {
@@ -503,16 +500,18 @@ CellStatPlot.data.frame <- function(
             stop("Cannot swap between 'group_by' and 'columns_split_by' without specifying 'columns_split_by'.")
         }
         idents <- if (is.factor(object[[ident]])) levels(object[[ident]]) else unique(object[[ident]])
-        object <- pivot_wider(object, id_cols = unique(c(split_by, group_by, columns_split_by)),
+        object <- pivot_wider(
+            object, id_cols = unique(c(split_by, group_by, columns_split_by)),
             names_from = ident, values_fill = 0,
-            values_from = if (identical(frac, "none")) ".n" else ".frac")
+            values_from = if (identical(frac, "none")) ".n" else ".frac"
+        )
 
         rows_name <- rows_name %||% ident
         name <- name %||% ifelse(identical(frac, "none"), "Number of cells", "Fraction of cells")
 
         Heatmap(
-            object, rows = idents, rows_name = rows_name, name = name,
-            columns_by = if (swap) columns_split_by else group_by,
+            object, rows_by = idents, rows_name = rows_name, values_by = name,
+            columns_by = if (swap) columns_split_by else group_by, values_fill = 0,
             columns_split_by = if (swap) group_by else columns_split_by,
             split_by = split_by, ...)
     } else if (plot_type %in% c("violin", "box")) {

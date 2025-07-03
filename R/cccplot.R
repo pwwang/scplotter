@@ -100,7 +100,8 @@
 #' CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")
 #' CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",
 #'   node_size_by = 1)
-#' CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction")
+#' CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction",
+#'   palette = "Reds")
 #' CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
 #' CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
 #'   add_box = TRUE)
@@ -163,7 +164,7 @@ CCCPlot <- function(
         links <- suppressWarnings({ links %>%
             filter(!is.na(!!sym(specificity))) %>%
             summarise(
-                interactionStrength = magnitude_agg(!!sym(magnitude)),
+                !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
                 .specificity = if (is.null(specificity)) {
                     NA
                 } else if (n() == 1) {
@@ -178,31 +179,24 @@ CCCPlot <- function(
         if (plot_type == "network") {
             Network(links, from = source_col, to = target_col, node_fill_by = "name", split_by = split_by,
                 link_curvature = link_curvature, link_weight_name = magnitude_name, link_alpha = link_alpha,
-                node_fill_name = "Source/Target", link_weight_by = "interactionStrength", ...)
+                node_fill_name = "Source/Target", link_weight_by = magnitude_name, ...)
         } else if (plot_type %in% c("chord", "circos")) {
-            ChordPlot(links, y = "interactionStrength", from = source_col, to = target_col,
+            ChordPlot(links, y = magnitude_name, from = source_col, to = target_col,
                 split_by = split_by, ...)
         } else if (plot_type == "heatmap") {
-            sources <- if (is.factor(links[[source_col]])) {
-                levels(links[[source_col]])
-            } else {
-                unique(links[[source_col]])
-            }
-            links <- pivot_wider(links, names_from = source_col, values_from = "interactionStrength",
-                values_fill = 0)
-            Heatmap(links, rows = sources, columns_by = target_col, rows_name = "source", split_by = split_by,
-                name = magnitude_name, show_row_names = show_row_names, show_column_names = show_column_names,
+            Heatmap(links, values_by = magnitude_name, rows_by = source_col, columns_by = target_col,
+                split_by = split_by, show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
         } else if (plot_type %in% c("sankey", "alluvial")) {
-            SankeyPlot(links, y = "interactionStrength", x = c(source_col, target_col), split_by = split_by,
+            SankeyPlot(links, y = magnitude_name, x = c(source_col, target_col), split_by = split_by,
                 links_fill_by = source_col, flow = TRUE, xlab = "", ylab = "Strength", ...)
         } else if (plot_type == "dot") {
             if (!is.null(specificity)) {
-                DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
+                DotPlot(links, x = source_col, y = target_col, size_by = magnitude_name,
                     fill_by = ".specificity", fill_name = paste0(meta_specificity, "(", specificity, ")"),
                     size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             } else {
-                DotPlot(links, x = source_col, y = target_col, size_by = "interactionStrength",
+                DotPlot(links, x = source_col, y = target_col, size_by = magnitude_name,
                     size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
             }
         } else {
@@ -228,11 +222,8 @@ CCCPlot <- function(
                 link_color_name = "source -> target", split_by = split_by, ...)
         } else if (plot_type == "heatmap") {
             data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
-            all_lrs <- unique(data$ligand_receptor)
-            data <- pivot_wider(data, names_from = "ligand_receptor", values_from = magnitude,
-                values_fill = 0)
-            Heatmap(data, rows = all_lrs, rows_name = "Ligand -> Receptor", split_by = split_by,
-                name = magnitude, columns_by = target_col, columns_split_by = source_col,
+            Heatmap(data, rows_by = "ligand_receptor", rows_name = "Ligand -> Receptor", split_by = split_by,
+                values_by = magnitude, columns_by = target_col, columns_split_by = source_col, values_fill = 0,
                 show_row_names = show_row_names, show_column_names = show_column_names,
                 ...)
         } else if (plot_type == "box") {

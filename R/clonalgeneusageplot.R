@@ -21,6 +21,8 @@
 #' @param row_annotation_type A list of row annotation types.
 #' @param row_annotation_side The side of the row annotation. Default is "right".
 #' @param row_annotation_agg A list of row annotation aggregation functions.
+#' @param show_row_names Whether to show row names in the heatmap. Default is TRUE.
+#' @param show_column_names Whether to show column names in the heatmap. Default is TRUE.
 #' @param ... Other arguments passed to the specific plot function.
 #'  * For "bar", [plotthis::BarPlot()].
 #'  * For "heatmap", [plotthis::Heatmap()].
@@ -28,7 +30,7 @@
 #'  * For "chord", [plotthis::ChordPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom rlang := syms
-#' @importFrom dplyr mutate rename slice_max summarise pull filter all_of
+#' @importFrom dplyr mutate rename slice_max summarise pull filter all_of ungroup
 #' @importFrom tidyr separate
 #' @importFrom ggplot2 unit element_blank
 #' @importFrom scRepertoire vizGenes
@@ -65,6 +67,7 @@ ClonalGeneUsagePlot <- function(
     plot_type = c("bar", "heatmap", "circos", "chord", "alluvial", "sankey"),
     group_by = "Sample", facet_by = NULL, facet_ncol = 1, split_by = NULL,
     aspect.ratio = 2 / top, theme_args = list(), ylab = NULL,
+    show_row_names = TRUE, show_column_names = TRUE,
     row_annotation = NULL, row_annotation_type = list(), row_annotation_side = "right",
     row_annotation_agg = list(), ...
 ) {
@@ -98,7 +101,15 @@ ClonalGeneUsagePlot <- function(
             pull(axis1)%>%
             as.character()
 
-        data <- data %>% filter(!!sym(axis1) %in% selected_genes)
+        selected_genes_levels <- if (is.factor(data[[axis1]])) {
+            levels(data[[axis1]])
+        } else {
+            unique(data[[axis1]])
+        }
+        selected_genes_levels <- selected_genes_levels[selected_genes_levels %in% selected_genes]
+
+        data <- data %>% filter(!!sym(axis1) %in% selected_genes) %>%
+            mutate(!!sym(axis1) := factor(!!sym(axis1), levels = selected_genes_levels))
     } else {
         axis1 <- genes
         axis2 <- genes2
@@ -129,32 +140,24 @@ ClonalGeneUsagePlot <- function(
             split_by = split_by, legend.position = "none", x_text_angle = 90, aspect.ratio = aspect.ratio,
             facet_args = list(strip.position = "right"), theme_args = theme_args, ylab = ylab, ...)
     } else if (plot_type == "heatmap") {
-        rmcols <- c("total", "n", "varcount", "sd", "mean")
-        if (!is.null(genes2)) {
-            rmcols <- c(rmcols, group_by)
+        row_annotation_type[["Total Usage"]] <- row_annotation_type[["Total Usage"]] %||% "lines"
+        row_annotation_agg[["Total Usage"]] <- row_annotation_agg[["Total Usage"]] %||% function(x) ifelse(length(x) > 1, x[1], 0)
+        if (is.null(genes2)) {
+            data <- data %>% dplyr::group_by(!!!syms(c(axis1, split_by))) %>%
+                mutate(.total = sum(!!sym(ifelse(scale, "proportion", "count")))) %>%
+                ungroup()
+            row_annotation <- row_annotation %||% list(`Total Usage` = ".total")
         }
-        if (scale) {
-            rmcols <- c(rmcols, "count")
-        } else {
-            rmcols <- c(rmcols, "proportion")
-        }
-        data <- data[, setdiff(colnames(data), rmcols), drop = FALSE]
-        row_genes <- unique(as.character(data[[axis1]]))
-        data <- data %>% pivot_wider(names_from = axis1, values_from = ifelse(scale, "proportion", "count"),
-            values_fn = sum, values_fill = 0)
-        rows_data <- data[, c(split_by, row_genes), drop = FALSE] %>%
-            dplyr::group_by(!!!syms(split_by)) %>%
-            summarise(across(all_of(row_genes), sum), .groups = "drop") %>%
-            pivot_longer(cols = -all_of(split_by), names_to = axis1, values_to = ".total")
 
-        row_annotation <- row_annotation %||% list(`Total Usage` = ".total")
-        row_annotation_type$`Total Usage` <- row_annotation_type$`Total Usage` %||% "lines"
-        row_annotation_agg$`Total Usage` <- row_annotation_agg$`Total Usage` %||% sum
-
-        Heatmap(data, rows = row_genes, columns_by = axis2, split_by = split_by, rows_data = rows_data,
+        Heatmap(
+            data,
+            values_by = ifelse(scale, "proportion", "count"), values_fill = 0,
+            rows_by = axis1, columns_by = axis2, split_by = split_by,
             rows_name = axis1, name = ifelse(scale, "Gene Usage Fraction", "Gene Usage Count"),
             row_annotation = row_annotation, row_annotation_type = row_annotation_type, row_annotation_agg = row_annotation_agg,
-            split_rows_data = TRUE, row_annotation_side = row_annotation_side, ...)
+            row_annotation_side = row_annotation_side,
+            show_row_names = show_row_names, show_column_names = show_column_names,
+            ...)
     } else if (plot_type %in% c("circos", "chord")) {
         if (is.null(genes2)) {
             ChordPlot(data, from = axis1, to = axis2, y = ifelse(scale, "proportion", "count"),

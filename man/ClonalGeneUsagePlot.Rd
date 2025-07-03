@@ -17,6 +17,8 @@ ClonalGeneUsagePlot(
   aspect.ratio = 2/top,
   theme_args = list(),
   ylab = NULL,
+  show_row_names = TRUE,
+  show_column_names = TRUE,
   row_annotation = NULL,
   row_annotation_type = list(),
   row_annotation_side = "right",
@@ -53,6 +55,10 @@ Should not be specified manually.}
 \item{theme_args}{A list of arguments to be passed to the \link[ggplot2:theme]{ggplot2::theme} function.}
 
 \item{ylab}{The y-axis label. Default is NULL.}
+
+\item{show_row_names}{Whether to show row names in the heatmap. Default is TRUE.}
+
+\item{show_column_names}{Whether to show column names in the heatmap. Default is TRUE.}
 
 \item{row_annotation}{A list of row annotations to be added to the heatmap. Default is NULL.}
 

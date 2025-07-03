@@ -303,8 +303,8 @@ ClonalStatPlot <- function(
         }
         data[[clone_groups_name]] <- data$CloneGroups
         data$CloneGroups <- NULL
-        Heatmap(data, rows = groups, columns_by = clone_groups_name, rows_name = group_by,
-            split_by = split_by, name = "Clone size", ...)
+        Heatmap(data, rows_by = groups, columns_by = clone_groups_name, rows_name = group_by,
+            split_by = split_by, name = "Clone Size", ...)
     } else if (identical(plot_type, "pies")) {
         if (!is.null(facet_by)) {
             stop("'facet_by' is not supported for 'pies' plot. Please use 'split_by' instead.")
@@ -314,9 +314,21 @@ ClonalStatPlot <- function(
         }
         data[[clone_groups_name]] <- data$CloneGroups
         data$CloneGroups <- NULL
-        Heatmap(data, rows = groups, columns_by = clone_groups_name, rows_name = group_by,
-            split_by = split_by, name = "Clone size", cell_type = "pie", pie_group_by = subgroup_by,
-            pie_values = "sum", ...)
+        args <- rlang::dots_list(...)
+        args$data <- data
+        args$rows_by <- groups
+        args$columns_by <- clone_groups_name
+        args$rows_name <- group_by
+        args$split_by <- split_by
+        args$cell_type <- "pie"
+        args$pie_group_by <- subgroup_by
+        args$pie_values <- "sum"
+        args$pie_size <- args$pie_size %||% sqrt
+        args$pie_size_name <- args$pie_size_name %||% "Size"
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
+        args$add_reticle <- args$add_reticle %||% TRUE
+        do.call(Heatmap, args)
     } else if (identical(plot_type, "sankey")) {
         SankeyPlot(data, x = groups, links_name = clone_groups_name,
             links_fill_by = "CloneGroups", flow = TRUE, xlab = xlab %||% group_by, ylab = ylab,
