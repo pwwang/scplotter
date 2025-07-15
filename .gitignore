@@ -6,3 +6,5 @@ Rplots.pdf
 inst/doc
 notebooks/spatial/data/
 notebooks/data/
+.vscode/mcp.json
+scplotter_presentation.pptx

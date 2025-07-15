@@ -123,10 +123,10 @@ EnrichmentPlot <- function(
     if (!is.null(split_by) || !is.null(group_by) || !is.null(facet_by)) {
         data <- data %>%
             group_by(!!!syms(unique(c(split_by, group_by, facet_by)))) %>%
-            slice_min(!!sym(metric), n = top_term) %>%
+            slice_min(!!sym(metric), n = top_term, with_ties = FALSE) %>%
             ungroup()
     } else {
-        data <- data %>% slice_min(!!sym(metric), n = top_term)
+        data <- data %>% slice_min(!!sym(metric), n = top_term, with_ties = FALSE)
     }
 
     # preprocessing
