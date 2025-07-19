@@ -265,7 +265,8 @@ CellDimPlot.Seurat <- function(
         graph <- object@graphs[[graph]]
     }
 
-    data <- cbind(Embeddings(object, reduction = reduction), object@meta.data)
+    emb <- Embeddings(object, reduction = reduction)
+    data <- cbind(emb, object@meta.data[rownames(emb), , drop = FALSE])
     if (is.null(group_by)) {
         group_by <- "Identity"
         data[[group_by]] <- Idents(object)

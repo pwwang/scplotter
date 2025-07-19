@@ -544,7 +544,12 @@ FeatureStatPlot.Seurat <- function(
     if (is.null(reduction)) {
         data <- cbind(object@meta.data, assay_data)
     } else {
-        data <- cbind(Embeddings(object, reduction = reduction), object@meta.data, assay_data)
+        emb <- Embeddings(object, reduction = reduction)
+        data <- cbind(
+            emb,
+            object@meta.data[rownames(emb), , drop = FALSE],
+            assay_data[rownames(emb), , drop = FALSE]
+        )
     }
 
     if (is.null(ident)) {
