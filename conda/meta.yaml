@@ -1,6 +1,6 @@
 package:
   name: r-scplotter
-  version: 0.5.1
+  version: 0.5.2
 
 source:
   path: ..
@@ -28,7 +28,7 @@ requirements:
     # - r-rlang
     # - r-stringr
     # - r-tidyr
-    - pwwang::r-plotthis>=0.7.1
+    - pwwang::r-plotthis>=0.7.3
     # - r-r6
 
     # Suggests:
@@ -58,7 +58,7 @@ requirements:
     - r-callr
     - r-seuratobject
     - pwwang::bioconductor-screpertoire
-    - pwwang::r-plotthis>=0.7.1
+    - pwwang::r-plotthis>=0.7.3
     - r-gridgraphics
     - r-metap
     - r-seurat
