@@ -8,11 +8,12 @@ EnrichmentPlot(
   data,
   top_term = NULL,
   plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud",
-    "comparison"),
+    "comparison", "heatmap"),
   x_by = NULL,
   size_by = NULL,
   fill_cutoff_name = NULL,
   fill_name = NULL,
+  values_fill = 0,
   character_width = 50,
   expand = NULL,
   word_type = c("term", "feature"),
@@ -50,6 +51,9 @@ Works only for "comparison", "dot" and "lollipop".}
 \item{fill_name}{The legend name for the metric. Default is NULL.
 Works only for "comparison", "dot" and "lollipop".}
 
+\item{values_fill}{The value to fill the missing values in the data. Default is 0.
+Used only for "heatmap" plot.}
+
 \item{character_width}{The width of the terms in the plot. Default is 50.
 When the terms are too long, they will be wrapped to fit the width.}
 
@@ -69,7 +73,8 @@ Works only for "wordcloud".}
 \item{facet_scales}{The facet scales. Default is NULL.}
 
 \item{group_by}{A character vector of column names to group the terms. Default is NULL.
-Works only for "comparison" plot.}
+Works only for "comparison" and "heatmap" plot.
+For heatmap, it will be used as \code{columns_by} in \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.}
 
 \item{group_by_sep}{A character to concatenate the group_by columns when there are multiple columns. Default is "_".
 Works only for "comparison" plot.}
@@ -103,6 +108,7 @@ See \link[plotthis:show_palettes]{plotthis::show_palettes} for available palette
 \item For "enrichmap", \code{\link[plotthis:enrichmap1]{plotthis::EnrichMap()}}.
 \item For "wordcloud", \code{\link[plotthis:WordCloudPlot]{plotthis::WordCloudPlot()}}.
 \item For "comparison", \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}.
+\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
 }}
 }
 \description{
@@ -111,11 +117,16 @@ This function generates various types of plots for enrichment (over-representati
 \examples{
 set.seed(8525)
 data(enrich_example, package = "plotthis")
+enrich_example$Group <- sample(LETTERS[1:3], nrow(enrich_example), replace = TRUE)
 data(enrich_multidb_example, package = "plotthis")
 
 EnrichmentPlot(enrich_example)
 EnrichmentPlot(enrich_example, cutoff = 0.05)
 EnrichmentPlot(enrich_example, palette = "Paired")
+
+enrich_example$Description <- enrich_example$ID
+EnrichmentPlot(enrich_example, plot_type = "heatmap", group_by = "Group",
+ show_row_names = TRUE, show_column_names = TRUE, cutoff = 0.05)
 
 # Multiple databases#'
 EnrichmentPlot(enrich_multidb_example, facet_by = "Database", facet_nrow = 2)

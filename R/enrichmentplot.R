@@ -24,6 +24,8 @@
 #'  Works only for "comparison", "dot" and "lollipop".
 #' @param fill_name The legend name for the metric. Default is NULL.
 #'  Works only for "comparison", "dot" and "lollipop".
+#' @param values_fill The value to fill the missing values in the data. Default is 0.
+#'  Used only for "heatmap" plot.
 #' @param character_width The width of the terms in the plot. Default is 50.
 #'  When the terms are too long, they will be wrapped to fit the width.
 #' @param expand A numeric vector of length 1, 2 or 4 to expand the plot. Default is NULL.
@@ -36,7 +38,8 @@
 #' @param facet_by A character vector of column names to facet the plots. Default is NULL.
 #' @param facet_scales The facet scales. Default is NULL.
 #' @param group_by A character vector of column names to group the terms. Default is NULL.
-#'  Works only for "comparison" plot.
+#'  Works only for "comparison" and "heatmap" plot.
+#'  For heatmap, it will be used as `columns_by` in [plotthis::Heatmap()].
 #' @param group_by_sep A character to concatenate the group_by columns when there are multiple columns. Default is "_".
 #'  Works only for "comparison" plot.
 #' @param palette The color palette to use for the plot. Default is "Spectral".
@@ -51,19 +54,25 @@
 #'  * For "enrichmap", [plotthis::EnrichMap()].
 #'  * For "wordcloud", [plotthis::WordCloudPlot()].
 #'  * For "comparison", [plotthis::DotPlot()].
+#'  * For "heatmap", [plotthis::Heatmap()].
 #' @importFrom rlang sym syms
 #' @importFrom stringr str_wrap
 #' @importFrom dplyr %>% group_by slice_min ungroup
-#' @importFrom plotthis BarPlot DotPlot LollipopPlot EnrichNetwork EnrichMap WordCloudPlot
+#' @importFrom plotthis BarPlot DotPlot LollipopPlot EnrichNetwork EnrichMap WordCloudPlot Heatmap
 #' @export
 #' @examples
 #' set.seed(8525)
 #' data(enrich_example, package = "plotthis")
+#' enrich_example$Group <- sample(LETTERS[1:3], nrow(enrich_example), replace = TRUE)
 #' data(enrich_multidb_example, package = "plotthis")
 #'
 #' EnrichmentPlot(enrich_example)
 #' EnrichmentPlot(enrich_example, cutoff = 0.05)
 #' EnrichmentPlot(enrich_example, palette = "Paired")
+#'
+#' enrich_example$Description <- enrich_example$ID
+#' EnrichmentPlot(enrich_example, plot_type = "heatmap", group_by = "Group",
+#'  show_row_names = TRUE, show_column_names = TRUE, cutoff = 0.05)
 #'
 #' # Multiple databases#'
 #' EnrichmentPlot(enrich_multidb_example, facet_by = "Database", facet_nrow = 2)
@@ -79,8 +88,8 @@
 #' EnrichmentPlot(enrich_example, plot_type = "wordcloud", word_type = "feature")
 EnrichmentPlot <- function(
     data, top_term = NULL,
-    plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison"),
-    x_by = NULL, size_by = NULL, fill_cutoff_name = NULL, fill_name = NULL,
+    plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison", "heatmap"),
+    x_by = NULL, size_by = NULL, fill_cutoff_name = NULL, fill_name = NULL, values_fill = 0,
     character_width = 50, expand = NULL, word_type = c("term", "feature"),
     split_by = NULL, split_by_sep = "_", facet_by = NULL, facet_scales = NULL,
     group_by = NULL, group_by_sep = "_", metric = "p.adjust", cutoff = NULL,
@@ -130,10 +139,16 @@ EnrichmentPlot <- function(
     }
 
     # preprocessing
-    if (plot_type %in% c("bar", "comparison", "dot", "lollipop")) {
-        data$.metric <- -log10(data[[metric]])
-        # we lost order?
-        data[[descr_col]] <- str_wrap(data[[descr_col]], width = character_width)
+    if (plot_type %in% c("bar", "comparison", "dot", "lollipop", "heatmap")) {
+        if (metric %in% c("pvalue", "p.adjust", "qvalue")) {
+            data$.metric <- -log10(data[[metric]])
+        } else {
+            data$.metric <- data[[metric]]
+        }
+        if (plot_type != "heatmap") {
+            # we lost order?
+            data[[descr_col]] <- str_wrap(data[[descr_col]], width = character_width)
+        }
         # Convert GeneRatio from something like "38/225" to 0.169
         data$GeneRatio <- as.numeric(sapply(strsplit(data$GeneRatio, "/"), function(x) as.numeric(x[1]) / as.numeric(x[2])))
         if (!is.null(data$BgRatio) && !all(is.na(data$BgRatio))) {
@@ -141,7 +156,28 @@ EnrichmentPlot <- function(
         }
     }
 
-    if (plot_type == "bar") {
+    if (plot_type == "heatmap") {
+        if (!is.null(facet_by)) {
+            stop('[EnrichmentPlot] "heatmap" plot does not support "facet_by". Use "split_by" to split the heatmap.')
+        }
+        data[[metric]] <- NULL
+        if (metric %in% c("pvalue", "p.adjust", "qvalue")) {
+            metric <- paste0("-log10(", metric, ")")
+            if (!is.null(cutoff)) {
+                cutoff <- -log10(cutoff)
+            }
+        }
+        if (is.null(cutoff)) {
+            Heatmap(data, in_form = "long", values_by = ".metric", name = metric,
+                rows_by = descr_col, columns_by = group_by, values_fill = values_fill, ...)
+        } else {
+            Heatmap(data, in_form = "long", values_by = ".metric", name = metric,
+                rows_by = descr_col, columns_by = group_by, values_fill = values_fill,
+                cell_type = "label", label = function(x) {
+                    ifelse(x > cutoff, '*', NA)
+                }, ...)
+        }
+    } else if (plot_type == "bar") {
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment bar plot. Use 'facet_by'/'split_by' to split the plots.")
         }
