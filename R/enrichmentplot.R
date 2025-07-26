@@ -105,7 +105,14 @@ EnrichmentPlot <- function(
     }
 
     if (in_form == "enrichr") {
-        data <- utils::getFromNamespace("prepare_enrichr_result", "plotthis")(data)
+        prepare_enrichr_result <- utils::getFromNamespace("prepare_enrichr_result", "plotthis")
+        data <- tryCatch(
+            prepare_enrichr_result(data, n_input = NULL),
+            error = function(e) {
+                n_input <- length(unique(unlist(strsplit(unlist(data$Genes), ";", fixed = TRUE)))) * 2
+                prepare_enrichr_result(data, n_input = n_input)
+            }
+        )
     }
 
     descr_col <- "Description"
