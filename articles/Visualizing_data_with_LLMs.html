@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -301,12 +301,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                     </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
-<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                   </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
+<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -853,8 +853,12 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
 <span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
 <span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
-<span><span class="co">#&gt;       It takes the aggregated values as the argument and returns the labels to be shown in the heatmap.</span></span>
-<span><span class="co">#&gt;       No labels will be shown for the NA the returned values.</span></span>
+<span><span class="co">#&gt;       It can take either 1, 3, or 5 arguments. The first argument is the aggregated values.</span></span>
+<span><span class="co">#&gt;       If it takes 3 arguments, the second and third arguments are the row and column indices.</span></span>
+<span><span class="co">#&gt;       If it takes 5 arguments, the second and third arguments are the row and column indices,</span></span>
+<span><span class="co">#&gt;       the fourth and fifth arguments are the row and column names.</span></span>
+<span><span class="co">#&gt;       The function should return a character vector of the same length as the aggregated values.</span></span>
+<span><span class="co">#&gt;       If the function returns NA, no label will be shown for that cell.</span></span>
 <span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
 <span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
 <span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
@@ -1220,9 +1224,9 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "network")</span></span>
 <span><span class="co">#&gt; ```</span></span>
-<span><span class="co">#&gt; [1] "list(source = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, ..."</span></span></code></pre>
+<span><span class="co">#&gt; [1] "list(x = c(1, 0.809016994374947, 0.309016994374947, -0.309016994374947, -0.809016994374947, -1, -..."</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -1762,8 +1766,12 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
 <span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
 <span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
-<span><span class="co">#&gt;       It takes the aggregated values as the argument and returns the labels to be shown in the heatmap.</span></span>
-<span><span class="co">#&gt;       No labels will be shown for the NA the returned values.</span></span>
+<span><span class="co">#&gt;       It can take either 1, 3, or 5 arguments. The first argument is the aggregated values.</span></span>
+<span><span class="co">#&gt;       If it takes 3 arguments, the second and third arguments are the row and column indices.</span></span>
+<span><span class="co">#&gt;       If it takes 5 arguments, the second and third arguments are the row and column indices,</span></span>
+<span><span class="co">#&gt;       the fourth and fifth arguments are the row and column names.</span></span>
+<span><span class="co">#&gt;       The function should return a character vector of the same length as the aggregated values.</span></span>
+<span><span class="co">#&gt;       If the function returns NA, no label will be shown for that cell.</span></span>
 <span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
 <span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
 <span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
