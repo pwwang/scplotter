@@ -86,6 +86,17 @@ chat$ask("Do a heatmap instead")
 
 ![](./man/figures/scplotter-chat2.png)
 
+## Credits
+
+`scplotter` is built upon the following fantastic packages:
+
+- [`plotthis`][1] for the core plotting functions.
+- [`tidyprompt`][21] for the LLM interface.
+- [`Seurat`][25] for the Seurat object support.
+- [`LIANA`][26] for the cell-cell communication analysis.
+- [`scRepertoire`][27] for the TCR/BCR repertoire analysis.
+- [`Giotto`][28] for the spatial data analysis.
+
 
 [1]: https://github.com/pwwang/plotthis
 [2]: https://pwwang.github.io/scplotter/reference/CellVelocityPlot.html
@@ -107,6 +118,11 @@ chat$ask("Do a heatmap instead")
 [18]: https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html
 [19]: https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html
 [20]: https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html
+[21]: https://github.com/tjarkvandemerwe/tidyprompt
 [22]: https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html
 [23]: https://pwwang.github.io/scplotter/reference/SpatDimPlot.html
 [24]: https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.html
+[25]: https://satijalab.org/seurat/
+[26]: https://github.com/saezlab/liana-py
+[27]: https://github.com/BorchLab/scRepertoire
+[28]: https://drieslab.github.io/Giotto_website/
