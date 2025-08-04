@@ -407,12 +407,12 @@ ClonalLengthPlot <- function(
 #' @keywords internal
 DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ...) {
     if (nrow(df) == 0) {
-        stop("No data found for the group_by: ", group_by,
+        stop("[ClonalResidencyPlot] No data found for the group_by: ", group_by,
             ". Did you specify the correct 'group_by'/'groups' parameters?")
     }
     pair <- unique(as.character(df[[group_by]]))
     if (length(pair) != 2) {
-        stop("The group_by should have exactly 2 unique values.")
+        stop("[ClonalResidencyPlot] The group_by should have exactly 2 unique values.")
     }
 
     exponent <- function(x) { floor(log10(abs(x))) }
@@ -594,7 +594,9 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
 #' @param groups The groups to compare. Default is NULL.
 #'  If NULL, all the groups in `group_by` will be compared.
-#'  Note that for "scatter" plot, only two groups can be compared.
+#'  Note that for "scatter" plot, only two groups can be compared. So when there are more than two groups,
+#'  the combination of the pairs will be used.
+#'  For "scatter" plot, the groups can be specified as the comparisons separated by ":", e.g. "L:B", "Y:X".
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
 #' @param split_by The column name in the meta data to split the plots. Default: NULL
 #' @param split_by_sep The separator used to concatenate the split_by when multiple columns are used.
@@ -616,7 +618,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom utils combn
-#' @importFrom dplyr distinct rename_with select across starts_with ends_with
+#' @importFrom dplyr distinct rename_with select across starts_with ends_with %>% filter
 #' @importFrom tidyr pivot_longer separate pivot_wider unite
 #' @importFrom scRepertoire clonalScatter
 #' @importFrom plotthis ScatterPlot VennDiagram UpsetPlot
@@ -628,7 +630,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = rep(c("B", "L", "X", "Y"), 2)
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -636,9 +638,12 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' )
 #'
 #' ClonalResidencyPlot(data, groups = c("P18B", "P18L"))
-#' ClonalResidencyPlot(data, group_by = "Type", split_by = "Subject")
-#' ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"), group_by = "Type",
+#' ClonalResidencyPlot(data, group_by = "Type", groups = c("L", "B"),
 #'  split_by = "Subject")
+#' ClonalResidencyPlot(data, group_by = "Type", groups = c("L:B", "Y:X"),
+#'  split_by = "Subject")
+#' ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"),
+#'  group_by = "Type", split_by = "Subject")
 #' ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
 #' }
 ClonalResidencyPlot <- function(
@@ -648,8 +653,8 @@ ClonalResidencyPlot <- function(
     order = list(), combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, ...
 ) {
 
-    stopifnot("ClonalResidencyPlot supports only a single group_by column" = length(group_by) == 1)
-    stopifnot("'facet_by' is not supported for 'ClonalResidencyPlot'" = is.null(facet_by))
+    stopifnot("[ClonalResidencyPlot] only a single `group_by` column supported" = length(group_by) == 1)
+    stopifnot("[ClonalResidencyPlot] 'facet_by' is not supported" = is.null(facet_by))
 
     plot_type <- match.arg(plot_type)
     scatter_size_by <- match.arg(scatter_size_by)
@@ -664,7 +669,32 @@ ClonalResidencyPlot <- function(
         }
     }
 
-    groups <- groups %||% unique(data[[group_by]])
+    # handle the groups
+    # the order of groups should override the order in the data, even specified by `order`
+    if (is.null(groups)) {
+        if (!is.factor(data[[group_by]])) {
+            data[[group_by]] <- factor(data[[group_by]])
+        }
+        groups <- levels(data[[group_by]])
+    } else {
+        groups <- unique(groups)
+        if (any(grepl(":", groups, fixed = TRUE))) {
+            if (!identical(plot_type, "scatter")) {
+                stop("[ClonalResidencyPlot] The 'groups' parameter should not contain ':' for non-scatter plots.")
+            }
+            if (!all(grepl(":", groups, fixed = TRUE))) {
+                stop("[ClonalResidencyPlot] All 'groups' should contain ':' for scatter plot if any of them does.")
+            }
+            lvls <- rev(unique(rev(unlist(strsplit(groups, ":", fixed = TRUE)))))
+            if (any(!lvls %in% data[[group_by]])) {
+                stop(paste0("[ClonalResidencyPlot] '", paste(setdiff(lvls, data[[group_by]]), collapse = ", "), "' in `groups` parameter are not present in the data."))
+            }
+            data[[group_by]] <- factor(data[[group_by]], levels = lvls)
+        } else {
+            data[[group_by]] <- factor(data[[group_by]], levels = groups)
+        }
+    }
+
     if (plot_type == "scatter") {
         if (!is.null(split_by)) {
             data <- unite(data, ".split", split_by, sep = split_by_sep, remove = FALSE)
@@ -672,36 +702,36 @@ ClonalResidencyPlot <- function(
             data$.split <- "..."
         }
         data <- split(data, data$.split)
-        spdata <- list()
-        if (!is.list(groups)) {
+        if (any(grepl(":", groups, fixed = TRUE))) {
+            groups <- lapply(groups, function(g) {
+                gs <- strsplit(g, ":", fixed = TRUE)[[1]]
+                if (length(gs) != 2) {
+                    stop("[ClonalResidencyPlot] The 'groups' parameter should contain exactly two values separated by ':' for scatter plot.")
+                }
+                gs <- trimws(gs)
+                gs
+            })
+        } else {
             groups <- as.list(as.data.frame(combn(groups, 2, simplify = TRUE)))
         }
-        for (spname in names(data)) {
-            sdata <- data[[spname]]
-            for (gp in groups) {
-                gname <- paste(gp, collapse = " - ")
-                gname <- ifelse(identical(spname, "..."), gname, paste(spname, gname, sep = ": "))
-                spdata[[gname]] <- sdata[sdata[[group_by]] %in% gp, , drop = FALSE]
+
+        plots <- list()
+        for (nm in names(data)) {
+            for (g in groups) {
+                d <- data[[nm]] %>% filter(!!sym(group_by) %in% g)
+                if (length(unique(as.character(d[[group_by]]))) != 2) {
+                    warning(paste0("[ClonalResidencyPlot] Not both groups '", paste(g, collapse = ", "), "' is not present in the data for '", nm, "'. Skipping."))
+                    next
+                }
+                d[[group_by]] <- factor(d[[group_by]], levels = g)
+                plots[[length(plots) + 1]] <- DummyClonalScatterPlot(d, nm, group_by, scatter_cor, scatter_size_by, ...)
             }
         }
-        if (is.null(nrow) && is.null(ncol) && isTRUE(byrow) && length(groups) > 1 && length(data) > 1) {
-            nrow <- length(data)
-        }
-        data <- spdata
-        rm(spdata)
-    } else {
-        groups <- unique(unlist(groups))
-    }
-
-    if (plot_type == "scatter") {
-        plots <- lapply(names(data), function(nm) {
-            DummyClonalScatterPlot(data[[nm]], nm, group_by, scatter_cor, scatter_size_by, ...)
-        })
 
         combine_plots(plots, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow)
     } else if (plot_type == "venn") {
         if (length(groups) > 4) {
-            stop("Too many groups for venn plot. Please use 'upset' plot instead.")
+            stop("[ClonalResidencyPlot] Too many groups for venn plot. Please use 'upset' plot instead.")
         }
         data <- data[data[[group_by]] %in% groups, , drop = FALSE]
         data <- data[data$count > 0, , drop = FALSE]

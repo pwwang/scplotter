@@ -42,7 +42,9 @@ Possible values are "scatter", "venn", and "upset".}
 
 \item{groups}{The groups to compare. Default is NULL.
 If NULL, all the groups in \code{group_by} will be compared.
-Note that for "scatter" plot, only two groups can be compared.}
+Note that for "scatter" plot, only two groups can be compared. So when there are more than two groups,
+the combination of the pairs will be used.
+For "scatter" plot, the groups can be specified as the comparisons separated by ":", e.g. "L:B", "Y:X".}
 
 \item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
 
@@ -91,7 +93,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = rep(c("B", "L", "X", "Y"), 2)
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",
@@ -99,9 +101,12 @@ data <- scRepertoire::addVariable(data,
 )
 
 ClonalResidencyPlot(data, groups = c("P18B", "P18L"))
-ClonalResidencyPlot(data, group_by = "Type", split_by = "Subject")
-ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"), group_by = "Type",
+ClonalResidencyPlot(data, group_by = "Type", groups = c("L", "B"),
  split_by = "Subject")
+ClonalResidencyPlot(data, group_by = "Type", groups = c("L:B", "Y:X"),
+ split_by = "Subject")
+ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"),
+ group_by = "Type", split_by = "Subject")
 ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
 }
 }
