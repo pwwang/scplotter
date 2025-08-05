@@ -54,7 +54,7 @@ $ conda install pwwang::r-scplotter
 
 ![](./man/figures/clonalstat.png)
 
-[`ClonalRarefactionPlot`][17] | [`ClonalGeneUsagePlot`][18] | [`ClonalDiversityPlot`][19] | [`ClonalPositionalPlot`][20]
+[`ClonalRarefactionPlot`][17] | [`ClonalKmerPlot`][18] | [`ClonalDiversityPlot`][19] | [`ClonalPositionalPlot`][20] | [`ClonalLengthPlot`][29] | [`ClonalStatPlot`][30]
 
 ![](./man/figures/clonaldiv.png)
 
@@ -115,7 +115,7 @@ chat$ask("Do a heatmap instead")
 [15]: https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.html
 [16]: https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html
 [17]: https://pwwang.github.io/scplotter/reference/ClonalRarefactionPlot.html
-[18]: https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html
+[18]: https://pwwang.github.io/scplotter/reference/ClonalKmerPlot.html
 [19]: https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html
 [20]: https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html
 [21]: https://github.com/tjarkvandemerwe/tidyprompt
@@ -126,3 +126,5 @@ chat$ask("Do a heatmap instead")
 [26]: https://github.com/saezlab/liana-py
 [27]: https://github.com/BorchLab/scRepertoire
 [28]: https://drieslab.github.io/Giotto_website/
+[29]: https://pwwang.github.io/scplotter/reference/ClonalLengthPlot.html
+[30]: https://pwwang.github.io/scplotter/reference/ClonalStatPlot.html
