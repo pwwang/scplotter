@@ -40,22 +40,22 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
 
     gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
     do.call(rbind, lapply(gv_pairs, function(gv) {
-            d <- clonalScatter(data,
-                cloneCall = clone_call, chain = chain,
-                x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
-            )
-            d$class <- NULL
-            d$sum <- NULL
-            d$size <- NULL
-            names(d)[2:3] <- paste(names(d)[2:3], "count", sep = ".")
-            d <- pivot_longer(
-                d,
-                cols = -"Var1",
-                names_to = c(".group", ".value"),
-                names_sep = "\\."
-            )
-            d
-        })) %>%
+        d <- clonalScatter(data,
+            cloneCall = clone_call, chain = chain,
+            x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
+        )
+        d$class <- NULL
+        d$sum <- NULL
+        d$size <- NULL
+        names(d)[2:3] <- paste(names(d)[2:3], "count", sep = ".")
+        d <- pivot_longer(
+            d,
+            cols = -"Var1",
+            names_to = c(".group", ".value"),
+            names_sep = "\\."
+        )
+        d
+    })) %>%
         distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
         separate(".group", into = groupings, sep = " // ") %>%
         filter(!!sym("count") > 0) %>%
@@ -127,7 +127,8 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
 #' \donttest{
 #' data(contig_list, package = "scRepertoire")
 #' screp <- scRepertoire::combineTCR(contig_list,
-#'    samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
+#'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B", "P19L", "P20B", "P20L")
+#' )
 #'
 #' head(scplotter:::screp_subset(screp, "nchar(CTaa) < 20")[[1]])
 #' names(scplotter:::screp_subset(screp, "Sample %in% c('P17B', 'P17L')"))
@@ -165,21 +166,28 @@ screp_subset <- function(screp, subset) {
 #' @param groups The column names in the meta data to group the cells.
 #' By default, it is assumed `facet_by` and `split_by` to be in the parent frame.
 #' @param data The data frame containing clone information. Default is NULL. If NULL, it will get data from parent.frame.
-#' A typical `data` should have a column named `CloneID` and other columns for the groupings.
+#' A typical `data` should have a column named `CTaa` and other columns for the groupings.
 #' Supposingly it should be a grouped data frame with the grouping columns.
 #' Under each grouping column, the value should be the size of the clone.
 #' By default, the data is assumed to be in the parent frame.
-#' @return A vector of selected clones.
-#' @importFrom rlang parse_expr syms sym
-#' @importFrom dplyr group_by summarise filter reframe pull slice_head
+#' @param id The column name that contains the clone ID. Default is "CTaa".
+#' @param return_all If TRUE, the function returns a vector with the same length as the data, with CTaa values for selected clones and NA for others.
+#' If FALSE, it returns a subset data frame with only the selected clones.
+#' Default is NULL, which will be determined based on the data. If the function is used in a context of dplyr verbs, it defaults to TRUE.
+#' Otherwise, it defaults to FALSE.
+#' @param x The first vector to compare in logical operations (and/or).
+#' @param y The second vector to compare in logical operations (and/or).
+#' @return A vector of CTaas or a data frame with the selected clones based on the criteria.
+#' @importFrom rlang parse_expr syms sym caller_env env_has env_get
+#' @importFrom dplyr group_by summarise filter reframe pull mutate select across everything row_number
 #' @keywords internal
 #' @rdname clone_selectors
 #' @examples
 #' data <- data.frame(
-#'    CloneID = 1:10,
-#'    group1 = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-#'    group2 = c(7, 3, 8, 2, 1, 5, 9, 4, 6, 0),
-#'    groups = c("A", "A", "A", "A", "B", "B", "B", "B", "B", "B")
+#'     CTaa = 1:10,
+#'     group1 = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+#'     group2 = c(7, 3, 8, 2, 1, 5, 9, 4, 6, 0),
+#'     groups = c("A", "A", "A", "A", "B", "B", "B", "B", "B", "B")
 #' )
 #' data <- data[order(data$group1 + data$group2, decreasing = TRUE), ]
 #' scplotter:::top(3)
@@ -192,36 +200,107 @@ screp_subset <- function(screp, subset) {
 #' scplotter:::le(group1, group2)
 #' scplotter:::lt(group1, group2, include_zeros = FALSE)
 #' scplotter:::eq(group1, group2)
-top <- function(n, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
-    if (!is.null(groups)) {
-        data <- data %>% dplyr::group_by(!!!syms(groups))
+#' scplotter:::ne(group1, group2)
+#'
+#' # Use them in a dplyr pipeline
+#' dplyr::mutate(data, Top3 = scplotter:::top(3))
+#' dplyr::mutate(data, Top3 = scplotter:::top(3, groups = "groups"))
+#' dplyr::mutate(data, Unique = scplotter:::sel(group1 == 0 | group2 == 0))
+#' dplyr::mutate(data, UniqueInG1 = scplotter:::uniq(group1, group2))
+#' dplyr::mutate(data, Shared = scplotter:::shared(group1, group2))
+#' dplyr::mutate(data, Greater = scplotter:::gt(group1, group2))
+#' dplyr::mutate(data, Less = scplotter:::lt(group1, group2))
+#' dplyr::mutate(data, LessEqual = scplotter:::le(group1, group2))
+#' dplyr::mutate(data, GreaterEqual = scplotter:::ge(group1, group2))
+#' dplyr::mutate(data, Equal = scplotter:::eq(group1, group2))
+#' dplyr::mutate(data, NotEqual = scplotter:::ne(group1, group2))
+#'
+#' # Compond expressions
+#' dplyr::mutate(data,
+#'   Top3OrEqual = scplotter:::or(scplotter:::top(3), scplotter:::eq(group1, group2)))
+#' dplyr::mutate(data,
+#'   SharedAndGreater = scplotter:::and(
+#'      scplotter:::shared(group1, group2), scplotter:::gt(group1, group2)))
+.get_data <- function(data) {
+    if (is.null(data)) {
+        # Walk back to find the frame that has a `data` object
+        env <- caller_env(n = 2)
+        if (env_has(env, ".data")) {
+            data <- across(everything())
+            attr(data, "return_all") <- TRUE
+        } else if (env_has(env, "data") && is.data.frame(env$data)) {
+            data <- env_get(env, "data")
+            attr(data, "return_all") <- FALSE
+        } else {
+            stop("No data not found in caller environment. Please provide it to the 'data' argument.")
+        }
     }
-    slice_head(data, n = n)
+    data
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-sel <- function(expr, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+.return_what <- function(data, id, return_all) {
+    if (return_all) {
+        if (!id %in% colnames(data)) {
+            stop(paste0("The id column '", id, "' is not found in the data."))
+        }
+        ifelse(data$.indicator, data[[id]], NA)
+    } else {
+        data %>% filter(!!sym(".indicator")) %>% select(-!!sym(".indicator"))
+    }
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+top <- function(n, groups = NULL, data = NULL, order = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     if (!is.null(groups)) {
         data <- data %>% dplyr::group_by(!!!syms(groups))
     }
-    is_char <- tryCatch({
-        is.character(expr)
-    }, error = function(e) {
-        FALSE
-    })
-    if (!is_char) {
+
+    order_is_char <- tryCatch(is.character(order), error = function(e) FALSE)
+    if (!order_is_char) {
+        order <- deparse(substitute(order))
+    }
+
+    if (!is.null(order)) {
+        data <- dplyr::arrange(data, !!parse_expr(order))
+    }
+
+    out <- data %>% mutate(.indicator = row_number() <= n)
+    .return_what(out, as.character(substitute(id)), return_all)
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+sel <- function(expr, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
+
+    if (!is.null(groups)) {
+        data <- data %>% dplyr::group_by(!!!syms(groups))
+    }
+
+    expr_is_char <- tryCatch(is.character(expr), error = function(e) FALSE)
+    if (!expr_is_char) {
         expr <- deparse(substitute(expr))
     }
-    data %>% filter(!!parse_expr(expr))
+    out <- data %>% mutate(.indicator = !!parse_expr(expr))
+
+    id_is_char <- tryCatch(is.character(id), error = function(e) FALSE)
+    if (!id_is_char) {
+        id <- deparse(substitute(id))
+    }
+    .return_what(out, id, return_all)
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-uniq <- function(group1, group2, ..., groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     other_groups <- as.character(substitute(list(...)))[-1]
@@ -229,13 +308,15 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL) {
     for (g in other_groups) {
         expr <- paste0(expr, " & `", g, "` == 0")
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-shared <- function(group1, group2, ..., groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     other_groups <- as.character(substitute(list(...)))[-1]
@@ -243,80 +324,108 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL) {
     for (g in other_groups) {
         expr <- paste0(expr, " & `", g, "` > 0")
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` > `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group2, "` > 0 & ", expr)
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` >= `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group2, "` > 0 & ", expr)
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` < `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & ", expr)
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` <= `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & ", expr)
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-eq <- function(group1, group2, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+eq <- function(group1, group2, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` == `", group2, "`")
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
 }
 
 #' @rdname clone_selectors
 #' @keywords internal
-ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL) {
-    data <- data %||% parent.frame()$data
+ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
+    data <- .get_data(data)
+    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
     group1 <- as.character(substitute(group1))
     group2 <- as.character(substitute(group2))
     expr <- paste0("`", group1, "` != `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
     }
-    return(sel(expr, groups, data))
+    id <- as.character(substitute(id))
+    return(sel(expr, groups, data, id = id, return_all = return_all))
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+and <- function(x, y) {
+    mask_x <- is.na(x)
+    mask_y <- is.na(y)
+    x[mask_x | mask_y] <- NA
+    x
+}
+
+#' @rdname clone_selectors
+#' @keywords internal
+or <- function(x, y) {
+    dplyr::coalesce(x, y)
 }
