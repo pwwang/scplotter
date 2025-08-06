@@ -26,6 +26,7 @@ Imports:
     plotthis,
     R6
 Suggests:
+    testthat (>= 3.0.0),
     ComplexHeatmap,
     Seurat (>= 5.0.0),
     data.table,
