@@ -483,12 +483,19 @@ CellStatPlot.data.frame <- function(
         if (!is.null(facet_by)) {
             stop("Cannot create a heatmap (cell_type = 'pie') plot with 'facet_by'.")
         }
+        args <- rlang::dots_list(...)
+        args$data <- object
+        args$rows_by <- rows_by
+        args$cell_type <- "pie"
+        args$rows_name <- rows_name
+        args$values_by <- args$values_by %||% name
+        args$columns_by <- if (swap) ident else group_by
+        args$values_fill <- args$values_fill %||% 0
+        args$pie_group_by <- if (swap) group_by else ident
+        args$columns_split_by <- columns_split_by
+        args$split_by <- split_by
 
-        Heatmap(
-            object, rows_by = rows_by, cell_type = "pie", rows_name = rows_name, values_by = name,
-            columns_by = if (swap) ident else group_by, values_fill = 0,
-            pie_group_by = if (swap) group_by else ident,
-            columns_split_by = columns_split_by, split_by = split_by, ...)
+        do.call(Heatmap, args)
     } else if (plot_type == "heatmap") {
         if (is.null(group_by)) {
             stop("Cannot create a heatmap plot without specifying 'group_by', which should work as the columns of the heatmap.")
