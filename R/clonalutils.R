@@ -40,7 +40,7 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
 
     gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
     do.call(rbind, lapply(gv_pairs, function(gv) {
-        d <- clonalScatter(data,
+        d <- clonalScatter(data, group.by = ".group",
             cloneCall = clone_call, chain = chain,
             x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
         )
