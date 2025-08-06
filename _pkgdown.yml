@@ -95,6 +95,21 @@ reference:
     - ifnb_sub
     - pancreas_sub
     - cellphonedb_res
+  - title: Clone selectors
+    desc: Functions for selecting clones
+    contents:
+    - shared
+    - uniq
+    - sel
+    - top
+    - eq
+    - ne
+    - gt
+    - ge
+    - lt
+    - le
+    - and
+    - or
   - title: Re-exports
     desc: Functions that are re-exported from plotthis
     contents:

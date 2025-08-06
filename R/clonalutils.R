@@ -150,9 +150,151 @@ screp_subset <- function(screp, subset) {
     }
 }
 
+#' Utility functions for clone selectors
+#'
+#' @rdname clone_selector_utils
+#' @inheritParams CloneSelectors
+#' @description These utility functions are used internally by the clone selectors to handle
+#' different environments and return the results in the desired format.
+#' @importFrom rlang caller_env env_has env_get sym
+#' @importFrom dplyr filter left_join mutate group_by summarise arrange
+#' @importFrom tidyr pivot_wider
+#' @importFrom rlang parse_expr
+#' @importFrom dplyr across
+#' @param envtype The type of environment to use. It can be "tidy" for dplyr verbs, "scplotter" for scplotter functions, or "unknown" if the context cannot be determined.
+#' @param out The output data frame to be processed.
+#' @keywords internal
+.get_envtype <- function() {
+    # Returns:
+    # - "tidy" if the function is called in a tidyverse context (e.g. dplyr verbs)
+    # - "scplotter" if the function is called in a scplotter function context
+    # - "unknown" if the context cannot be determined
+    env <- caller_env(n = 2)
+    if (env_has(env, ".data") && env_has(env, ".__tidyeval_data_mask__.")) {
+        "tidy"
+    } else if (env_has(env, "data") && is.data.frame(env$data)) {
+        "scplotter"
+    } else {
+        "unknown"
+    }
+}
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.get_data <- function(envtype) {
+    # Get the data from the environment if not provided
+    if (envtype == "tidy") {
+        return(across(everything()))
+    } else if (envtype == "scplotter") {
+        env <- caller_env(n = 2)
+        if (env_has(env, "data") && is.data.frame(env$data)) {
+            return(env_get(env, "data"))
+        }
+    }
+    stop("No data not found in caller environment. Please provide it to the 'data' argument.")
+}
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.return_what <- function(out, id, return_ids) {
+    if (return_ids) {
+        if (!id %in% colnames(out)) {
+            stop(paste0("The id column '", id, "' is not found in the data."))
+        }
+        ifelse(out$.indicator, out[[id]], NA)
+    } else {
+        out %>% filter(!!sym(".indicator")) %>% select(-!!sym(".indicator"))
+    }
+}
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.top_long <- function(n, groups, data, order, id, return_ids) {
+    data2 <- data %>%
+        group_by(!!!syms(unique(c(id, groups)))) %>%
+        summarise(.n = n(), .groups = "drop")
+
+    if (!is.null(order)) {
+        data2 <- data2 %>% arrange(!!parse_expr(order))
+    }
+    if (!is.null(groups)) {
+        data2 <- data2 %>% group_by(!!!syms(groups))
+    }
+
+    out <- data2 %>% mutate(.indicator = row_number() <= n)
+    out <- data %>% left_join(out, by = unique(c(id, groups)))
+    .return_what(out, id, return_ids)
+}
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.top_wide <- function(n, groups, data, order, id, return_ids) {
+    if (!is.null(groups)) {
+        data <- data %>% group_by(!!!syms(groups))
+    }
+
+    if (!is.null(order)) {
+        data <- data %>% arrange(!!parse_expr(order))
+    }
+
+    out <- data %>% mutate(.indicator = row_number() <= n)
+    .return_what(out, id, return_ids)
+}
+
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.sel_long <- function(expr, groups, data, id, return_ids) {
+    data2 <- data %>%
+        group_by(!!!syms(unique(c(id, groups)))) %>%
+        summarise(.n = n(), .groups = "drop")
+
+    if (!is.null(groups)) {
+        data2 <- tidyr::pivot_wider(
+            data2,
+            names_from = !!sym(groups[1]),
+            values_from = !!sym(".n"),
+            values_fill = 0
+        )
+        if (length(groups) > 1) {
+            data2 <- dplyr::group_by(data2, !!!syms(groups[-1]))
+        }
+    }
+
+    out <- data2 %>% mutate(.indicator = !!parse_expr(expr))
+    out <- data %>% left_join(out, by = unique(c(id, groups[-1])))
+    .return_what(out, id, return_ids)
+}
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.sel_wide <- function(expr, groups, data, id, return_ids) {
+    if (!is.null(groups)) {
+        data <- data %>% group_by(!!!syms(groups))
+    }
+
+    out <- data %>% mutate(.indicator = !!parse_expr(expr))
+    .return_what(out, id, return_ids)
+}
+
 #' Helper functions to select clones based on various criteria
 #'
+#' @name CloneSelectors
 #' @description These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
+#' @details These helper functions are designed to be used in a dplyr pipeline or used internally in other scplotter
+#' functions to select clones based on various criteria.
+#' * When used in a dplyr pipeline, they will return a vector with the same length as the input data, with the selected
+#' clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame. For the
+#' functions that need `group1`, `group2`, and/or `...`, `groups` should be provided to specify the grouping columns.
+#' Then `group1`, `group2`, and `...` can be the values in the grouping column. To include more grouping columns, just use
+#' `c(grouping1, grouping2, ...)`, where `grouping1` is used for values of `group1`, `group2` and `...`; `grouping2` and
+#' so on will be kept as the groupings where the clones are selected in each combination of the grouping values.
+#' * When used in a scplotter function, they will return a subset of the data frame with only the selected clones.
+#' This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in
+#' some other scplotter functions, such as `ClonalStatPlot`, to select clones. The groupings are also applied, and defaulting
+#' to `facet_by` and `split_by` in the parent frame.
+#' * When used independently, you should pass the arguments explicitly, such as `groups` and `return_ids`, to control the
+#' behavior and the output of the function.
 #'
 #' @param n The number of top clones to select or the threshold size.
 #' @param expr The expression (in characters) to filter the clones
@@ -164,259 +306,384 @@ screp_subset <- function(screp, subset) {
 #' If TRUE, in a comparison (s1 > s2) for a clone to be selected, both s1 and s2 must be greater than 0.
 #' If FALSE, only the first group must be greater than the second group.
 #' @param groups The column names in the meta data to group the cells.
-#' By default, it is assumed `facet_by` and `split_by` to be in the parent frame.
-#' @param data The data frame containing clone information. Default is NULL. If NULL, it will get data from parent.frame.
-#' A typical `data` should have a column named `CTaa` and other columns for the groupings.
+#' By default, it is assumed `facet_by` and `split_by` to be in the parent frame if used in scplotter functions.
+#' When used in dplyr verbs, it should be a character vector of the grouping columns, where the first column is used to
+#' extract the values (count) for `group1`, `group2`, and `...` and the rest are used to keep the groupings.
+#' @param order The order of the clones to select. It can be an expression to order the clones by a specific column. Only used in `top()`.
+#' @param in_form The format of the input data. It can be "long" or "wide".
+#' If "long", the data should be in a long format with a column for the clone IDs and a column for the size.
+#' If "wide", the data should be in a wide format with columns for the clone IDs and the size for each group.
+#' When used in dplyr verbs, it should be "long" by default.
+#' If used in scplotter functions, it should be "wide" by default.#'
+#' @param data The data frame containing clone information. Default is NULL. If NULL,
+#' when used in scplotter functions, it will get data from parent.frame.
+#' A typical `data` should have a column named `CloneID` and other columns for the groupings.
 #' Supposingly it should be a grouped data frame with the grouping columns.
 #' Under each grouping column, the value should be the size of the clone.
 #' By default, the data is assumed to be in the parent frame.
+#' When used in dplyr verbs, it should be the parent data frame passed to the dplyr verb.
 #' @param id The column name that contains the clone ID. Default is "CTaa".
-#' @param return_all If TRUE, the function returns a vector with the same length as the data, with CTaa values for selected clones and NA for others.
+#' @param return_ids If TRUE, the function returns a vector with the same length as the data, with CTaa values for selected clones and NA for others.
 #' If FALSE, it returns a subset data frame with only the selected clones.
 #' Default is NULL, which will be determined based on the data. If the function is used in a context of dplyr verbs, it defaults to TRUE.
 #' Otherwise, it defaults to FALSE.
 #' @param x The first vector to compare in logical operations (and/or).
 #' @param y The second vector to compare in logical operations (and/or).
 #' @return A vector of CTaas or a data frame with the selected clones based on the criteria.
-#' @importFrom rlang parse_expr syms sym caller_env env_has env_get
-#' @importFrom dplyr group_by summarise filter reframe pull mutate select across everything row_number
-#' @keywords internal
+#' @importFrom rlang parse_expr syms sym caller_env env_has env_get enquo expr_name
+#' @importFrom dplyr group_by summarise filter reframe pull mutate select across everything row_number left_join
 #' @rdname clone_selectors
 #' @examples
 #' data <- data.frame(
-#'     CTaa = 1:10,
+#'     CTaa = c("AA1", "AA2", "AA3", "AA4", "AA5", "AA6", "AA7", "AA8", "AA9", "AA10"),
 #'     group1 = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 #'     group2 = c(7, 3, 8, 2, 1, 5, 9, 4, 6, 0),
 #'     groups = c("A", "A", "A", "A", "B", "B", "B", "B", "B", "B")
 #' )
 #' data <- data[order(data$group1 + data$group2, decreasing = TRUE), ]
-#' scplotter:::top(3)
-#' scplotter:::top(3, groups = "groups")
-#' scplotter:::sel(group1 == 0 | group2 == 0)
-#' scplotter:::uniq(group1, group2)
-#' scplotter:::shared(group1, group2)
-#' scplotter:::gt(group1, group2)
-#' scplotter:::lt(group1, group2)
-#' scplotter:::le(group1, group2)
-#' scplotter:::lt(group1, group2, include_zeros = FALSE)
-#' scplotter:::eq(group1, group2)
-#' scplotter:::ne(group1, group2)
+#' top(3)
+#' top(3, groups = "groups")
+#' sel(group1 == 0 | group2 == 0)
+#' uniq(group1, group2)
+#' shared(group1, group2)
+#' gt(group1, group2)
+#' lt(group1, group2)
+#' le(group1, group2)
+#' lt(group1, group2, include_zeros = FALSE)
+#' eq(group1, group2)
+#' ne(group1, group2)
 #'
 #' # Use them in a dplyr pipeline
-#' dplyr::mutate(data, Top3 = scplotter:::top(3))
-#' dplyr::mutate(data, Top3 = scplotter:::top(3, groups = "groups"))
-#' dplyr::mutate(data, Unique = scplotter:::sel(group1 == 0 | group2 == 0))
-#' dplyr::mutate(data, UniqueInG1 = scplotter:::uniq(group1, group2))
-#' dplyr::mutate(data, Shared = scplotter:::shared(group1, group2))
-#' dplyr::mutate(data, Greater = scplotter:::gt(group1, group2))
-#' dplyr::mutate(data, Less = scplotter:::lt(group1, group2))
-#' dplyr::mutate(data, LessEqual = scplotter:::le(group1, group2))
-#' dplyr::mutate(data, GreaterEqual = scplotter:::ge(group1, group2))
-#' dplyr::mutate(data, Equal = scplotter:::eq(group1, group2))
-#' dplyr::mutate(data, NotEqual = scplotter:::ne(group1, group2))
+#' data <- tidyr::pivot_longer(data, cols = c("group1", "group2"),
+#'     names_to = "group", values_to = "value")
+#' data <- tidyr::uncount(data, !!rlang::sym("value"))
 #'
+#' unique(dplyr::mutate(data, Top3 = top(3))$Top3)
+#' unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
+#' unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
+#' unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)
+#' unique(dplyr::mutate(data, Shared = shared(group1, group2, groups = "group"))$Shared)
+#' unique(dplyr::mutate(data, Greater = gt(group1, group2, groups = "group"))$Greater)
+#' unique(dplyr::mutate(data, Less = lt(group1, group2, groups = "group"))$Less)
+#' unique(dplyr::mutate(data, LessEqual = le(group1, group2, groups = "group"))$LessEqual)
+#' unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, groups = "group"))$GreaterEqual)
+#' unique(dplyr::mutate(data, Equal = eq(group1, group2, groups = "group"))$Equal)
+#' unique(dplyr::mutate(data, NotEqual = ne(group1, group2, groups = "group"))$NotEqual)
 #' # Compond expressions
-#' dplyr::mutate(data,
-#'   Top3OrEqual = scplotter:::or(scplotter:::top(3), scplotter:::eq(group1, group2)))
-#' dplyr::mutate(data,
-#'   SharedAndGreater = scplotter:::and(
-#'      scplotter:::shared(group1, group2), scplotter:::gt(group1, group2)))
-.get_data <- function(data) {
-    if (is.null(data)) {
-        # Walk back to find the frame that has a `data` object
-        env <- caller_env(n = 2)
-        if (env_has(env, ".data")) {
-            data <- across(everything())
-            attr(data, "return_all") <- TRUE
-        } else if (env_has(env, "data") && is.data.frame(env$data)) {
-            data <- env_get(env, "data")
-            attr(data, "return_all") <- FALSE
-        } else {
-            stop("No data not found in caller environment. Please provide it to the 'data' argument.")
-        }
-    }
-    data
-}
+#' unique(
+#'   dplyr::mutate(data,
+#'      Top3OrEqual = or(top(3), eq(group1, group2, groups = "group")))$Top3OrEqual
+#' )
+#'
+#' unique(
+#'   dplyr::mutate(data,
+#'      SharedAndGreater = and(
+#'         shared(group1, group2, groups = "group"),
+#'         gt(group1, group2, groups = "group")
+#'      ))$SharedAndGreater
+#' )
+NULL
 
 #' @rdname clone_selectors
-#' @keywords internal
-.return_what <- function(data, id, return_all) {
-    if (return_all) {
-        if (!id %in% colnames(data)) {
-            stop(paste0("The id column '", id, "' is not found in the data."))
-        }
-        ifelse(data$.indicator, data[[id]], NA)
+#' @export
+top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
     } else {
-        data %>% filter(!!sym(".indicator")) %>% select(-!!sym(".indicator"))
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
+    if (in_form == "long") {
+        stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
+        .top_long(n, groups, data, order, id, return_ids)
+    } else {
+        .top_wide(n, groups, data, order, id, return_ids)
+    }
+}
+
+
+#' @rdname clone_selectors
+#' @export
+sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(expr) || is.null(expr), error = function(e) FALSE)) expr <- expr_name(substitute(expr))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
+    if (in_form == "long") {
+        stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
+        .sel_long(expr, groups, data, id, return_ids)
+    } else {
+        .sel_wide(expr, groups, data, id, return_ids)
     }
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-top <- function(n, groups = NULL, data = NULL, order = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    if (!is.null(groups)) {
-        data <- data %>% dplyr::group_by(!!!syms(groups))
-    }
-
-    order_is_char <- tryCatch(is.character(order), error = function(e) FALSE)
-    if (!order_is_char) {
-        order <- deparse(substitute(order))
-    }
-
-    if (!is.null(order)) {
-        data <- dplyr::arrange(data, !!parse_expr(order))
-    }
-
-    out <- data %>% mutate(.indicator = row_number() <= n)
-    .return_what(out, as.character(substitute(id)), return_all)
-}
-
-#' @rdname clone_selectors
-#' @keywords internal
-sel <- function(expr, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-
-    if (!is.null(groups)) {
-        data <- data %>% dplyr::group_by(!!!syms(groups))
-    }
-
-    expr_is_char <- tryCatch(is.character(expr), error = function(e) FALSE)
-    if (!expr_is_char) {
-        expr <- deparse(substitute(expr))
-    }
-    out <- data %>% mutate(.indicator = !!parse_expr(expr))
-
-    id_is_char <- tryCatch(is.character(id), error = function(e) FALSE)
-    if (!id_is_char) {
-        id <- deparse(substitute(id))
-    }
-    .return_what(out, id, return_all)
-}
-
-#' @rdname clone_selectors
-#' @keywords internal
-uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     other_groups <- as.character(substitute(list(...)))[-1]
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` > 0 & `", group2, "` == 0")
     for (g in other_groups) {
         expr <- paste0(expr, " & `", g, "` == 0")
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     other_groups <- as.character(substitute(list(...)))[-1]
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0")
     for (g in other_groups) {
         expr <- paste0(expr, " & `", g, "` > 0")
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` > `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group2, "` > 0 & ", expr)
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` >= `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group2, "` > 0 & ", expr)
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` < `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & ", expr)
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` <= `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & ", expr)
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-eq <- function(group1, group2, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` == `", group2, "`")
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
-ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = "CTaa", return_all = NULL) {
-    data <- .get_data(data)
-    return_all <- return_all %||% attr(data, "return_all") %||% FALSE
-    group1 <- as.character(substitute(group1))
-    group2 <- as.character(substitute(group2))
+#' @export
+ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, return_ids = NULL) {
+    if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
+    if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
+    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    envtype <- .get_envtype()
+    if (!is.null(data)) {
+        stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
+        in_form <- match.arg(in_form, c("wide", "long"))
+        stopifnot("`return_ids` must be provided when `data` is provided explictly." = !is.null(return_ids))
+    } else {
+        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
+        return_ids <- return_ids %||% (envtype == "tidy")
+    }
+    if (envtype == "scplotter" && is.null(groups)) {
+        env <- caller_env()
+        groups <- unique(c(env$facet_by, env$split_by))
+    }
+    id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0("`", group1, "` != `", group2, "`")
     if (!include_zeros) {
         expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
     }
-    id <- as.character(substitute(id))
-    return(sel(expr, groups, data, id = id, return_all = return_all))
+    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
+#' @export
 and <- function(x, y) {
     mask_x <- is.na(x)
     mask_y <- is.na(y)
@@ -425,7 +692,7 @@ and <- function(x, y) {
 }
 
 #' @rdname clone_selectors
-#' @keywords internal
+#' @export
 or <- function(x, y) {
     dplyr::coalesce(x, y)
 }
