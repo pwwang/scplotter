@@ -76,7 +76,9 @@ different environments and return the results in the desired format.</p>
 <span></span>
 <span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.bquote</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -130,6 +132,10 @@ When used in dplyr verbs, it should be the parent data frame passed to the dplyr
 <dt id="arg-expr">expr<a class="anchor" aria-label="anchor" href="#arg-expr"></a></dt>
 <dd><p>The expression (in characters) to filter the clones
 (e.g. "group1 &gt; group2" to select clones where group1 is larger than group2).</p></dd>
+
+
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>The name to be backtick-quoted</p></dd>
 
 </dl></div>
 
