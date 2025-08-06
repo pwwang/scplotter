@@ -8,6 +8,7 @@
 \alias{.top_wide}
 \alias{.sel_long}
 \alias{.sel_wide}
+\alias{.bquote}
 \title{Utility functions for clone selectors}
 \usage{
 .get_envtype()
@@ -23,6 +24,8 @@
 .sel_long(expr, groups, data, id, return_ids)
 
 .sel_wide(expr, groups, data, id, return_ids)
+
+.bquote(x)
 }
 \arguments{
 \item{envtype}{The type of environment to use. It can be "tidy" for dplyr verbs, "scplotter" for scplotter functions, or "unknown" if the context cannot be determined.}
@@ -55,6 +58,8 @@ When used in dplyr verbs, it should be the parent data frame passed to the dplyr
 
 \item{expr}{The expression (in characters) to filter the clones
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}
+
+\item{x}{The name to be backtick-quoted}
 }
 \description{
 These utility functions are used internally by the clone selectors to handle

@@ -5,6 +5,10 @@ test_that("gt()/ge()/lt()/le() returns selected elements", {
         g1 = c(10, 20, 30, 40, 50),
         g2 = c(5, 15, 35, 40, 30)
     )
+    # group2 works with numbers
+    result <- gt(g1, 40, data = df, in_form = "wide", return_ids = FALSE)
+    expect_equal(result$x, c("E"))
+
     result <- gt(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
     expect_equal(result$x, c("A", "B", "E"))
 

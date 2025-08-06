@@ -163,6 +163,7 @@ screp_subset <- function(screp, subset) {
 #' @importFrom dplyr across
 #' @param envtype The type of environment to use. It can be "tidy" for dplyr verbs, "scplotter" for scplotter functions, or "unknown" if the context cannot be determined.
 #' @param out The output data frame to be processed.
+#' @param x The name to be backtick-quoted
 #' @keywords internal
 .get_envtype <- function() {
     # Returns:
@@ -275,6 +276,23 @@ screp_subset <- function(screp, subset) {
 
     out <- data %>% mutate(.indicator = !!parse_expr(expr))
     .return_what(out, id, return_ids)
+}
+
+#' @rdname clone_selector_utils
+#' @keywords internal
+.bquote <- function(x) {
+    if (is.character(x)) {
+        if (!suppressWarnings(is.na(as.numeric(x)))) {
+            return(x)  # if x is a number, return it as is
+        }
+        if (grepl("`", x)) {
+            return(x)  # already quoted
+        } else {
+            return(paste0("`", x, "`"))  # backtick-quote the name
+        }
+    } else {
+        return(x)
+    }
 }
 
 #' Helper functions to select clones based on various criteria
@@ -466,9 +484,9 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` > 0 & `", group2, "` == 0")
+    expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " == 0")
     for (g in other_groups) {
-        expr <- paste0(expr, " & `", g, "` == 0")
+        expr <- paste0(expr, " & ", .bquote(g), " == 0")
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
@@ -497,9 +515,9 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, i
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0")
+    expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " > 0")
     for (g in other_groups) {
-        expr <- paste0(expr, " & `", g, "` > 0")
+        expr <- paste0(expr, " & ", .bquote(g), " > 0")
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
@@ -527,9 +545,9 @@ gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` > `", group2, "`")
+    expr <- paste0(.bquote(group1), " > ", .bquote(group2))
     if (!include_zeros) {
-        expr <- paste0("`", group2, "` > 0 & ", expr)
+        expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
@@ -557,9 +575,9 @@ ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` >= `", group2, "`")
+    expr <- paste0(.bquote(group1), " >= ", .bquote(group2))
     if (!include_zeros) {
-        expr <- paste0("`", group2, "` > 0 & ", expr)
+        expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
@@ -587,9 +605,9 @@ lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` < `", group2, "`")
+    expr <- paste0(.bquote(group1), " < ", .bquote(group2))
     if (!include_zeros) {
-        expr <- paste0("`", group1, "` > 0 & ", expr)
+        expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
@@ -617,9 +635,9 @@ le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` <= `", group2, "`")
+    expr <- paste0(.bquote(group1), " <= ", .bquote(group2))
     if (!include_zeros) {
-        expr <- paste0("`", group1, "` > 0 & ", expr)
+        expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
@@ -647,7 +665,7 @@ eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = 
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` == `", group2, "`")
+    expr <- paste0(.bquote(group1), " == ", .bquote(group2))
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
 }
@@ -674,9 +692,9 @@ ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         groups <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
-    expr <- paste0("`", group1, "` != `", group2, "`")
+    expr <- paste0(.bquote(group1), " != ", .bquote(group2))
     if (!include_zeros) {
-        expr <- paste0("`", group1, "` > 0 & `", group2, "` > 0 & ", expr)
+        expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
     sel(expr, groups, data, id = id, in_form = in_form, return_ids = return_ids)
