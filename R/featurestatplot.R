@@ -72,9 +72,11 @@
             if (!is.null(args$rows_split_by)) {
                 stop("[FeatureStatPlot] Cannot use both `rows_split_by` and named features.")
             }
+            feature_groups <- lapply(names(features), function(x) rep(x, length(features[[x]])))
+            feature_groups <- do.call(c, feature_groups)
             fdata <- data.frame(
                 Feautures = unlisted_features,
-                FeatureGroups = unlist(sapply(names(features), function(x) rep(x, length(features[[x]]))))
+                FeatureGroups = feature_groups
             )
             args$rows_split_name <- args$rows_split_name %||% "Feature Groups"
             names(fdata) <- c(rows_name, args$rows_split_name)
