@@ -66,6 +66,8 @@
         args$rows_name <- rows_name
         args$split_by <- split_by
         args$values_fill <- args$values_fill %||% 0
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
         if (!is.null(names(features))) {
             # handle named features.
             # names will be used as rows_split_by
@@ -101,6 +103,8 @@
         args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
         args$row_name_annotation <- args$row_name_annotation %||% TRUE
         args$column_name_annotation <- args$column_name_annotation %||% TRUE
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
         args$add_reticle <- args$add_reticle %||% TRUE
         args$cluster_rows <- args$cluster_rows %||% FALSE
         args$cluster_columns <- args$cluster_columns %||% FALSE
