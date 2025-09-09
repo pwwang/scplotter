@@ -345,7 +345,7 @@ ClonalStatPlot <- function(
 
 #' ClonalDynamicsPlot
 #'
-#' @description This function is deprecated. Please use [ClonalStatPlot()] instead.
+#' @description This function is deprecated. Please use [scplotter::ClonalStatPlot()] instead.
 #' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
 #' [scRepertoire::combineExpression].
 #' @param ... Other arguments.

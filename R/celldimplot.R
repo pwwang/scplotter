@@ -19,7 +19,7 @@
 #' @param ... Other arguments passed to [plotthis::DimPlot()].
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
-#' @seealso [CellStatPlot()] [CellVelocityPlot()]
+#' @seealso [scplotter::CellStatPlot()] [scplotter::CellVelocityPlot()]
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions Idents
 #' @importFrom plotthis DimPlot
 #' @details
@@ -366,7 +366,7 @@ CellDimPlot.H5File <- function(
 #' @param ... Other arguments passed to [plotthis::VelocityPlot()].
 #' @return A ggplot object
 #' @export
-#' @seealso [CellDimPlot()]
+#' @seealso [scplotter::CellDimPlot()]
 #' @importFrom SeuratObject DefaultDimReduc Embeddings Reductions
 #' @importFrom plotthis VelocityPlot
 #' @details See:
