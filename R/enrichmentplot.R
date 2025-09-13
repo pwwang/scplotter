@@ -198,7 +198,7 @@ EnrichmentPlot <- function(
         }
         BarPlot(data, x = descr_col, y = ".metric", flip = TRUE, label = "Count",
             add_line = add_line, line_name = line_name,
-            label_nudge = 0.8, fill_by_x_if_no_group = FALSE, palette = palette, expand = expand,
+            fill_by_x_if_no_group = FALSE, palette = palette, expand = expand,
             split_by = split_by, facet_by = facet_by, facet_scales = facet_scales %||% "free_y",
             ylab = xlab %||% paste0("-log10(", metric, ")"), xlab = ylab %||% "", ...)
     } else if (plot_type == "comparison") {
