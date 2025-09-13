@@ -10,6 +10,7 @@
   plot_type,
   should_shrink,
   should_pivot,
+  downsample,
   graph = NULL,
   bg_cutoff = 0,
   dims = 1:2,
@@ -31,6 +32,8 @@
 \item{features}{A character vector of feature names}
 
 \item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"}
+
+\item{downsample}{An integer specifying the number of cells in each identity group to downsample to for violin, box, or ridge plots.}
 
 \item{graph}{Specify the graph name to add edges between cell neighbors to the plot, only used when \code{plot_type} is "dim".}
 

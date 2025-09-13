@@ -10,6 +10,7 @@ FeatureStatPlot(
   plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
   spat_unit = NULL,
   feat_type = NULL,
+  downsample = NULL,
   reduction = NULL,
   graph = NULL,
   bg_cutoff = 0,
@@ -38,6 +39,8 @@ FeatureStatPlot(
 \item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
 
 \item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
+
+\item{downsample}{An integer specifying the number of cells in each identity group to downsample to for violin, box, or ridge plots.}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}
 

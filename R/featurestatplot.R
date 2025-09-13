@@ -9,7 +9,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr summarise %>%
 .feature_stat_plot <- function(
-    data, features, plot_type, should_shrink, should_pivot,
+    data, features, plot_type, should_shrink, should_pivot, downsample,
     graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
@@ -35,12 +35,25 @@
             facet_by <- ".features"
         }
     }
+    downsample_data <- function() {
+        if (!is.null(downsample) && !is.null(ident)) {
+            if (downsample > 0 && downsample <= 1) {
+                slice_sample(data, prop = downsample, by = !!sym(ident))
+            } else {  # downsample > 1
+                slice_sample(data, n = downsample, by = !!sym(ident))
+            }
+        } else {
+            data
+        }
+    }
 
     if (plot_type == "violin") {
+        data <- downsample_data()
         ViolinPlot(
             data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
     } else if (plot_type == "box") {
+        data <- downsample_data()
         BoxPlot(
             data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
@@ -51,6 +64,7 @@
             data, x = ident, y = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
     } else if (plot_type == "ridge") {
+        data <- downsample_data()
         RidgePlot(
             data, x = ".value", group_by = ident, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", ...)
@@ -164,6 +178,9 @@
 #' @param assay The assay to use for the feature data.
 #' @param layer The layer to use for the feature data.
 #' @param agg The aggregation function to use for the bar plot.
+#' @param downsample A numeric the number of cells in each identity group to downsample to for violin, box, or ridge plots.
+#' If n > 1, it is treated as the number of cells to downsample to.
+#' If 0 < n <= 1, it is treated as the fraction of cells to downsample to.
 #' @param group_by The column name in the meta data to group the cells.
 #' @param split_by Column name in the meta data to split the cells to different plots.
 #'   If TRUE, the cells are split by the features.
@@ -398,7 +415,7 @@
 #' }
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL,
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -409,7 +426,7 @@ FeatureStatPlot <- function(
 #' @export
 FeatureStatPlot.giotto <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL,
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -514,7 +531,7 @@ FeatureStatPlot.giotto <- function(
     .feature_stat_plot(
         data = data, features = features, plot_type = plot_type,
         should_shrink = should_shrink, should_pivot = should_pivot,
-        graph = graph, bg_cutoff = bg_cutoff,
+        graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
         xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
@@ -524,7 +541,7 @@ FeatureStatPlot.giotto <- function(
 #' @export
 FeatureStatPlot.Seurat <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL,
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -573,7 +590,7 @@ FeatureStatPlot.Seurat <- function(
     .feature_stat_plot(
         data = data, features = features, plot_type = plot_type,
         should_shrink = should_shrink, should_pivot = should_pivot,
-        graph = graph, bg_cutoff = bg_cutoff,
+        graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
         xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
@@ -583,7 +600,7 @@ FeatureStatPlot.Seurat <- function(
 #' @export
 FeatureStatPlot.character <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL,
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -597,7 +614,7 @@ FeatureStatPlot.character <- function(
 
     FeatureStatPlot.H5File(
         object, features = features, plot_type = plot_type,
-        spat_unit = spat_unit, feat_type = feat_type,
+        spat_unit = spat_unit, feat_type = feat_type, downsample = downsample,
         reduction = reduction, graph = graph, bg_cutoff = bg_cutoff,
         dims = dims, rows_name = rows_name, ident = ident,
         assay = assay, layer = layer, agg = agg,
@@ -609,7 +626,7 @@ FeatureStatPlot.character <- function(
 #' @export
 FeatureStatPlot.H5File <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL,
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -678,7 +695,7 @@ FeatureStatPlot.H5File <- function(
     .feature_stat_plot(
         data = data, features = features, plot_type = plot_type,
         should_shrink = should_shrink, should_pivot = should_pivot,
-        graph = graph, bg_cutoff = bg_cutoff,
+        graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
         xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
