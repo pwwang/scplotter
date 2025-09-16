@@ -18,6 +18,7 @@
   ident = NULL,
   agg = mean,
   group_by = NULL,
+  pos_only = c("no", "any", "all"),
   split_by = NULL,
   facet_by = NULL,
   xlab = NULL,
@@ -33,7 +34,9 @@
 
 \item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"}
 
-\item{downsample}{An integer specifying the number of cells in each identity group to downsample to for violin, box, or ridge plots.}
+\item{downsample}{A numeric the number of cells in each identity group to downsample to for violin, box, or ridge plots.
+If n > 1, it is treated as the number of cells to downsample to.
+If 0 < n <= 1, it is treated as the fraction of cells to downsample to.}
 
 \item{graph}{Specify the graph name to add edges between cell neighbors to the plot, only used when \code{plot_type} is "dim".}
 
@@ -48,6 +51,14 @@
 \item{agg}{The aggregation function to use for the bar plot.}
 
 \item{group_by}{The column name in the meta data to group the cells.}
+
+\item{pos_only}{Whether to only include cells with positive feature values.
+\itemize{
+\item "no": Do not filter cells based on feature values. (default)
+\item "any": Include cells with positive values for any of the features.
+\item "all": Include cells with positive values for all of the features.
+If you have named features (i.e. a named list), \code{pos_only} will be applied to all flattened features.
+}}
 
 \item{split_by}{Column name in the meta data to split the cells to different plots.
 If TRUE, the cells are split by the features.}

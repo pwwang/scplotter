@@ -11,6 +11,7 @@ FeatureStatPlot(
   spat_unit = NULL,
   feat_type = NULL,
   downsample = NULL,
+  pos_only = c("no", "any", "all"),
   reduction = NULL,
   graph = NULL,
   bg_cutoff = 0,
@@ -40,7 +41,17 @@ FeatureStatPlot(
 
 \item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
 
-\item{downsample}{An integer specifying the number of cells in each identity group to downsample to for violin, box, or ridge plots.}
+\item{downsample}{A numeric the number of cells in each identity group to downsample to for violin, box, or ridge plots.
+If n > 1, it is treated as the number of cells to downsample to.
+If 0 < n <= 1, it is treated as the fraction of cells to downsample to.}
+
+\item{pos_only}{Whether to only include cells with positive feature values.
+\itemize{
+\item "no": Do not filter cells based on feature values. (default)
+\item "any": Include cells with positive values for any of the features.
+\item "all": Include cells with positive values for all of the features.
+If you have named features (i.e. a named list), \code{pos_only} will be applied to all flattened features.
+}}
 
 \item{reduction}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}
 
@@ -139,6 +150,9 @@ FeatureStatPlot(
    ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
    add_bg = TRUE, add_box = TRUE, stack = TRUE)
+# Use `pos_only` to include only cells with positive expression of all features
+FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
+   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "aall")
 FeatureStatPlot(pancreas_sub, features = c(
        "Sox9", "Anxa2", "Bicc1", # Ductal
        "Neurog3", "Hes6", # EPs

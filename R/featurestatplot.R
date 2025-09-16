@@ -11,11 +11,17 @@
 .feature_stat_plot <- function(
     data, features, plot_type, should_shrink, should_pivot, downsample,
     graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = NULL, agg = mean, group_by = NULL,
+    ident = NULL, agg = mean, group_by = NULL, pos_only = c("no", "any", "all"),
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
     ...
 ) {
+    pos_only <- match.arg(pos_only)
     unlisted_features <- unname(unlist(features))
+    if (pos_only == "all") {
+        data <- data[rowSums(data[, unlisted_features, drop = FALSE] > 0) == length(unlisted_features), , drop = FALSE]
+    } else if (pos_only == "any") {
+        data <- data[rowSums(data[, unlisted_features, drop = FALSE] > 0) > 0, , drop = FALSE]
+    }
     if (should_shrink) {
         dims <- if (is.null(dims)) NULL else colnames(data)[dims]
         selected_columns <- c(dims, ident, unlisted_features, group_by, if (!isTRUE(split_by)) split_by)
@@ -145,7 +151,7 @@
         do.call(Heatmap, args)
     } else if (plot_type == "cor") {
         if (length(unlisted_features) < 2) {
-            stop("The number of features should be at least 2 for correlation plot.")
+            stop("[FeatureStatPlot] The number of features should be at least 2 for correlation plot.")
         }
         if (length(unlisted_features) == 2) {
             CorPlot(data, x = unlisted_features[1], y = unlisted_features[2], group_by = ident, split_by = split_by,
@@ -174,6 +180,11 @@
 #' @param rows_name The name of the rows in the heatmap, only used when `plot_type` is "heatmap".
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot, only used when `plot_type` is "dim".
 #' @param bg_cutoff Background cutoff for the dim plot, only used when `plot_type` is "dim".
+#' @param pos_only Whether to only include cells with positive feature values.
+#' * "no": Do not filter cells based on feature values. (default)
+#' * "any": Include cells with positive values for any of the features.
+#' * "all": Include cells with positive values for all of the features.
+#' If you have named features (i.e. a named list), `pos_only` will be applied to all flattened features.
 #' @param ident The column name in the meta data to identify the cells.
 #' @param assay The assay to use for the feature data.
 #' @param layer The layer to use for the feature data.
@@ -241,6 +252,9 @@
 #'    ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
 #' FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
 #'    add_bg = TRUE, add_box = TRUE, stack = TRUE)
+#' # Use `pos_only` to include only cells with positive expression of all features
+#' FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
+#'    add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "aall")
 #' FeatureStatPlot(pancreas_sub, features = c(
 #'        "Sox9", "Anxa2", "Bicc1", # Ductal
 #'        "Neurog3", "Hes6", # EPs
@@ -415,7 +429,7 @@
 #' }
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL, downsample = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -426,7 +440,7 @@ FeatureStatPlot <- function(
 #' @export
 FeatureStatPlot.giotto <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL, downsample = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -529,7 +543,7 @@ FeatureStatPlot.giotto <- function(
     }
 
     .feature_stat_plot(
-        data = data, features = features, plot_type = plot_type,
+        data = data, features = features, plot_type = plot_type, pos_only = pos_only,
         should_shrink = should_shrink, should_pivot = should_pivot,
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
@@ -541,7 +555,7 @@ FeatureStatPlot.giotto <- function(
 #' @export
 FeatureStatPlot.Seurat <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL, downsample = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -588,7 +602,7 @@ FeatureStatPlot.Seurat <- function(
     }
 
     .feature_stat_plot(
-        data = data, features = features, plot_type = plot_type,
+        data = data, features = features, plot_type = plot_type, pos_only = pos_only,
         should_shrink = should_shrink, should_pivot = should_pivot,
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
@@ -600,7 +614,7 @@ FeatureStatPlot.Seurat <- function(
 #' @export
 FeatureStatPlot.character <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL, downsample = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -626,7 +640,7 @@ FeatureStatPlot.character <- function(
 #' @export
 FeatureStatPlot.H5File <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
-    spat_unit = NULL, feat_type = NULL, downsample = NULL,
+    spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
@@ -693,7 +707,7 @@ FeatureStatPlot.H5File <- function(
     }
 
     .feature_stat_plot(
-        data = data, features = features, plot_type = plot_type,
+        data = data, features = features, plot_type = plot_type, pos_only = pos_only,
         should_shrink = should_shrink, should_pivot = should_pivot,
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
