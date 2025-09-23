@@ -1,6 +1,6 @@
 Package: scplotter
 Title: Publication Quality Plots for Single Cell Data Analysis
-Version: 0.5.5
+Version: 0.6.0
 Authors@R:
     person("Panwen", "Wang", , "pwwang@pwwang.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4614-8970"))
@@ -56,7 +56,6 @@ Suggests:
     knitr,
     terra,
     rmarkdown,
-    learnr,
     hdf5r,
     proxyC,
     metR

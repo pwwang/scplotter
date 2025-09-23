@@ -12,7 +12,7 @@
 #' @param reduction Name of the reduction to plot (for example, "umap").
 #' @param graph Specify the graph name to add edges between cell neighbors to the plot.
 #' @param velocity The name of velocity reduction to plot cell velocities.
-#' It is typically "stochastic_<reduction>", "deterministic_<reduction>", or "dynamical_<reduction>".
+#' It is typically `"stochastic_<reduction>"`, `"deterministic_<reduction>"`, or `"dynamical_<reduction>"`.
 #' @param group_by A character vector of column name(s) to group the data. Default is NULL.
 #' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
 #' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.

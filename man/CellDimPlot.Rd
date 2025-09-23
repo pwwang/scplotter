@@ -29,7 +29,7 @@ CellDimPlot(
 \item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
 
 \item{velocity}{The name of velocity reduction to plot cell velocities.
-It is typically "stochastic_\if{html}{\out{<reduction>}}", "deterministic_\if{html}{\out{<reduction>}}", or "dynamical_\if{html}{\out{<reduction>}}".}
+It is typically \code{"stochastic_<reduction>"}, \code{"deterministic_<reduction>"}, or \code{"dynamical_<reduction>"}.}
 
 \item{...}{Other arguments passed to \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.}
 }

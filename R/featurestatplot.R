@@ -254,7 +254,7 @@
 #'    add_bg = TRUE, add_box = TRUE, stack = TRUE)
 #' # Use `pos_only` to include only cells with positive expression of all features
 #' FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-#'    add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "aall")
+#'    add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all")
 #' FeatureStatPlot(pancreas_sub, features = c(
 #'        "Sox9", "Anxa2", "Bicc1", # Ductal
 #'        "Neurog3", "Hes6", # EPs
