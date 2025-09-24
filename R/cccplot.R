@@ -56,6 +56,17 @@
 #' @param meta_specificity The method to calculate the specificity when there are multiple
 #'  ligand-receptor pairs interactions. Default is "sumlog".
 #'  It should be one of the methods in the `metap` package.
+#'  Current available methods are:
+#'  * `invchisq`: Combine p values using the inverse chi squared method
+#'  * `invt`: Combine p values using the inverse t method
+#'  * `logitp`: Combine p values using the logit method
+#'  * `meanp`: Combine p values by the mean p method
+#'  * `meanz`: Combine p values using the mean z method
+#'  * `sumlog`: Combine p-values by the sum of logs (Fisher's) method
+#'  * `sump`: Combine p-values using the sum of p (Edgington's) method
+#'  * `two2one`: Convert two-sided p-values to one-sided
+#'  * `votep`: Combine p-values by the vote counting method
+#'  * `wilkinsonp`: Combine p-values using Wilkinson's method
 #' @param split_by A character vector of column names to split the plots. Default is NULL.
 #' @param x_text_angle The angle of the x-axis text. Default is 90.
 #'  Only used when `plot_type` is "dot".
@@ -159,22 +170,28 @@ CCCPlot <- function(
             magnitiude <- "mag_score"
             links[[magnitiude]] <- NA
         }
-
-        metap_fn <- getFromNamespace(meta_specificity, "metap")
-        links <- suppressWarnings({ links %>%
-            filter(!is.na(!!sym(specificity))) %>%
-            summarise(
-                !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
-                .specificity = if (is.null(specificity)) {
-                    NA
-                } else if (n() == 1) {
-                    !!sym(specificity)
-                } else {
-                    metap_fn(!!sym(specificity))$p
-                },
-                .groups = "drop") %>%
-            replace_na(list(.specificity = 0))
-        })
+        if (is.null(specificity)) {
+            links <- suppressWarnings({ links %>%
+                summarise(
+                    !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
+                    .groups = "drop"
+                )
+            })
+        } else {
+            metap_fn <- getFromNamespace(meta_specificity, "metap")
+            links <- suppressWarnings({ links %>%
+                filter(!is.na(!!sym(specificity))) %>%
+                summarise(
+                    !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
+                    .specificity = if (n() == 1) {
+                        !!sym(specificity)
+                    } else {
+                        metap_fn(!!sym(specificity))$p
+                    },
+                    .groups = "drop") %>%
+                replace_na(list(.specificity = 0))
+            })
+        }
 
         if (plot_type == "network") {
             Network(links, from = source_col, to = target_col, node_fill_by = "name", split_by = split_by,

@@ -87,7 +87,20 @@ Default is "No. of interactions".}
 
 \item{meta_specificity}{The method to calculate the specificity when there are multiple
 ligand-receptor pairs interactions. Default is "sumlog".
-It should be one of the methods in the \code{metap} package.}
+It should be one of the methods in the \code{metap} package.
+Current available methods are:
+\itemize{
+\item \code{invchisq}: Combine p values using the inverse chi squared method
+\item \code{invt}: Combine p values using the inverse t method
+\item \code{logitp}: Combine p values using the logit method
+\item \code{meanp}: Combine p values by the mean p method
+\item \code{meanz}: Combine p values using the mean z method
+\item \code{sumlog}: Combine p-values by the sum of logs (Fisher's) method
+\item \code{sump}: Combine p-values using the sum of p (Edgington's) method
+\item \code{two2one}: Convert two-sided p-values to one-sided
+\item \code{votep}: Combine p-values by the vote counting method
+\item \code{wilkinsonp}: Combine p-values using Wilkinson's method
+}}
 
 \item{split_by}{A character vector of column names to split the plots. Default is NULL.}
 
