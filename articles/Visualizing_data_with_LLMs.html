@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -301,10 +301,13 @@ for visualization.</p>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [1] "list(source = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, ..."</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 91 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">#&gt; Warning: Removed 91 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-2.png" width="672"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Do a heatmap instead"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -314,11 +317,9 @@ for visualization.</p>
 <span><span class="co">#&gt; Running tool:  CCCPlot</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
-<span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [1] "list()\nlist()\n&lt;environment&gt;\n&lt;environment&gt;\nlist()\nlist()\n&lt;environment&gt;\n&lt;environment&gt;\n&lt;environment&gt;..."</span></span></code></pre></div>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; prompt</span></span></code></pre></div>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-2.png" width="672"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a title to the plot: 'Cell-Cell Communication Plot'"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
@@ -327,16 +328,14 @@ for visualization.</p>
 <span><span class="co">#&gt; Running tool:  CCCPlot</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
-<span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [1] "list()\nlist()\n&lt;environment&gt;\n&lt;environment&gt;\nlist()\nlist()\n&lt;environment&gt;\n&lt;environment&gt;\n&lt;environment&gt;..."</span></span></code></pre></div>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; prompt</span></span></code></pre></div>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-2.png" width="672"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                   </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
 <span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
 <span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
 <span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
@@ -351,7 +350,7 @@ for visualization.</p>
 <p>You can set <code>verbose</code> to <code>TRUE</code> for all
 conversations when constructing the <code>chat</code> object. This will
 print the prompt and the response from the LLM.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/SCPlotterChat.html">SCPlotterChat</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>    provider <span class="op">=</span> <span class="va">provider</span>,</span>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -1295,12 +1294,16 @@ print the prompt and the response from the LLM.</p>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
 <span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
-<span><span class="co">#&gt; ```</span></span>
-<span><span class="co">#&gt; [1] "list(source = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, ..."</span></span></code></pre>
+<span><span class="co">#&gt; ```</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Warning: Removed 91 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<pre><code><span><span class="co">#&gt; Warning: Removed 91 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-2.png" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/SCPlotterChat.html">SCPlotterChat</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>    provider <span class="op">=</span> <span class="va">provider</span>,</span>
 <span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -2244,9 +2247,13 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
 <span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
-<span><span class="co">#&gt; ```</span></span>
-<span><span class="co">#&gt; [1] "list(source = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, ..."</span></span></code></pre>
+<span><span class="co">#&gt; ```</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Warning: Removed 91 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<pre><code><span><span class="co">#&gt; Warning: Removed 91 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

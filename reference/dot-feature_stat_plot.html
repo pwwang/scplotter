@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,6 +67,7 @@
 <span>  <span class="va">plot_type</span>,</span>
 <span>  <span class="va">should_shrink</span>,</span>
 <span>  <span class="va">should_pivot</span>,</span>
+<span>  <span class="va">downsample</span>,</span>
 <span>  graph <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bg_cutoff <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
@@ -74,6 +75,7 @@
 <span>  ident <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  agg <span class="op">=</span> <span class="va">mean</span>,</span>
 <span>  group_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pos_only <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no"</span>, <span class="st">"any"</span>, <span class="st">"all"</span><span class="op">)</span>,</span>
 <span>  split_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  facet_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -97,6 +99,12 @@
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
 <dd><p>Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"</p></dd>
+
+
+<dt id="arg-downsample">downsample<a class="anchor" aria-label="anchor" href="#arg-downsample"></a></dt>
+<dd><p>A numeric the number of cells in each identity group to downsample to for violin, box, or ridge plots.
+If n &gt; 1, it is treated as the number of cells to downsample to.
+If 0 &lt; n &lt;= 1, it is treated as the fraction of cells to downsample to.</p></dd>
 
 
 <dt id="arg-graph">graph<a class="anchor" aria-label="anchor" href="#arg-graph"></a></dt>
@@ -125,6 +133,14 @@
 
 <dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
 <dd><p>The column name in the meta data to group the cells.</p></dd>
+
+
+<dt id="arg-pos-only">pos_only<a class="anchor" aria-label="anchor" href="#arg-pos-only"></a></dt>
+<dd><p>Whether to only include cells with positive feature values.</p><ul><li><p>"no": Do not filter cells based on feature values. (default)</p></li>
+<li><p>"any": Include cells with positive values for any of the features.</p></li>
+<li><p>"all": Include cells with positive values for all of the features.
+If you have named features (i.e. a named list), <code>pos_only</code> will be applied to all flattened features.</p></li>
+</ul></dd>
 
 
 <dt id="arg-split-by">split_by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>

@@ -17,7 +17,7 @@ It also supports calculating fractions of cells based on specified groupings.#'"
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -320,19 +320,22 @@ Note that this is different from <code>flip</code>. <code>flip</code> is used to
 <span class="r-in"><span>   show_column_names <span class="op">=</span> <span class="cn">TRUE</span>, column_names_side <span class="op">=</span> <span class="st">"top"</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>   row_names_side <span class="op">=</span> <span class="st">"right"</span>, pie_size <span class="op">=</span> <span class="st">"identity"</span>, pie_values <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CellStatPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-17.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Heatmap</span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>, palette <span class="op">=</span> <span class="st">"Blues"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-17.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>,</span></span>
 <span class="r-in"><span>   frac <span class="op">=</span> <span class="st">"group"</span>, columns_split_by <span class="op">=</span> <span class="st">"seurat_annotations"</span>, swap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-20.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-21.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Radar plot/Spider plot</span></span></span>
 <span class="r-in"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"radar"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"spider"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pr</span> <span class="op">|</span> <span class="va">ps</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-19.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-22.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Box/Violin plot</span></span></span>
 <span class="r-in"><span><span class="va">ifnb_sub</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"g"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ifnb_sub</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -353,7 +356,7 @@ Note that this is different from <code>flip</code>. <code>flip</code> is used to
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In index: 13.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `utils::combn()`:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> n &lt; m</span>
-<span class="r-plt img"><img src="CellStatPlot-20.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

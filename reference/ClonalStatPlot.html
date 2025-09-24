@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -264,6 +264,7 @@ This argument is not supported and will raise an error if provided.</p></dd>
 <span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="clone_selectors.html">sel</a></span><span class="op">(</span><span class="va">P17L</span> <span class="op">&gt;</span> <span class="fl">10</span> <span class="op">&amp;</span> <span class="va">P17B</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, relabel <span class="op">=</span> <span class="cn">TRUE</span>, orderby <span class="op">=</span> <span class="st">"P17L"</span>,</span></span>
 <span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ClonalStatPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># using heatmap with subgroups</span></span></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -271,14 +272,15 @@ This argument is not supported and will raise an error if provided.</p></dd>
 <span class="r-in"><span>        ExpandedClonesInP17B <span class="op">=</span> <span class="st">"sel(P17B &gt; 20)"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span>, subgroup_by <span class="op">=</span> <span class="st">"CellType"</span>, pie_size <span class="op">=</span> <span class="va">sqrt</span>,</span></span>
 <span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"pies"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># using clone groups and showing dynamics using sankey plot</span></span></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>      <span class="st">"Hyper-expanded clones in P17B"</span> <span class="op">=</span> <span class="st">"sel(P17B &gt; 10)"</span>,</span></span>
 <span class="r-in"><span>      <span class="st">"Hyper-expanded clones in P17L"</span> <span class="op">=</span> <span class="st">"sel(P17L &gt; 10)"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"sankey"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
