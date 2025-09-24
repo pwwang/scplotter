@@ -19,11 +19,11 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
     data <- merge_clonal_groupings(data, groupings)
 
     if (inherits(data, "Seurat")) {
-        all_gvalues <- unique(data@meta.data$.group)
+        # all_gvalues <- unique(data@meta.data$.group)
     } else {
         # clonalScatter only returns data for each sample
         # need to re-organize the data to get the data for each group
-        all_gvalues <- unique(unlist(sapply(data, function(x) x$.group)))
+        # all_gvalues <- unique(unlist(sapply(data, function(x) x$.group)))
         newdata <- list()
         for (d in data) {
             nd <- split(d, d$.group)
@@ -38,23 +38,32 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
         data <- newdata
     }
 
+    .data.wrangle <- utils::getFromNamespace(".data.wrangle", "scRepertoire")
+    .theCall <- utils::getFromNamespace(".theCall", "scRepertoire")
+
+    data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE), chain)
+    all_gvalues <- names(data)
     gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
+    clone_call <- .theCall(data, clone_call)
+
     do.call(rbind, lapply(gv_pairs, function(gv) {
-        d <- clonalScatter(data, group.by = ".group",
-            cloneCall = clone_call, chain = chain,
-            x.axis = gv[1], y.axis = gv[2], exportTable = TRUE
-        )
-        d$class <- NULL
-        d$sum <- NULL
-        d$size <- NULL
-        names(d)[2:3] <- paste(names(d)[2:3], "count", sep = ".")
-        d <- pivot_longer(
-            d,
+        x_df <- as.data.frame(table(data[[gv[1]]][, clone_call]))
+        x_col <- colnames(x_df)[2] <- paste0(gv[1], ".count")
+        y_df <- as.data.frame(table(data[[gv[2]]][, clone_call]))
+        y_col <- colnames(y_df)[2] <- paste0(gv[2], ".count")
+
+        mat <- merge(x_df, y_df, by = "Var1", all = TRUE)
+        mat[is.na(mat)] <- 0
+        mat[, paste0(gv[1], ".fraction")] <- mat[, x_col]/sum(mat[,  x_col])
+        mat[, paste0(gv[2], ".fraction")] <- mat[, y_col]/sum(mat[,  y_col])
+
+        mat <- pivot_longer(
+            mat,
             cols = -"Var1",
             names_to = c(".group", ".value"),
             names_sep = "\\."
         )
-        d
+        mat
     })) %>%
         distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
         separate(".group", into = groupings, sep = " // ") %>%
