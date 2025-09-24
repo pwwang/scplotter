@@ -241,16 +241,10 @@ See <a href="https://pwwang.github.io/plotthis/reference/show_palettes.html" cla
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">enrich_example</span><span class="op">$</span><span class="va">Group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">enrich_example</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span><span class="va">enrich_example</span>, plot_type <span class="op">=</span> <span class="st">"comparison"</span>, group_by <span class="op">=</span> <span class="st">"Group"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 12 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="EnrichmentPlot-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span><span class="va">enrich_example</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>, top_term <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="EnrichmentPlot-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span><span class="va">enrich_example</span>, plot_type <span class="op">=</span> <span class="st">"lollipop"</span>, top_term <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="EnrichmentPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span><span class="va">enrich_example</span>, plot_type <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="EnrichmentPlot-10.png" alt="" width="700" height="433"></span>
