@@ -246,37 +246,35 @@ Only used when <code>plot_type</code> is "heatmap".</p></dd>
 <span class="r-plt img"><img src="CCCPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CCCPlot-3.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="CCCPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
 <span class="r-in"><span>  magnitude_agg <span class="op">=</span> <span class="va">mean</span>, magnitude_name <span class="op">=</span> <span class="st">"Average Interaction Strength"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCPlot-5.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res</span>, plot_type <span class="op">=</span> <span class="st">"sankey"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing alluvia for some stratum combinations.</span>
-<span class="r-plt img"><img src="CCCPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cellphonedb_res_sub</span> <span class="op">&lt;-</span> <span class="va">cellphonedb_res</span><span class="op">[</span></span></span>
 <span class="r-in"><span>  <span class="va">cellphonedb_res</span><span class="op">$</span><span class="va">source</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dendritic"</span>, <span class="st">"CD14+ Monocyte"</span><span class="op">)</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res_sub</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>, method <span class="op">=</span> <span class="st">"interaction"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Multiple columns are provided in 'y'. They will be concatenated into one column.</span>
-<span class="r-plt img"><img src="CCCPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res_sub</span>, plot_type <span class="op">=</span> <span class="st">"network"</span>, method <span class="op">=</span> <span class="st">"interaction"</span>,</span></span>
 <span class="r-in"><span>  node_size_by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, method <span class="op">=</span> <span class="st">"interaction"</span>,</span></span>
 <span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"Reds"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCPlot-9.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="CCCPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, method <span class="op">=</span> <span class="st">"interaction"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, method <span class="op">=</span> <span class="st">"interaction"</span>,</span></span>
 <span class="r-in"><span>  add_box <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CCCPlot</span><span class="op">(</span><span class="va">cellphonedb_res_sub</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, method <span class="op">=</span> <span class="st">"interaction"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.311</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.311</span>
-<span class="r-plt img"><img src="CCCPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CCCPlot-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

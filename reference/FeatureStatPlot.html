@@ -416,15 +416,12 @@ If TRUE, the cells are split by the features.</p></dd>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-35.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-36.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, columns_split_by <span class="op">=</span> <span class="st">"SubCellType"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-37.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-38.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-36.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, cell_type <span class="op">=</span> <span class="st">"bars"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-39.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-40.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-37.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, cell_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, dot_size <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   dot_size_name <span class="op">=</span> <span class="st">"Percent Expressed"</span>, add_bg <span class="op">=</span> <span class="cn">TRUE</span>, rows_data <span class="op">=</span> <span class="va">rows_data</span>,</span></span>
@@ -437,8 +434,7 @@ If TRUE, the cells are split by the features.</p></dd>
 <span class="r-in"><span>   row_annotation_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>TF <span class="op">=</span> <span class="st">"simple"</span>, CSPA <span class="op">=</span> <span class="st">"simple"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation</span>
-<span class="r-plt img"><img src="FeatureStatPlot-41.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-42.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-38.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, cell_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, dot_size <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   dot_size_name <span class="op">=</span> <span class="st">"Percent Expressed"</span>, add_bg <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
@@ -452,20 +448,17 @@ If TRUE, the cells are split by the features.</p></dd>
 <span class="r-in"><span>   row_annotation_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>TF <span class="op">=</span> <span class="st">"simple"</span>, CSPA <span class="op">=</span> <span class="st">"simple"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation</span>
-<span class="r-plt img"><img src="FeatureStatPlot-43.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-44.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-39.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, cell_type <span class="op">=</span> <span class="st">"violin"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>   cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>, rows_split_by <span class="op">=</span> <span class="st">"group"</span>, rows_data <span class="op">=</span> <span class="va">rows_data</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-45.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-46.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-40.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, cell_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, dot_size <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   dot_size_name <span class="op">=</span> <span class="st">"Percent Expressed"</span>, palette <span class="op">=</span> <span class="st">"viridis"</span>, add_reticle <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>   rows_data <span class="op">=</span> <span class="va">rows_data</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>   rows_split_by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-47.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-48.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-41.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Visualize the markers for each sub-cell type (the markers can overlap)</span></span></span>
 <span class="r-in"><span><span class="co"># Say: markers &lt;- Seurat::FindAllMarkers(pancreas_sub, ident = "SubCellType")</span></span></span>
 <span class="r-in"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
@@ -489,13 +482,11 @@ If TRUE, the cells are split by the features.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, rows_data <span class="op">=</span> <span class="va">markers</span>, rows_name <span class="op">=</span> <span class="st">"gene"</span>, rows_split_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
 <span class="r-in"><span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>,</span></span>
 <span class="r-in"><span>  cluster_rows <span class="op">=</span> <span class="cn">FALSE</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>, rows_split_palette <span class="op">=</span> <span class="st">"Paired"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-49.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-50.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-42.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-51.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-52.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-43.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">named_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>   Ductal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span><span class="op">)</span>,</span></span>
@@ -506,16 +497,15 @@ If TRUE, the cells are split by the features.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">named_features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-53.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="FeatureStatPlot-54.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-44.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Correlation plot</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pyy"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"cor"</span>,</span></span>
 <span class="r-in"><span>   anno_items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="st">"r2"</span>, <span class="st">"spearman"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-55.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-45.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"cor"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-56.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="FeatureStatPlot-46.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

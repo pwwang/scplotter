@@ -184,12 +184,6 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    This function generates various types of plots for enrichment (over-representation) analysis.</span></span>
 <span><span class="co">#&gt; -  eq :  Helper functions to select clones based on various criteria     </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
-<span><span class="co">#&gt; -  VolcanoPlot :  Objects exported from other packages     </span></span>
-<span><span class="co">#&gt;    These objects are imported from other packages. Follow the links</span></span>
-<span><span class="co">#&gt;    below to see their documentation.</span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
 <span><span class="co">#&gt; -  CellVelocityPlot :  Cell Velocity Plot     </span></span>
 <span><span class="co">#&gt;    This function creates a cell velocity plot for a Seurat object,</span></span>
 <span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
@@ -219,7 +213,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
 <span><span class="co">#&gt; -  CCCPlot :  Cell-Cell Communication Plot     </span></span>
 <span><span class="co">#&gt;    Plot the cell-cell communication.</span></span>
 <span><span class="co">#&gt;    See also:</span></span>
@@ -242,6 +236,8 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; -  le :  Helper functions to select clones based on various criteria     </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
+<span><span class="co">#&gt; -  MarkersPlot :  Visualize Markers     </span></span>
+<span><span class="co">#&gt;    Plot markers, typically identified by    Seurat::FindMarkers()    or    Seurat::FindAllMarkers()   .</span></span>
 <span><span class="co">#&gt; -  ClonalOverlapPlot :  ClonalOverlapPlot     </span></span>
 <span><span class="co">#&gt;    Plot the overlap of the clones in different samples/groups.</span></span>
 <span><span class="co">#&gt; -  ge :  Helper functions to select clones based on various criteria     </span></span>
@@ -273,7 +269,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
 <span><span class="co">#&gt; -  or :  Helper functions to select clones based on various criteria     </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; -  ListTools :  List all available tools</span></span>
@@ -329,12 +325,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                          </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                            </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                           </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                        </span></span>
-<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                        </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = 'Cell-Cell Communication Plot')"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                          </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
+<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -392,13 +388,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; - eq: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - VolcanoPlot: Objects exported from other packages  </span></span>
-<span><span class="co">#&gt;    These objects are imported from other packages. Follow the links</span></span>
-<span><span class="co">#&gt;    below to see their documentation.</span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - CellVelocityPlot: Cell Velocity Plot  </span></span>
 <span><span class="co">#&gt;    This function creates a cell velocity plot for a Seurat object,</span></span>
 <span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
@@ -434,7 +423,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - CCCPlot: Cell-Cell Communication Plot  </span></span>
 <span><span class="co">#&gt;    Plot the cell-cell communication.</span></span>
@@ -465,6 +454,9 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - le: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; - MarkersPlot: Visualize Markers  </span></span>
+<span><span class="co">#&gt;    Plot markers, typically identified by    Seurat::FindMarkers()    or    Seurat::FindAllMarkers()   .</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalOverlapPlot: ClonalOverlapPlot  </span></span>
 <span><span class="co">#&gt;    Plot the overlap of the clones in different samples/groups.</span></span>
@@ -508,7 +500,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - or: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
@@ -936,6 +928,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       the fourth and fifth arguments are the row and column names.</span></span>
 <span><span class="co">#&gt;       The function should return a character vector of the same length as the aggregated values.</span></span>
 <span><span class="co">#&gt;       If the function returns NA, no label will be shown for that cell.</span></span>
+<span><span class="co">#&gt;       For the indices, if you have the same dimension of data (same order of rows and columns) as the heatmap, you need to use ComplexHeatmap::pindex() to get the correct values.</span></span>
 <span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
 <span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
 <span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
@@ -994,7 +987,8 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the column data.</span></span>
 <span><span class="co">#&gt;       - column_annotation_params: A list of parameters passed to the annotation function.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
+<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters passed to the annotation function. For the parameters for names (columns_by, rows_by, columns_split_by, rows_split_by), the key should be "name.(name)", where (name) is the name of the annotation.</span></span>
+<span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.</span></span>
 <span><span class="co">#&gt;       - column_annotation_agg: A function to aggregate the values in the column annotation.</span></span>
 <span><span class="co">#&gt;       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
@@ -1011,6 +1005,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the row data.</span></span>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
+<span><span class="co">#&gt;       Same as column_annotation_params.</span></span>
 <span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
 <span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
@@ -1353,13 +1348,6 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; - eq: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - VolcanoPlot: Objects exported from other packages  </span></span>
-<span><span class="co">#&gt;    These objects are imported from other packages. Follow the links</span></span>
-<span><span class="co">#&gt;    below to see their documentation.</span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - CellVelocityPlot: Cell Velocity Plot  </span></span>
 <span><span class="co">#&gt;    This function creates a cell velocity plot for a Seurat object,</span></span>
 <span><span class="co">#&gt;    a Giotto object, a path to an .h5ad file or an opened    H5File    by    hdf5r    package.</span></span>
@@ -1395,7 +1383,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - CCCPlot: Cell-Cell Communication Plot  </span></span>
 <span><span class="co">#&gt;    Plot the cell-cell communication.</span></span>
@@ -1426,6 +1414,9 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - le: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; - MarkersPlot: Visualize Markers  </span></span>
+<span><span class="co">#&gt;    Plot markers, typically identified by    Seurat::FindMarkers()    or    Seurat::FindAllMarkers()   .</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalOverlapPlot: ClonalOverlapPlot  </span></span>
 <span><span class="co">#&gt;    Plot the overlap of the clones in different samples/groups.</span></span>
@@ -1469,7 +1460,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   ,    VolcanoPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - or: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
@@ -1897,6 +1888,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       the fourth and fifth arguments are the row and column names.</span></span>
 <span><span class="co">#&gt;       The function should return a character vector of the same length as the aggregated values.</span></span>
 <span><span class="co">#&gt;       If the function returns NA, no label will be shown for that cell.</span></span>
+<span><span class="co">#&gt;       For the indices, if you have the same dimension of data (same order of rows and columns) as the heatmap, you need to use ComplexHeatmap::pindex() to get the correct values.</span></span>
 <span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
 <span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
 <span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
@@ -1955,7 +1947,8 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the column data.</span></span>
 <span><span class="co">#&gt;       - column_annotation_params: A list of parameters passed to the annotation function.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
+<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters passed to the annotation function. For the parameters for names (columns_by, rows_by, columns_split_by, rows_split_by), the key should be "name.(name)", where (name) is the name of the annotation.</span></span>
+<span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.</span></span>
 <span><span class="co">#&gt;       - column_annotation_agg: A function to aggregate the values in the column annotation.</span></span>
 <span><span class="co">#&gt;       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
@@ -1972,6 +1965,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the row data.</span></span>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
+<span><span class="co">#&gt;       Same as column_annotation_params.</span></span>
 <span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
 <span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
@@ -2262,7 +2256,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
 </div>
