@@ -325,12 +325,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                            </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                          </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
-<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                          </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                          </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                            </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                           </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                        </span></span>
+<span><span class="co">#&gt; [5] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                        </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = 'Cell-Cell Communication Plot')"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -1296,7 +1296,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-2.png" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
@@ -2256,7 +2256,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
 </div>
