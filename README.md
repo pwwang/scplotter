@@ -40,7 +40,7 @@ $ conda install pwwang::r-scplotter
 
 ![](./man/figures/gseaplot.png)
 
-[`VolcanoPlot`][9]
+[`MarkersPlot`][9]
 
 ![](./man/figures/volcanoplot.png)
 
@@ -106,7 +106,7 @@ chat$ask("Do a heatmap instead")
 [6]: https://pwwang.github.io/scplotter/reference/FeatureStatPlot.html
 [7]: https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html
 [8]: https://pwwang.github.io/plotthis/reference/gsea.html
-[9]: https://pwwang.github.io/plotthis/reference/VolcanoPlot.html
+[9]: https://pwwang.github.io/scplotter/reference/MarkersPlot.html
 [10]: https://pwwang.github.io/scplotter/reference/CCCPlot.html
 [11]: https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.html
 [12]: https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.html

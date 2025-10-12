@@ -104,20 +104,20 @@ Additional arguments passed to specific plotting functions:
 }
 \examples{
 \donttest{
-data("pbmc_small", package = "SeuratObject")
-markers <- Seurat::FindMarkers(pbmc_small,
- group.by = "groups", ident.1 = "g1", ident.2 = "g2")
-allmarkers <- Seurat::FindAllMarkers(pbmc_small)  # RNA_snn_res.1
+data(pancreas_sub)
+markers <- Seurat::FindMarkers(pancreas_sub,
+ group.by = "Phase", ident.1 = "G2M", ident.2 = "G1")
+allmarkers <- Seurat::FindAllMarkers(pancreas_sub)  # seurat_clusters
 
-MarkersPlot(markers, p_adjust = FALSE)
-MarkersPlot(markers, p_adjust = FALSE, x_cutoff = 1)
+MarkersPlot(markers)
+MarkersPlot(markers, x_cutoff = 2)
 MarkersPlot(allmarkers, p_adjust = FALSE,
     subset_by = "cluster", ncol = 2, subset_as_facet = TRUE)
-MarkersPlot(markers, p_adjust = FALSE, plot_type = "volcano_pct")
+MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 
 MarkersPlot(allmarkers, plot_type = "jitter", subset_by = "cluster")
 MarkersPlot(allmarkers, plot_type = "jitter_pct",
-    subset_by = "cluster", add_hline = 0)
+    subset_by = "cluster", add_hline = 0, shape = 16)
 
 MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
 MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
@@ -126,24 +126,25 @@ MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
 MarkersPlot(allmarkers, plot_type = "dot_log2fc", subset_by = "cluster",
     add_reticle = TRUE)
 
-MarkersPlot(allmarkers, object = pbmc_small, plot_type = "heatmap",
-    comparison_by = "cluster:RNA_snn_res.1")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
+   columns_split_by = "CellType",
+   comparison_by = "cluster:seurat_clusters")
 
 # Suppose we did a DE between g1 and g2 in each cluster
 allmarkers$comparison <- "g1:g2"
-MarkersPlot(allmarkers, object = pbmc_small, plot_type = "heatmap",
-   comparison_by = "comparison:groups", subset_by = "cluster:RNA_snn_res.1")
-MarkersPlot(allmarkers, object = pbmc_small, plot_type = "dot",
-   comparison_by = "comparison:groups", subset_by = "cluster:RNA_snn_res.1")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
+   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
+   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
 
-MarkersPlot(allmarkers, object = pbmc_small, plot_type = "violin", select = 3,
-   comparison_by = "comparison:groups", subset_by = "cluster:RNA_snn_res.1")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
+   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
 
-MarkersPlot(allmarkers, object = pbmc_small, plot_type = "box", select = 3,
-   comparison_by = "comparison:groups", subset_by = "cluster:RNA_snn_res.1")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
+   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
 
-MarkersPlot(allmarkers, object = pbmc_small, plot_type = "ridge", select = 2,
-   comparison_by = "comparison:groups", subset_by = "cluster:RNA_snn_res.1",
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
+   comparison_by = "Phase", subset_by = "cluster:seurat_clusters",
    ncol = 2)
 }
 }
