@@ -183,9 +183,9 @@ See Details.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmc_small"</span>, package <span class="op">=</span> <span class="st">"SeuratObject"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindMarkers.html" class="external-link">FindMarkers</a></span><span class="op">(</span><span class="va">pbmc_small</span>,</span></span>
-<span class="r-in"><span> group.by <span class="op">=</span> <span class="st">"groups"</span>, ident.1 <span class="op">=</span> <span class="st">"g1"</span>, ident.2 <span class="op">=</span> <span class="st">"g2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindMarkers.html" class="external-link">FindMarkers</a></span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span> group.by <span class="op">=</span> <span class="st">"Phase"</span>, ident.1 <span class="op">=</span> <span class="st">"G2M"</span>, ident.2 <span class="op">=</span> <span class="st">"G1"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `slot` argument of `GetAssayData()` is deprecated as of SeuratObject 5.0.0.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use the `layer` argument instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">Seurat</span> package.</span>
@@ -203,457 +203,29 @@ See Details.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> After installation of presto, Seurat will automatically use the more </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> efficient implementation (no further action necessary).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-in"><span><span class="va">allmarkers</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindAllMarkers.html" class="external-link">FindAllMarkers</a></span><span class="op">(</span><span class="va">pbmc_small</span><span class="op">)</span>  <span class="co"># RNA_snn_res.1</span></span></span>
+<span class="r-in"><span><span class="va">allmarkers</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindAllMarkers.html" class="external-link">FindAllMarkers</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>  <span class="co"># seurat_clusters</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 0</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot compute exact p-value with ties</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating cluster 6</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span>, p_adjust <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span>, p_adjust <span class="op">=</span> <span class="cn">FALSE</span>, x_cutoff <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span>, x_cutoff <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, p_adjust <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>    subset_by <span class="op">=</span> <span class="st">"cluster"</span>, ncol <span class="op">=</span> <span class="fl">2</span>, subset_as_facet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span>, p_adjust <span class="op">=</span> <span class="cn">FALSE</span>, plot_type <span class="op">=</span> <span class="st">"volcano_pct"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span>, plot_type <span class="op">=</span> <span class="st">"volcano_pct"</span>, flip_negative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"jitter"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"jitter_pct"</span>,</span></span>
-<span class="r-in"><span>    subset_by <span class="op">=</span> <span class="st">"cluster"</span>, add_hline <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    subset_by <span class="op">=</span> <span class="st">"cluster"</span>, add_hline <span class="op">=</span> <span class="fl">0</span>, shape <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
@@ -666,60 +238,227 @@ See Details.</p></dd>
 <span class="r-in"><span>    add_reticle <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pbmc_small</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>    comparison_by <span class="op">=</span> <span class="st">"cluster:RNA_snn_res.1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
+<span class="r-in"><span>   columns_split_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Suppose we did a DE between g1 and g2 in each cluster</span></span></span>
 <span class="r-in"><span><span class="va">allmarkers</span><span class="op">$</span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="st">"g1:g2"</span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pbmc_small</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:groups"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:RNA_snn_res.1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pbmc_small</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:groups"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:RNA_snn_res.1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pbmc_small</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:groups"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:RNA_snn_res.1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-13.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pbmc_small</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:groups"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:RNA_snn_res.1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pbmc_small</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:groups"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:RNA_snn_res.1"</span>,</span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
 <span class="r-in"><span>   ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.59</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.597</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.506</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.641</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.691</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.482</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.856</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.596</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.792</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.227</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.316</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 1.64</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.517</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 1.02</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.59</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.597</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.506</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.641</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.691</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.482</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.856</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.596</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.792</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.227</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.316</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 1.64</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.517</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 1.02</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.265</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.155</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.153</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.322</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.246</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.326</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.307</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.306</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.094</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0735</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.116</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.031</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.251</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0355</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.144</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.202</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.278</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.28</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.239</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0755</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.256</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0748</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.201</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.361</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.381</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.234</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.351</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.368</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.512</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.351</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.515</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.461</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.362</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0669</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.031</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0314</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.264</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.153</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.187</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0693</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.124</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.268</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.255</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.282</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.254</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.209</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.188</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.229</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.204</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0543</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0263</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0421</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.256</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.196</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.193</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.18</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0409</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0677</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0491</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.358</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.241</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0658</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.195</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.468</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0579</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0672</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.185</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.173</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0904</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.269</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0588</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0847</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0403</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.51</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.29</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.09</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.518</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.25</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.265</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.155</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.153</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.322</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.246</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.326</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.307</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.306</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.094</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0735</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.116</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.031</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.251</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0355</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.144</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.202</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.278</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.28</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.239</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0755</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.256</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0748</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.201</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.361</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.381</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.234</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.351</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.368</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.512</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.351</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.515</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.461</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.362</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0669</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.031</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0314</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.264</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.153</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.187</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0693</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.124</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.268</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.255</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.282</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.254</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.209</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.188</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.229</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.204</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0543</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0263</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0421</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.256</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.196</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.193</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.18</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0409</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0677</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0491</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.358</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.241</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0658</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.195</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.468</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0579</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0672</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.185</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.173</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0904</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.269</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0588</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0847</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0403</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.51</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.29</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.09</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.518</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.25</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
 <span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
