@@ -64,6 +64,7 @@ reference:
     - ClustreePlot
     - EnrichmentPlot
     - CCCPlot
+    - MarkersPlot
   - title: scTCR-seq/scBCR-seq
     desc: Functions for plotting single cell TCR-seq/BCR-seq data
     contents:
