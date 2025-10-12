@@ -61,6 +61,7 @@
 #' @importFrom plotthis BarPlot DotPlot LollipopPlot EnrichNetwork EnrichMap WordCloudPlot Heatmap
 #' @export
 #' @examples
+#' \donttest{
 #' set.seed(8525)
 #' data(enrich_example, package = "plotthis")
 #' enrich_example$Group <- sample(LETTERS[1:3], nrow(enrich_example), replace = TRUE)
@@ -86,6 +87,7 @@
 #' EnrichmentPlot(enrich_example, plot_type = "wordcloud")
 #' # Wordcloud with feature
 #' EnrichmentPlot(enrich_example, plot_type = "wordcloud", word_type = "feature")
+#' }
 EnrichmentPlot <- function(
     data, top_term = NULL,
     plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison", "heatmap"),

@@ -115,6 +115,7 @@ See \link[plotthis:show_palettes]{plotthis::show_palettes} for available palette
 This function generates various types of plots for enrichment (over-representation) analysis.
 }
 \examples{
+\donttest{
 set.seed(8525)
 data(enrich_example, package = "plotthis")
 enrich_example$Group <- sample(LETTERS[1:3], nrow(enrich_example), replace = TRUE)
@@ -140,4 +141,5 @@ EnrichmentPlot(enrich_example, plot_type = "enrichmap")
 EnrichmentPlot(enrich_example, plot_type = "wordcloud")
 # Wordcloud with feature
 EnrichmentPlot(enrich_example, plot_type = "wordcloud", word_type = "feature")
+}
 }
