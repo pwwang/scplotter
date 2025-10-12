@@ -169,7 +169,7 @@ MarkersPlot <- function(
                 paste(nonexisting_sub, collapse = ", "))
         }
         meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(subset_by_2))
-        markers <- dplyr::left_join(markers, meta, by = setNames(subset_by_2, subset_by_1), suffix = c("", ".meta"))
+        markers <- dplyr::left_join(markers, meta, by = stats::setNames(subset_by_2, subset_by_1), suffix = c("", ".meta"))
     }
 
     # Check comparison_by
@@ -205,7 +205,7 @@ MarkersPlot <- function(
         if (!all(c("pct.1", "pct.2") %in% colnames(markers))) {
             stop("[MarkersPlot] `markers` must contain 'pct.1' and 'pct.2' columns for plot_type '", plot_type, "'")
         }
-        markers <- dplyr::mutate(markers, pct_diff = pct.1 - pct.2)
+        markers <- dplyr::mutate(markers, pct_diff = !!sym("pct.1") - !!sym("pct.2"))
     }
 
     # calcualte -log10(p-value) or -log10(adjusted p-value)
@@ -268,7 +268,7 @@ MarkersPlot <- function(
             genes <- dplyr::filter(markers, !!rlang::parse_expr(select))$gene
         }
         genes <- unique(genes)
-        markers <- dplyr::filter(markers, gene %in% genes)
+        markers <- dplyr::filter(markers, !!sym("gene") %in% genes)
         if (!is.factor(markers$gene)) {
             markers$gene <- factor(markers$gene, levels = unique(markers$gene))
         }
@@ -294,7 +294,7 @@ MarkersPlot <- function(
         if (!is.null(cutoff) && startsWith(plot_type, "heatmap_")) {
             sig_mat <- tidyr::pivot_wider(
                 markers,
-                id_cols = gene,
+                id_cols = !!sym("gene"),
                 names_from = subset_by_1,
                 values_from = !!rlang::sym(pcol),
                 values_fill = 1
@@ -316,24 +316,15 @@ MarkersPlot <- function(
         if (startsWith(plot_type, "dot_")) {
             ds_mat <- tidyr::pivot_wider(
                 markers,
-                id_cols = gene,
+                id_cols = !!sym("gene"),
                 names_from = subset_by_1,
-                values_from = "neg_log10_p",
-                values_fill = 0
+                values_from = "neg_log10_p"
             )
             ds_mat <- as.data.frame(ds_mat)
             rownames(ds_mat) <- ds_mat$gene
             ds_mat$gene <- NULL
             ds_mat <- ds_mat[genes, groups, drop = FALSE]
             ds_mat <- as.matrix(ds_mat)
-
-            tidyr::pivot_wider(
-                markers,
-                id_cols = gene,
-                names_from = subset_by_1,
-                values_from = "avg_log2FC",
-                values_fill = 0
-            )
 
             args$cell_type <- "dot"
             args$dot_size <- function(x, i, j) {
