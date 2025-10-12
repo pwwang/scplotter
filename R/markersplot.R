@@ -357,6 +357,12 @@ MarkersPlot <- function(
             genes <- dplyr::filter(markers, !!rlang::parse_expr(select))$gene
         }
         genes <- unique(genes)
+        # subset the object to only include the selected genes
+        object <- Seurat::DietSeurat(object, features = genes)
+        # subset the object to only include the comparison groups
+        comp_groups <- unique(unlist(strsplit(unique(as.character(markers[[comparison_by_1]])), ":")))
+        object <- subset(object, subset = !!rlang::sym(comparison_by_2) %in% comp_groups)
+
         args <- list(
             object,
             features = genes,
