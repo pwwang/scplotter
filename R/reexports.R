@@ -7,8 +7,3 @@ plotthis::GSEASummaryPlot
 #' @export
 #' @seealso [plotthis::GSEAPlot()]
 plotthis::GSEAPlot
-
-#' @importFrom plotthis VolcanoPlot
-#' @export
-#' @seealso [plotthis::VolcanoPlot()]
-plotthis::VolcanoPlot
