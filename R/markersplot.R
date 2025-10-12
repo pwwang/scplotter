@@ -240,7 +240,7 @@ MarkersPlot <- function(
         if (!is.numeric(select)) {
             stop("[MarkersPlot] `select` must be numeric for plot_type '", plot_type, "', to label top N markers in each group.")
         }
-        plotthis::JitterPlot(
+        args <- list(
             markers,
             x = subset_by_1,
             y = ifelse(plot_type == "jitter_pct", "pct_diff", "avg_log2FC"),
@@ -250,6 +250,10 @@ MarkersPlot <- function(
             nlabel = select,
             ...
         )
+        if (!is.null(args$order_by)) {
+            args$order_by <- order_by
+        }
+        do.call(plotthis::JitterPlot, args)
     } else if (plot_type %in% c("heatmap_log2fc", "heatmap_pct", "dot_log2fc", "dot_pct")) {
         if (is.null(subset_by)) {
             stop("[MarkersPlot] `subset_by` is required for plot_type '", plot_type, "'")
