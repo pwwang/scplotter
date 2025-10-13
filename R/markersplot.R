@@ -70,7 +70,7 @@
 #'
 #' MarkersPlot(markers)
 #' MarkersPlot(markers, x_cutoff = 2)
-#' MarkersPlot(allmarkers, p_adjust = FALSE,
+#' MarkersPlot(allmarkers,
 #'     subset_by = "cluster", ncol = 2, subset_as_facet = TRUE)
 #' MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 #'
@@ -150,6 +150,9 @@ MarkersPlot <- function(
         subset_by_1 <- strsplit(subset_by, ":")[[1]][1]
         subset_by_2 <- strsplit(subset_by, ":")[[1]][2]  # NA if not provided
         subset_by_2 <- if (!is.na(subset_by_2)) subset_by_2 else NULL
+        if (is.null(subset_by_2) && !is.null(object) && subset_by_1 %in% colnames(object@meta.data)) {
+            subset_by_2 <- subset_by_1
+        }
     } else {
         subset_by_1 <- NULL
         subset_by_2 <- NULL
@@ -178,6 +181,9 @@ MarkersPlot <- function(
         comparison_by_1 <- strsplit(comparison_by, ":")[[1]][1]
         comparison_by_2 <- strsplit(comparison_by, ":")[[1]][2]  # NA if not provided
         comparison_by_2 <- if (!is.na(comparison_by_2)) comparison_by_2 else NULL
+        if (is.null(comparison_by_2) && !is.null(object) && comparison_by_1 %in% colnames(object@meta.data)) {
+            comparison_by_2 <- comparison_by_1
+        }
     } else {
         comparison_by_1 <- NULL
         comparison_by_2 <- NULL

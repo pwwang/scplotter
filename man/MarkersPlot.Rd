@@ -111,7 +111,7 @@ allmarkers <- Seurat::FindAllMarkers(pancreas_sub)  # seurat_clusters
 
 MarkersPlot(markers)
 MarkersPlot(markers, x_cutoff = 2)
-MarkersPlot(allmarkers, p_adjust = FALSE,
+MarkersPlot(allmarkers,
     subset_by = "cluster", ncol = 2, subset_as_facet = TRUE)
 MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 
