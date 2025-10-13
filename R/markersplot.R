@@ -377,10 +377,15 @@ MarkersPlot <- function(
         }
         genes <- unique(genes)
         # subset the object to only include the selected genes
-        object <- Seurat::DietSeurat(object, features = genes)
+        object <- subset(object, features = genes)
         # subset the object to only include the comparison groups
         comp_groups <- unique(unlist(strsplit(unique(as.character(markers[[comparison_by_1]])), ":")))
-        object <- subset(object, subset = !!rlang::sym(comparison_by_2) %in% comp_groups)
+        if (length(comp_groups) > 1) {
+            object <- subset(object, subset = !!rlang::sym(comparison_by_2) %in% comp_groups)
+        } else {
+            object@meta.data[[comparison_by_2]] <- ifelse(object@meta.data[[comparison_by_2]] == comp_groups, comp_groups, "Other")
+            object@meta.data[[comparison_by_2]] <- factor(object@meta.data[[comparison_by_2]], levels = c(comp_groups, "Other"))
+        }
 
         args <- list(
             object,
