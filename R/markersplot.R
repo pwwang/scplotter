@@ -388,6 +388,7 @@ MarkersPlot <- function(
         )
         if (plot_type %in% c("heatmap", "dot")) {
             args$name <- args$name %||% "Expression"
+            args$cluster_columns <- args$cluster_columns %||% FALSE
             if (!is.null(subset_by_2)) {
                 args$facet_by <- NULL
                 args$split_by <- NULL
