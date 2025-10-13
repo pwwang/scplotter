@@ -348,6 +348,18 @@ MarkersPlot <- function(
                 stop("[MarkersPlot] `comparison_by` '", comparison_by_2, "' is not found in the object's metadata.")
             }
         }
+        if (!is.null(subset_by_1) && is.null(subset_by_2)) {
+            if (subset_by_1 %in% colnames(object@meta.data)) {
+                subset_by_2 <- subset_by_1
+            } else {
+                warning(
+                    "[MarkersPlot] `subset_by` '", subset_by_1, "' is ignored, ",
+                    "since it is not found in the object's metadata. ",
+                    "Set `subset_by` to '", subset_by_1, ":<object_metadata_column>' to make it work.",
+                    immediate. = TRUE)
+            }
+        }
+
         if (is.numeric(select)) {
             if (!is.null(subset_by)) {
                 genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(subset_by_1))$gene
