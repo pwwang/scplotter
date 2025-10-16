@@ -257,7 +257,7 @@ MarkersPlot <- function(
             nlabel = select,
             ...
         )
-        if (!is.null(args$order_by)) {
+        if (!is.null(order_by)) {
             args$order_by <- order_by
         }
         do.call(plotthis::JitterPlot, args)
