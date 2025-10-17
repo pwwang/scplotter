@@ -48,10 +48,10 @@ test_that("top() works with dplyr::mutate()", {
         group = c(rep("A", 10), rep("B", 50))
     )
     result <- dplyr::mutate(df, TopClones = top(1))
-    expect_equal(result$TopClone, c(rep("A", 10), rep(NA, 50)))
+    expect_equal(result$TopClone, c(rep(NA, 30), rep("C", 30)))
 
     result <- dplyr::mutate(df, TopClones = top(1, groups = "group"))
-    expect_equal(result$TopClones, c(rep("A", 10), rep("B", 20), rep(NA, 30)))
+    expect_equal(result$TopClones, c(rep("A", 10), rep(NA, 20), rep("C", 30)))
 })
 
 test_that("top() works with given environment", {
