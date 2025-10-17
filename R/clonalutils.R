@@ -224,9 +224,9 @@ screp_subset <- function(screp, subset) {
         group_by(!!!syms(unique(c(id, groups)))) %>%
         summarise(.n = n(), .groups = "drop")
 
-    if (!is.null(order)) {
-        data2 <- data2 %>% arrange(!!parse_expr(order))
-    }
+    order <- order %||% "-.n"
+    data2 <- data2 %>% arrange(!!parse_expr(order))
+
     if (!is.null(groups)) {
         data2 <- data2 %>% group_by(!!!syms(groups))
     }
