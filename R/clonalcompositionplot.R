@@ -330,7 +330,7 @@ ClonalLengthPlot <- function(
         args$ylab <- ylab %||% default_ylab
         args$theme_args <- args$theme_args %||% list()
         args$theme_args$panel.grid.major.x <- element_blank()
-        breaks <- quantile(data$length, probs = seq(0, 1, length.out = x_nbreaks), type = 3)
+        breaks <- unname(quantile(data$length, probs = seq(0, 1, length.out = x_nbreaks), type = 3))
         if (is.null(args$split_by)) {
             suppressMessages({
                 do.call(BarPlot, args) + scale_x_discrete(breaks = breaks)
