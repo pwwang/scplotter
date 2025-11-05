@@ -144,7 +144,8 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
 #' }
 screp_subset <- function(screp, subset) {
     if (inherits(screp, "Seurat")) {
-        eval(parse(text = paste('base::subset(screp, subset = "', subset, '")')))
+        # You need tidyseurat to work with dplyr verbs on Seurat objects
+        dplyr::filter(screp, !!parse_expr(subset))
     } else {
         screp <- sapply(names(screp), function(x) {
             y <- screp[[x]]
