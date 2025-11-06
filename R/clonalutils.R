@@ -61,7 +61,7 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
             mat,
             cols = -"Var1",
             names_to = c(".group", ".value"),
-            names_sep = "\\."
+            names_pattern = "(.+)\\.(.+)"
         )
         mat
     })) %>%
