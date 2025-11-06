@@ -145,6 +145,9 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
 screp_subset <- function(screp, subset) {
     if (inherits(screp, "Seurat")) {
         # You need tidyseurat to work with dplyr verbs on Seurat objects
+        if (is.null(utils::getS3method("filter", "Seurat", optional = TRUE, envir = asNamespace("dplyr")))) {
+            stop("'tidyseurat' package is required to use 'screp_subset' on Seurat objects.")
+        }
         dplyr::filter(screp, !!parse_expr(subset))
     } else {
         screp <- sapply(names(screp), function(x) {
