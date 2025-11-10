@@ -298,6 +298,7 @@ MarkersPlot <- function(
         )
         args$show_row_names <- args$show_row_names %||% TRUE
         args$show_column_names <- args$show_column_names %||% TRUE
+        args$values_fill <- args$values_fill %||% 0
 
         # add label if cutoff is provided for heatmap
         genes <- levels(markers$gene)
