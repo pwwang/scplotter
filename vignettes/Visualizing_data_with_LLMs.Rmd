@@ -30,7 +30,7 @@ This vignette demonstrates how to use the `scplotter` package to visualize data 
 ```{r, eval = api_key_set}
 # Set up LLM provider
 provider <- tidyprompt::llm_provider_openai(
-    parameters = list(model = "gpt-4o-mini", stream = getOption("tidyprompt.stream", TRUE)),
+    parameters = list(model = "gpt-5-nano", stream = getOption("tidyprompt.stream", TRUE)),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.openai.com/v1/chat/completions",
     api_key = Sys.getenv("OPENAI_API_KEY")
