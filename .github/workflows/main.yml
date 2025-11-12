@@ -72,7 +72,7 @@ jobs:
 
       - name: Install R package dependencies
         run: |
-          pak::pkg_install(".", dependencies = TRUE)
+          pak::pkg_install(".", dependencies = TRUE, ask = FALSE)
 
       - uses: r-lib/actions/check-r-package@v2
         env:
