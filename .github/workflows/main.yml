@@ -53,18 +53,26 @@ jobs:
           sudo apt-get update -y && sudo apt-get install -y libglpk40
         shell: bash
 
-      - name: Setup R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          cache-version: 2
-          extra-packages: |
-            any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
-            any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
-            any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
-            any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
-            any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
-            any::terra, any::GiottoClass, any::GiottoData, any::proxyC, any::metR,
-            any::hdf5r
+      # -- This takes too long to run
+      # - name: Setup R dependencies
+      #   uses: r-lib/actions/setup-r-dependencies@v2
+      #   with:
+      #     cache-version: 2
+      #     extra-packages: |
+      #       any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
+      #       any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
+      #       any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
+      #       any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
+      #       any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
+      #       any::terra, any::GiottoClass, any::GiottoData, any::proxyC, any::metR,
+      #       any::hdf5r
+      - name: Install pak
+        run: |
+          install.packages("pak")
+
+      - name: Install R package dependencies
+        run: |
+          pak::pkg_install(".", dependencies = TRUE)
 
       - uses: r-lib/actions/check-r-package@v2
         env:
