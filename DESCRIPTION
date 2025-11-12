@@ -14,7 +14,7 @@ Depends:
     R (>= 4.2.0)
 Imports:
     SeuratObject,
-    scRepertoire (>= 2.0.8), scRepertoire (< 2.3.2),
+    scRepertoire,
     circlize,
     dplyr,
     scales,
@@ -63,7 +63,8 @@ LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
-    drieslab/GiottoClass,
+    BorchLab/scRepertoire@v2.2.1,
+    drieslab/GiottoClass@15d00a550b52ce9d325fdaace2a8fa073b49fc4e,
     drieslab/GiottoData,
     KennispuntTwente/tidyprompt
 URL: https://github.com/pwwang/scplotter
