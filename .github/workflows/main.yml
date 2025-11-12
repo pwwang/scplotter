@@ -57,7 +57,17 @@ jobs:
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
             any::terra, any::GiottoClass, any::GiottoData, any::proxyC, any::metR,
-            any::hdf5r
+            any::hdf5r, scRepertoire=?ignore
+
+      # Caused by error:
+      # ! Could not solve package dependencies:
+      # * deps::.: Can't install dependency BorchLab/scRepertoire@v2.2.1
+      # * BorchLab/scRepertoire@v2.2.1: Can't install dependency evmix
+      # * evmix: Can't install dependency gsl
+      # * gsl: Needs R >= 4.5.0
+      - name: Install scRepertoire
+        run: |
+          devtools::install_github("BorchLab/scRepertoire", ref = "v2.2.1")
 
       - uses: r-lib/actions/check-r-package@v2
         env:
