@@ -1,0 +1,284 @@
+# scplotter
+
+`scplotter` is an R package that is built upon
+[`plotthis`](https://github.com/pwwang/plotthis). It provides a set of
+functions to visualize single-cell sequencing data in an easy and
+efficient way.
+
+## Installation
+
+``` r
+remotes::install_github("pwwang/scplotter")
+# or
+devtools::install_github("pwwang/scplotter")
+# or using conda
+$ conda install pwwang::r-scplotter
+```
+
+## Gallery
+
+### scRNA-seq
+
+[`CellDimPlot`](https://pwwang.github.io/scplotter/reference/CellDimPlot.html)
+
+![](./reference/figures/celldimplot.png)
+
+[`CellStatPlot`](https://pwwang.github.io/scplotter/reference/CellStatPlot.html)
+
+![](./reference/figures/cellstatplot.png)
+
+[`ClustreePlot`](https://pwwang.github.io/scplotter/reference/ClustreePlot.html)
+\|
+[`CellVelocityPlot`](https://pwwang.github.io/scplotter/reference/CellVelocityPlot.html)
+
+![](./reference/figures/clustreeplot.png)
+
+[`FeatureStatPlot`](https://pwwang.github.io/scplotter/reference/FeatureStatPlot.html)
+
+![](./reference/figures/featurestatplot.png)
+
+[`EnrichmentPlot`](https://pwwang.github.io/scplotter/reference/EnrichmentPlot.html)
+
+![](./reference/figures/enrichmentplot.png)
+
+[`GSEASummaryPlot`](https://pwwang.github.io/plotthis/reference/gsea.html)
+\| [`GSEAPlot`](https://pwwang.github.io/plotthis/reference/gsea.html)
+
+![](./reference/figures/gseaplot.png)
+
+[`MarkersPlot`](https://pwwang.github.io/scplotter/reference/MarkersPlot.html)
+
+![](./reference/figures/volcanoplot.png)
+
+[`CCCPlot`](https://pwwang.github.io/scplotter/reference/CCCPlot.html)
+(Cell-Cell Communication Plot)
+
+![](./reference/figures/cccplot.png)
+
+### scTCR-seq/scBCR-seq
+
+[`ClonalVolumePlot`](https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.html)
+\|
+[`ClonalAbundancePlot`](https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.html)
+\|
+[`ClonalResidencyPlot`](https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.html)
+\|
+[`ClonalDynamicsPlot`](https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html)
+\|
+[`ClonalCompositionPlot`](https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.html)
+\|
+[`ClonalOverlapPlot`](https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.html)
+\|
+[`ClonalGeneUsagePlot`](https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.html)
+
+![](./reference/figures/clonalstat.png)
+
+[`ClonalRarefactionPlot`](https://pwwang.github.io/scplotter/reference/ClonalRarefactionPlot.html)
+\|
+[`ClonalKmerPlot`](https://pwwang.github.io/scplotter/reference/ClonalKmerPlot.html)
+\|
+[`ClonalDiversityPlot`](https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html)
+\|
+[`ClonalPositionalPlot`](https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html)
+\|
+[`ClonalLengthPlot`](https://pwwang.github.io/scplotter/reference/ClonalLengthPlot.html)
+\|
+[`ClonalStatPlot`](https://pwwang.github.io/scplotter/reference/ClonalStatPlot.html)
+
+![](./reference/figures/clonaldiv.png)
+
+## Spatial data
+
+[`SpatDimPlot`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.html)
+\|
+[`SpatFeaturePlot`](https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.html)
+
+![](./reference/figures/spatialplot.png)
+
+## Visualization with LLMs
+
+``` r
+provider <- tidyprompt::llm_provider_openai(api_key = Sys.getenv("OPENAI_API_KEY"))
+chat <- SCPlotterChat$new(provider = provider)
+chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
+# Tool identified:  CCCPlot
+# Data object identified:  cellphonedb_res
+# Running tool:  CCCPlot
+```
+
+![](./reference/figures/scplotter-chat1.png)
+
+``` r
+chat$ask("Do a heatmap instead")
+# Tool identified:  CCCPlot
+# Data object identified:  cellphonedb_res
+# Running tool:  CCCPlot
+```
+
+![](./reference/figures/scplotter-chat2.png)
+
+## Credits
+
+`scplotter` is built upon the following fantastic packages:
+
+- [`plotthis`](https://github.com/pwwang/plotthis) for the core plotting
+  functions.
+- [`tidyprompt`](https://github.com/tjarkvandemerwe/tidyprompt) for the
+  LLM interface.
+- [`Seurat`](https://satijalab.org/seurat/) for the Seurat object
+  support.
+- [`LIANA`](https://github.com/saezlab/liana-py) for the cell-cell
+  communication analysis.
+- [`scRepertoire`](https://github.com/BorchLab/scRepertoire) for the
+  TCR/BCR repertoire analysis.
+- [`Giotto`](https://drieslab.github.io/Giotto_website/) for the spatial
+  data analysis.
+
+# Package index
+
+## scRNA-seq
+
+Functions for plotting single cell RNA-seq data
+
+- [`CellDimPlot()`](https://pwwang.github.io/scplotter/reference/CellDimPlot.md)
+  : Cell Dimension Reduction Plot
+- [`CellStatPlot()`](https://pwwang.github.io/scplotter/reference/CellStatPlot.md)
+  : Cell statistics plot
+- [`CellVelocityPlot()`](https://pwwang.github.io/scplotter/reference/CellVelocityPlot.md)
+  : Cell Velocity Plot
+- [`FeatureStatPlot()`](https://pwwang.github.io/scplotter/reference/FeatureStatPlot.md)
+  : Feature statistic plot
+- [`ClustreePlot()`](https://pwwang.github.io/scplotter/reference/ClustreePlot.md)
+  : Clustree plot
+- [`EnrichmentPlot()`](https://pwwang.github.io/scplotter/reference/EnrichmentPlot.md)
+  : Enrichment Plot
+- [`CCCPlot()`](https://pwwang.github.io/scplotter/reference/CCCPlot.md)
+  : Cell-Cell Communication Plot
+- [`MarkersPlot()`](https://pwwang.github.io/scplotter/reference/MarkersPlot.md)
+  : Visualize Markers
+
+## scTCR-seq/scBCR-seq
+
+Functions for plotting single cell TCR-seq/BCR-seq data
+
+- [`ClonalVolumePlot()`](https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.md)
+  : ClonalVolumePlot
+- [`ClonalAbundancePlot()`](https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.md)
+  : ClonalAbundancePlot
+- [`ClonalLengthPlot()`](https://pwwang.github.io/scplotter/reference/ClonalLengthPlot.md)
+  : ClonalLengthPlot
+- [`ClonalResidencyPlot()`](https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.md)
+  : ClonalResidencyPlot
+- [`ClonalCompositionPlot()`](https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.md)
+  : ClonalCompositionPlot
+- [`ClonalOverlapPlot()`](https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.md)
+  : ClonalOverlapPlot
+- [`ClonalDynamicsPlot()`](https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.md)
+  : ClonalDynamicsPlot
+- [`ClonalStatPlot()`](https://pwwang.github.io/scplotter/reference/ClonalStatPlot.md)
+  : ClonalStatPlot
+- [`ClonalDiversityPlot()`](https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.md)
+  : ClonalDiversityPlot
+- [`ClonalGeneUsagePlot()`](https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.md)
+  : ClonalGeneUsagePlot
+- [`ClonalPositionalPlot()`](https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.md)
+  : ClonalPositionalPlot
+- [`ClonalKmerPlot()`](https://pwwang.github.io/scplotter/reference/ClonalKmerPlot.md)
+  : ClonalKmerPlot
+- [`ClonalRarefactionPlot()`](https://pwwang.github.io/scplotter/reference/ClonalRarefactionPlot.md)
+  : ClonalRarefactionPlot
+
+## Spatial data visualization
+
+Functions for plotting spatial data
+
+- [`SpatDimPlot()`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.md)
+  : Plot categories for spatial data
+- [`SpatFeaturePlot()`](https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.md)
+  : Plot features for spatial data
+
+## Visualizing using LLMs
+
+Functions/Classes for visualizing using LLMs
+
+- [`SCPlotterChat`](https://pwwang.github.io/scplotter/reference/SCPlotterChat.md)
+  : SCPlotterChat Class
+
+## data
+
+Built-in data sets
+
+- [`ifnb_sub`](https://pwwang.github.io/scplotter/reference/ifnb_sub.md)
+  : A subsetted version of 'ifnb' datasets
+- [`pancreas_sub`](https://pwwang.github.io/scplotter/reference/pancreas_sub.md)
+  : A subsetted version of mouse 'pancreas' datasets
+- [`cellphonedb_res`](https://pwwang.github.io/scplotter/reference/cellphonedb_res.md)
+  : A toy example of CellPhoneDB output from LIANA
+
+## Clone selectors
+
+Functions for selecting clones
+
+- [`top()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`sel()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`uniq()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`shared()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`gt()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`ge()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`lt()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`le()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`eq()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`ne()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`and()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  [`or()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
+  : Helper functions to select clones based on various criteria
+
+## Re-exports
+
+Functions that are re-exported from plotthis
+
+- [`reexports`](https://pwwang.github.io/scplotter/reference/reexports.md)
+  [`GSEASummaryPlot`](https://pwwang.github.io/scplotter/reference/reexports.md)
+  [`GSEAPlot`](https://pwwang.github.io/scplotter/reference/reexports.md)
+  : Objects exported from other packages
+
+# Articles
+
+### All vignettes
+
+- [Use scplotter with Giotto CODEX
+  data](https://pwwang.github.io/scplotter/articles/Giotto_CODEX.md):
+- [Use scplotter with Giotto Nanostring CosMx
+  data](https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx.md):
+- [Use scplotter with Giotto seqFISH
+  data](https://pwwang.github.io/scplotter/articles/Giotto_seqFISH.md):
+- [Use scplotter with Giotto SlideSeq
+  data](https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.md):
+- [Use scplotter with Giotto Spatial CITE-Seq
+  data](https://pwwang.github.io/scplotter/articles/Giotto_Spatial_CITE-Seq.md):
+- [Use scplotter with Giotto Visium
+  data](https://pwwang.github.io/scplotter/articles/Giotto_Visium.md):
+- [Use scplotter with Giotto VisiumHD
+  data](https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.md):
+- [Use scplotter with Giotto vizgen
+  data](https://pwwang.github.io/scplotter/articles/Giotto_vizgen.md):
+- [Use scplotter with Giotto Xenium
+  data](https://pwwang.github.io/scplotter/articles/Giotto_Xenium.md):
+- [Knowing your spatial data and
+  visualization](https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.md):
+- [Use scplotter with Seurat 10x Visium
+  data](https://pwwang.github.io/scplotter/articles/Seurat_10x_Visium.md):
+- [Use scplotter with Seurat 10x VisiumHD
+  data](https://pwwang.github.io/scplotter/articles/Seurat_10x_VisiumHD.md):
+- [Use scplotter with Seurat Akoya CODEX
+  data](https://pwwang.github.io/scplotter/articles/Seurat_Akoya_CODEX.md):
+- [Use scplotter with Seurat Nanostring CosMx
+  data](https://pwwang.github.io/scplotter/articles/Seurat_Nanostring_CosMx.md):
+- [Use scplotter with Seurat SlideSeq
+  data](https://pwwang.github.io/scplotter/articles/Seurat_SlideSeq.md):
+- [Use scplotter with Seurat Xenium
+  data](https://pwwang.github.io/scplotter/articles/Seurat_Xenium.md):
+- [Visualizing data with
+  LLMs](https://pwwang.github.io/scplotter/articles/Visualizing_data_with_LLMs.md):
+- [Working with anndata (.h5ad)
+  files](https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.md):
