@@ -40,7 +40,7 @@ jobs:
           r-version: ${{ matrix.r }}
           Ncpus: '2L'
           use-public-rspm: true
-          cran: https://packagemanager.posit.co/cran/2024-10-01
+          cran: https://packagemanager.posit.co/cran/2025-10-01
 
       - name: Install libglpk40 for igraph
         run: |
