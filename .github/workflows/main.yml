@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - {r: '4.4.1'}
+          - {r: '4.4.3'}
 
     steps:
       - uses: actions/checkout@v4

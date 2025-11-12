@@ -14,7 +14,7 @@ Depends:
     R (>= 4.2.0)
 Imports:
     SeuratObject,
-    scRepertoire (== 2.2.1),
+    scRepertoire (>= 2.0.8), scRepertoire (< 2.3.2),
     circlize,
     dplyr,
     scales,
