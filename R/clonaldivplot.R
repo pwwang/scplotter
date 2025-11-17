@@ -10,6 +10,7 @@ ClonalDiversity <- function(
     method <- match.arg(method)
     if (method == "gini.coeff") {
         div_fn <- function(dat) {
+            dat <- sort(dat)
             n <- length(dat)
             1 / n * (n + 1 - 2 * sum((n + 1 - 1:n) * dat) / sum(dat))
         }
