@@ -387,7 +387,12 @@ MarkersPlot <- function(
         }
         genes <- unique(genes)
         # subset the object to only include the selected genes
-        object <- subset(object, features = genes)
+        object <- tryCatch({
+            # In case the features do not exist in some assays
+            subset(object, features = genes)
+        }, error = function(e) {
+            object
+        })
 
         args <- list(
             object,
