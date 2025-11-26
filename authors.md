@@ -12,7 +12,7 @@ Source:
 
 Wang P (2025). *scplotter: Publication Quality Plots for Single Cell
 Data Analysis*. R package version
-0.6.2https://github.com/pwwang/scplotter
+0.6.3https://github.com/pwwang/scplotter
 https://pwwang.github.io/scplotter/,
 [https://github.com/pwwang/scplotter
 https://pwwang.github.io/scplotter/](https://github.com/pwwang/scplotter%20%20%20%20https://pwwang.github.io/scplotter/).
@@ -21,7 +21,7 @@ https://pwwang.github.io/scplotter/](https://github.com/pwwang/scplotter%20%20%2
       title = {scplotter: Publication Quality Plots for Single Cell Data Analysis},
       author = {Panwen Wang},
       year = {2025},
-      note = {R package version 0.6.2https://github.com/pwwang/scplotter
+      note = {R package version 0.6.3https://github.com/pwwang/scplotter
         https://pwwang.github.io/scplotter/},
       url = {https://github.com/pwwang/scplotter
         https://pwwang.github.io/scplotter/},

@@ -277,7 +277,6 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 # Velocity
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
   velocity = "stochastic_PCA")
-#> Warning: [VelocityPlot] 'arrow()' in ggplot2 >= 4.0.0 does not support varying lengths. Using fixed length instead. See https://github.com/tidyverse/ggplot2/issues/6594 for details.
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_segment()`).
 

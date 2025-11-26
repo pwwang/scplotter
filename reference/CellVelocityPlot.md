@@ -93,7 +93,6 @@ CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA"
 
 CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
  group_by = "SubCellType")
-#> Warning: [VelocityPlot] 'arrow()' in ggplot2 >= 4.0.0 does not support varying lengths. Using fixed length instead. See https://github.com/tidyverse/ggplot2/issues/6594 for details.
 
 # }
 ```
