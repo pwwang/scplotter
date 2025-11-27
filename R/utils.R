@@ -73,3 +73,94 @@ h5group_to_matrix <- function(x) {
         dims = rev(shape)
     )
 }
+
+#' Subset function with automatic layer repair for Seurat v5 objects
+#'
+#' This function handles corrupted layers in Seurat v5 assays that can cause
+#' "incorrect number of dimensions" errors during subsetting.
+#'
+#' Strategy:
+#' 1. Evaluate subset normally
+#' 2. Check for corrupted layers proactively
+#' 3. Repair any corrupted layers before subsetting
+#' 4. Perform the subset operation
+#' 5. If subset still fails, re-throw the error
+#'
+#' Example: subset_seurat(obj, EFS %in% c("EFS_L", "EFS_S"), nCount_RNA > 1000)
+#' @param object Seurat object to subset
+#' @param ... Arguments passed to `subset()`
+#' @return Subsetted Seurat object with repaired layers if needed
+#' @keywords internal
+subset_seurat <- function(object, ...) {
+  # Try subsetting first
+  result <- tryCatch({
+    subset(object, ...)
+  }, error = function(e) {
+    if (grepl("incorrect number of dimensions", e$message)) {
+      warning("Subsetting failed due to corrupted layers. Attempting to repair...", call. = FALSE)
+
+      # Scan and repair assays with multiple layers
+      for (assay_name in names(object@assays)) {
+        assay <- object@assays[[assay_name]]
+
+        # Check if it's a v5 assay with layers
+        if (inherits(assay, "Assay5") && length(assay@layers) > 1) {
+          cat(sprintf("Scanning assay '%s' with %d layers...\n", assay_name, length(assay@layers)))
+
+          # Identify intact and corrupted layers
+          intact_layers <- list()
+          corrupted_layers <- character()
+
+          for (layer_name in names(assay@layers)) {
+            layer <- assay@layers[[layer_name]]
+            if (is.matrix(layer) || inherits(layer, "dgCMatrix")) {
+              intact_layers[[layer_name]] <- layer
+            } else {
+              corrupted_layers <- c(corrupted_layers, layer_name)
+            }
+          }
+
+          # If all layers are corrupted, remove the assay
+          if (length(intact_layers) == 0) {
+            warning(sprintf("All layers in assay '%s' are corrupted. Removing assay.", assay_name), call. = FALSE)
+            object@assays[[assay_name]] <- NULL
+          } else {
+            # Restore corrupted layers based on intact ones
+            if (length(corrupted_layers) > 0) {
+              # Get dimensions from first intact layer
+              template_layer <- intact_layers[[1]]
+              n_features <- nrow(template_layer)
+              n_cells <- ncol(template_layer)
+
+              for (layer_name in corrupted_layers) {
+                corrupted_data <- assay@layers[[layer_name]]
+
+                # Check if it's a 1D vector with correct number of features
+                if (is.vector(corrupted_data) && length(corrupted_data) == n_features) {
+                  # Restore as single-column sparse matrix
+                  warning(sprintf("Restoring corrupted layer '%s' in assay '%s' (1D vector -> sparse matrix)",
+                                layer_name, assay_name), call. = FALSE)
+                  object@assays[[assay_name]]@layers[[layer_name]] <-
+                    Matrix::Matrix(corrupted_data, nrow = n_features, ncol = 1, sparse = TRUE)
+                } else {
+                  # Cannot restore, remove it
+                  warning(sprintf("Cannot restore layer '%s' in assay '%s' (incompatible dimensions). Removing.",
+                                layer_name, assay_name), call. = FALSE)
+                  object@assays[[assay_name]]@layers[[layer_name]] <- NULL
+                }
+              }
+            }
+          }
+        }
+      }
+
+      # Try subsetting again after repairs
+      subset(object, ...)
+    } else {
+      # Re-throw other errors
+      stop(e)
+    }
+  })
+
+  return(result)
+}

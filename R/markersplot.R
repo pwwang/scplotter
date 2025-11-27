@@ -380,7 +380,7 @@ MarkersPlot <- function(
         # subset the object to only include the comparison groups
         comp_groups <- unique(unlist(strsplit(unique(as.character(markers[[comparison_by_1]])), ":")))
         if (length(comp_groups) > 1) {
-            object <- subset(object, subset = !!rlang::sym(comparison_by_2) %in% comp_groups)
+            object <- subset_seurat(object, subset = !!rlang::sym(comparison_by_2) %in% comp_groups)
         } else {
             object@meta.data[[comparison_by_2]] <- ifelse(object@meta.data[[comparison_by_2]] == comp_groups, comp_groups, "Other")
             object@meta.data[[comparison_by_2]] <- factor(object@meta.data[[comparison_by_2]], levels = c(comp_groups, "Other"))
@@ -389,7 +389,7 @@ MarkersPlot <- function(
         # subset the object to only include the selected genes
         object <- tryCatch({
             # In case the features do not exist in some assays
-            subset(object, features = genes)
+            subset_seurat(object, features = genes)
         }, error = function(e) {
             object
         })
