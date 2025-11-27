@@ -314,6 +314,18 @@ MarkersPlot <- function(
             sig_mat <- as.data.frame(sig_mat)
             rownames(sig_mat) <- sig_mat$gene
             sig_mat$gene <- NULL
+            # There might be some groups failed to run DE analysis
+            # So we just exclude them
+            failed_groups <- setdiff(groups, colnames(sig_mat))
+            if (length(failed_groups) > 1) {
+                warning(
+                    "[MarkersPlot] The following groups in `subset_by` '", subset_by_1,
+                    "' are not found in the markers data frame and will be ignored: ",
+                    paste(failed_groups, collapse = ", "),
+                    immediate. = TRUE
+                )
+            }
+            groups <- intersect(groups, colnames(sig_mat))
             sig_mat <- sig_mat[genes, groups, drop = FALSE]
             sig_mat <- as.matrix(sig_mat)
 
@@ -335,6 +347,18 @@ MarkersPlot <- function(
             ds_mat <- as.data.frame(ds_mat)
             rownames(ds_mat) <- ds_mat$gene
             ds_mat$gene <- NULL
+            # There might be some groups failed to run DE analysis
+            # So we just exclude them
+            failed_groups <- setdiff(groups, colnames(ds_mat))
+            if (length(failed_groups) > 1) {
+                warning(
+                    "[MarkersPlot] The following groups in `subset_by` '", subset_by_1,
+                    "' are not found in the markers data frame and will be ignored: ",
+                    paste(failed_groups, collapse = ", "),
+                    immediate. = TRUE
+                )
+            }
+            groups <- intersect(groups, colnames(ds_mat))
             ds_mat <- ds_mat[genes, groups, drop = FALSE]
             ds_mat <- as.matrix(ds_mat)
 
