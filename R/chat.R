@@ -190,11 +190,6 @@ SCPlotterChat <- R6::R6Class(
                                 }
                             } else {
                                 out$arguments[[arg_name]] <- paste(unlist(argument[[-1]]), collapse = "")
-                                # Extract the argument type, which is specified at the beginning of the description
-                                # e.g. "data: (data.frame) A data frame or matrix."
-                                # if (grepl("^\\([^)]+\\)", argument[[2]][1])) {
-                                #     datatype <- gsub("^\\(([^)]+)\\).*", "\\1", argument[[2]][1])
-                                # }
                             }
                         }
                     }
@@ -211,7 +206,7 @@ SCPlotterChat <- R6::R6Class(
         locate_data = function(prompt, datatype, verbose) {
             if (!is.null(private$history)) {
                 history <- paste0(
-                    "\n\n", "--- Chat History ---\n",
+                    "\n\n", "Chat History:\n",
                     paste(private$history, collapse = "\n")
                 )
             } else {
@@ -222,13 +217,17 @@ SCPlotterChat <- R6::R6Class(
                 prompt,
                 modify_fn = function(base_prompt) {
                     paste0(
-                        "Based on the following prompt, identify the name of the data object that is mentioned in the prompt.\n",
-                        "The name should be one of the available ones listed.\n",
-                        "If no data object is found based on the prompt, use the last mentioned data object in the chat history.\n",
-                        "If no data object is found in the chat history, just answer \"None\".\n\n",
-                        "--- Prompt ---\n",
+                        'Objective: Identify the data object to be used.\n\n',
+                        'Decision Process:\n',
+                        '- If the user explicitly names a data object, output that data object name. If the name does not match exactly the available ones, use the one that is mostly related.\n',
+                        '- Else, if the request appears to refine the previous output (e.g., "do X instead", "make it a heatmap/dot/bar/etc", "change to …", "add … to", "same plot but …"), select the last dataset name mentioned in the chat history.\n',
+                        '- Else, analyze the current user request; if there is a clear, unambiguous match to a dataset, select that data object.\n',
+                        '- Else, use the last mentioned data object from the chat history.\n',
+                        '- If no data object is found, respond with "None".\n\n',
+                        'Response Format: Provide only the name of the selected data object, or "None" if no tool applies. The response should be unquoted.\n\n',
+                        'User Request:\n',
                         base_prompt, "\n\n",
-                        "-- Available Data Objects ---\n",
+                        "Available Data Objects:\n",
                         paste(
                             sapply(names(private$datasets), function(data) {
                                 paste0("- ", data, ": ", private$datasets[[data]])
@@ -255,20 +254,7 @@ SCPlotterChat <- R6::R6Class(
                     if (!response %in% names(private$datasets)) {
                         return(tidyprompt::llm_feedback("The data object is not available. It is not in the list of available ones."))
                     }
-                    if (is.null(datatype)) {
-                        return(TRUE)
-                    }
-                    # Check if the object is of the expected type
-                    # obj <- get(response, envir = .GlobalEnv)
-                    # if (!inherits(obj, datatype)) {
-                    #     return(tidyprompt::llm_feedback(
-                    #         paste0(
-                    #             "The data object is not of the expected type: ", datatype, ".\n",
-                    #             "Please provide a valid data object name."
-                    #         )
-                    #     ))
-                    # }
-                    # return(TRUE)
+                    return(TRUE)
                 }
             )
 
@@ -278,7 +264,7 @@ SCPlotterChat <- R6::R6Class(
         locate_tool = function(prompt, verbose) {
             if (!is.null(private$history)) {
                 history <- paste0(
-                    "\n\n", "--- Chat History ---\n",
+                    "\n\n", "Chat History:\n",
                     paste(private$history, collapse = "\n")
                 )
             } else {
@@ -288,13 +274,17 @@ SCPlotterChat <- R6::R6Class(
                 prompt,
                 modify_fn = function(base_prompt) {
                     paste0(
-                        "Based on the following prompt and identify the tool that can be used to handle the request.\n",
-                        "Please only answer with the name of the tool from the listed available ones. \n",
-                        "If no proper tool is identified from the prompt, use the last mentioned tool in the chat history.\n",
-                        "If no tool is found in the chat history, just answer \"None\".\n\n",
-                        "--- Prompt ---\n",
-                        base_prompt, "\n\n",
-                        "--- Available Tools ---\n",
+                        'Objective: Select the most appropriate tool to handle the user\'s request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.\n\n',
+                        'Decision Process:\n',
+                        '- If the user explicitly names a tool, output that tool.\n',
+                        '- Else, if the request appears to refine the previous output (e.g., "do X instead", "make it a heatmap/dot/bar/etc", "change to …", "add … to", "same plot but …"), select the last tool mentioned in the chat history.\n',
+                        '- Else, analyze the current user request; if there is a clear, unambiguous match to a single tool, select that tool.\n',
+                        '- Else, use the last mentioned tool from the chat history.\n',
+                        '- If no tool is found, respond with "None".\n\n',
+                        'Response Format: Provide only the name of the selected tool, or "None" if no tool applies.\n\n',
+                        'User Request:\n',
+                        base_prompt, '\n\n',
+                        'Available Tools:\n',
                         paste(
                             sapply(names(private$tools), function(tool) {
                                 paste0(
@@ -328,7 +318,7 @@ SCPlotterChat <- R6::R6Class(
         run_tool = function(prompt, tool_name, data_name, tool_info, verbose, add_to_history) {
             if (!is.null(private$history)) {
                 history <- paste0(
-                    "\n\n", "--- Chat History ---\n",
+                    "\n\n", "Chat History:\n",
                     paste(private$history, collapse = "\n")
                 )
             } else {
@@ -339,16 +329,20 @@ SCPlotterChat <- R6::R6Class(
                 prompt,
                 modify_fn = function(base_prompt) {
                     paste0(
-                        "Based on the following prompt and the given tool information, generate the code to run the tool.\n",
-                        "The tool or function to be used is: ", tool_name, ". The data object to be used is: ",
-                        # remove the prefix package:: from the data name, because the object passed to object_to_use will be used
-                        sub("^[a-zA-Z0-9._]+::", "", data_name), ".\n",
-                        "Don't quote the data name when using it. The code should be valid R code.\n",
-                        "Only answer with the code that is wrapped between between ```r and ``` to run the tool.\n",
-                        "If there is not enough information in the prompt to run the tool, also refer to the chat history.\n\n",
-                        "--- Prompt ---\n",
+                        'Objective: Generate the R code to run the specified tool using the specified data object based on the user\'s request and the provided tool information.\n\n',
+                        'Decision Process:\n',
+                        '- Analyze the user\'s request to understand what needs to be done with the specified tool and data object.\n',
+                        '- When use the data object name, do not quote it.\n',
+                        '- Refer to the provided tool information to understand the tool\'s usage, arguments, and examples.\n',
+                        '- Consider any specific parameters or options mentioned in the user\'s request that need to be included in the tool call.\n',
+                        '- If the user\'s request is ambiguous or lacks necessary details, refer to the chat history for additional context that may help clarify the intended use of the tool and data object.\n',
+                        '- Construct the R code that correctly calls the tool with the specified data object, ensuring that all necessary arguments are included and correctly formatted.\n\n',
+                        'Response Format: Provide only the valid R code wrapped between "```r" and "```" to run the tool.\n\n',
+                        'Tool to be used: ', tool_name, '\n',
+                        'Data object to be used: ', sub("^[a-zA-Z0-9._]+::", "", data_name), '\n\n',
+                        "User Request:\n",
                         base_prompt, "\n\n",
-                        "--- Tool Information ---\n",
+                        "Tool Information:\n",
                         paste(
                             sapply(names(tool_info), function(sec) {
                                 paste0("- ", sec, "\n  ", gsub("\n", "\n  ", tool_info[[sec]], fixed = TRUE), "\n")

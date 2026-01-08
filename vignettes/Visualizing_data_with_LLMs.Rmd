@@ -86,7 +86,7 @@ chat$ask("Do a heatmap instead")
 ```
 
 ```{r, eval = api_key_set, fig.width=7, fig.height=6}
-chat$ask("Add a title to the plot: 'Cell-Cell Communication Plot'")
+chat$ask("Add a proper title to the plot")
 ```
 
 ```{r, eval = api_key_set}
