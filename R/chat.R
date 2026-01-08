@@ -407,7 +407,7 @@ SCPlotterChat <- R6::R6Class(
                 pkgs_to_use = "scplotter",
                 objects_to_use = as.list(env),
                 evaluate_code = TRUE,
-                return_mode = "object"
+                return_mode = "full"
             )
 
             tidyprompt::send_prompt(wrapt_prompt, private$provider, verbose = verbose)
@@ -532,11 +532,13 @@ SCPlotterChat <- R6::R6Class(
                 cat("Using preset data: ", data_name, "\n")
             }
 
-            cat("Running tool: ", tool_name, "\n")
-
-            private$run_tool(prompt, tool_name, data_name, tool_info,
+            result <- private$run_tool(prompt, tool_name, data_name, tool_info,
                 verbose = verbose, add_to_history = add_to_history
             )
+
+            cat("Code ran:\n")
+            cat(as.character(result$code), "\n")
+            return(result$output$result)
         }
     )
 )
