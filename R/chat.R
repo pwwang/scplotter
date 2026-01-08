@@ -393,6 +393,15 @@ SCPlotterChat <- R6::R6Class(
                 env[[private$data_name]] <- private$data
             }
 
+            # We only need to return the plot object, not display it
+            # Capture current device and open a null device to suppress plotting
+            old_dev <- dev.cur()
+            pdf(NULL)
+            on.exit({
+                dev.off()
+                if (old_dev > 1) dev.set(old_dev)
+            }, add = TRUE)
+
             wrapt_prompt <- tidyprompt::answer_using_r(
                 wrapt_prompt,
                 pkgs_to_use = "scplotter",
