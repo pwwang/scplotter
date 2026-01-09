@@ -51,6 +51,7 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2
+          # gsl v2.1-9 requires R>4.5
           extra-packages: |
             any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
             any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
@@ -58,7 +59,7 @@ jobs:
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
             any::terra, any::GiottoClass, any::GiottoData, any::proxyC, any::metR,
-            any::hdf5r
+            any::hdf5r, github::RobinHankin/gsl@2.1-8
 
       - uses: r-lib/actions/check-r-package@v2
         env:
