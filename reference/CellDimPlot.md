@@ -191,16 +191,12 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
             add_density = TRUE, density_filled = TRUE)
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
-#> Warning: Removed 396 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
 
 CellDimPlot(pancreas_sub,
   group_by = "SubCellType", reduction = "UMAP",
   add_density = TRUE, density_filled = TRUE, density_filled_palette = "Blues",
   highlight = TRUE
 )
-#> Warning: Removed 396 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
 
@@ -227,20 +223,14 @@ CellDimPlot(pancreas_sub, group_by = "CellType", reduction = "UMAP",
             hex = TRUE)
 #> Warning: Removed 5 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
 
 CellDimPlot(pancreas_sub, group_by = "CellType", reduction = "UMAP",
             hex = TRUE, hex_bins = 20)
 #> Warning: Removed 4 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 4 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
 
 CellDimPlot(pancreas_sub, group_by = "CellType", reduction = "UMAP",
             hex = TRUE, hex_count = FALSE)
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
 #> Warning: Removed 5 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 

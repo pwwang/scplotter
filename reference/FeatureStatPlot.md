@@ -311,8 +311,6 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = 
    add_density = TRUE, density_filled = TRUE)
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
-#> Warning: Removed 396 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
 
 
 # Change the plot type from point to the hexagonal bin
@@ -320,15 +318,9 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = 
    hex = TRUE)
 #> Warning: Removed 4 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 4 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
    hex = TRUE, hex_bins = 20)
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 #> Warning: Removed 5 rows containing missing values or values outside the scale range

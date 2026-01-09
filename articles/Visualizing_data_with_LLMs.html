@@ -292,51 +292,48 @@ for visualization.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res </span></span>
-<span><span class="co">#&gt; Running tool:  CCCPlot</span></span>
+<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
-<span><span class="co">#&gt; prompt</span></span></code></pre></div>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" width="672"></p>
+<span><span class="co">#&gt; prompt</span></span>
+<span><span class="co">#&gt; Code ran:</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre></div>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Do a heatmap instead"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Tool identified:  CellStatPlot </span></span>
+<span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res </span></span>
-<span><span class="co">#&gt; Running tool:  CellStatPlot</span></span>
+<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
-<span><span class="co">#&gt; prompt</span></span></code></pre></div>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-2.png" class="r-plt" width="672"></p>
+<span><span class="co">#&gt; prompt</span></span>
+<span><span class="co">#&gt; Code ran:</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a title to the plot: 'Cell-Cell Communication Plot'"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a proper title to the plot"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res </span></span>
-<span><span class="co">#&gt; Running tool:  CCCPlot</span></span>
+<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
-<span><span class="co">#&gt; prompt</span></span></code></pre></div>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-2.png" class="r-plt" width="672"></p>
+<span><span class="co">#&gt; prompt</span></span>
+<span><span class="co">#&gt; Code ran:</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt;  [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - ccplot &lt;- CCCPlot(data = cellphonedb_res, plot_type = \"network\")\nccplot"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         </span></span>
-<span><span class="co">#&gt;  [3] "User: Do a heatmap instead"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </span></span>
-<span><span class="co">#&gt;  [4] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - # Heatmap using cellphonedb_res data\np_heatmap &lt;- CellStatPlot(cellphonedb_res, ident = \"interacting_pair\", group_by = \"cell_type_A\", plot_type = \"heatmap\")\np_heatmap"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span></span>
-<span><span class="co">#&gt;  [5] "User: Do a heatmap instead"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </span></span>
-<span><span class="co">#&gt;  [6] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - # Auto-detect suitable ident and group_by columns for heatmap\ncols &lt;- colnames(cellphonedb_res)\n\nident_candidates &lt;- c(\"interacting_pair\",\"ligand\",\"receptor\",\"pair\",\"cell_type_A\",\"cell_type\")\npossible_ident &lt;- ident_candidates[ident_candidates %in% cols]\nident_col &lt;- if (length(possible_ident) &gt; 0) possible_ident[1] else NULL\n\ngroup_candidates &lt;- c(\"cell_type_B\",\"cell_type\",\"stim\",\"group\",\"sample\",\"orig.ident\",\"treatment\",\"cluster\",\"identity\")\npossible_group &lt;- group_candidates[group_candidates %in% cols]\ngroup_col &lt;- if (length(possible_group) &gt; 0) possible_group[1] else NULL\n\np_heatmap &lt;- CellStatPlot(cellphonedb_res, ident = ident_col, group_by = group_col, plot_type = \"heatmap\")\np_heatmap"                                                                                                                                                                                                                                                                                                                                                                                                                                     </span></span>
-<span><span class="co">#&gt;  [7] "User: Do a heatmap instead"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </span></span>
-<span><span class="co">#&gt;  [8] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - # Robust heatmap: find common ident and group columns\ncols &lt;- colnames(cellphonedb_res)\n\nident_candidates &lt;- c(\"interacting_pair\",\"ligand\",\"receptor\",\"pair\",\"cell_type_A\",\"cell_type\")\npossible_ident &lt;- ident_candidates[ident_candidates %in% cols]\n\ngroup_candidates &lt;- c(\"cell_type_B\",\"cell_type\",\"stim\",\"group\",\"sample\",\"orig.ident\",\"treatment\",\"cluster\",\"identity\")\npossible_group &lt;- group_candidates[group_candidates %in% cols]\n\nident_col &lt;- if (length(possible_ident) &gt; 0) possible_ident[1] else NULL\ngroup_col &lt;- if (length(possible_group) &gt; 0) possible_group[1] else NULL\n\nif (is.null(ident_col) || is.null(group_col)) {\n  stop(\"Could not find suitable ident and group_by columns in cellphonedb_res.\")\n}\n\np_heatmap &lt;- CellStatPlot(cellphonedb_res, ident = ident_col, group_by = group_col, plot_type = \"heatmap\")\np_heatmap"                                                                                                                                                                                                                                                                                                 </span></span>
-<span><span class="co">#&gt;  [9] "User: Do a heatmap instead"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </span></span>
-<span><span class="co">#&gt; [10] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - # Robust dynamic selection for ident and group_by for heatmap\ncols &lt;- colnames(cellphonedb_res)\n\nident_candidates &lt;- c(\n  \"interacting_pair\",\"ligand\",\"receptor\",\"pair\",\"cell_type_A\",\"cell_type\",\n  \"interaction\",\"donor\",\"ligand_receptor\",\"partner\",\"cell_type_pair\"\n)\npossible_ident &lt;- intersect(ident_candidates, cols)\nident_col &lt;- if (length(possible_ident) &gt; 0) possible_ident[1] else NULL\n\ngroup_candidates &lt;- c(\n  \"cell_type_B\",\"cell_type\",\"stim\",\"group\",\"sample\",\"orig.ident\",\"treatment\",\"cluster\",\n  \"identity\",\"donor\",\"condition\",\"sample_id\",\"experiment\"\n)\npossible_group &lt;- intersect(group_candidates, cols)\ngroup_col &lt;- if (length(possible_group) &gt; 0) possible_group[1] else NULL\n\nif (is.null(ident_col)) ident_col &lt;- if (length(cols) &gt; 0) cols[1] else NULL\nif (is.null(group_col)) group_col &lt;- if (length(cols) &gt; 1) cols[2] else NULL\n\nif (is.null(ident_col) || is.null(group_col)) {\n  stop(\"Not enough suitable columns in cellphonedb_res to create a heatmap.\")\n}\n\np_heatmap &lt;- CellStatPlot(cellphonedb_res, ident = ident_col, group_by = group_col, plot_type = \"heatmap\")\np_heatmap"</span></span>
-<span><span class="co">#&gt; [11] "User: Add a title to the plot: 'Cell-Cell Communication Plot'"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           </span></span>
-<span><span class="co">#&gt; [12] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - p &lt;- CCCPlot(data = cellphonedb_res, plot_type = \"dot\", title = \"Cell-Cell Communication Plot\")\np"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                             </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                      </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -354,15 +351,21 @@ print the prompt and the response from the LLM.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Generate a cell-cell communication plot for the cellphonedb_res data."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
-<span><span class="co">#&gt; Based on the following prompt and identify the tool that can be used to handle the request.</span></span>
-<span><span class="co">#&gt; Please only answer with the name of the tool from the listed available ones. </span></span>
-<span><span class="co">#&gt; If no proper tool is identified from the prompt, use the last mentioned tool in the chat history.</span></span>
-<span><span class="co">#&gt; If no tool is found in the chat history, just answer "None".</span></span>
+<span><span class="co">#&gt; Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Prompt ---</span></span>
+<span><span class="co">#&gt; Decision Process:</span></span>
+<span><span class="co">#&gt; - If the user explicitly names a tool, output that tool.</span></span>
+<span><span class="co">#&gt; - Else, if the request appears to refine the previous output (e.g., "do X instead", "make it a heatmap/dot/bar/etc", "change to ...", "add ... to", "same plot but ..."), select the last tool mentioned in the chat history.</span></span>
+<span><span class="co">#&gt; - Else, analyze the current user request; if there is a clear, unambiguous match to a single tool, select that tool.</span></span>
+<span><span class="co">#&gt; - Else, use the last mentioned tool from the chat history.</span></span>
+<span><span class="co">#&gt; - If no tool is found, respond with "None".</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response Format: Provide only the name of the selected tool, or "None" if no tool applies.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; User Request:</span></span>
 <span><span class="co">#&gt; Generate a cell-cell communication plot for the cellphonedb_res data.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Available Tools ---</span></span>
+<span><span class="co">#&gt; Available Tools:</span></span>
 <span><span class="co">#&gt; - gt: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -520,15 +523,21 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; CCCPlot</span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
-<span><span class="co">#&gt; Based on the following prompt, identify the name of the data object that is mentioned in the prompt.</span></span>
-<span><span class="co">#&gt; The name should be one of the available ones listed.</span></span>
-<span><span class="co">#&gt; If no data object is found based on the prompt, use the last mentioned data object in the chat history.</span></span>
-<span><span class="co">#&gt; If no data object is found in the chat history, just answer "None".</span></span>
+<span><span class="co">#&gt; Objective: Identify the data object to be used.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Prompt ---</span></span>
+<span><span class="co">#&gt; Decision Process:</span></span>
+<span><span class="co">#&gt; - If the user explicitly names a data object, output that data object name. If the name does not match exactly the available ones, use the one that is mostly related.</span></span>
+<span><span class="co">#&gt; - Else, if the request appears to refine the previous output (e.g., "do X instead", "make it a heatmap/dot/bar/etc", "change to ...", "add ... to", "same plot but ..."), select the last dataset name mentioned in the chat history.</span></span>
+<span><span class="co">#&gt; - Else, analyze the current user request; if there is a clear, unambiguous match to a dataset, select that data object.</span></span>
+<span><span class="co">#&gt; - Else, use the last mentioned data object from the chat history.</span></span>
+<span><span class="co">#&gt; - If no data object is found, respond with "None".</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response Format: Provide only the name of the selected data object, or "None" if no tool applies. The response should be unquoted.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; User Request:</span></span>
 <span><span class="co">#&gt; Generate a cell-cell communication plot for the cellphonedb_res data.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; -- Available Data Objects ---</span></span>
+<span><span class="co">#&gt; Available Data Objects:</span></span>
 <span><span class="co">#&gt; - scplotter::cellphonedb_res: A toy example of CellPhoneDB output from LIANA</span></span>
 <span><span class="co">#&gt; - scplotter::ifnb_sub: A subsetted version of 'ifnb' datasets</span></span>
 <span><span class="co">#&gt; - scplotter::pancreas_sub: A subsetted version of mouse 'pancreas' datasets</span></span>
@@ -540,22 +549,30 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; - scRepertoire::scRep_example: A Seurat object of 500 single T cells,</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; scplotter::cellphonedb_res</span></span>
-<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res </span></span>
-<span><span class="co">#&gt; Running tool:  CCCPlot</span></span>
+<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Based on the following prompt and the given tool information, generate the code to run the tool.</span></span>
-<span><span class="co">#&gt; The tool or function to be used is: CCCPlot. The data object to be used is: cellphonedb_res.</span></span>
-<span><span class="co">#&gt; Don't quote the data name when using it. The code should be valid R code.</span></span>
-<span><span class="co">#&gt; Only answer with the code that is wrapped between between ```r and ``` to run the tool.</span></span>
-<span><span class="co">#&gt; If there is not enough information in the prompt to run the tool, also refer to the chat history.</span></span>
+<pre><code><span><span class="co">#&gt; Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Prompt ---</span></span>
+<span><span class="co">#&gt; Decision Process:</span></span>
+<span><span class="co">#&gt; - Analyze the user's request to understand what needs to be done with the specified tool and data object.</span></span>
+<span><span class="co">#&gt; - When use the data object name, do not quote it.</span></span>
+<span><span class="co">#&gt; - Refer to the provided tool information to understand the tool's usage, arguments, and examples.</span></span>
+<span><span class="co">#&gt; - Consider any specific parameters or options mentioned in the user's request that need to be included in the tool call.</span></span>
+<span><span class="co">#&gt; - If the user's request is ambiguous or lacks necessary details, refer to the chat history for additional context that may help clarify the intended use of the tool and data object.</span></span>
+<span><span class="co">#&gt; - Construct the R code that correctly calls the tool with the specified data object, ensuring that all necessary arguments are included and correctly formatted.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response Format: Provide only the valid R code wrapped between "```r" and "```" to run the tool.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Tool to be used: CCCPlot</span></span>
+<span><span class="co">#&gt; Data object to be used: cellphonedb_res</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; User Request:</span></span>
 <span><span class="co">#&gt; Generate a cell-cell communication plot for the cellphonedb_res data.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Tool Information ---</span></span>
+<span><span class="co">#&gt; Tool Information:</span></span>
 <span><span class="co">#&gt; - title</span></span>
 <span><span class="co">#&gt;   Cell-Cell Communication Plot</span></span>
 <span><span class="co">#&gt; - description</span></span>
@@ -1298,38 +1315,38 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Object_name, Type</span></span>
 <span><span class="co">#&gt; cellphonedb_res, data.frame.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Do not define these objects in your R code.</span></span>
-<span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
+<span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; cellcc_plot &lt;- CCCPlot(</span></span>
-<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "dot",</span></span>
-<span><span class="co">#&gt;   method = "aggregation",</span></span>
-<span><span class="co">#&gt;   magnitude_agg = length,</span></span>
-<span><span class="co">#&gt;   magnitude_name = "No. of interactions",</span></span>
-<span><span class="co">#&gt;   x_text_angle = 90</span></span>
-<span><span class="co">#&gt; )</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-2.png" class="r-plt" width="672"></p>
+<pre><code><span><span class="co">#&gt; Code ran:</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/SCPlotterChat.html">SCPlotterChat</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>    provider <span class="op">=</span> <span class="va">provider</span>,</span>
 <span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Generate a cell-cell communication plot for the cellphonedb_res data."</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
-<span><span class="co">#&gt; Based on the following prompt and identify the tool that can be used to handle the request.</span></span>
-<span><span class="co">#&gt; Please only answer with the name of the tool from the listed available ones. </span></span>
-<span><span class="co">#&gt; If no proper tool is identified from the prompt, use the last mentioned tool in the chat history.</span></span>
-<span><span class="co">#&gt; If no tool is found in the chat history, just answer "None".</span></span>
+<span><span class="co">#&gt; Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Prompt ---</span></span>
+<span><span class="co">#&gt; Decision Process:</span></span>
+<span><span class="co">#&gt; - If the user explicitly names a tool, output that tool.</span></span>
+<span><span class="co">#&gt; - Else, if the request appears to refine the previous output (e.g., "do X instead", "make it a heatmap/dot/bar/etc", "change to ...", "add ... to", "same plot but ..."), select the last tool mentioned in the chat history.</span></span>
+<span><span class="co">#&gt; - Else, analyze the current user request; if there is a clear, unambiguous match to a single tool, select that tool.</span></span>
+<span><span class="co">#&gt; - Else, use the last mentioned tool from the chat history.</span></span>
+<span><span class="co">#&gt; - If no tool is found, respond with "None".</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response Format: Provide only the name of the selected tool, or "None" if no tool applies.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; User Request:</span></span>
 <span><span class="co">#&gt; Generate a cell-cell communication plot for the cellphonedb_res data.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Available Tools ---</span></span>
+<span><span class="co">#&gt; Available Tools:</span></span>
 <span><span class="co">#&gt; - gt: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1487,15 +1504,21 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; CCCPlot</span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
-<span><span class="co">#&gt; Based on the following prompt, identify the name of the data object that is mentioned in the prompt.</span></span>
-<span><span class="co">#&gt; The name should be one of the available ones listed.</span></span>
-<span><span class="co">#&gt; If no data object is found based on the prompt, use the last mentioned data object in the chat history.</span></span>
-<span><span class="co">#&gt; If no data object is found in the chat history, just answer "None".</span></span>
+<span><span class="co">#&gt; Objective: Identify the data object to be used.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Prompt ---</span></span>
+<span><span class="co">#&gt; Decision Process:</span></span>
+<span><span class="co">#&gt; - If the user explicitly names a data object, output that data object name. If the name does not match exactly the available ones, use the one that is mostly related.</span></span>
+<span><span class="co">#&gt; - Else, if the request appears to refine the previous output (e.g., "do X instead", "make it a heatmap/dot/bar/etc", "change to ...", "add ... to", "same plot but ..."), select the last dataset name mentioned in the chat history.</span></span>
+<span><span class="co">#&gt; - Else, analyze the current user request; if there is a clear, unambiguous match to a dataset, select that data object.</span></span>
+<span><span class="co">#&gt; - Else, use the last mentioned data object from the chat history.</span></span>
+<span><span class="co">#&gt; - If no data object is found, respond with "None".</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response Format: Provide only the name of the selected data object, or "None" if no tool applies. The response should be unquoted.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; User Request:</span></span>
 <span><span class="co">#&gt; Generate a cell-cell communication plot for the cellphonedb_res data.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; -- Available Data Objects ---</span></span>
+<span><span class="co">#&gt; Available Data Objects:</span></span>
 <span><span class="co">#&gt; - scplotter::cellphonedb_res: A toy example of CellPhoneDB output from LIANA</span></span>
 <span><span class="co">#&gt; - scplotter::ifnb_sub: A subsetted version of 'ifnb' datasets</span></span>
 <span><span class="co">#&gt; - scplotter::pancreas_sub: A subsetted version of mouse 'pancreas' datasets</span></span>
@@ -1507,22 +1530,30 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; - scRepertoire::scRep_example: A Seurat object of 500 single T cells,</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; scplotter::cellphonedb_res</span></span>
-<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res </span></span>
-<span><span class="co">#&gt; Running tool:  CCCPlot</span></span>
+<span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Based on the following prompt and the given tool information, generate the code to run the tool.</span></span>
-<span><span class="co">#&gt; The tool or function to be used is: CCCPlot. The data object to be used is: cellphonedb_res.</span></span>
-<span><span class="co">#&gt; Don't quote the data name when using it. The code should be valid R code.</span></span>
-<span><span class="co">#&gt; Only answer with the code that is wrapped between between ```r and ``` to run the tool.</span></span>
-<span><span class="co">#&gt; If there is not enough information in the prompt to run the tool, also refer to the chat history.</span></span>
+<pre><code><span><span class="co">#&gt; Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Prompt ---</span></span>
+<span><span class="co">#&gt; Decision Process:</span></span>
+<span><span class="co">#&gt; - Analyze the user's request to understand what needs to be done with the specified tool and data object.</span></span>
+<span><span class="co">#&gt; - When use the data object name, do not quote it.</span></span>
+<span><span class="co">#&gt; - Refer to the provided tool information to understand the tool's usage, arguments, and examples.</span></span>
+<span><span class="co">#&gt; - Consider any specific parameters or options mentioned in the user's request that need to be included in the tool call.</span></span>
+<span><span class="co">#&gt; - If the user's request is ambiguous or lacks necessary details, refer to the chat history for additional context that may help clarify the intended use of the tool and data object.</span></span>
+<span><span class="co">#&gt; - Construct the R code that correctly calls the tool with the specified data object, ensuring that all necessary arguments are included and correctly formatted.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response Format: Provide only the valid R code wrapped between "```r" and "```" to run the tool.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Tool to be used: CCCPlot</span></span>
+<span><span class="co">#&gt; Data object to be used: cellphonedb_res</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; User Request:</span></span>
 <span><span class="co">#&gt; Generate a cell-cell communication plot for the cellphonedb_res data.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --- Tool Information ---</span></span>
+<span><span class="co">#&gt; Tool Information:</span></span>
 <span><span class="co">#&gt; - title</span></span>
 <span><span class="co">#&gt;   Cell-Cell Communication Plot</span></span>
 <span><span class="co">#&gt; - description</span></span>
@@ -2265,20 +2296,14 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Object_name, Type</span></span>
 <span><span class="co">#&gt; cellphonedb_res, data.frame.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Do not define these objects in your R code.</span></span>
-<span><span class="co">#&gt; The R code should produce an object that answers the prompt.</span></span></code></pre>
+<span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(</span></span>
-<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "network",</span></span>
-<span><span class="co">#&gt;   legend.position = "none",</span></span>
-<span><span class="co">#&gt;   theme = "theme_blank",</span></span>
-<span><span class="co">#&gt;   theme_args = list(add_coord = FALSE),</span></span>
-<span><span class="co">#&gt;   seed = 8525</span></span>
-<span><span class="co">#&gt; )</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "network")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="672"><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-2.png" class="r-plt" width="672"></p>
+<pre><code><span><span class="co">#&gt; Code ran:</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "network")</span></span></code></pre>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

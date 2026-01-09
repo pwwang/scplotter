@@ -102,8 +102,9 @@ provider <- tidyprompt::llm_provider_openai(api_key = Sys.getenv("OPENAI_API_KEY
 chat <- SCPlotterChat$new(provider = provider)
 chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
 # Tool identified:  CCCPlot
-# Data object identified:  cellphonedb_res
-# Running tool:  CCCPlot
+# Data object identified:  scplotter::cellphonedb_res
+# Code ran:
+# CCCPlot(cellphonedb_res, plot_type = "dot")
 ```
 
 ![](./reference/figures/scplotter-chat1.png)
@@ -111,8 +112,9 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 ``` r
 chat$ask("Do a heatmap instead")
 # Tool identified:  CCCPlot
-# Data object identified:  cellphonedb_res
-# Running tool:  CCCPlot
+# Data object identified:  scplotter::cellphonedb_res
+# Code ran:
+# CCCPlot(cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](./reference/figures/scplotter-chat2.png)
