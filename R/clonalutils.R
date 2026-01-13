@@ -388,6 +388,8 @@ screp_subset <- function(screp, subset) {
 #' data <- tidyr::pivot_longer(data, cols = c("group1", "group2"),
 #'     names_to = "group", values_to = "value")
 #' data <- tidyr::uncount(data, !!rlang::sym("value"))
+#' # Take a glimpse of the data
+#' data[sample(1:nrow(data), 10), ]
 #'
 #' unique(dplyr::mutate(data, Top3 = top(3))$Top3)
 #' unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
