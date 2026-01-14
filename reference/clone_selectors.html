@@ -68,6 +68,7 @@
 <span>  order <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -77,6 +78,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -88,6 +90,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -99,6 +102,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -110,6 +114,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -121,6 +126,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -132,6 +138,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -143,6 +150,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -153,6 +161,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -164,6 +173,7 @@
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  in_form <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_ids <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -211,6 +221,13 @@ If "long", the data should be in a long format with a column for the clone IDs a
 If "wide", the data should be in a wide format with columns for the clone IDs and the size for each group.
 When used in dplyr verbs, it should be "long" by default.
 If used in scplotter functions, it should be "wide" by default.#'</p></dd>
+
+
+<dt id="arg-within">within<a class="anchor" aria-label="anchor" href="#arg-within"></a></dt>
+<dd><p>An expression passed to subset the data before applying the selection criteria.
+Note that this subsetting is only applied to determine the selection of clones, not to the final output.
+So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
+if it does not meet the <code>within</code> criteria.</p></dd>
 
 
 <dt id="arg-return-ids">return_ids<a class="anchor" aria-label="anchor" href="#arg-return-ids"></a></dt>
@@ -274,7 +291,8 @@ behavior and the output of the function.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8525</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    CTaa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AA1"</span>, <span class="st">"AA2"</span>, <span class="st">"AA3"</span>, <span class="st">"AA4"</span>, <span class="st">"AA5"</span>, <span class="st">"AA6"</span>, <span class="st">"AA7"</span>, <span class="st">"AA8"</span>, <span class="st">"AA9"</span>, <span class="st">"AA10"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    group1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    group2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">3</span>, <span class="fl">8</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">9</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
@@ -358,9 +376,27 @@ behavior and the output of the function.</p></li>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">data</span>, cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group1"</span>, <span class="st">"group2"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    names_to <span class="op">=</span> <span class="st">"group"</span>, values_to <span class="op">=</span> <span class="st">"value"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/uncount.html" class="external-link">uncount</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">!</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/sym.html" class="external-link">sym</a></span><span class="op">(</span><span class="st">"value"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S1"</span>, <span class="st">"S2"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Take a glimpse of the data</span></span></span>
+<span class="r-in"><span><span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>, <span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    CTaa  groups group  subset</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> AA8   B      group2 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> AA8   B      group1 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> AA5   B      group1 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> AA10  B      group1 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> AA7   B      group1 S2    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> AA7   B      group1 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> AA1   A      group2 S2    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> AA1   A      group2 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> AA5   B      group1 S1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AA9   B      group1 S2    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">data</span>, Top3 <span class="op">=</span> <span class="fu">top</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">Top3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AA7" "AA9" "AA8" NA   </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">data</span>, Top3 <span class="op">=</span> <span class="fu">top</span><span class="op">(</span><span class="fl">3</span>, within <span class="op">=</span> <span class="va">groups</span> <span class="op">==</span> <span class="st">"A"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">Top3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] NA    "AA3" "AA1" "AA4"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">data</span>, Top3 <span class="op">=</span> <span class="fu">top</span><span class="op">(</span><span class="fl">3</span>, groups <span class="op">=</span> <span class="st">"groups"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">Top3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AA7" "AA9" "AA8" "AA3" NA    "AA1" "AA4"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">data</span>, Unique <span class="op">=</span> <span class="fu">sel</span><span class="op">(</span><span class="va">group1</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">|</span> <span class="va">group2</span> <span class="op">==</span> <span class="fl">0</span>, groups <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">Unique</span><span class="op">)</span></span></span>

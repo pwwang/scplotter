@@ -70,11 +70,11 @@ different environments and return the results in the desired format.</p>
 <span></span>
 <span><span class="fu">.return_what</span><span class="op">(</span><span class="va">out</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.top_long</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.top_long</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">return_ids</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.top_wide</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">return_ids</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
 <span></span>
@@ -127,6 +127,13 @@ When used in dplyr verbs, it should be the parent data frame passed to the dplyr
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
 <dd><p>The order of the clones to select. It can be an expression to order the clones by a specific column. Only used in <code><a href="clone_selectors.html">top()</a></code>.</p></dd>
+
+
+<dt id="arg-within">within<a class="anchor" aria-label="anchor" href="#arg-within"></a></dt>
+<dd><p>An expression passed to subset the data before applying the selection criteria.
+Note that this subsetting is only applied to determine the selection of clones, not to the final output.
+So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
+if it does not meet the <code>within</code> criteria.</p></dd>
 
 
 <dt id="arg-expr">expr<a class="anchor" aria-label="anchor" href="#arg-expr"></a></dt>
