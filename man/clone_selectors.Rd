@@ -23,6 +23,7 @@ top(
   order = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -32,6 +33,7 @@ sel(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -43,6 +45,7 @@ uniq(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -54,6 +57,7 @@ shared(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -65,6 +69,7 @@ gt(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -76,6 +81,7 @@ ge(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -87,6 +93,7 @@ lt(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -98,6 +105,7 @@ le(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -108,6 +116,7 @@ eq(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -119,6 +128,7 @@ ne(
   data = NULL,
   id = NULL,
   in_form = NULL,
+  within = NULL,
   return_ids = NULL
 )
 
@@ -151,6 +161,11 @@ If "long", the data should be in a long format with a column for the clone IDs a
 If "wide", the data should be in a wide format with columns for the clone IDs and the size for each group.
 When used in dplyr verbs, it should be "long" by default.
 If used in scplotter functions, it should be "wide" by default.#'}
+
+\item{within}{An expression passed to subset the data before applying the selection criteria.
+Note that this subsetting is only applied to determine the selection of clones, not to the final output.
+So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
+if it does not meet the \code{within} criteria.}
 
 \item{return_ids}{If TRUE, the function returns a vector with the same length as the data, with CTaa values for selected clones and NA for others.
 If FALSE, it returns a subset data frame with only the selected clones.
@@ -199,6 +214,7 @@ behavior and the output of the function.
 }
 }
 \examples{
+set.seed(8525)
 data <- data.frame(
     CTaa = c("AA1", "AA2", "AA3", "AA4", "AA5", "AA6", "AA7", "AA8", "AA9", "AA10"),
     group1 = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
@@ -222,10 +238,12 @@ ne(group1, group2)
 data <- tidyr::pivot_longer(data, cols = c("group1", "group2"),
     names_to = "group", values_to = "value")
 data <- tidyr::uncount(data, !!rlang::sym("value"))
+data$subset <- sample(c("S1", "S2"), nrow(data), replace = TRUE)
 # Take a glimpse of the data
 data[sample(1:nrow(data), 10), ]
 
 unique(dplyr::mutate(data, Top3 = top(3))$Top3)
+unique(dplyr::mutate(data, Top3 = top(3, within = groups == "A"))$Top3)
 unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
 unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
 unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)

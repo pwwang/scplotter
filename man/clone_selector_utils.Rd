@@ -17,11 +17,11 @@
 
 .return_what(out, id, return_ids)
 
-.top_long(n, groups, data, order, id, return_ids)
+.top_long(n, groups, data, order, id, within, return_ids)
 
 .top_wide(n, groups, data, order, id, return_ids)
 
-.sel_long(expr, groups, data, id, return_ids)
+.sel_long(expr, groups, data, id, within, return_ids)
 
 .sel_wide(expr, groups, data, id, return_ids)
 
@@ -55,6 +55,11 @@ By default, the data is assumed to be in the parent frame.
 When used in dplyr verbs, it should be the parent data frame passed to the dplyr verb.}
 
 \item{order}{The order of the clones to select. It can be an expression to order the clones by a specific column. Only used in \code{top()}.}
+
+\item{within}{An expression passed to subset the data before applying the selection criteria.
+Note that this subsetting is only applied to determine the selection of clones, not to the final output.
+So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
+if it does not meet the \code{within} criteria.}
 
 \item{expr}{The expression (in characters) to filter the clones
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}
