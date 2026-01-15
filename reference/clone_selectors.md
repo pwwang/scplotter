@@ -123,9 +123,9 @@ ne(
   return_ids = NULL
 )
 
-and(x, y)
+and(x, y, ...)
 
-or(x, y)
+or(x, y, ...)
 ```
 
 ## Arguments
@@ -205,7 +205,7 @@ or(x, y)
 
 - ...:
 
-  More groups to compare.
+  Additional vectors to compare in logical operations (and/or).
 
 - include_zeros:
 
