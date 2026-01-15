@@ -132,9 +132,9 @@ ne(
   return_ids = NULL
 )
 
-and(x, y)
+and(x, y, ...)
 
-or(x, y)
+or(x, y, ...)
 }
 \arguments{
 \item{n}{The number of top clones to select or the threshold size.}
@@ -179,7 +179,7 @@ Otherwise, it defaults to FALSE.}
 
 \item{group2}{The second group to compare.}
 
-\item{...}{More groups to compare.}
+\item{...}{Additional vectors to compare in logical operations (and/or).}
 
 \item{include_zeros}{Whether to include clones with zero size in the comparison.
 If TRUE, in a comparison (s1 > s2) for a clone to be selected, both s1 and s2 must be greater than 0.

@@ -374,6 +374,7 @@ screp_subset <- function(screp, subset) {
 #' Otherwise, it defaults to FALSE.
 #' @param x The first vector to compare in logical operations (and/or).
 #' @param y The second vector to compare in logical operations (and/or).
+#' @param ... Additional vectors to compare in logical operations (and/or).
 #' @return A vector of CTaas or a data frame with the selected clones based on the criteria.
 #' @importFrom rlang parse_expr syms sym caller_env env_has env_get enquo expr_name
 #' @importFrom dplyr group_by summarise filter reframe pull mutate select across everything row_number left_join
@@ -746,15 +747,17 @@ ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
 
 #' @rdname clone_selectors
 #' @export
-and <- function(x, y) {
-    mask_x <- is.na(x)
-    mask_y <- is.na(y)
-    x[mask_x | mask_y] <- NA
+and <- function(x, y, ...) {
+    mask <- is.na(x) | is.na(y)
+    for (arg in list(...)) {
+        mask <- mask | is.na(arg)
+    }
+    x[mask] <- NA
     x
 }
 
 #' @rdname clone_selectors
 #' @export
-or <- function(x, y) {
-    dplyr::coalesce(x, y)
+or <- function(x, y, ...) {
+    dplyr::coalesce(x, y, ...)
 }
