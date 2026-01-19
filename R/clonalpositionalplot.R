@@ -81,6 +81,18 @@ ClonalPositionalPlot <- function (
     } else {
         all_groupings <- unique(c(group_by, facet_by, split_by))
     }
+    grouping_levels <- sapply(all_groupings, function(g) {
+        dg <- if (inherits(data, "Seurat")) {
+            data@meta.data[[g]]
+        } else {
+            data[[g]]
+        }
+        if (is.null(dg)) return(NULL)
+        if (!is.factor(dg)) dg <- factor(dg)
+        levels(dg)
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- merge_clonal_groupings(data, all_groupings)
 
     if (method == "AA") {
@@ -90,6 +102,11 @@ ClonalPositionalPlot <- function (
         data <- percentAA(data, chain = chain, aa.length = aa_length, group.by = ".group",
             exportTable = TRUE)
         data <- separate(data, "group", into = all_groupings, sep = " // ")
+        for (gl in names(grouping_levels)) {
+            if (!is.null(data[[gl]])) {
+                data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+            }
+        }
 
         if (plot_type == "bar") {
             theme_args$panel.grid.major.y <- theme_args$panel.grid.major.y %||% element_blank()
@@ -119,6 +136,12 @@ ClonalPositionalPlot <- function (
             separate("Var1", into = all_groupings, sep = " // ") %>%
             rename(Position = "Var2") %>%
             unite(".group", !!!syms(group_by), sep = group_by_sep)
+
+        for (gl in names(grouping_levels)) {
+            if (!is.null(data[[gl]])) {
+                data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+            }
+        }
 
         group_by <- paste(group_by, sep = group_by_sep)
         data <- rename(data, !!sym(group_by) := ".group")
@@ -169,6 +192,12 @@ ClonalPositionalPlot <- function (
             separate("group", into = all_groupings, sep = " // ") %>%
             rename(Position = "position") %>%
             unite(".group", !!!syms(group_by), sep = group_by_sep)
+
+        for (gl in names(grouping_levels)) {
+            if (!is.null(data[[gl]])) {
+                data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+            }
+        }
 
         group_by <- paste(group_by, sep = group_by_sep)
         data <- rename(data, !!sym(group_by) := ".group")
@@ -259,8 +288,19 @@ ClonalKmerPlot <- function (
 ) {
     plot_type <- match.arg(plot_type)
     all_groupings <- unique(c(group_by, split_by))
-    data <- merge_clonal_groupings(data, all_groupings)
+    grouping_levels <- sapply(all_groupings, function(g) {
+        dg <- if (inherits(data, "Seurat")) {
+            data@meta.data[[g]]
+        } else {
+            data[[g]]
+        }
+        if (is.null(dg)) return(NULL)
+        if (!is.factor(dg)) dg <- factor(dg)
+        levels(dg)
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
 
+    data <- merge_clonal_groupings(data, all_groupings)
     data <- percentKmer(data, chain = chain, cloneCall = clone_call, motif.length = k,
         top.motifs = top, group.by = ".group", exportTable = TRUE)
     data <- as.data.frame(data)
@@ -270,6 +310,12 @@ ClonalKmerPlot <- function (
         separate(".group", into = all_groupings, sep = " // ") %>%
         unite(".group", !!!syms(group_by), sep = group_by_sep) %>%
         rename(!!sym(paste(group_by, sep = group_by_sep)) := ".group")
+
+    for (gl in names(grouping_levels)) {
+        if (!is.null(data[[gl]])) {
+            data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+        }
+    }
 
     group_by <- paste(group_by, sep = group_by_sep)
 

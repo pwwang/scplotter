@@ -162,10 +162,27 @@ ClonalDiversityPlot <- function(
     )
 
     data <- merge_clonal_groupings(data, all_groupings)
+    grouping_levels <- sapply(all_groupings, function(g) {
+        dg <- if (inherits(data, "Seurat")) {
+            data@meta.data[[g]]
+        } else {
+            data[[g]]
+        }
+        if (is.null(dg)) return(NULL)
+        if (!is.factor(dg)) dg <- factor(dg)
+        levels(dg)
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- ClonalDiversity(data,
         cloneCall = clone_call, chain = chain, method = method, d = d, group_by = ".group"
     )
     data <- separate(data, ".group", into = all_groupings, sep = " // ")
+    for (gl in names(grouping_levels)) {
+        if (!is.null(data[[gl]])) {
+            data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+        }
+    }
 
     if (plot_type == "bar") {
         x <- group_by %||% "Sample"
@@ -252,6 +269,7 @@ ClonalRarefactionPlot <- function(
     }
 
     all_groupings <- unique(c(group_by, split_by))
+    # TODO (maybe): keep the ordering of the grouping levels?
     data <- merge_clonal_groupings(data, all_groupings)
 
     .data.wrangle <- getFromNamespace(".data.wrangle", "scRepertoire")
@@ -260,8 +278,7 @@ ClonalRarefactionPlot <- function(
     is_se_object <- getFromNamespace("is_se_object", "scRepertoire")
     is_seurat_object <- getFromNamespace("is_seurat_object", "scRepertoire")
 
-    data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE),
-        chain)
+    data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE), chain)
     cloneCall <- .theCall(data, clone_call)
 
     if (!is_seurat_object(data) && !is_se_object(data)) {

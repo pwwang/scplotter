@@ -85,6 +85,18 @@ ClonalGeneUsagePlot <- function(
     }
 
     all_groupings <- unique(c(group_by, split_by))
+    grouping_levels <- sapply(all_groupings, function(g) {
+        dg <- if (inherits(data, "Seurat")) {
+            data@meta.data[[g]]
+        } else {
+            data[[g]]
+        }
+        if (is.null(dg)) return(NULL)
+        if (!is.factor(dg)) dg <- factor(dg)
+        levels(dg)
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- merge_clonal_groupings(data, all_groupings)
     data <- vizGenes(data, x.axis = genes, y.axis = genes2, group.by = ".group", scale = scale, exportTable = TRUE)
     if (is.null(genes2)) {
@@ -94,6 +106,12 @@ ClonalGeneUsagePlot <- function(
 
         data <- separate(data, "y.axis", into = all_groupings, sep = " // ") %>%
             rename(!!sym(axis1) := "x.axis")
+
+        for (gl in names(grouping_levels)) {
+            if (!is.null(data[[gl]])) {
+                data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+            }
+        }
 
         selected_genes <- data %>% dplyr::group_by(!!sym(genes)) %>%
             summarise(total = sum(!!sym("count")), .groups = "drop") %>%
@@ -116,6 +134,11 @@ ClonalGeneUsagePlot <- function(
 
         if (!is.null(all_groupings)) {
             data <- separate(data, "element.names", into = all_groupings, sep = " // ")
+            for (gl in names(grouping_levels)) {
+                if (!is.null(data[[gl]])) {
+                    data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+                }
+            }
         }
         data <- data %>%
             rename(!!sym(genes) := "x.axis", !!sym(genes2) := "y.axis") %>%

@@ -16,6 +16,18 @@
 #' @importFrom dplyr distinct filter rename
 #' @importFrom tidyr pivot_longer
 clonal_size_data <- function(data, clone_call, chain, groupings) {
+    grouping_levels <- sapply(groupings, function(g) {
+        dg <- if (inherits(data, "Seurat")) {
+            data@meta.data[[g]]
+        } else {
+            data[[g]]
+        }
+        if (is.null(dg)) return(NULL)
+        if (!is.factor(dg)) dg <- factor(dg)
+        levels(dg)
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- merge_clonal_groupings(data, groupings)
 
     if (inherits(data, "Seurat")) {
@@ -46,7 +58,7 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
     gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
     clone_call <- .theCall(data, clone_call)
 
-    do.call(rbind, lapply(gv_pairs, function(gv) {
+    df <- do.call(rbind, lapply(gv_pairs, function(gv) {
         x_df <- as.data.frame(table(data[[gv[1]]][, clone_call]))
         x_col <- colnames(x_df)[2] <- paste0(gv[1], ".count")
         y_df <- as.data.frame(table(data[[gv[2]]][, clone_call]))
@@ -69,6 +81,14 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
         separate(".group", into = groupings, sep = " // ") %>%
         filter(!!sym("count") > 0) %>%
         rename(CloneID = "Var1")
+
+    for (gl in names(grouping_levels)) {
+        if (!is.null(df[[gl]])) {
+            df[[gl]] <- factor(df[[gl]], levels = grouping_levels[[gl]])
+        }
+    }
+
+    df
 }
 
 #' merge_clonal_groupings

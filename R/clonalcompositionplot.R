@@ -75,6 +75,21 @@ ClonalVolumePlot <- function(
     } else {
         all_groupings <- unique(c(x, group_by, facet_by, split_by))
     }
+    grouping_levels <- sapply(all_groupings, function(g) {
+        if (!is.null(order[[g]])) {
+            order[[g]]
+        } else {
+            dg <- if (inherits(data, "Seurat")) {
+                data@meta.data[[g]]
+            } else {
+                data[[g]]
+            }
+            if (is.null(dg)) return(NULL)
+            if (!is.factor(dg)) dg <- factor(dg)
+            levels(dg)
+        }
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
     data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalQuant(data,
         cloneCall = clone_call, chain = chain, scale = scale,
@@ -82,9 +97,9 @@ ClonalVolumePlot <- function(
     )
     # restore the groups
     data <- separate(data, ".group", into = all_groupings, sep = " // ")
-    for (group in all_groupings) {
-        if (!is.null(order[[group]])) {
-            data[[group]] <- factor(data[[group]], levels = order[[group]])
+    for (gl in names(grouping_levels)) {
+        if (!is.null(data[[gl]])) {
+            data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
         }
     }
     if (scale) {
@@ -182,6 +197,22 @@ ClonalAbundancePlot <- function(
     plot_type <- match.arg(plot_type)
 
     all_groupings <- unique(c(group_by, facet_by, split_by))
+    grouping_levels <- sapply(all_groupings, function(g) {
+        if (!is.null(order[[g]])) {
+            order[[g]]
+        } else {
+            dg <- if (inherits(data, "Seurat")) {
+                data@meta.data[[g]]
+            } else {
+                data[[g]]
+            }
+            if (is.null(dg)) return(NULL)
+            if (!is.factor(dg)) dg <- factor(dg)
+            levels(dg)
+        }
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- merge_clonal_groupings(data, all_groupings)
     if (length(all_groupings) > 0) {
         data <- clonalAbundance(data,
@@ -191,9 +222,9 @@ ClonalAbundancePlot <- function(
 
         # restore the groups
         data <- separate(data, ".group", into = all_groupings, sep = " // ")
-        for (group in all_groupings) {
-            if (!is.null(order[[group]])) {
-                data[[group]] <- factor(data[[group]], levels = order[[group]])
+        for (gl in names(grouping_levels)) {
+            if (!is.null(data[[gl]])) {
+                data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
             }
         }
     } else {
@@ -289,6 +320,22 @@ ClonalLengthPlot <- function(
     } else {
         all_groupings <- unique(c(group_by, facet_by, split_by))
     }
+    grouping_levels <- sapply(all_groupings, function(g) {
+        if (!is.null(order[[g]])) {
+            order[[g]]
+        } else {
+            dg <- if (inherits(data, "Seurat")) {
+                data@meta.data[[g]]
+            } else {
+                data[[g]]
+            }
+            if (is.null(dg)) return(NULL)
+            if (!is.factor(dg)) dg <- factor(dg)
+            levels(dg)
+        }
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- merge_clonal_groupings(data, all_groupings)
 
     if (identical(all_groupings, "Sample")) {
@@ -303,9 +350,9 @@ ClonalLengthPlot <- function(
     }
 
     # restore the groups
-    for (group in all_groupings) {
-        if (!is.null(order[[group]])) {
-            data[[group]] <- factor(data[[group]], levels = order[[group]])
+    for (gl in names(grouping_levels)) {
+        if (!is.null(data[[gl]])) {
+            data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
         }
     }
 
@@ -887,6 +934,23 @@ ClonalCompositionPlot <- function(
         }
     }
     all_groupings <- unique(c("Sample", group_by, facet_by, split_by))
+    grouping_levels <- sapply(all_groupings, function(g) {
+        if (!is.null(order[[g]])) {
+            order[[g]]
+        } else {
+            dg <- if (inherits(data, "Seurat")) {
+                data@meta.data[[g]]
+            } else {
+                data[[g]]
+            }
+            if (is.null(dg)) return(NULL)
+            if (!is.factor(dg)) dg <- factor(dg)
+            levels(dg)
+        }
+    })
+    # remove NULL entries
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     if (method == "homeostasis" || method == "homeo" || method == "rel" || method == "top") {
         data <- merge_clonal_groupings(data, all_groupings)
         if (method == "top") {
@@ -901,6 +965,12 @@ ClonalCompositionPlot <- function(
         # restore the groups
         data <- separate(data, ".group", into = all_groupings, sep = " // ")
         data <- pivot_longer(data, cols = -all_groupings, names_to = ".names", values_to = ".values")
+
+        for (gl in names(grouping_levels)) {
+            if (!is.null(data[[gl]])) {
+                data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+            }
+        }
         # Sample Type  .names        .values
         name_levels <- unique(data$.names)
     } else {  # rare
@@ -924,12 +994,6 @@ ClonalCompositionPlot <- function(
         data <- data %>%
             dplyr::group_by(!!!syms(setdiff(colnames(data), c("CloneID", "count", "fraction")))) %>%
             summarise(.values = n(), .groups = "drop")
-    }
-
-    for (group in all_groupings) {
-        if (!is.null(order[[group]])) {
-            data[[group]] <- factor(data[[group]], levels = order[[group]])
-        }
     }
 
     if (isTRUE(scale)) {
@@ -1069,6 +1133,22 @@ ClonalOverlapPlot <- function(
     method <- match.arg(method)
 
     all_groupings <- unique(c(group_by, split_by))
+    grouping_levels <- sapply(all_groupings, function(g) {
+        if (!is.null(order[[g]])) {
+            order[[g]]
+        } else {
+            dg <- if (inherits(data, "Seurat")) {
+                data@meta.data[[g]]
+            } else {
+                data[[g]]
+            }
+            if (is.null(dg)) return(NULL)
+            if (!is.factor(dg)) dg <- factor(dg)
+            levels(dg)
+        }
+    })
+    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+
     data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalOverlap(data, cloneCall = clone_call, chain = chain, group.by = ".group",
         method = method, exportTable = TRUE)
@@ -1084,6 +1164,12 @@ ClonalOverlapPlot <- function(
         separate(".group", into = all_groupings, sep = " // ") %>%
         pivot_longer(cols = -all_groupings, names_to = ".names", values_to = ".values") %>%
         separate(".names", into = paste(".names", all_groupings, sep = "_"), sep = " // ")
+
+    for (gl in names(grouping_levels)) {
+        if (!is.null(data[[gl]])) {
+            data[[gl]] <- factor(data[[gl]], levels = grouping_levels[[gl]])
+        }
+    }
 
     if (!is.null(split_by)) {
         data <- data %>%
