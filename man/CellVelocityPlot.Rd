@@ -11,6 +11,7 @@ CellVelocityPlot(
   spat_unit = NULL,
   feat_type = NULL,
   group_by = NULL,
+  ident = NULL,
   ...
 )
 }
@@ -27,6 +28,8 @@ It should be the same as the reduction used to calculate the velocity.}
 \item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
 
 \item{group_by}{A character vector of metadata column name(s) to group (color) the data. Default is NULL.}
+
+\item{ident}{Alias for \code{group_by}.}
 
 \item{...}{Other arguments passed to \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.}
 }

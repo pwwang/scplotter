@@ -14,6 +14,7 @@
 #' @param velocity The name of velocity reduction to plot cell velocities.
 #' It is typically `"stochastic_<reduction>"`, `"deterministic_<reduction>"`, or `"dynamical_<reduction>"`.
 #' @param group_by A character vector of column name(s) to group the data. Default is NULL.
+#' @param ident Alias for `group_by`.
 #' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
 #' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
 #' @param ... Other arguments passed to [plotthis::DimPlot()].
@@ -153,7 +154,7 @@
 #'   velocity = "stochastic_PCA", velocity_plot_type = "stream", pt_alpha = 0.5)
 #' }
 CellDimPlot <- function(
-    object, reduction = NULL, graph = NULL, group_by = NULL,
+    object, reduction = NULL, graph = NULL, group_by = NULL, ident = NULL,
     spat_unit = NULL, feat_type = NULL, velocity = NULL, ...
 ) {
     UseMethod("CellDimPlot")
@@ -161,9 +162,12 @@ CellDimPlot <- function(
 
 #' @export
 CellDimPlot.giotto <- function(
-    object, reduction = NULL, graph = NULL, group_by = NULL,
+    object, reduction = NULL, graph = NULL, group_by = NULL, ident = NULL,
     spat_unit = NULL, feat_type = NULL, velocity = NULL, ...
 ) {
+    stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
     stopifnot("[CellDimPlot] 'group_by' is required for giotto objects." = !is.null(group_by))
 
     spat_unit <- GiottoClass::set_default_spat_unit(
@@ -245,12 +249,15 @@ CellDimPlot.giotto <- function(
 
 #' @export
 CellDimPlot.Seurat <- function(
-    object, reduction = NULL, graph = NULL, group_by = NULL,
+    object, reduction = NULL, graph = NULL, group_by = NULL, ident = NULL,
     spat_unit = NULL, feat_type = NULL, velocity = NULL,
     ...
 ) {
     stopifnot("[CellDimPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
         is.null(spat_unit) && is.null(feat_type))
+    stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
 
     reduction <- reduction %||% DefaultDimReduc(object)
 
@@ -281,13 +288,15 @@ CellDimPlot.Seurat <- function(
 
 #' @export
 CellDimPlot.character <- function(
-    object, reduction = NULL, graph = NULL, group_by = NULL,
+    object, reduction = NULL, graph = NULL, group_by = NULL, ident = NULL,
     spat_unit = NULL, feat_type = NULL, velocity = NULL,
     ...
 ) {
-    if (!endsWith(object, ".h5ad")) {
-        stop("[CellDimPlot] Currently only supports .h5ad files when called with a string/path.")
-    }
+    stopifnot("[CellDimPlot] Currently only supports .h5ad files when called with a string/path." =
+        endsWith(object, ".h5ad"))
+    stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
 
     object <- hdf5r::H5File$new(object, mode = "r")
     on.exit(object$close_all())
@@ -301,12 +310,15 @@ CellDimPlot.character <- function(
 
 #' @export
 CellDimPlot.H5File <- function(
-    object, reduction = NULL, graph = NULL, group_by = NULL,
+    object, reduction = NULL, graph = NULL, group_by = NULL, ident = NULL,
     spat_unit = NULL, feat_type = NULL, velocity = NULL,
     ...
 ) {
     stopifnot("[CellDimPlot] 'spat_unit' and 'feat_type' are not used for anndata." =
         is.null(spat_unit) && is.null(feat_type))
+    stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
     stopifnot("[CellDimPlot] 'group_by' is required for anndata (h5ad) objects." = !is.null(group_by))
 
     reductions <- names(object[['obsm']])
@@ -363,6 +375,7 @@ CellDimPlot.H5File <- function(
 #' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
 #' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
 #' @param group_by A character vector of metadata column name(s) to group (color) the data. Default is NULL.
+#' @param ident Alias for `group_by`.
 #' @param ... Other arguments passed to [plotthis::VelocityPlot()].
 #' @return A ggplot object
 #' @export
@@ -386,15 +399,19 @@ CellDimPlot.H5File <- function(
 #'  group_by = "SubCellType")
 #' }
 CellVelocityPlot <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...
 ) {
     UseMethod("CellVelocityPlot")
 }
 
 #' @export
 CellVelocityPlot.giotto <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...
 ) {
+    stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
+
     spat_unit <- GiottoClass::set_default_spat_unit(
         gobject = object,
         spat_unit = spat_unit
@@ -457,10 +474,13 @@ CellVelocityPlot.giotto <- function(
 
 #' @export
 CellVelocityPlot.Seurat <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...
 ) {
     stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
         is.null(spat_unit) && is.null(feat_type))
+    stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
 
     if (!reduction %in% Reductions(object)) {
         stop("[CellVelocityPlot] The object does not have reduction:", reduction)
@@ -486,11 +506,13 @@ CellVelocityPlot.Seurat <- function(
 
 #' @export
 CellVelocityPlot.character <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...
 ) {
-    if (!endsWith(object, ".h5ad")) {
-        stop("[CellVelocityPlot] Currently only supports .h5ad files when called with a string/path.")
-    }
+    stopifnot("[CellVelocityPlot] Currently only supports .h5ad files when called with a string/path." =
+        endsWith(object, ".h5ad"))
+    stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
 
     object <- hdf5r::H5File$new(object, mode = "r")
     on.exit(object$close_all())
@@ -503,10 +525,13 @@ CellVelocityPlot.character <- function(
 
 #' @export
 CellVelocityPlot.H5File <- function(
-    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ...
+    object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...
 ) {
     stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for anndata." =
         is.null(spat_unit) && is.null(feat_type))
+    stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
+        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+    group_by <- group_by %||% ident
 
     reduc_info <- names(object[['obsm']])
     if (is.null(reduc_info) || length(reduc_info) == 0) {

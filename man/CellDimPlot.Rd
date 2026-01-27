@@ -9,6 +9,7 @@ CellDimPlot(
   reduction = NULL,
   graph = NULL,
   group_by = NULL,
+  ident = NULL,
   spat_unit = NULL,
   feat_type = NULL,
   velocity = NULL,
@@ -23,6 +24,8 @@ CellDimPlot(
 \item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
 
 \item{group_by}{A character vector of column name(s) to group the data. Default is NULL.}
+
+\item{ident}{Alias for \code{group_by}.}
 
 \item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
 
