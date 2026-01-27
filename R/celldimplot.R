@@ -166,7 +166,7 @@ CellDimPlot.giotto <- function(
     spat_unit = NULL, feat_type = NULL, velocity = NULL, ...
 ) {
     stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
     stopifnot("[CellDimPlot] 'group_by' is required for giotto objects." = !is.null(group_by))
 
@@ -256,7 +256,7 @@ CellDimPlot.Seurat <- function(
     stopifnot("[CellDimPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
         is.null(spat_unit) && is.null(feat_type))
     stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
     reduction <- reduction %||% DefaultDimReduc(object)
@@ -295,7 +295,7 @@ CellDimPlot.character <- function(
     stopifnot("[CellDimPlot] Currently only supports .h5ad files when called with a string/path." =
         endsWith(object, ".h5ad"))
     stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
     object <- hdf5r::H5File$new(object, mode = "r")
@@ -317,7 +317,7 @@ CellDimPlot.H5File <- function(
     stopifnot("[CellDimPlot] 'spat_unit' and 'feat_type' are not used for anndata." =
         is.null(spat_unit) && is.null(feat_type))
     stopifnot("[CellDimPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
     stopifnot("[CellDimPlot] 'group_by' is required for anndata (h5ad) objects." = !is.null(group_by))
 
@@ -409,7 +409,7 @@ CellVelocityPlot.giotto <- function(
     object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...
 ) {
     stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
     spat_unit <- GiottoClass::set_default_spat_unit(
@@ -479,7 +479,7 @@ CellVelocityPlot.Seurat <- function(
     stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for Seurat objects." =
         is.null(spat_unit) && is.null(feat_type))
     stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
     if (!reduction %in% Reductions(object)) {
@@ -511,7 +511,7 @@ CellVelocityPlot.character <- function(
     stopifnot("[CellVelocityPlot] Currently only supports .h5ad files when called with a string/path." =
         endsWith(object, ".h5ad"))
     stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
     object <- hdf5r::H5File$new(object, mode = "r")
@@ -530,7 +530,7 @@ CellVelocityPlot.H5File <- function(
     stopifnot("[CellVelocityPlot] 'spat_unit' and 'feat_type' are not used for anndata." =
         is.null(spat_unit) && is.null(feat_type))
     stopifnot("[CellVelocityPlot] Either 'group_by' or 'ident' must be provided, not both." =
-        is.null(group_by) || is.null(ident) || !identical(group_by, ident))
+        is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
     reduc_info <- names(object[['obsm']])
