@@ -21,6 +21,7 @@ CellVelocityPlot(
   spat_unit = NULL,
   feat_type = NULL,
   group_by = NULL,
+  ident = NULL,
   ...
 )
 ```
@@ -55,6 +56,10 @@ CellVelocityPlot(
 
   A character vector of metadata column name(s) to group (color) the
   data. Default is NULL.
+
+- ident:
+
+  Alias for `group_by`.
 
 - ...:
 

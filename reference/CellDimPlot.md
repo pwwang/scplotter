@@ -19,6 +19,7 @@ CellDimPlot(
   reduction = NULL,
   graph = NULL,
   group_by = NULL,
+  ident = NULL,
   spat_unit = NULL,
   feat_type = NULL,
   velocity = NULL,
@@ -46,6 +47,10 @@ CellDimPlot(
 
   A character vector of column name(s) to group the data. Default is
   NULL.
+
+- ident:
+
+  Alias for `group_by`.
 
 - spat_unit:
 
