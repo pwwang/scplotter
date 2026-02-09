@@ -297,7 +297,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -322,18 +322,18 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                                    </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                      </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                         </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                               </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -850,6 +850,25 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       This is useful when split_by is used and the title needs to be dynamic.</span></span>
 <span><span class="co">#&gt;       - subtitle: A character string specifying the subtitle of the plot.</span></span>
 <span><span class="co">#&gt;       - seed: The random seed to use. Default is 8525.</span></span>
+<span><span class="co">#&gt;       - keep_na: A logical value or a character to replace the NA values in the data.</span></span>
+<span><span class="co">#&gt;       It can also take a named list to specify different behavior for different columns.</span></span>
+<span><span class="co">#&gt;       If TRUE or NA, NA values will be replaced with NA.</span></span>
+<span><span class="co">#&gt;       If FALSE, NA values will be removed from the data before plotting.</span></span>
+<span><span class="co">#&gt;       If a character string is provided, NA values will be replaced with the provided string.</span></span>
+<span><span class="co">#&gt;       If a named vector/list is provided, the names should be the column names to apply the behavior to,</span></span>
+<span><span class="co">#&gt;       and the values should be one of TRUE, FALSE, or a character string.</span></span>
+<span><span class="co">#&gt;       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,</span></span>
+<span><span class="co">#&gt;       for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.</span></span>
 <span><span class="co">#&gt;       - nrow: A numeric value specifying the number of rows in the facet.</span></span>
 <span><span class="co">#&gt;       - ncol: A numeric value specifying the number of columns in the facet.</span></span>
@@ -912,6 +931,20 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - columns_data: A data frame containing additional data for columns, which can be used to add annotations to the heatmap.</span></span>
 <span><span class="co">#&gt;       It will be joined to the main data by columns_by and split_by if split_by exists in columns_data.</span></span>
 <span><span class="co">#&gt;       This is useful for adding additional information to the columns of the heatmap.</span></span>
+<span><span class="co">#&gt;       - keep_na: Whether we should keep NA groups in rows, columns and split_by variables. Default is FALSE.</span></span>
+<span><span class="co">#&gt;       FALSE to remove NA groups; TRUE to keep NA groups.</span></span>
+<span><span class="co">#&gt;       A vector of column names can also be provided to specify which columns to keep NA groups.</span></span>
+<span><span class="co">#&gt;       Note that the record will be removed if any of the grouping columns has NA and is not specified to keep NA.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.</span></span>
@@ -1091,8 +1124,16 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       See data for more details.</span></span>
 <span><span class="co">#&gt;       - alluvium_sep: A character string to concatenate the columns in alluvium, if multiple columns are provided.</span></span>
 <span><span class="co">#&gt;       - split_by_sep: The separator for multiple split_by columns. See split_by</span></span>
-<span><span class="co">#&gt;       - keep_empty: A logical value indicating whether to keep empty groups.</span></span>
-<span><span class="co">#&gt;       If FALSE, empty groups will be removed.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - flow: A logical value to use ggalluvial::geom_flow instead of ggalluvial::geom_alluvium.</span></span>
 <span><span class="co">#&gt;       - expand: The values to expand the x and y axes. It is like CSS padding.</span></span>
 <span><span class="co">#&gt;       When a single value is provided, it is used for both axes on both sides.</span></span>
@@ -1241,8 +1282,25 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - subtitle: A character string specifying the subtitle of the plot.</span></span>
 <span><span class="co">#&gt;       - xlab: A character string specifying the x-axis label.</span></span>
 <span><span class="co">#&gt;       - ylab: A character string specifying the y-axis label.</span></span>
-<span><span class="co">#&gt;       - keep_empty: A logical value indicating whether to keep empty groups.</span></span>
-<span><span class="co">#&gt;       If FALSE, empty groups will be removed.</span></span>
+<span><span class="co">#&gt;       - keep_na: A logical value or a character to replace the NA values in the data.</span></span>
+<span><span class="co">#&gt;       It can also take a named list to specify different behavior for different columns.</span></span>
+<span><span class="co">#&gt;       If TRUE or NA, NA values will be replaced with NA.</span></span>
+<span><span class="co">#&gt;       If FALSE, NA values will be removed from the data before plotting.</span></span>
+<span><span class="co">#&gt;       If a character string is provided, NA values will be replaced with the provided string.</span></span>
+<span><span class="co">#&gt;       If a named vector/list is provided, the names should be the column names to apply the behavior to,</span></span>
+<span><span class="co">#&gt;       and the values should be one of TRUE, FALSE, or a character string.</span></span>
+<span><span class="co">#&gt;       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,</span></span>
+<span><span class="co">#&gt;       for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.</span></span>
 <span><span class="co">#&gt;       - nrow: A numeric value specifying the number of rows in the facet.</span></span>
 <span><span class="co">#&gt;       - ncol: A numeric value specifying the number of columns in the facet.</span></span>
@@ -1318,10 +1376,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -1831,6 +1889,25 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       This is useful when split_by is used and the title needs to be dynamic.</span></span>
 <span><span class="co">#&gt;       - subtitle: A character string specifying the subtitle of the plot.</span></span>
 <span><span class="co">#&gt;       - seed: The random seed to use. Default is 8525.</span></span>
+<span><span class="co">#&gt;       - keep_na: A logical value or a character to replace the NA values in the data.</span></span>
+<span><span class="co">#&gt;       It can also take a named list to specify different behavior for different columns.</span></span>
+<span><span class="co">#&gt;       If TRUE or NA, NA values will be replaced with NA.</span></span>
+<span><span class="co">#&gt;       If FALSE, NA values will be removed from the data before plotting.</span></span>
+<span><span class="co">#&gt;       If a character string is provided, NA values will be replaced with the provided string.</span></span>
+<span><span class="co">#&gt;       If a named vector/list is provided, the names should be the column names to apply the behavior to,</span></span>
+<span><span class="co">#&gt;       and the values should be one of TRUE, FALSE, or a character string.</span></span>
+<span><span class="co">#&gt;       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,</span></span>
+<span><span class="co">#&gt;       for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.</span></span>
 <span><span class="co">#&gt;       - nrow: A numeric value specifying the number of rows in the facet.</span></span>
 <span><span class="co">#&gt;       - ncol: A numeric value specifying the number of columns in the facet.</span></span>
@@ -1893,6 +1970,20 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - columns_data: A data frame containing additional data for columns, which can be used to add annotations to the heatmap.</span></span>
 <span><span class="co">#&gt;       It will be joined to the main data by columns_by and split_by if split_by exists in columns_data.</span></span>
 <span><span class="co">#&gt;       This is useful for adding additional information to the columns of the heatmap.</span></span>
+<span><span class="co">#&gt;       - keep_na: Whether we should keep NA groups in rows, columns and split_by variables. Default is FALSE.</span></span>
+<span><span class="co">#&gt;       FALSE to remove NA groups; TRUE to keep NA groups.</span></span>
+<span><span class="co">#&gt;       A vector of column names can also be provided to specify which columns to keep NA groups.</span></span>
+<span><span class="co">#&gt;       Note that the record will be removed if any of the grouping columns has NA and is not specified to keep NA.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.</span></span>
@@ -2072,8 +2163,16 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       See data for more details.</span></span>
 <span><span class="co">#&gt;       - alluvium_sep: A character string to concatenate the columns in alluvium, if multiple columns are provided.</span></span>
 <span><span class="co">#&gt;       - split_by_sep: The separator for multiple split_by columns. See split_by</span></span>
-<span><span class="co">#&gt;       - keep_empty: A logical value indicating whether to keep empty groups.</span></span>
-<span><span class="co">#&gt;       If FALSE, empty groups will be removed.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - flow: A logical value to use ggalluvial::geom_flow instead of ggalluvial::geom_alluvium.</span></span>
 <span><span class="co">#&gt;       - expand: The values to expand the x and y axes. It is like CSS padding.</span></span>
 <span><span class="co">#&gt;       When a single value is provided, it is used for both axes on both sides.</span></span>
@@ -2222,8 +2321,25 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - subtitle: A character string specifying the subtitle of the plot.</span></span>
 <span><span class="co">#&gt;       - xlab: A character string specifying the x-axis label.</span></span>
 <span><span class="co">#&gt;       - ylab: A character string specifying the y-axis label.</span></span>
-<span><span class="co">#&gt;       - keep_empty: A logical value indicating whether to keep empty groups.</span></span>
-<span><span class="co">#&gt;       If FALSE, empty groups will be removed.</span></span>
+<span><span class="co">#&gt;       - keep_na: A logical value or a character to replace the NA values in the data.</span></span>
+<span><span class="co">#&gt;       It can also take a named list to specify different behavior for different columns.</span></span>
+<span><span class="co">#&gt;       If TRUE or NA, NA values will be replaced with NA.</span></span>
+<span><span class="co">#&gt;       If FALSE, NA values will be removed from the data before plotting.</span></span>
+<span><span class="co">#&gt;       If a character string is provided, NA values will be replaced with the provided string.</span></span>
+<span><span class="co">#&gt;       If a named vector/list is provided, the names should be the column names to apply the behavior to,</span></span>
+<span><span class="co">#&gt;       and the values should be one of TRUE, FALSE, or a character string.</span></span>
+<span><span class="co">#&gt;       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,</span></span>
+<span><span class="co">#&gt;       for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify</span></span>
+<span><span class="co">#&gt;       different behavior for different columns. Without a named list, the behavior applies to the</span></span>
+<span><span class="co">#&gt;       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       FALSE (default): Drop empty factor levels from the data before plotting.</span></span>
+<span><span class="co">#&gt;       TRUE: Keep empty factor levels and show them as a separate category in the plot.</span></span>
+<span><span class="co">#&gt;       "level": Keep empty factor levels, but do not show them in the plot.</span></span>
+<span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
+<span><span class="co">#&gt;       Alias: levels</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.</span></span>
 <span><span class="co">#&gt;       - nrow: A numeric value specifying the number of rows in the facet.</span></span>
 <span><span class="co">#&gt;       - ncol: A numeric value specifying the number of columns in the facet.</span></span>

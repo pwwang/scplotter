@@ -221,6 +221,10 @@ CellDimPlot(pancreas_sub,
 CellDimPlot(pancreas_sub,
   group_by = "CellType", reduction = "UMAP", stat_by = "Phase",
   stat_plot_type = "line", stat_type = "count", stat_args = list(point_size = 1))
+#> `geom_line()`: Each group consists of only one observation.
+#> ℹ Do you need to adjust the group aesthetic?
+#> `geom_line()`: Each group consists of only one observation.
+#> ℹ Do you need to adjust the group aesthetic?
 
 
 # Chane the plot type from point to the hexagonal bin

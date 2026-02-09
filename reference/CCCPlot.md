@@ -258,10 +258,10 @@ CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
   add_box = TRUE)
 
 CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
-#> Picking joint bandwidth of 0.285
 #> Picking joint bandwidth of 0.311
 #> Picking joint bandwidth of 0.285
 #> Picking joint bandwidth of 0.311
+#> Picking joint bandwidth of 0.285
 
 # }
 ```

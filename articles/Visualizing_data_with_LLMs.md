@@ -215,7 +215,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res)
+#> CCCPlot(data = cellphonedb_res, plot_type = "network")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -246,7 +246,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -255,12 +255,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      
-#> [3] "User: Do a heatmap instead"                                                                                                                                                
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                                    
-#> [5] "User: Add a proper title to the plot"                                                                                                                                      
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                         
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                               
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -780,6 +780,25 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       This is useful when split_by is used and the title needs to be dynamic.
     #>       - subtitle: A character string specifying the subtitle of the plot.
     #>       - seed: The random seed to use. Default is 8525.
+    #>       - keep_na: A logical value or a character to replace the NA values in the data.
+    #>       It can also take a named list to specify different behavior for different columns.
+    #>       If TRUE or NA, NA values will be replaced with NA.
+    #>       If FALSE, NA values will be removed from the data before plotting.
+    #>       If a character string is provided, NA values will be replaced with the provided string.
+    #>       If a named vector/list is provided, the names should be the column names to apply the behavior to,
+    #>       and the values should be one of TRUE, FALSE, or a character string.
+    #>       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,
+    #>       for example, the x, group_by, fill_by, etc.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.
     #>       - nrow: A numeric value specifying the number of rows in the facet.
     #>       - ncol: A numeric value specifying the number of columns in the facet.
@@ -842,6 +861,20 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - columns_data: A data frame containing additional data for columns, which can be used to add annotations to the heatmap.
     #>       It will be joined to the main data by columns_by and split_by if split_by exists in columns_data.
     #>       This is useful for adding additional information to the columns of the heatmap.
+    #>       - keep_na: Whether we should keep NA groups in rows, columns and split_by variables. Default is FALSE.
+    #>       FALSE to remove NA groups; TRUE to keep NA groups.
+    #>       A vector of column names can also be provided to specify which columns to keep NA groups.
+    #>       Note that the record will be removed if any of the grouping columns has NA and is not specified to keep NA.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.
     #>       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.
     #>       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.
@@ -1021,8 +1054,16 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       See data for more details.
     #>       - alluvium_sep: A character string to concatenate the columns in alluvium, if multiple columns are provided.
     #>       - split_by_sep: The separator for multiple split_by columns. See split_by
-    #>       - keep_empty: A logical value indicating whether to keep empty groups.
-    #>       If FALSE, empty groups will be removed.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - flow: A logical value to use ggalluvial::geom_flow instead of ggalluvial::geom_alluvium.
     #>       - expand: The values to expand the x and y axes. It is like CSS padding.
     #>       When a single value is provided, it is used for both axes on both sides.
@@ -1171,8 +1212,25 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - subtitle: A character string specifying the subtitle of the plot.
     #>       - xlab: A character string specifying the x-axis label.
     #>       - ylab: A character string specifying the y-axis label.
-    #>       - keep_empty: A logical value indicating whether to keep empty groups.
-    #>       If FALSE, empty groups will be removed.
+    #>       - keep_na: A logical value or a character to replace the NA values in the data.
+    #>       It can also take a named list to specify different behavior for different columns.
+    #>       If TRUE or NA, NA values will be replaced with NA.
+    #>       If FALSE, NA values will be removed from the data before plotting.
+    #>       If a character string is provided, NA values will be replaced with the provided string.
+    #>       If a named vector/list is provided, the names should be the column names to apply the behavior to,
+    #>       and the values should be one of TRUE, FALSE, or a character string.
+    #>       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,
+    #>       for example, the x, group_by, fill_by, etc.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.
     #>       - nrow: A numeric value specifying the number of rows in the facet.
     #>       - ncol: A numeric value specifying the number of columns in the facet.
@@ -1250,11 +1308,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -1769,6 +1827,25 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       This is useful when split_by is used and the title needs to be dynamic.
     #>       - subtitle: A character string specifying the subtitle of the plot.
     #>       - seed: The random seed to use. Default is 8525.
+    #>       - keep_na: A logical value or a character to replace the NA values in the data.
+    #>       It can also take a named list to specify different behavior for different columns.
+    #>       If TRUE or NA, NA values will be replaced with NA.
+    #>       If FALSE, NA values will be removed from the data before plotting.
+    #>       If a character string is provided, NA values will be replaced with the provided string.
+    #>       If a named vector/list is provided, the names should be the column names to apply the behavior to,
+    #>       and the values should be one of TRUE, FALSE, or a character string.
+    #>       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,
+    #>       for example, the x, group_by, fill_by, etc.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.
     #>       - nrow: A numeric value specifying the number of rows in the facet.
     #>       - ncol: A numeric value specifying the number of columns in the facet.
@@ -1831,6 +1908,20 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - columns_data: A data frame containing additional data for columns, which can be used to add annotations to the heatmap.
     #>       It will be joined to the main data by columns_by and split_by if split_by exists in columns_data.
     #>       This is useful for adding additional information to the columns of the heatmap.
+    #>       - keep_na: Whether we should keep NA groups in rows, columns and split_by variables. Default is FALSE.
+    #>       FALSE to remove NA groups; TRUE to keep NA groups.
+    #>       A vector of column names can also be provided to specify which columns to keep NA groups.
+    #>       Note that the record will be removed if any of the grouping columns has NA and is not specified to keep NA.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.
     #>       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.
     #>       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.
@@ -2010,8 +2101,16 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       See data for more details.
     #>       - alluvium_sep: A character string to concatenate the columns in alluvium, if multiple columns are provided.
     #>       - split_by_sep: The separator for multiple split_by columns. See split_by
-    #>       - keep_empty: A logical value indicating whether to keep empty groups.
-    #>       If FALSE, empty groups will be removed.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - flow: A logical value to use ggalluvial::geom_flow instead of ggalluvial::geom_alluvium.
     #>       - expand: The values to expand the x and y axes. It is like CSS padding.
     #>       When a single value is provided, it is used for both axes on both sides.
@@ -2160,8 +2259,25 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - subtitle: A character string specifying the subtitle of the plot.
     #>       - xlab: A character string specifying the x-axis label.
     #>       - ylab: A character string specifying the y-axis label.
-    #>       - keep_empty: A logical value indicating whether to keep empty groups.
-    #>       If FALSE, empty groups will be removed.
+    #>       - keep_na: A logical value or a character to replace the NA values in the data.
+    #>       It can also take a named list to specify different behavior for different columns.
+    #>       If TRUE or NA, NA values will be replaced with NA.
+    #>       If FALSE, NA values will be removed from the data before plotting.
+    #>       If a character string is provided, NA values will be replaced with the provided string.
+    #>       If a named vector/list is provided, the names should be the column names to apply the behavior to,
+    #>       and the values should be one of TRUE, FALSE, or a character string.
+    #>       Without a named vector/list, the behavior applies to categorical/character columns used on the plot,
+    #>       for example, the x, group_by, fill_by, etc.
+    #>       - keep_empty: One of FALSE, TRUE and "level". It can also take a named list to specify
+    #>       different behavior for different columns. Without a named list, the behavior applies to the
+    #>       categorical/character columns used on the plot, for example, the x, group_by, fill_by, etc.
+    #>       
+    #>       FALSE (default): Drop empty factor levels from the data before plotting.
+    #>       TRUE: Keep empty factor levels and show them as a separate category in the plot.
+    #>       "level": Keep empty factor levels, but do not show them in the plot.
+    #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
+    #>       Alias: levels
+    #>       
     #>       - combine: Whether to combine the plots into one when facet is FALSE. Default is TRUE.
     #>       - nrow: A numeric value specifying the number of rows in the facet.
     #>       - ncol: A numeric value specifying the number of columns in the facet.
