@@ -919,7 +919,7 @@ ClonalCompositionPlot <- function(
     plot_type <- match.arg(plot_type)
     method <- match.arg(method)
     if (plot_type %in% c("box", "violin") && is.null(group_by)) {
-        stop("'group_by' must be provided for box/violin ClonalCompositionPlot")
+        stop("[ClonalCompositionPlot] 'group_by' must be provided for box/violin ClonalCompositionPlot")
     }
 
     if (is.null(clone_split)) {
