@@ -28,7 +28,19 @@
 #' If TRUE, the clones will be relabeled as "clone1", "clone2", etc.
 #' Only works for visualizations for single clones.
 #' @param plot_type The type of plot to use. Default is "bar".
-#'  Possible values are "trend", "sankey", and "alluvial" (alias of "sankey").
+#' Possible values are:
+#' * "bar" - bar plot showing the total size of the selected clones in each group.
+#' * "box" - box plot showing the distribution of the clone sizes in each group.
+#' * "violin" - violin plot showing the distribution of the clone sizes in each group.
+#' * "heatmap" - heatmap showing the clone sizes in each group.
+#' * "pies" - heatmap with pie charts showing the clone sizes and subgroup compositions in each group. Requires `subgroup_by` to be provided.
+#' * "sankey" - sankey plot showing the dynamics of the clones between groups. The clone groups will be defined by the `clones` argument. The flows will be colored by the clone groups.
+#' * "alluvial" - same as "sankey".
+#' * "trend" - line plot showing the trend of the clone sizes in each group. The clone groups will be defined by the `clones` argument. The lines will be colored by the clone groups.
+#' * "col" - same as "col-rel".
+#' * "col-rel" - column plot showing the relative size of the clones in each group.
+#' * "col-abs" - column plot showing the absolute size of the clones in each group.
+#' Note that for "col-rel" and "col-abs", the plot will be faceted by the groups, so "facet_by" is not supported. Please use "split_by" instead if you want to split the plot by another variable.
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
 #' @param groups The groups to include in the plot. Default is NULL.
 #'  If NULL, all the groups in `group_by` will be included.
@@ -127,10 +139,18 @@
 #'       "Hyper-expanded clones in P17B" = "sel(P17B > 10)",
 #'       "Hyper-expanded clones in P17L" = "sel(P17L > 10)"
 #'     ), plot_type = "sankey")
+#' # col-rel/col-abs
+#' ClonalStatPlot(data, plot_type = "col-rel")
+#' ClonalStatPlot(data, plot_type = "col-abs", facet_scale = "free")
+#' ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
+#'     top = 20, facet_ncol = 1, legend.position = "right")
+#' ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
+#'     top = 20, facet_ncol = 1, legend.position = "right",
+#'     relabel = TRUE, fill_by = "CloneGroups", fill_name = "Clones")
 #' }
 ClonalStatPlot <- function(
-    data, clones = NULL, top = NULL, orderby = NULL, clone_call = "aa", chain = "both",
-    plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend"),
+    data, clones = NULL, top = 10, orderby = NULL, clone_call = "aa", chain = "both",
+    plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend", "col", "col-rel", "col-abs"),
     group_by = "Sample", groups = NULL, subgroup_by = NULL, subgroups = NULL,
     within_subgroup = match.arg(plot_type) != "pies", relabel = FALSE,
     facet_by = NULL, split_by = NULL, y = NULL, xlab = NULL, ylab = NULL, ...
@@ -138,8 +158,10 @@ ClonalStatPlot <- function(
     plot_type <- match.arg(plot_type)
     if (plot_type == "alluvial") plot_type <- "sankey"
     if (plot_type == "circos") plot_type <- "chord"
-    stopifnot("Only a single group_by is supported for 'ClonalStatPlot'" = length(unique(group_by)) == 1)
+    if (plot_type == "col") plot_type <- "col-rel"
+    stopifnot("Only a single group_by is supported for 'ClonalStatPlot'" = length(unique(group_by)) <= 1)
     stopifnot("'subgroup_by' is not supported for 'ClonalStatPlot' with plot_type = 'trend'" = is.null(subgroup_by) || plot_type != "trend")
+    stopifnot("'subgroup_by' is not supported for 'ClonalStatPlot' with plot_type = 'col-rel' or 'col-abs'" = is.null(subgroup_by) || !(plot_type %in% c("col-rel", "col-abs")))
 
     if (!is.null(groups)) {
         data <- screp_subset(data, paste0('`', group_by, '`', ' %in% c(', paste0('"', groups, '"', collapse = ', '), ')'))
@@ -147,13 +169,16 @@ ClonalStatPlot <- function(
 
     all_groupings <- unique(c(group_by, subgroup_by, facet_by, split_by))
     data <- clonal_size_data(data, clone_call, chain, all_groupings)
-    data$fraction <- NULL
-    groups <- groups %||% unique(data[[group_by]])
-    nonexist_groups <- setdiff(groups, unique(data[[group_by]]))
-    if (length(nonexist_groups) > 0) {
-        stop(paste("The following groups do not exist in the data:", paste(nonexist_groups, collapse = ", ")))
+
+    # data$fraction <- NULL
+    if (!is.null(group_by)) {
+        groups <- groups %||% unique(data[[group_by]])
+        nonexist_groups <- setdiff(groups, unique(data[[group_by]]))
+        if (length(nonexist_groups) > 0) {
+            stop(paste("The following groups do not exist in the data:", paste(nonexist_groups, collapse = ", ")))
+        }
     }
-    if (length(groups) < 2) {
+    if (length(groups) < 2 && !plot_type %in% c("col-rel", "col-abs")) {
         stop("At least 2 groups are required for ClonalStatPlot")
     }
     if (identical(plot_type, "chord") && length(groups) > 2) {
@@ -168,14 +193,15 @@ ClonalStatPlot <- function(
         # if orderby is not a valid expression, use the string representation
         as_label(enexpr(orderby))
     })
-    orderby <- orderby %||% paste0("desc(", paste0("`", groups, "`", collapse = "+"), ")")
+    if (plot_type %in% c("col-rel", "col-abs")) {
+        orderby <- orderby %||% "desc(count)"
+    } else if (!is.null(groups)) {
+        orderby <- orderby %||% paste0("desc(", paste0("`", groups, "`", collapse = "+"), ")")
+    }
 
     clones <- tryCatch({
         if (!is.list(clones)) {
-            clones <- clones %||% paste0("top(", topn, ")")
-            if (!is.list(clones)) {
-                clones <- list(.selected.clones = clones)
-            }
+            clones <- list(.selected.clones = clones)
         } else {
             clones
         }
@@ -184,21 +210,19 @@ ClonalStatPlot <- function(
         list(.selected.clones = as_label(enexpr(clones)))
     })
 
-    if (identical(clones, list(.selected.clones = "top()"))) {
-        clones = list(.selected.clones = paste0("top(10)"))
-    }
-
     by_clones <- identical(names(clones), ".selected.clones")
     if (by_clones && identical(clones$.selected.clones, "list(...)")) {
         stop("[CloneStatPlot] When 'clones' is provided as a list of expressions; the expressions must be quoted.")
     }
-    data <- data %>%
-        pivot_wider(names_from = group_by, values_from = "count", values_fill = 0) %>%
-        dplyr::group_by(!!!syms(unique(c("CloneID", subgroup_by, facet_by, split_by)))) %>%
-        summarise(across(groups, sum), .groups = "drop") %>%
-        # keep the grouping columns for the selectors
-        dplyr::group_by(!!!syms(unique(c(subgroup_by, facet_by, split_by)))) %>%
-        arrange(!!parse_expr(orderby))
+    if (!plot_type %in% c("col-rel", "col-abs")) {
+        data <- data %>%
+            pivot_wider(names_from = group_by, values_from = "count", values_fill = 0) %>%
+            dplyr::group_by(!!!syms(unique(c("CloneID", subgroup_by, facet_by, split_by)))) %>%
+            summarise(across(groups, sum), .groups = "drop") %>%
+            # keep the grouping columns for the selectors
+            dplyr::group_by(!!!syms(unique(c(subgroup_by, facet_by, split_by))))
+    }
+    data <- data %>% arrange(!!parse_expr(orderby))
 
     fulldata <- data
     # CloneID                                    Sample CellType count
@@ -219,13 +243,23 @@ ClonalStatPlot <- function(
     selected_data <- NULL
     for (nc in names(clones)) {
         clones_expr <- clones[[nc]]
-        if (length(clones_expr) == 1 && grepl("(", clones_expr, fixed = TRUE) && grepl(")", clones_expr, fixed = TRUE)) {
+        if (is.null(clones_expr)) {
+            selected <- data
+        } else if (length(clones_expr) == 1 && grepl("(", clones_expr, fixed = TRUE) && grepl(")", clones_expr, fixed = TRUE)) {
             selected <- eval(parse(text = clones_expr))
         } else {
             selected <- filter(data, !!sym("CloneID") %in% clones_expr)
         }
         if (!is.null(topn)) {
-            selected <- slice_head(selected, n = topn)
+            groupings <- unique(intersect(all_groupings, colnames(selected)))
+            if (length(groupings) == 0) {
+                selected <- slice_head(selected, n = topn)
+            } else {
+                selected <- selected %>%
+                    group_by(!!!syms(groupings)) %>%
+                    slice_head(n = topn) %>%
+                    ungroup()
+            }
         }
         if (nrow(selected) == 0) {
             stop("No clones selected in the data with clone selector: ", ifelse(by_clones, "default", nc), ".")
@@ -254,7 +288,6 @@ ClonalStatPlot <- function(
                 by = unique(c("CloneID", facet_by, split_by))
             )
             selected <- selected[!is.na(selected$CloneGroups), , drop = FALSE]
-            # print(selected)
         }
         if (is.null(selected_data)) {
             selected_data <- selected
@@ -263,9 +296,11 @@ ClonalStatPlot <- function(
         }
     }
 
-    data <- ungroup(selected_data)
+    if (!is.null(selected_data)) {
+        data <- ungroup(selected_data)
+        rm(selected_data)
+    }
     data$CloneGroups <- factor(data$CloneGroups, levels = unique(data$CloneGroups))
-    rm(selected_data)
 
     if (by_clones) {
         data$CloneGroups <- factor(data$CloneGroups, levels = unique(data$CloneGroups))
@@ -276,7 +311,31 @@ ClonalStatPlot <- function(
 
     clone_groups_name <- if (by_clones) "Clones" else "Clone Groups"
 
-    if (identical(plot_type, "bar")) {
+    if (plot_type %in% c("col-rel", "col-abs")) {
+        if (!is.null(facet_by)) {
+            stop("'facet_by' is not supported for 'col-rel'/'col-abs' plot. Please use 'split_by' instead.")
+        }
+        args <- rlang::dots_list(...)
+        args$data <- data
+        args$x <- "CloneGroups"
+        args$y <- ifelse(plot_type == "col-rel", "fraction", "count")
+        args$split_by <- split_by
+        args$facet_by <- group_by
+        args$facet_scales <- args$facet_scale %||% "free_x"
+        args$fill_by <- args$fill_by %||% FALSE
+        args$xlab <- xlab %||% clone_groups_name
+        args$ylab <- ylab %||% ifelse(plot_type == "col-rel", "Relative Abundance", "Size")
+        args$legend.position <- args$legend.position %||% "none"
+        args$aspect.ratio <- args$aspect.ratio %||% 0.6
+        args$theme_args <- args$theme_args %||% list()
+        args$theme_args$panel.grid.major.x <- args$theme_args$panel.grid.major.x %||% ggplot2::element_blank()
+        args$theme_args$axis.text.x <- args$theme_args$axis.text.x %||% ggplot2::element_blank()
+        axis.text.x <- args$theme_args$axis.text.x
+        args$theme_args$axis.text.x <- NULL
+        p <- do.call(BarPlot, args) & ggplot2::theme(axis.text.x = axis.text.x)
+        attr(p, "height") <- 0.6 * attr(p, "width")
+        p
+    } else if (identical(plot_type, "bar")) {
         data <- data %>%
             pivot_longer(cols = groups, names_to = group_by, values_to = "Size") %>%
             dplyr::filter(!!sym("Size") > 0) %>%

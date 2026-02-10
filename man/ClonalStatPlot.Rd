@@ -7,11 +7,12 @@
 ClonalStatPlot(
   data,
   clones = NULL,
-  top = NULL,
+  top = 10,
   orderby = NULL,
   clone_call = "aa",
   chain = "both",
-  plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend"),
+  plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend",
+    "col", "col-rel", "col-abs"),
   group_by = "Sample",
   groups = NULL,
   subgroup_by = NULL,
@@ -57,7 +58,21 @@ in the data}
 "TRA", "TRG", "IGH", "IGL"}
 
 \item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "trend", "sankey", and "alluvial" (alias of "sankey").}
+Possible values are:
+\itemize{
+\item "bar" - bar plot showing the total size of the selected clones in each group.
+\item "box" - box plot showing the distribution of the clone sizes in each group.
+\item "violin" - violin plot showing the distribution of the clone sizes in each group.
+\item "heatmap" - heatmap showing the clone sizes in each group.
+\item "pies" - heatmap with pie charts showing the clone sizes and subgroup compositions in each group. Requires \code{subgroup_by} to be provided.
+\item "sankey" - sankey plot showing the dynamics of the clones between groups. The clone groups will be defined by the \code{clones} argument. The flows will be colored by the clone groups.
+\item "alluvial" - same as "sankey".
+\item "trend" - line plot showing the trend of the clone sizes in each group. The clone groups will be defined by the \code{clones} argument. The lines will be colored by the clone groups.
+\item "col" - same as "col-rel".
+\item "col-rel" - column plot showing the relative size of the clones in each group.
+\item "col-abs" - column plot showing the absolute size of the clones in each group.
+Note that for "col-rel" and "col-abs", the plot will be faceted by the groups, so "facet_by" is not supported. Please use "split_by" instead if you want to split the plot by another variable.
+}}
 
 \item{group_by}{The column name in the meta data to group the cells. Default: "Sample"}
 
@@ -171,5 +186,13 @@ ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
       "Hyper-expanded clones in P17B" = "sel(P17B > 10)",
       "Hyper-expanded clones in P17L" = "sel(P17L > 10)"
     ), plot_type = "sankey")
+# col-rel/col-abs
+ClonalStatPlot(data, plot_type = "col-rel")
+ClonalStatPlot(data, plot_type = "col-abs", facet_scale = "free")
+ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
+    top = 20, facet_ncol = 1, legend.position = "right")
+ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
+    top = 20, facet_ncol = 1, legend.position = "right",
+    relabel = TRUE, fill_by = "CloneGroups", fill_name = "Clones")
 }
 }
