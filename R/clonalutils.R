@@ -16,19 +16,33 @@
 #' @importFrom dplyr distinct filter rename
 #' @importFrom tidyr pivot_longer
 clonal_size_data <- function(data, clone_call, chain, groupings) {
-    grouping_levels <- sapply(groupings, function(g) {
-        dg <- if (inherits(data, "Seurat")) {
-            data@meta.data[[g]]
-        } else {
-            data[[g]]
-        }
-        if (is.null(dg)) return(NULL)
-        if (!is.factor(dg)) dg <- factor(dg)
-        levels(dg)
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+    if (length(groupings > 0)) {
+        grouping_levels <- sapply(groupings, function(g) {
+            dg <- if (inherits(data, "Seurat")) {
+                data@meta.data[[g]]
+            } else {
+                data[[g]]
+            }
+            if (is.null(dg)) return(NULL)
+            if (!is.factor(dg)) dg <- factor(dg)
+            levels(dg)
+        })
+        grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
 
-    data <- merge_clonal_groupings(data, groupings)
+        data <- merge_clonal_groupings(data, groupings)
+    } else {
+        if (inherits(data, "Seurat")) {
+            data$.group <- "All"
+        } else {
+            data <- lapply(data, function(d) {
+                d$.group <- "All"
+                d
+            })
+        }
+
+        groupings <- ".group"
+        grouping_levels <- list()
+    }
 
     if (inherits(data, "Seurat")) {
         # all_gvalues <- unique(data@meta.data$.group)
@@ -55,32 +69,42 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
 
     data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE), chain)
     all_gvalues <- names(data)
-    gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
+    if (length(all_gvalues) < 2) {
+        gv_pairs <- list(all_gvalues[1])
+    } else {
+        gv_pairs <- as.list(as.data.frame(combn(all_gvalues, 2, simplify = TRUE)))
+    }
     clone_call <- .theCall(data, clone_call)
 
     df <- do.call(rbind, lapply(gv_pairs, function(gv) {
-        x_df <- as.data.frame(table(data[[gv[1]]][, clone_call]))
-        x_col <- colnames(x_df)[2] <- paste0(gv[1], ".count")
-        y_df <- as.data.frame(table(data[[gv[2]]][, clone_call]))
-        y_col <- colnames(y_df)[2] <- paste0(gv[2], ".count")
+        if (length(gv) == 1) {
+            mat <- as.data.frame(table(data[[gv[1]]][, clone_call]))
+            x_col <- colnames(mat)[2] <- paste0(gv[1], ".count")
+            mat[is.na(mat)] <- 0
+            mat[, paste0(gv[1], ".fraction")] <- mat[, x_col]/sum(mat[,  x_col])
+        } else {
+            x_df <- as.data.frame(table(data[[gv[1]]][, clone_call]))
+            x_col <- colnames(x_df)[2] <- paste0(gv[1], ".count")
+            y_df <- as.data.frame(table(data[[gv[2]]][, clone_call]))
+            y_col <- colnames(y_df)[2] <- paste0(gv[2], ".count")
 
-        mat <- merge(x_df, y_df, by = "Var1", all = TRUE)
-        mat[is.na(mat)] <- 0
-        mat[, paste0(gv[1], ".fraction")] <- mat[, x_col]/sum(mat[,  x_col])
-        mat[, paste0(gv[2], ".fraction")] <- mat[, y_col]/sum(mat[,  y_col])
+            mat <- merge(x_df, y_df, by = "Var1", all = TRUE)
+            mat[is.na(mat)] <- 0
+            mat[, paste0(gv[1], ".fraction")] <- mat[, x_col]/sum(mat[,  x_col])
+            mat[, paste0(gv[2], ".fraction")] <- mat[, y_col]/sum(mat[,  y_col])
 
-        mat <- pivot_longer(
+        }
+        pivot_longer(
             mat,
             cols = -"Var1",
             names_to = c(".group", ".value"),
             names_pattern = "(.+)\\.(.+)"
         )
-        mat
     })) %>%
-        distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
-        separate(".group", into = groupings, sep = " // ") %>%
-        filter(!!sym("count") > 0) %>%
-        rename(CloneID = "Var1")
+    distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
+    separate(".group", into = groupings, sep = " // ") %>%
+    filter(!!sym("count") > 0) %>%
+    rename(CloneID = "Var1")
 
     for (gl in names(grouping_levels)) {
         if (!is.null(df[[gl]])) {
