@@ -45,7 +45,7 @@
 #' ClonalVolumePlot(data)
 #' ClonalVolumePlot(data, x = "Type")
 #' ClonalVolumePlot(data, x = "Type", order = list(Type = c("L", "B")))
-#' ClonalVolumePlot(data, x = c("Type", "Sex"), scale = TRUE)
+#' ClonalVolumePlot(data, x = c("Type", "Sex"), scale = TRUE, fill_by = "Type")
 #' ClonalVolumePlot(data, x = "Type", group_by = "Sex", position = "stack")
 #' ClonalVolumePlot(data,
 #'     plot_type = "box", x = "Type", comparisons = TRUE,
