@@ -297,7 +297,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "network")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot", magnitude = "magnitude")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -322,18 +322,18 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Plot")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                     </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"network\")"                                          </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                            </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\", magnitude = \"magnitude\")"                      </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                         </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                               </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -945,6 +945,13 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
 <span><span class="co">#&gt;       Alias: levels</span></span>
 <span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       - rows_orderby: A expression (in character) to specify how to order rows. It will be evaluated in the context of the data frame used for rows (after grouping by rows_split_by and rows_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.</span></span>
+<span><span class="co">#&gt;       Can't be used with cluster_rows = TRUE.</span></span>
+<span><span class="co">#&gt;       This is applied before renaming rows_by to rows_name.</span></span>
+<span><span class="co">#&gt;       - columns_orderby: A expression (in character) to specify how to order columns. It will be evaluated in the context of the data frame used for columns (after grouping by columns</span></span>
+<span><span class="co">#&gt;       split_by and columns_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.</span></span>
+<span><span class="co">#&gt;       Can't be used with cluster_columns = TRUE.</span></span>
+<span><span class="co">#&gt;       This is applied before renaming columns_by to columns_name.</span></span>
 <span><span class="co">#&gt;       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.</span></span>
@@ -1376,10 +1383,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -1984,6 +1991,13 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       But they will be assigned colors from the palette to maintain consistency across multiple plots.</span></span>
 <span><span class="co">#&gt;       Alias: levels</span></span>
 <span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       - rows_orderby: A expression (in character) to specify how to order rows. It will be evaluated in the context of the data frame used for rows (after grouping by rows_split_by and rows_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.</span></span>
+<span><span class="co">#&gt;       Can't be used with cluster_rows = TRUE.</span></span>
+<span><span class="co">#&gt;       This is applied before renaming rows_by to rows_name.</span></span>
+<span><span class="co">#&gt;       - columns_orderby: A expression (in character) to specify how to order columns. It will be evaluated in the context of the data frame used for columns (after grouping by columns</span></span>
+<span><span class="co">#&gt;       split_by and columns_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.</span></span>
+<span><span class="co">#&gt;       Can't be used with cluster_columns = TRUE.</span></span>
+<span><span class="co">#&gt;       This is applied before renaming columns_by to columns_name.</span></span>
 <span><span class="co">#&gt;       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.</span></span>
@@ -2415,10 +2429,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

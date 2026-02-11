@@ -215,7 +215,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "network")
+#> CCCPlot(cellphonedb_res, plot_type = "dot", magnitude = "magnitude")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -246,7 +246,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Plot")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -255,12 +255,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                     
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"network\")"                                          
-#> [3] "User: Do a heatmap instead"                                                                                                                                      
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                          
-#> [5] "User: Add a proper title to the plot"                                                                                                                            
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\", magnitude = \"magnitude\")"                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                         
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                               
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -875,6 +875,13 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
     #>       Alias: levels
     #>       
+    #>       - rows_orderby: A expression (in character) to specify how to order rows. It will be evaluated in the context of the data frame used for rows (after grouping by rows_split_by and rows_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.
+    #>       Can't be used with cluster_rows = TRUE.
+    #>       This is applied before renaming rows_by to rows_name.
+    #>       - columns_orderby: A expression (in character) to specify how to order columns. It will be evaluated in the context of the data frame used for columns (after grouping by columns
+    #>       split_by and columns_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.
+    #>       Can't be used with cluster_columns = TRUE.
+    #>       This is applied before renaming columns_by to columns_name.
     #>       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.
     #>       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.
     #>       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.
@@ -1308,11 +1315,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -1922,6 +1929,13 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       But they will be assigned colors from the palette to maintain consistency across multiple plots.
     #>       Alias: levels
     #>       
+    #>       - rows_orderby: A expression (in character) to specify how to order rows. It will be evaluated in the context of the data frame used for rows (after grouping by rows_split_by and rows_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.
+    #>       Can't be used with cluster_rows = TRUE.
+    #>       This is applied before renaming rows_by to rows_name.
+    #>       - columns_orderby: A expression (in character) to specify how to order columns. It will be evaluated in the context of the data frame used for columns (after grouping by columns
+    #>       split_by and columns_by). The expression should return a vector of the same length as the number of rows in the data frame. The default is NULL, which means no specific ordering.
+    #>       Can't be used with cluster_columns = TRUE.
+    #>       This is applied before renaming columns_by to columns_name.
     #>       - columns_name: A character string to rename the column created by columns_by, which will be reflected in the name of the annotation or legend.
     #>       - columns_split_name: A character string to rename the column created by columns_split_by, which will be reflected in the name of the annotation or legend.
     #>       - rows_name: A character string to rename the column created by rows_by, which will be reflected in the name of the annotation or legend.
@@ -2355,10 +2369,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(cellphonedb_res, plot_type = "dot")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)
