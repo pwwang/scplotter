@@ -118,7 +118,7 @@ ClonalVolumePlot(data, x = "Type")
 
 ClonalVolumePlot(data, x = "Type", order = list(Type = c("L", "B")))
 
-ClonalVolumePlot(data, x = c("Type", "Sex"), scale = TRUE)
+ClonalVolumePlot(data, x = c("Type", "Sex"), scale = TRUE, fill_by = "Type")
 #> Multiple columns are provided in 'x'. They will be concatenated into one column.
 
 ClonalVolumePlot(data, x = "Type", group_by = "Sex", position = "stack")
