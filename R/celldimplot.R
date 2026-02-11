@@ -273,7 +273,8 @@ CellDimPlot.Seurat <- function(
     }
 
     emb <- Embeddings(object, reduction = reduction)
-    data <- cbind(emb, object@meta.data[rownames(emb), , drop = FALSE])
+
+    data <- cbind(emb, object@meta.data[rownames(emb), setdiff(colnames(object@meta.data), colnames(emb)), drop = FALSE])
     if (is.null(group_by)) {
         group_by <- "Identity"
         data[[group_by]] <- Idents(object)
