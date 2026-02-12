@@ -33,6 +33,9 @@
 #'   Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", "sankey"/"alluvial", "radar" and "spider".
 #'   'pie' vs 'pies': 'pie' plot will plot a single pie chart for each group, while 'pies' plot will plot multiple pie charts for each group and split.
 #'   'pies' basically is a heatmap with 'cell_type = "pie"'.
+#' @param agg The expression (in character string) passed to `summarise()` to calculate the values for each group. Default is "n()", which means counting the number of cells in each group.
+#' For example, you can use "sum(hasTCR) / n()" to calculate the fraction of cells with TCR in each group if you have a logical column `hasTCR` in your metadata.
+#' Note that this will be ignored for `CircosPlot` and `pies` plot, which will always use the count of cells as the value to plot.
 #' @param frac The way of calculating the fraction. Default is "none".
 #'   Possible values are "group", "ident", "cluster", "all", "none".
 #'   Note that the fractions are calculated in each split and facet group if `split_by` and `facet_by` are specified.
@@ -72,7 +75,7 @@
 #'   * For `box` plot, see [plotthis::BoxPlot()].
 #'
 #' @return A ggplot object or a list if `combine` is FALSE
-#' @importFrom rlang sym syms
+#' @importFrom rlang sym syms parse_expr
 #' @importFrom SeuratObject Idents
 #' @importFrom dplyr %>% summarise mutate ungroup n
 #' @importFrom tidyr drop_na pivot_wider pivot_longer
@@ -168,11 +171,18 @@
 #' CellStatPlot(ifnb_sub, group_by = c("group", "stim"), frac = "group",
 #'    plot_type = "violin", add_box = TRUE, ident = "seurat_annotations",
 #'    x_text_angle = 60, comparisons = TRUE, aspect.ratio = 0.8)
+#'
+#' # Use different agg other than counting the number of cells.
+#' # Let's say we do the fraction of g1 in each stim group.
+#' CellStatPlot(ifnb_sub, agg = "sum(group == 'g1') / n()",
+#'    plot_type = "bar", ylab = "Fraction of g1 cells")
+#' CellStatPlot(ifnb_sub, group_by = "stim", agg = "sum(group == 'g1') / n()",
+#'    plot_type = "bar", ylab = "Fraction of g1 cells")
 #' }
 CellStatPlot <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
-    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL, agg = "n()",
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
@@ -183,7 +193,7 @@ CellStatPlot <- function(
 CellStatPlot.giotto <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
-    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL, agg = "n()",
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
@@ -211,7 +221,7 @@ CellStatPlot.giotto <- function(
         data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
         rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
-        rows_name = rows_name, name = name, plot_type = plot_type,
+        rows_name = rows_name, name = name, plot_type = plot_type, agg = agg,
         swap = swap, ylab = ylab, ...
     )
 }
@@ -220,7 +230,7 @@ CellStatPlot.giotto <- function(
 CellStatPlot.Seurat <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
-    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL, agg = "n()",
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
@@ -234,7 +244,7 @@ CellStatPlot.Seurat <- function(
         data, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
         rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
-        rows_name = rows_name, name = name, plot_type = plot_type,
+        rows_name = rows_name, name = name, plot_type = plot_type, agg = agg,
         swap = swap, ylab = ylab, ...
     )
 }
@@ -243,7 +253,7 @@ CellStatPlot.Seurat <- function(
 CellStatPlot.character <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
-    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL, agg = "n()",
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
@@ -256,7 +266,7 @@ CellStatPlot.character <- function(
 
     CellStatPlot.H5File(
         object, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
-        spat_unit = spat_unit, feat_type = feat_type,
+        spat_unit = spat_unit, feat_type = feat_type, agg = agg,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
         rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,
@@ -268,7 +278,7 @@ CellStatPlot.character <- function(
 CellStatPlot.H5File <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
-    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL, agg = "n()",
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
@@ -278,7 +288,7 @@ CellStatPlot.H5File <- function(
 
     CellStatPlot.data.frame(
         object, ident = ident, group_by = group_by, group_by_sep = group_by_sep,
-        spat_unit = spat_unit, feat_type = feat_type,
+        spat_unit = spat_unit, feat_type = feat_type, agg = agg,
         split_by = split_by, split_by_sep = split_by_sep, facet_by = facet_by,
         rows_by = rows_by, columns_split_by = columns_split_by, frac = frac,
         rows_name = rows_name, name = name, plot_type = plot_type,
@@ -290,7 +300,7 @@ CellStatPlot.H5File <- function(
 CellStatPlot.data.frame <- function(
     object, ident = NULL, group_by = NULL, group_by_sep = "_", spat_unit = NULL, feat_type = NULL,
     split_by = NULL, split_by_sep = "_", facet_by = NULL, rows_by = NULL, columns_split_by = NULL,
-    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL,
+    frac = c("none", "group", "ident", "cluster", "all"), rows_name = NULL, name = NULL, agg = "n()",
     plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area", "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
     swap = FALSE, ylab = NULL, ...
 ) {
@@ -334,7 +344,7 @@ CellStatPlot.data.frame <- function(
         if (is.null(group_by)) {
             object <- object %>%
                 dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
-                summarise(.n = n(), .groups = "drop")
+                summarise(.n = !!parse_expr(agg), .groups = "drop")
 
             if (frac != "none") {
                 object <- object %>%
@@ -348,7 +358,7 @@ CellStatPlot.data.frame <- function(
             object <- do.call(rbind, lapply(group_by, function(g) {
                 dat <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident, g)))) %>%
-                    summarise(.n = n(), .groups = "drop")
+                    summarise(.n = !!parse_expr(agg), .groups = "drop")
                 dat <- dat[!is.na(dat[[g]]), , drop = FALSE]
 
                 if (frac == "group") {
@@ -376,7 +386,7 @@ CellStatPlot.data.frame <- function(
         } else {
             object <- object %>%
                 dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by, ident)))) %>%
-                summarise(.n = n(), .groups = "drop")
+                summarise(.n = !!parse_expr(agg), .groups = "drop")
 
             if (frac == "group") {
                 object <- object %>%

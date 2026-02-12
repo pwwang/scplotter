@@ -19,6 +19,7 @@ CellStatPlot(
   frac = c("none", "group", "ident", "cluster", "all"),
   rows_name = NULL,
   name = NULL,
+  agg = "n()",
   plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area",
     "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
   swap = FALSE,
@@ -79,6 +80,10 @@ Only works when \code{group-by} is specified.
 \item{rows_name}{The name of the rows in the 'pies'/'heatmap' plot. Default is NULL.}
 
 \item{name}{The name of the 'pies'/'heatmap' plot, shown as the name of the main legend. Default is NULL.}
+
+\item{agg}{The expression (in character string) passed to \code{summarise()} to calculate the values for each group. Default is "n()", which means counting the number of cells in each group.
+For example, you can use "sum(hasTCR) / n()" to calculate the fraction of cells with TCR in each group if you have a logical column \code{hasTCR} in your metadata.
+Note that this will be ignored for \code{CircosPlot} and \code{pies} plot, which will always use the count of cells as the value to plot.}
 
 \item{plot_type}{The type of plot to use. Default is "bar".
 Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", "sankey"/"alluvial", "radar" and "spider".
@@ -220,5 +225,12 @@ ifnb_sub$group <- sample(paste0("g", 1:10), nrow(ifnb_sub), replace = TRUE)
 CellStatPlot(ifnb_sub, group_by = c("group", "stim"), frac = "group",
    plot_type = "violin", add_box = TRUE, ident = "seurat_annotations",
    x_text_angle = 60, comparisons = TRUE, aspect.ratio = 0.8)
+
+# Use different agg other than counting the number of cells.
+# Let's say we do the fraction of g1 in each stim group.
+CellStatPlot(ifnb_sub, agg = "sum(group == 'g1') / n()",
+   plot_type = "bar", ylab = "Fraction of g1 cells")
+CellStatPlot(ifnb_sub, group_by = "stim", agg = "sum(group == 'g1') / n()",
+   plot_type = "bar", ylab = "Fraction of g1 cells")
 }
 }
