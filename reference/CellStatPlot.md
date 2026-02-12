@@ -28,6 +28,7 @@ CellStatPlot(
   frac = c("none", "group", "ident", "cluster", "all"),
   rows_name = NULL,
   name = NULL,
+  agg = "n()",
   plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area",
     "sankey", "alluvial", "heatmap", "radar", "spider", "violin", "box"),
   swap = FALSE,
@@ -133,6 +134,16 @@ CellStatPlot(
 
   The name of the 'pies'/'heatmap' plot, shown as the name of the main
   legend. Default is NULL.
+
+- agg:
+
+  The expression (in character string) passed to `summarise()` to
+  calculate the values for each group. Default is "n()", which means
+  counting the number of cells in each group. For example, you can use
+  "sum(hasTCR) / n()" to calculate the fraction of cells with TCR in
+  each group if you have a logical column `hasTCR` in your metadata.
+  Note that this will be ignored for `CircosPlot` and `pies` plot, which
+  will always use the count of cells as the value to plot.
 
 - plot_type:
 
@@ -340,6 +351,15 @@ CellStatPlot(ifnb_sub, group_by = c("group", "stim"), frac = "group",
 #> ℹ In index: 13.
 #> Caused by error in `utils::combn()`:
 #> ! n < m
+
+
+# Use different agg other than counting the number of cells.
+# Let's say we do the fraction of g1 in each stim group.
+CellStatPlot(ifnb_sub, agg = "sum(group == 'g1') / n()",
+   plot_type = "bar", ylab = "Fraction of g1 cells")
+
+CellStatPlot(ifnb_sub, group_by = "stim", agg = "sum(group == 'g1') / n()",
+   plot_type = "bar", ylab = "Fraction of g1 cells")
 
 # }
 ```
