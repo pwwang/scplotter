@@ -314,7 +314,7 @@ screp_subset <- function(screp, subset) {
         data2 <- data
     }
     data2 <- data2 %>%
-        group_by(!!!syms(unique(c(id, groups)))) %>%
+        group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
         summarise(.n = n(), .groups = "drop")
 
     if (!is.null(groups)) {
@@ -571,6 +571,9 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_
         expr <- paste0(expr, " & ", .bquote(g), " == 0")
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -603,6 +606,9 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, i
         expr <- paste0(expr, " & ", .bquote(g), " > 0")
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -634,6 +640,9 @@ gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -665,6 +674,9 @@ ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -696,6 +708,9 @@ lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -727,6 +742,9 @@ le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -755,6 +773,9 @@ eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = 
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " == ", .bquote(group2))
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
@@ -786,6 +807,9 @@ ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    if (in_form == "long") {
+        data[[groups]] <- as.factor(data[[groups]])
+    }
     sel(expr, groups, data, id = id, in_form = in_form, within = within, return_ids = return_ids)
 }
 
