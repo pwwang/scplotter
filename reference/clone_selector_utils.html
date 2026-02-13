@@ -68,15 +68,15 @@ different environments and return the results in the desired format.</p>
 <span></span>
 <span><span class="fu">.get_data</span><span class="op">(</span><span class="va">envtype</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.return_what</span><span class="op">(</span><span class="va">out</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.return_what</span><span class="op">(</span><span class="va">out</span>, <span class="va">id</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.top_long</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.top_long</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.top_wide</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.top_wide</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">return_ids</span><span class="op">)</span></span>
+<span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.bquote</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -97,11 +97,12 @@ different environments and return the results in the desired format.</p>
 <dd><p>The column name that contains the clone ID. Default is "CTaa".</p></dd>
 
 
-<dt id="arg-return-ids">return_ids<a class="anchor" aria-label="anchor" href="#arg-return-ids"></a></dt>
-<dd><p>If TRUE, the function returns a vector with the same length as the data, with CTaa values for selected clones and NA for others.
-If FALSE, it returns a subset data frame with only the selected clones.
-Default is NULL, which will be determined based on the data. If the function is used in a context of dplyr verbs, it defaults to TRUE.
-Otherwise, it defaults to FALSE.</p></dd>
+<dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
+<dd><p>There are three options for the output: "id" (or "ids"), "logical" (or "bool", "boolean", "indicator"), and "data" (or "df", "data.frame").</p><ul><li><p>"id" (or "ids"): return a vector with the same length as the input data, with the selected clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame.</p></li>
+<li><p>"logical" (or "bool", "boolean", "indicator"): return a logical vector indicating whether each clone is selected or not. Same as <code>id</code> but with TRUE for selected clones and FALSE for others.</p></li>
+<li><p>"data" (or "df", "data.frame"): return a subset of the data frame with only the selected clones. This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in some other scplotter functions, such as <code>ClonalStatPlot</code>, to select clones. The groupings are also applied, and defaulting to <code>facet_by</code> and <code>split_by</code> in the parent frame.
+By default, it is NULL, which will return "id" when used in dplyr verbs and "data" when used in scplotter functions.</p></li>
+</ul></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -131,9 +132,19 @@ When used in dplyr verbs, it should be the parent data frame passed to the dplyr
 
 <dt id="arg-within">within<a class="anchor" aria-label="anchor" href="#arg-within"></a></dt>
 <dd><p>An expression passed to subset the data before applying the selection criteria.
+Only works for <code>long</code> format. It is useful when you want to select clones based on the criteria within a specific subset of the data.
 Note that this subsetting is only applied to determine the selection of clones, not to the final output.
 So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
-if it does not meet the <code>within</code> criteria.</p></dd>
+if it does not meet the <code>within</code> criteria. If you want the clones returned to also meet the <code>within</code> criteria,
+you can set <code>output_within</code> to TRUE, which will return the clones that meet both the selection criteria and the <code>within</code> criteria.</p></dd>
+
+
+<dt id="arg-output-within">output_within<a class="anchor" aria-label="anchor" href="#arg-output-within"></a></dt>
+<dd><p>An expression passed to subset the data after applying the selection criteria.
+Can work with both <code>long</code> and <code>wide</code> format.
+It is useful when you want to return clones that meet both the selection criteria and this criteria.
+If set to TRUE (only works when <code>within</code> is specified), the <code>within</code> criteria will be applied to filter the final output to include only the clones that meet both the selection criteria and the <code>within</code> criteria.
+If FALSE or NULL (default), the <code>within</code> criteria will only be applied to determine the selection of clones, not to the final output.</p></dd>
 
 
 <dt id="arg-expr">expr<a class="anchor" aria-label="anchor" href="#arg-expr"></a></dt>

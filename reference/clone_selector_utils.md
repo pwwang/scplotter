@@ -11,15 +11,15 @@ format.
 
 .get_data(envtype)
 
-.return_what(out, id, return_ids)
+.return_what(out, id, output)
 
-.top_long(n, groups, data, order, id, within, return_ids)
+.top_long(n, groups, data, order, id, within, output_within, output)
 
-.top_wide(n, groups, data, order, id, return_ids)
+.top_wide(n, groups, data, order, id, output_within, output)
 
-.sel_long(expr, groups, data, id, within, return_ids)
+.sel_long(expr, groups, data, id, within, output_within, output)
 
-.sel_wide(expr, groups, data, id, return_ids)
+.sel_wide(expr, groups, data, id, output_within, output)
 
 .bquote(x)
 ```
@@ -40,14 +40,27 @@ format.
 
   The column name that contains the clone ID. Default is "CTaa".
 
-- return_ids:
+- output:
 
-  If TRUE, the function returns a vector with the same length as the
-  data, with CTaa values for selected clones and NA for others. If
-  FALSE, it returns a subset data frame with only the selected clones.
-  Default is NULL, which will be determined based on the data. If the
-  function is used in a context of dplyr verbs, it defaults to TRUE.
-  Otherwise, it defaults to FALSE.
+  There are three options for the output: "id" (or "ids"), "logical" (or
+  "bool", "boolean", "indicator"), and "data" (or "df", "data.frame").
+
+  - "id" (or "ids"): return a vector with the same length as the input
+    data, with the selected clones' CTaa values (clone IDs) and NA for
+    others. It is useful for adding a new column to the data frame.
+
+  - "logical" (or "bool", "boolean", "indicator"): return a logical
+    vector indicating whether each clone is selected or not. Same as
+    `id` but with TRUE for selected clones and FALSE for others.
+
+  - "data" (or "df", "data.frame"): return a subset of the data frame
+    with only the selected clones. This is useful for filtering the data
+    frame to only include the clones that meet the criteria. It is used
+    internally in some other scplotter functions, such as
+    `ClonalStatPlot`, to select clones. The groupings are also applied,
+    and defaulting to `facet_by` and `split_by` in the parent frame. By
+    default, it is NULL, which will return "id" when used in dplyr verbs
+    and "data" when used in scplotter functions.
 
 - n:
 
@@ -82,11 +95,28 @@ format.
 - within:
 
   An expression passed to subset the data before applying the selection
-  criteria. Note that this subsetting is only applied to determine the
+  criteria. Only works for `long` format. It is useful when you want to
+  select clones based on the criteria within a specific subset of the
+  data. Note that this subsetting is only applied to determine the
   selection of clones, not to the final output. So if a cell belongs to
   a clone that is selected based on the subsetted data, it will be
   included in the final output, even if it does not meet the `within`
+  criteria. If you want the clones returned to also meet the `within`
+  criteria, you can set `output_within` to TRUE, which will return the
+  clones that meet both the selection criteria and the `within`
   criteria.
+
+- output_within:
+
+  An expression passed to subset the data after applying the selection
+  criteria. Can work with both `long` and `wide` format. It is useful
+  when you want to return clones that meet both the selection criteria
+  and this criteria. If set to TRUE (only works when `within` is
+  specified), the `within` criteria will be applied to filter the final
+  output to include only the clones that meet both the selection
+  criteria and the `within` criteria. If FALSE or NULL (default), the
+  `within` criteria will only be applied to determine the selection of
+  clones, not to the final output.
 
 - expr:
 
