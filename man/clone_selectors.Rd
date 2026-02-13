@@ -24,7 +24,7 @@ top(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 sel(
@@ -34,7 +34,7 @@ sel(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 uniq(
@@ -46,7 +46,7 @@ uniq(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 shared(
@@ -58,7 +58,7 @@ shared(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 gt(
@@ -70,7 +70,7 @@ gt(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 ge(
@@ -82,7 +82,7 @@ ge(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 lt(
@@ -94,7 +94,7 @@ lt(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 le(
@@ -106,7 +106,7 @@ le(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 eq(
@@ -117,7 +117,7 @@ eq(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 ne(
@@ -129,7 +129,7 @@ ne(
   id = NULL,
   in_form = NULL,
   within = NULL,
-  return_ids = NULL
+  output = NULL
 )
 
 and(x, y, ...)
@@ -167,10 +167,13 @@ Note that this subsetting is only applied to determine the selection of clones, 
 So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
 if it does not meet the \code{within} criteria.}
 
-\item{return_ids}{If TRUE, the function returns a vector with the same length as the data, with CTaa values for selected clones and NA for others.
-If FALSE, it returns a subset data frame with only the selected clones.
-Default is NULL, which will be determined based on the data. If the function is used in a context of dplyr verbs, it defaults to TRUE.
-Otherwise, it defaults to FALSE.}
+\item{output}{There are three options for the output: "id" (or "ids"), "logical" (or "bool", "boolean", "indicator"), and "data" (or "df", "data.frame").
+\itemize{
+\item "id" (or "ids"): return a vector with the same length as the input data, with the selected clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame.
+\item "logical" (or "bool", "boolean", "indicator"): return a logical vector indicating whether each clone is selected or not. Same as \code{id} but with TRUE for selected clones and FALSE for others.
+\item "data" (or "df", "data.frame"): return a subset of the data frame with only the selected clones. This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in some other scplotter functions, such as \code{ClonalStatPlot}, to select clones. The groupings are also applied, and defaulting to \code{facet_by} and \code{split_by} in the parent frame.
+By default, it is NULL, which will return "id" when used in dplyr verbs and "data" when used in scplotter functions.
+}}
 
 \item{expr}{The expression (in characters) to filter the clones
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}
@@ -209,7 +212,7 @@ so on will be kept as the groupings where the clones are selected in each combin
 This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in
 some other scplotter functions, such as \code{ClonalStatPlot}, to select clones. The groupings are also applied, and defaulting
 to \code{facet_by} and \code{split_by} in the parent frame.
-\item When used independently, you should pass the arguments explicitly, such as \code{groups} and \code{return_ids}, to control the
+\item When used independently, you should pass the arguments explicitly, such as \code{groups} and \code{output}, to control the
 behavior and the output of the function.
 }
 }
@@ -267,4 +270,10 @@ unique(
         gt(group1, group2, groups = "group")
      ))$SharedAndGreater
 )
+dplyr::mutate(data,
+   SharedAndGreater = and(
+      shared(group1, group2, groups = "group", output = "logical"),
+      gt(group1, group2, groups = "group", output = "logical")
+   )
+)$SharedAndGreater
 }

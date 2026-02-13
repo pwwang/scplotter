@@ -6,47 +6,47 @@ test_that("gt()/ge()/lt()/le() returns selected elements", {
         g2 = c(5, 15, 35, 40, 30)
     )
     # group2 works with numbers
-    result <- gt(g1, 40, data = df, in_form = "wide", return_ids = FALSE)
+    result <- gt(g1, 40, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("E"))
 
-    result <- gt(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- gt(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "E"))
 
-    result <- gt(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- gt(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "E"))
 
-    result <- ge(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- ge(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "D", "E"))
 
-    result <- ge(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- ge(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "D", "E"))
 
-    result <- lt(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- lt(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C"))
 
-    result <- lt(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- lt(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C"))
 
-    result <- le(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- le(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C", "D"))
 
-    result <- le(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- le(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C", "D"))
 
-    result <- eq(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- eq(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D"))
 
-    result <- eq(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- eq(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D"))
 
-    result <- ne(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- ne(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 
-    result <- ne(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- ne(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 })
 
-test_that("gt()/ge()/lt()/le() respects return_ids", {
+test_that("gt()/ge()/lt()/le() respects output", {
     df <- data.frame(
         x = c("A", "B", "C", "D"),
         g = c("X", "Y", "X", "Y"),
@@ -54,28 +54,76 @@ test_that("gt()/ge()/lt()/le() respects return_ids", {
         g2 = c(5, 15, 30, 45)
     )
     result <- gt(g1, g2, id = x,
-                data = df, in_form = "wide", return_ids = TRUE)
+                data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", NA, NA))
 
+    result <- gt(g1, g2, groups = g, id = x,
+                data = df, in_form = "wide", output = "bool")
+    expect_equal(result, c(TRUE, TRUE, FALSE, FALSE))
+
+    result <- gt(g1, g2, id = x,
+                data = df, in_form = "wide", output = "data")
+    expect_equal(result$x, c("A", "B"))
+
     result <- ge(g1, g2, id = x,
-                data = df, in_form = "wide", return_ids = TRUE)
+                data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", "C", NA))
 
+    result <- ge(g1, g2, groups = g, id = x,
+                data = df, in_form = "wide", output = "bool")
+    expect_equal(result, c(TRUE, TRUE, TRUE, FALSE))
+
+    result <- ge(g1, g2, id = x,
+                data = df, in_form = "wide", output = "data")
+    expect_equal(result$x, c("A", "B", "C"))
+
     result <- lt(g1, g2, id = x,
-                data = df, in_form = "wide", return_ids = TRUE)
+                data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, NA, "D"))
 
+    result <- lt(g1, g2, groups = g, id = x,
+                data = df, in_form = "wide", output = "bool")
+    expect_equal(result, c(FALSE, FALSE, FALSE, TRUE))
+
+    result <- lt(g1, g2, id = x,
+                data = df, in_form = "wide", output = "data")
+    expect_equal(result$x, c("D"))
+
     result <- le(g1, g2, id = x,
-                data = df, in_form = "wide", return_ids = TRUE)
+                data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, "C", "D"))
 
+    result <- le(g1, g2, groups = g, id = x,
+                data = df, in_form = "wide", output = "bool")
+    expect_equal(result, c(FALSE, FALSE, TRUE, TRUE))
+
+    result <- le(g1, g2, id = x,
+                data = df, in_form = "wide", output = "data")
+    expect_equal(result$x, c("C", "D"))
+
     result <- eq(g1, g2, id = x,
-                data = df, in_form = "wide", return_ids = TRUE)
+                data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, "C", NA))
 
+    result <- eq(g1, g2, groups = g, id = x,
+                data = df, in_form = "wide", output = "bool")
+    expect_equal(result, c(FALSE, FALSE, TRUE, FALSE))
+
+    result <- eq(g1, g2, id = x,
+                data = df, in_form = "wide", output = "data")
+    expect_equal(result$x, c("C"))
+
     result <- ne(g1, g2, id = x,
-                data = df, in_form = "wide", return_ids = TRUE)
+                data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", NA, "D"))
+
+    result <- ne(g1, g2, groups = g, id = x,
+                data = df, in_form = "wide", output = "bool")
+    expect_equal(result, c(TRUE, TRUE, FALSE, TRUE))
+
+    result <- ne(g1, g2, id = x,
+                data = df, in_form = "wide", output = "data")
+    expect_equal(result$x, c("A", "B", "D"))
 })
 
 test_that("gt()/ge()/lt()/le() works with dplyr::mutate()", {

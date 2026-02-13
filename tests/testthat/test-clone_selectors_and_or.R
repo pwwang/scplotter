@@ -18,3 +18,15 @@ test_that("and()/or() works with dplyr::mutate()", {
     result <- dplyr::mutate(df, OrClones = or(eq(Y, X, groups = "group"), ge(Y, X, groups = "group")))
     expect_equal(result$OrClones, c(rep(NA, 10), rep("B", 20), rep("C", 30)))
 })
+
+test_that("and()/or() reports error when elements have different lengths", {
+    expect_error(and(c(1, 2), c(1, 2, 3)))
+    expect_error(or(c(1, 2), c(1, 2, 3)))
+})
+
+test_that("and()/or() respects the output of the input selectors", {
+    expect_equal(and(c(TRUE, FALSE, TRUE), c(FALSE, TRUE, TRUE)), c(FALSE, FALSE, TRUE))
+    expect_equal(or(c(TRUE, FALSE, TRUE), c(FALSE, TRUE, TRUE)), c(TRUE, TRUE, TRUE))
+    expect_equal(and(c("A", "B", "C"), c("A", "B", NA)), c("A", "B", NA))
+    expect_equal(or(c("A", NA, "C"), c("A", "B", NA)), c("A", "B", "C"))
+})

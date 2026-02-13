@@ -6,17 +6,17 @@ test_that("uniq() returns selected elements", {
         g2 = c(5, 15, 25, 0, 0),
         g3 = c(1, 2, 3, 0, 5)
     )
-    result <- uniq(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- uniq(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D", "E"))
 
-    result <- uniq(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- uniq(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D", "E"))
 
-    result <- uniq(g1, g2, g3, data = df, in_form = "wide", return_ids = FALSE)
+    result <- uniq(g1, g2, g3, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D"))
 })
 
-test_that("uniq() respects return_ids", {
+test_that("uniq() respects output", {
     df <- data.frame(
         x = c("A", "B", "C", "D"),
         g = c("X", "Y", "X", "Y"),
@@ -24,7 +24,7 @@ test_that("uniq() respects return_ids", {
         g2 = c(5, 15, 25, 0)
     )
     result <- uniq(g1, g2, id = x,
-                   data = df, in_form = "wide", return_ids = TRUE)
+                   data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, NA, "D"))
 })
 

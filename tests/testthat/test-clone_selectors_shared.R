@@ -6,17 +6,17 @@ test_that("shared() returns selected elements", {
         g2 = c(5, 15, 25, 0, 30),
         g3 = c(1, 2, 3, 0, 0)
     )
-    result <- shared(g1, g2, data = df, in_form = "wide", return_ids = FALSE)
+    result <- shared(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 
-    result <- shared(g1, g2, groups = g, data = df, in_form = "wide", return_ids = FALSE)
+    result <- shared(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 
-    result <- shared(g1, g2, g3, data = df, in_form = "wide", return_ids = FALSE)
+    result <- shared(g1, g2, g3, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C"))
 })
 
-test_that("shared() respects return_ids", {
+test_that("shared() respects output", {
     df <- data.frame(
         x = c("A", "B", "C", "D"),
         g = c("X", "Y", "X", "Y"),
@@ -24,7 +24,7 @@ test_that("shared() respects return_ids", {
         g2 = c(5, 15, 25, 0)
     )
     result <- shared(g1, g2, id = x,
-                    data = df, in_form = "wide", return_ids = TRUE)
+                    data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", "C", NA))
 })
 
