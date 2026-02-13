@@ -67,3 +67,39 @@ test_that("top() works with given environment", {
     result <- top(1, group = group)
     expect_equal(result$x, c("A", "C"))
 })
+
+test_that("top() respects within", {
+    df <- data.frame(
+        CTaa = c(rep("A", 10), rep("B", 20), rep("C", 30)),
+        group = c(rep("A", 25), rep("B", 35))
+    )
+    result <- unique(top(1, data = df, id = "CTaa", in_form = "long",
+        within = group == "A", output = "id"))
+    expect_equal(result, c(NA, "B"))  # not C
+})
+
+test_that("top() respects output_within", {
+    df <- data.frame(
+        CTaa = c(rep("A", 10), rep("B", 20), rep("C", 30)),
+        group = c(rep("A", 25), rep("B", 35))
+    )
+    result <- dplyr::mutate(df, TopClones = top(1, within = group == "A"))
+    result <- dplyr::distinct(result, CTaa, group, TopClones)
+    # without output_within, "B" from both groups A and B are returned
+    expect_equal(result$TopClone, c(NA, "B", "B", NA))
+
+    result <- dplyr::mutate(df, TopClones = top(1, within = group == "A", output_within = TRUE))
+    result <- dplyr::distinct(result, CTaa, group, TopClones)
+    # with output_within, only "B" from group A is returned, and "B" from group B is not returned
+    expect_equal(result$TopClone, c(NA, "B", NA, NA))
+
+    result <- dplyr::mutate(df, TopClones = top(1, within = group == "A", output_within = FALSE))
+    result <- dplyr::distinct(result, CTaa, group, TopClones)
+    # with output_within = FALSE, "B" from both groups A and B are returned, same as the case without output_within
+    expect_equal(result$TopClone, c(NA, "B", "B", NA))
+
+    result <- dplyr::mutate(df, TopClones = top(1, within = group == "A", output_within = group == "B"))
+    result <- dplyr::distinct(result, CTaa, group, TopClones)
+    # with output_within = group == "B", only "B" from group B is returned, and "B" from group A is not returned
+    expect_equal(result$TopClone, c(NA, NA, "B", NA))
+})

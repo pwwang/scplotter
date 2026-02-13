@@ -24,6 +24,7 @@ top(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -34,6 +35,7 @@ sel(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -46,6 +48,7 @@ uniq(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -58,6 +61,7 @@ shared(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -70,6 +74,7 @@ gt(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -82,6 +87,7 @@ ge(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -94,6 +100,7 @@ lt(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -106,6 +113,7 @@ le(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -117,6 +125,7 @@ eq(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -129,6 +138,7 @@ ne(
   id = NULL,
   in_form = NULL,
   within = NULL,
+  output_within = NULL,
   output = NULL
 )
 
@@ -163,9 +173,17 @@ When used in dplyr verbs, it should be "long" by default.
 If used in scplotter functions, it should be "wide" by default.#'}
 
 \item{within}{An expression passed to subset the data before applying the selection criteria.
+Only works for \code{long} format. It is useful when you want to select clones based on the criteria within a specific subset of the data.
 Note that this subsetting is only applied to determine the selection of clones, not to the final output.
 So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
-if it does not meet the \code{within} criteria.}
+if it does not meet the \code{within} criteria. If you want the clones returned to also meet the \code{within} criteria,
+you can set \code{output_within} to TRUE, which will return the clones that meet both the selection criteria and the \code{within} criteria.}
+
+\item{output_within}{An expression passed to subset the data after applying the selection criteria.
+Can work with both \code{long} and \code{wide} format.
+It is useful when you want to return clones that meet both the selection criteria and this criteria.
+If set to TRUE (only works when \code{within} is specified), the \code{within} criteria will be applied to filter the final output to include only the clones that meet both the selection criteria and the \code{within} criteria.
+If FALSE or NULL (default), the \code{within} criteria will only be applied to determine the selection of clones, not to the final output.}
 
 \item{output}{There are three options for the output: "id" (or "ids"), "logical" (or "bool", "boolean", "indicator"), and "data" (or "df", "data.frame").
 \itemize{
@@ -246,7 +264,21 @@ data$subset <- sample(c("S1", "S2"), nrow(data), replace = TRUE)
 data[sample(1:nrow(data), 10), ]
 
 unique(dplyr::mutate(data, Top3 = top(3))$Top3)
-unique(dplyr::mutate(data, Top3 = top(3, within = groups == "A"))$Top3)
+# Note that AA9 also reported in S2, even though the comparison is only applied within S1
+dplyr::distinct(
+   dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
+   CTaa, subset, Top3
+)
+# Note that AA9 is now excluded
+dplyr::distinct(
+   dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
+   CTaa, subset, Top3
+)
+# We can also exclude S1 clones even when the comparison is applied within S1
+dplyr::distinct(
+   dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
+   CTaa, subset, Top3
+)
 unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
 unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
 unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)

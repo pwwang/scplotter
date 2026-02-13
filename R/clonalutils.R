@@ -269,7 +269,7 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.top_long <- function(n, groups, data, order, id, within, output) {
+.top_long <- function(n, groups, data, order, id, within, output_within, output) {
     if (!is.null(within)) {
         data2 <- data %>% filter(!!parse_expr(within))
     } else {
@@ -285,15 +285,22 @@ screp_subset <- function(screp, subset) {
     if (!is.null(groups)) {
         data2 <- data2 %>% group_by(!!!syms(groups))
     }
-
+    # to gain the ids
     out <- data2 %>% mutate(.indicator = row_number() <= n)
+    # to attach indicator to the original data
     out <- data %>% left_join(out, by = unique(c(id, groups)))
+    if (isTRUE(output_within)) {
+        output_within <- within
+    }
+    if (!is.null(output_within) && !isFALSE(output_within)) {
+        out <- out %>% mutate(.indicator = !!sym(".indicator") & !!parse_expr(output_within))
+    }
     .return_what(out, id, output)
 }
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.top_wide <- function(n, groups, data, order, id, output) {
+.top_wide <- function(n, groups, data, order, id, output_within, output) {
     if (!is.null(groups)) {
         data <- data %>% group_by(!!!syms(groups))
     }
@@ -303,13 +310,16 @@ screp_subset <- function(screp, subset) {
     }
 
     out <- data %>% mutate(.indicator = row_number() <= n)
+    if (!is.null(output_within) && !isFALSE(output_within)) {
+        out <- out %>% mutate(.indicator = !!sym(".indicator") & !!parse_expr(output_within))
+    }
     .return_what(out, id, output)
 }
 
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.sel_long <- function(expr, groups, data, id, within, output) {
+.sel_long <- function(expr, groups, data, id, within, output_within, output) {
     if (!is.null(within)) {
         data2 <- data %>% filter(!!parse_expr(within))
     } else {
@@ -333,17 +343,26 @@ screp_subset <- function(screp, subset) {
 
     out <- data2 %>% mutate(.indicator = !!parse_expr(expr))
     out <- data %>% left_join(out, by = unique(c(id, groups[-1])))
+    if (isTRUE(output_within)) {
+        output_within <- within
+    }
+    if (!is.null(output_within) && !isFALSE(output_within)) {
+        out <- out %>% mutate(.indicator = !!sym(".indicator") & !!parse_expr(output_within))
+    }
     .return_what(out, id, output)
 }
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.sel_wide <- function(expr, groups, data, id, output) {
+.sel_wide <- function(expr, groups, data, id, output_within, output) {
     if (!is.null(groups)) {
         data <- data %>% group_by(!!!syms(groups))
     }
 
     out <- data %>% mutate(.indicator = !!parse_expr(expr))
+    if (!is.null(output_within) && !isFALSE(output_within)) {
+        out <- out %>% mutate(.indicator = !!sym(".indicator") & !!parse_expr(output_within))
+    }
     .return_what(out, id, output)
 }
 
@@ -411,9 +430,16 @@ screp_subset <- function(screp, subset) {
 #' When used in dplyr verbs, it should be the parent data frame passed to the dplyr verb.
 #' @param id The column name that contains the clone ID. Default is "CTaa".
 #' @param within An expression passed to subset the data before applying the selection criteria.
+#' Only works for `long` format. It is useful when you want to select clones based on the criteria within a specific subset of the data.
 #' Note that this subsetting is only applied to determine the selection of clones, not to the final output.
 #' So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
-#' if it does not meet the `within` criteria.
+#' if it does not meet the `within` criteria. If you want the clones returned to also meet the `within` criteria,
+#' you can set `output_within` to TRUE, which will return the clones that meet both the selection criteria and the `within` criteria.
+#' @param output_within An expression passed to subset the data after applying the selection criteria.
+#' Can work with both `long` and `wide` format.
+#' It is useful when you want to return clones that meet both the selection criteria and this criteria.
+#' If set to TRUE (only works when `within` is specified), the `within` criteria will be applied to filter the final output to include only the clones that meet both the selection criteria and the `within` criteria.
+#' If FALSE or NULL (default), the `within` criteria will only be applied to determine the selection of clones, not to the final output.
 #' @param output There are three options for the output: "id" (or "ids"), "logical" (or "bool", "boolean", "indicator"), and "data" (or "df", "data.frame").
 #' * "id" (or "ids"): return a vector with the same length as the input data, with the selected clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame.
 #' * "logical" (or "bool", "boolean", "indicator"): return a logical vector indicating whether each clone is selected or not. Same as `id` but with TRUE for selected clones and FALSE for others.
@@ -456,7 +482,21 @@ screp_subset <- function(screp, subset) {
 #' data[sample(1:nrow(data), 10), ]
 #'
 #' unique(dplyr::mutate(data, Top3 = top(3))$Top3)
-#' unique(dplyr::mutate(data, Top3 = top(3, within = groups == "A"))$Top3)
+#' # Note that AA9 also reported in S2, even though the comparison is only applied within S1
+#' dplyr::distinct(
+#'    dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
+#'    CTaa, subset, Top3
+#' )
+#' # Note that AA9 is now excluded
+#' dplyr::distinct(
+#'    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
+#'    CTaa, subset, Top3
+#' )
+#' # We can also exclude S1 clones even when the comparison is applied within S1
+#' dplyr::distinct(
+#'    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
+#'    CTaa, subset, Top3
+#' )
 #' unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
 #' unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
 #' unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)
@@ -490,11 +530,13 @@ NULL
 
 #' @rdname clone_selectors
 #' @export
-top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
+
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -506,6 +548,7 @@ top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form 
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (envtype == "scplotter" && is.null(groups)) {
         env <- caller_env()
         groups <- unique(c(env$facet_by, env$split_by))
@@ -513,20 +556,21 @@ top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form 
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     if (in_form == "long") {
         stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
-        .top_long(n, groups, data, order, id, within, output)
+        .top_long(n, groups, data, order, id, within, output_within, output)
     } else {
-        .top_wide(n, groups, data, order, id, output)
+        .top_wide(n, groups, data, order, id, output_within, output)
     }
 }
 
 
 #' @rdname clone_selectors
 #' @export
-sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(expr) || is.null(expr), error = function(e) FALSE)) expr <- expr_name(substitute(expr))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -538,6 +582,7 @@ sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, wit
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (envtype == "scplotter" && is.null(groups)) {
         env <- caller_env()
         groups <- unique(c(env$facet_by, env$split_by))
@@ -545,20 +590,21 @@ sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, wit
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     if (in_form == "long") {
         stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
-        .sel_long(expr, groups, data, id, within, output)
+        .sel_long(expr, groups, data, id, within, output_within, output)
     } else {
-        .sel_wide(expr, groups, data, id, output)
+        .sel_wide(expr, groups, data, id, output_within, output)
     }
 }
 
 #' @rdname clone_selectors
 #' @export
-uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     other_groups <- as.character(substitute(list(...)))[-1]
     envtype <- .get_envtype()
     if (!is.null(data)) {
@@ -580,20 +626,23 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_
         expr <- paste0(expr, " & ", .bquote(g), " == 0")
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     other_groups <- as.character(substitute(list(...)))[-1]
     envtype <- .get_envtype()
     if (!is.null(data)) {
@@ -615,20 +664,23 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, i
         expr <- paste0(expr, " & ", .bquote(g), " > 0")
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -649,20 +701,23 @@ gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -683,20 +738,23 @@ ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -717,20 +775,23 @@ lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -751,20 +812,23 @@ le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -782,20 +846,23 @@ eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = 
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " == ", .bquote(group2))
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output = NULL) {
+ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
+    if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
     if (!is.null(data)) {
         stopifnot("`in_form` must be provided when `data` is provided explictly." = !is.null(in_form))
@@ -816,10 +883,12 @@ ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " > 0 & ", expr)
     }
     stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
+    stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output = output)
+    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors

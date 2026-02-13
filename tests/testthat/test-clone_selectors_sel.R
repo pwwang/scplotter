@@ -62,3 +62,41 @@ test_that("sel() works with given environment", {
     result <- sel(mean(y) >= 25)
     expect_equal(result$x, c("C", "D"))
 })
+
+test_that("sel() respects within", {
+    df <- data.frame(
+        CTaa = c(rep("A", 10), rep("B", 20), rep("C", 30)),
+        group = c(rep("A", 25), rep("B", 35))
+    )
+
+    result <- dplyr::mutate(df, SelectedClones = sel(.n > 10))
+    result <- dplyr::distinct(result, CTaa, group, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, "B", "B", "C"))
+
+    result <- dplyr::mutate(df, SelectedClones = sel(.n > 10, within = group == "B"))
+    result <- dplyr::distinct(result, CTaa, group, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, NA, NA, "C"))
+
+    result <- dplyr::mutate(df, SelectedClones = sel(.n > 10, within = group == "A"))
+    result <- dplyr::distinct(result, CTaa, group, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, "B", "B", NA))
+})
+
+test_that("sel() respects output_within", {
+    df <- data.frame(
+        CTaa = c(rep("A", 10), rep("B", 20), rep("C", 30)),
+        group = c(rep("A", 25), rep("B", 35))
+    )
+
+    result <- dplyr::mutate(df, SelectedClones = sel(.n > 10, within = group == "A", output_within = TRUE))
+    result <- dplyr::distinct(result, CTaa, group, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, "B", NA, NA))
+
+    result <- dplyr::mutate(df, SelectedClones = sel(.n > 10, within = group == "A", output_within = FALSE))
+    result <- dplyr::distinct(result, CTaa, group, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, "B", "B", NA))
+
+    result <- dplyr::mutate(df, SelectedClones = sel(.n > 10, within = group == "A", output_within = group == "B"))
+    result <- dplyr::distinct(result, CTaa, group, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, NA, "B", NA))
+})

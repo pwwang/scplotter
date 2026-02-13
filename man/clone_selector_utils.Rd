@@ -17,13 +17,13 @@
 
 .return_what(out, id, output)
 
-.top_long(n, groups, data, order, id, within, output)
+.top_long(n, groups, data, order, id, within, output_within, output)
 
-.top_wide(n, groups, data, order, id, output)
+.top_wide(n, groups, data, order, id, output_within, output)
 
-.sel_long(expr, groups, data, id, within, output)
+.sel_long(expr, groups, data, id, within, output_within, output)
 
-.sel_wide(expr, groups, data, id, output)
+.sel_wide(expr, groups, data, id, output_within, output)
 
 .bquote(x)
 }
@@ -60,9 +60,17 @@ When used in dplyr verbs, it should be the parent data frame passed to the dplyr
 \item{order}{The order of the clones to select. It can be an expression to order the clones by a specific column. Only used in \code{top()}.}
 
 \item{within}{An expression passed to subset the data before applying the selection criteria.
+Only works for \code{long} format. It is useful when you want to select clones based on the criteria within a specific subset of the data.
 Note that this subsetting is only applied to determine the selection of clones, not to the final output.
 So if a cell belongs to a clone that is selected based on the subsetted data, it will be included in the final output, even
-if it does not meet the \code{within} criteria.}
+if it does not meet the \code{within} criteria. If you want the clones returned to also meet the \code{within} criteria,
+you can set \code{output_within} to TRUE, which will return the clones that meet both the selection criteria and the \code{within} criteria.}
+
+\item{output_within}{An expression passed to subset the data after applying the selection criteria.
+Can work with both \code{long} and \code{wide} format.
+It is useful when you want to return clones that meet both the selection criteria and this criteria.
+If set to TRUE (only works when \code{within} is specified), the \code{within} criteria will be applied to filter the final output to include only the clones that meet both the selection criteria and the \code{within} criteria.
+If FALSE or NULL (default), the \code{within} criteria will only be applied to determine the selection of clones, not to the final output.}
 
 \item{expr}{The expression (in characters) to filter the clones
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}

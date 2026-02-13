@@ -202,3 +202,31 @@ test_that("gt()/ge() works with given environment", {
     result <- ne(y, z)
     expect_equal(result$x, c("A", "B", "D"))
 })
+
+test_that("eq() respects within and output_within", {
+    df <- data.frame(
+        CTaa = c(rep("A", 20), rep("B", 30), rep("C", 20)),
+        group = c(rep("B", 35), rep("B", 35)),
+        group2 = c(rep("A", 35), rep("B", 35))
+    )
+
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group"))
+    result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
+    expect_equal(result$SelectedClones, c("A", NA, NA, "C"))
+
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", output_within = group2 == "A"))
+    result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
+    expect_equal(result$SelectedClones, c("A", NA, NA, NA))
+
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", output_within = group2 == "B"))
+    result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, NA, NA, "C"))
+
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", within = group2 == "A"))
+    result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
+    expect_equal(result$SelectedClones, c("A", NA, NA, NA))
+
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", within = group2 == "B"))
+    result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
+    expect_equal(result$SelectedClones, c(NA, NA, NA, "C"))
+})
