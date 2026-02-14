@@ -6,7 +6,7 @@ source:
   path: ..
 
 build:
-  number: 9
+  number: 10
   rpaths:
     - lib/R/lib/
     - lib/
