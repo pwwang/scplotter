@@ -582,9 +582,22 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
         )
     }
 
+    args <- rlang::dots_list(...)
+    args$palette <- args$palette %||% "turbo"
+    args$data <- plotdata
+    args$x <- pair[1]
+    args$y <- pair[2]
+    args$color_by <- "NumType"
+    args$title <- if (identical(title, "...")) NULL else title
+    args$subtitle <- subtitle
+    args$border_color <- TRUE
+    args$size_by <- ifelse(size_by == "max", "Max_Size", "Total_Size")
+    args$size_name <- ifelse(size_by == "max", "Max Size", "Total Size")
+    args$aspect.ratio <- 1
+
     colfun <- colorRamp2(
         seq(min(plotdata$NumType, na.rm = TRUE), max(plotdata$NumType, na.rm = TRUE), length.out = 100),
-        palette_this(palette = "Spectral", palcolor = NULL)
+        palette_this(palette = args$palette, palcolor = args$palcolor)
     )
     label_df <- plotdata %>% group_by(!!sym("TypeName")) %>%
         summarise(
@@ -594,13 +607,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     label_df$TypeName <- factor(label_df$TypeName, levels = labels)
     label_df <- label_df[order(label_df$TypeName), , drop = FALSE]
 
-    p <- ScatterPlot(
-            plotdata, x = pair[1], y = pair[2], color_by = "NumType",
-            title = if (identical(title, "...")) NULL else title, subtitle = subtitle,
-            border_color = TRUE,
-            size_by = ifelse(size_by == "max", "Max_Size", "Total_Size"),
-            size_name = ifelse(size_by == "max", "Max Size", "Total Size"),
-            aspect.ratio = 1, ...) +
+    p <- do.call(ScatterPlot, args) +
         guides(color = "none") +
         new_scale_fill() +
         geom_point(data = label_df, aes(x = !!sym("x"), y = !!sym("y"), fill = !!sym("TypeName")), shape = 21, alpha = 0) +
