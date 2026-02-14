@@ -488,9 +488,10 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     }
     sum_counts1 <- sum(df[[suf1]])
     sum_counts2 <- sum(df[[suf2]])
+    sum_counts_max <- max(sum_counts1, sum_counts2)
 
-    counts1_norm <- jitter(1 + df[[suf1]], amount = 0.25) / sum_counts1
-    counts2_norm <- jitter(1 + df[[suf2]], amount = 0.25) / sum_counts2
+    counts1_norm <- jitter(1 + df[[suf1]], amount = 0.25) / sum_counts_max
+    counts2_norm <- jitter(1 + df[[suf2]], amount = 0.25) / sum_counts_max
 
     # Avoid some points always overlaying each other
     oo <- sample(length(counts1_norm))
@@ -542,16 +543,16 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     )
 
     xbreaks <- c(
-        1 / sum_counts1,
-        0.001 + 1 / sum_counts1,
-        0.01 + 1 / sum_counts1,
-        0.1 + 1 / sum_counts1
+        1 / sum_counts_max,
+        0.001 + 1 / sum_counts_max,
+        0.01 + 1 / sum_counts_max,
+        0.1 + 1 / sum_counts_max
     )
     ybreaks <- c(
-        1 / sum_counts2,
-        0.001 + 1 / sum_counts2,
-        0.01 + 1 / sum_counts2,
-        0.1 + 1 / sum_counts2
+        1 / sum_counts_max,
+        0.001 + 1 / sum_counts_max,
+        0.01 + 1 / sum_counts_max,
+        0.1 + 1 / sum_counts_max
     )
 
     minx <- min(plotdata[[pair[1]]], na.rm = TRUE)
@@ -615,10 +616,10 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
         geom_segment(
             data = data.frame(
                 # diagnal, horizontal, vertical, horizontal short, vertical short
-                x = c(1.5 / sum_counts1, minx, 1.5 / sum_counts1, minx, 2.5 / sum_counts1),
-                xend = c(maxx, maxx, 1.5 / sum_counts1, 1.5 / sum_counts1, 2.5 / sum_counts1),
-                y = c(1.5 / sum_counts2, 1.5 / sum_counts2, miny, 2.5 / sum_counts2, miny),
-                yend = c(maxy, 1.5 / sum_counts2, maxy, 2.5 / sum_counts2, 1.5 / sum_counts2)
+                x = c(1.5 / sum_counts_max, minx, 1.5 / sum_counts_max, minx, 2.5 / sum_counts_max),
+                xend = c(maxx, maxx, 1.5 / sum_counts_max, 1.5 / sum_counts_max, 2.5 / sum_counts_max),
+                y = c(1.5 / sum_counts_max, 1.5 / sum_counts_max, miny, 2.5 / sum_counts_max, miny),
+                yend = c(maxy, 1.5 / sum_counts_max, maxy, 2.5 / sum_counts_max, 1.5 / sum_counts_max)
             ),
             aes(x = !!sym("x"), y = !!sym("y"), xend = !!sym("xend"), yend = !!sym("yend")), color = "gray90"
         )
