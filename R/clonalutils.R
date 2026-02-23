@@ -23,7 +23,9 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
             } else {
                 data[[g]]
             }
-            if (is.null(dg)) return(NULL)
+            if (is.null(dg)) {
+                return(NULL)
+            }
             if (!is.factor(dg)) dg <- factor(dg)
             levels(dg)
         })
@@ -81,7 +83,7 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
             mat <- as.data.frame(table(data[[gv[1]]][, clone_call]))
             x_col <- colnames(mat)[2] <- paste0(gv[1], ".count")
             mat[is.na(mat)] <- 0
-            mat[, paste0(gv[1], ".fraction")] <- mat[, x_col]/sum(mat[,  x_col])
+            mat[, paste0(gv[1], ".fraction")] <- mat[, x_col] / sum(mat[, x_col])
         } else {
             x_df <- as.data.frame(table(data[[gv[1]]][, clone_call]))
             x_col <- colnames(x_df)[2] <- paste0(gv[1], ".count")
@@ -90,9 +92,8 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
 
             mat <- merge(x_df, y_df, by = "Var1", all = TRUE)
             mat[is.na(mat)] <- 0
-            mat[, paste0(gv[1], ".fraction")] <- mat[, x_col]/sum(mat[,  x_col])
-            mat[, paste0(gv[2], ".fraction")] <- mat[, y_col]/sum(mat[,  y_col])
-
+            mat[, paste0(gv[1], ".fraction")] <- mat[, x_col] / sum(mat[, x_col])
+            mat[, paste0(gv[2], ".fraction")] <- mat[, y_col] / sum(mat[, y_col])
         }
         pivot_longer(
             mat,
@@ -101,10 +102,10 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
             names_pattern = "(.+)\\.(.+)"
         )
     })) %>%
-    distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
-    separate(".group", into = groupings, sep = " // ") %>%
-    filter(!!sym("count") > 0) %>%
-    rename(CloneID = "Var1")
+        distinct(!!sym("Var1"), !!sym(".group"), .keep_all = TRUE) %>%
+        separate(".group", into = groupings, sep = " // ") %>%
+        filter(!!sym("count") > 0) %>%
+        rename(CloneID = "Var1")
 
     for (gl in names(grouping_levels)) {
         if (!is.null(df[[gl]])) {
@@ -259,11 +260,13 @@ screp_subset <- function(screp, subset) {
         if (!id %in% colnames(out)) {
             stop(paste0("The id column '", id, "' is not found in the data."))
         }
-        ifelse(out$.indicator, out[[id]], NA)
+        ifelse(out$.indicator, as.character(out[[id]]), NA_character_)
     } else if (identical(output, "logical") || identical(output, "bool") || identical(output, "boolean") || identical(output, "indicator")) {
         out$.indicator
-    } else {  # data, df, data.frame
-        out %>% filter(!!sym(".indicator")) %>% select(-!!sym(".indicator"))
+    } else { # data, df, data.frame
+        out %>%
+            filter(!!sym(".indicator")) %>%
+            select(-!!sym(".indicator"))
     }
 }
 
@@ -354,7 +357,6 @@ screp_subset <- function(screp, subset) {
             data2 <- dplyr::group_by(data2, !!!syms(groups[-1]))
         }
     }
-
     out <- data2 %>% mutate(.indicator = !!parse_expr(expr))
     out <- data %>% left_join(out, by = unique(c(id, groups[-1])))
     if (isTRUE(output_within)) {
@@ -385,12 +387,12 @@ screp_subset <- function(screp, subset) {
 .bquote <- function(x) {
     if (is.character(x)) {
         if (!suppressWarnings(is.na(as.numeric(x)))) {
-            return(x)  # if x is a number, return it as is
+            return(x) # if x is a number, return it as is
         }
         if (grepl("`", x)) {
-            return(x)  # already quoted
+            return(x) # already quoted
         } else {
-            return(paste0("`", x, "`"))  # backtick-quote the name
+            return(paste0("`", x, "`")) # backtick-quote the name
         }
     } else {
         return(x)
@@ -488,8 +490,10 @@ screp_subset <- function(screp, subset) {
 #' ne(group1, group2)
 #'
 #' # Use them in a dplyr pipeline
-#' data <- tidyr::pivot_longer(data, cols = c("group1", "group2"),
-#'     names_to = "group", values_to = "value")
+#' data <- tidyr::pivot_longer(data,
+#'     cols = c("group1", "group2"),
+#'     names_to = "group", values_to = "value"
+#' )
 #' data <- tidyr::uncount(data, !!rlang::sym("value"))
 #' data$subset <- sample(c("S1", "S2"), nrow(data), replace = TRUE)
 #' # Take a glimpse of the data
@@ -498,18 +502,18 @@ screp_subset <- function(screp, subset) {
 #' unique(dplyr::mutate(data, Top3 = top(3))$Top3)
 #' # Note that AA9 also reported in S2, even though the comparison is only applied within S1
 #' dplyr::distinct(
-#'    dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
-#'    CTaa, subset, Top3
+#'     dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
+#'     CTaa, subset, Top3
 #' )
 #' # Note that AA9 is now excluded
 #' dplyr::distinct(
-#'    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
-#'    CTaa, subset, Top3
+#'     dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
+#'     CTaa, subset, Top3
 #' )
 #' # We can also exclude S1 clones even when the comparison is applied within S1
 #' dplyr::distinct(
-#'    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
-#'    CTaa, subset, Top3
+#'     dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
+#'     CTaa, subset, Top3
 #' )
 #' unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
 #' unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
@@ -523,22 +527,24 @@ screp_subset <- function(screp, subset) {
 #' unique(dplyr::mutate(data, NotEqual = ne(group1, group2, groups = "group"))$NotEqual)
 #' # Compond expressions
 #' unique(
-#'   dplyr::mutate(data,
-#'      Top3OrEqual = or(top(3), eq(group1, group2, groups = "group")))$Top3OrEqual
+#'     dplyr::mutate(data,
+#'         Top3OrEqual = or(top(3), eq(group1, group2, groups = "group"))
+#'     )$Top3OrEqual
 #' )
 #'
 #' unique(
-#'   dplyr::mutate(data,
-#'      SharedAndGreater = and(
-#'         shared(group1, group2, groups = "group"),
-#'         gt(group1, group2, groups = "group")
-#'      ))$SharedAndGreater
+#'     dplyr::mutate(data,
+#'         SharedAndGreater = and(
+#'             shared(group1, group2, groups = "group"),
+#'             gt(group1, group2, groups = "group")
+#'         )
+#'     )$SharedAndGreater
 #' )
 #' dplyr::mutate(data,
-#'    SharedAndGreater = and(
-#'       shared(group1, group2, groups = "group", output = "logical"),
-#'       gt(group1, group2, groups = "group", output = "logical")
-#'    )
+#'     SharedAndGreater = and(
+#'         shared(group1, group2, groups = "group", output = "logical"),
+#'         gt(group1, group2, groups = "group", output = "logical")
+#'     )
 #' )$SharedAndGreater
 NULL
 
@@ -557,7 +563,7 @@ top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form 
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -591,7 +597,7 @@ sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, wit
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -626,7 +632,7 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -664,7 +670,7 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, i
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -701,7 +707,7 @@ gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -738,7 +744,7 @@ ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -775,7 +781,7 @@ lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -812,7 +818,7 @@ le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -849,7 +855,7 @@ eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = 
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
@@ -883,7 +889,7 @@ ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
         in_form <- match.arg(in_form, c("wide", "long"))
         stopifnot("`output` must be provided when `data` is provided explictly." = !is.null(output))
     } else {
-        data <- .get_data(envtype)  # envtype is ensured to be "tidy" or "scplotter"
+        data <- .get_data(envtype) # envtype is ensured to be "tidy" or "scplotter"
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
