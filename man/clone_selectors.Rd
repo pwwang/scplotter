@@ -256,8 +256,10 @@ eq(group1, group2)
 ne(group1, group2)
 
 # Use them in a dplyr pipeline
-data <- tidyr::pivot_longer(data, cols = c("group1", "group2"),
-    names_to = "group", values_to = "value")
+data <- tidyr::pivot_longer(data,
+    cols = c("group1", "group2"),
+    names_to = "group", values_to = "value"
+)
 data <- tidyr::uncount(data, !!rlang::sym("value"))
 data$subset <- sample(c("S1", "S2"), nrow(data), replace = TRUE)
 # Take a glimpse of the data
@@ -266,18 +268,18 @@ data[sample(1:nrow(data), 10), ]
 unique(dplyr::mutate(data, Top3 = top(3))$Top3)
 # Note that AA9 also reported in S2, even though the comparison is only applied within S1
 dplyr::distinct(
-   dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
-   CTaa, subset, Top3
+    dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
+    CTaa, subset, Top3
 )
 # Note that AA9 is now excluded
 dplyr::distinct(
-   dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
-   CTaa, subset, Top3
+    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
+    CTaa, subset, Top3
 )
 # We can also exclude S1 clones even when the comparison is applied within S1
 dplyr::distinct(
-   dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
-   CTaa, subset, Top3
+    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
+    CTaa, subset, Top3
 )
 unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
 unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
@@ -291,21 +293,23 @@ unique(dplyr::mutate(data, Equal = eq(group1, group2, groups = "group"))$Equal)
 unique(dplyr::mutate(data, NotEqual = ne(group1, group2, groups = "group"))$NotEqual)
 # Compond expressions
 unique(
-  dplyr::mutate(data,
-     Top3OrEqual = or(top(3), eq(group1, group2, groups = "group")))$Top3OrEqual
+    dplyr::mutate(data,
+        Top3OrEqual = or(top(3), eq(group1, group2, groups = "group"))
+    )$Top3OrEqual
 )
 
 unique(
-  dplyr::mutate(data,
-     SharedAndGreater = and(
-        shared(group1, group2, groups = "group"),
-        gt(group1, group2, groups = "group")
-     ))$SharedAndGreater
+    dplyr::mutate(data,
+        SharedAndGreater = and(
+            shared(group1, group2, groups = "group"),
+            gt(group1, group2, groups = "group")
+        )
+    )$SharedAndGreater
 )
 dplyr::mutate(data,
-   SharedAndGreater = and(
-      shared(group1, group2, groups = "group", output = "logical"),
-      gt(group1, group2, groups = "group", output = "logical")
-   )
+    SharedAndGreater = and(
+        shared(group1, group2, groups = "group", output = "logical"),
+        gt(group1, group2, groups = "group", output = "logical")
+    )
 )$SharedAndGreater
 }

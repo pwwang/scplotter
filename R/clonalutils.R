@@ -275,9 +275,16 @@ screp_subset <- function(screp, subset) {
     } else {
         data2 <- data
     }
-    data2 <- data2 %>%
-        group_by(!!!syms(unique(c(id, groups)))) %>%
-        summarise(.n = n(), .groups = "drop")
+    # data from clonal_size_data()
+    if ("count" %in% colnames(data2) && "fraction" %in% colnames(data2)) {
+        data2 <- data2 %>%
+            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            summarise(.n = sum(!!sym("count")), .groups = "drop")
+    } else {
+        data2 <- data2 %>%
+            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            summarise(.n = n(), .groups = "drop")
+    }
 
     order <- order %||% "-.n"
     data2 <- data2 %>% arrange(!!parse_expr(order))
@@ -325,9 +332,16 @@ screp_subset <- function(screp, subset) {
     } else {
         data2 <- data
     }
-    data2 <- data2 %>%
-        group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
-        summarise(.n = n(), .groups = "drop")
+    # data from clonal_size_data()
+    if ("count" %in% colnames(data2) && "fraction" %in% colnames(data2)) {
+        data2 <- data2 %>%
+            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            summarise(.n = sum(!!sym("count")), .groups = "drop")
+    } else {
+        data2 <- data2 %>%
+            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            summarise(.n = n(), .groups = "drop")
+    }
 
     if (!is.null(groups)) {
         data2 <- tidyr::pivot_wider(
