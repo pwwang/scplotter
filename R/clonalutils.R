@@ -329,7 +329,7 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.sel_long <- function(expr, groups, data, id, within, output_within, output) {
+.sel_long <- function(expr, groups, data, id, top, order, within, output_within, output) {
     if (!is.null(within)) {
         data2 <- data %>% filter(!!parse_expr(within))
     } else {
@@ -359,6 +359,20 @@ screp_subset <- function(screp, subset) {
     }
     out <- data2 %>% mutate(.indicator = !!parse_expr(expr))
     out <- data %>% left_join(out, by = unique(c(id, groups[-1])))
+    if (!is.null(top)) {
+        if (is.null(order)) {
+            out <- out %>% mutate(
+                .indicator.index = ifelse(!!sym(".indicator"), cumsum(!!sym(".indicator")), Inf),
+                .indicator = !!sym(".indicator") & !!sym(".indicator.index") <= top
+            ) %>% select(-".indicator.index")
+        } else {
+            out2 <- out %>% arrange(!!parse_expr(order)) %>% mutate(
+                .indicator.index = ifelse(!!sym(".indicator"), cumsum(!!sym(".indicator")), Inf),
+                .indicator = !!sym(".indicator") & !!sym(".indicator.index") <= top
+            )
+            out <- out %>% left_join(out2[, unique(c(id, groups, ".indicator"))], by = unique(c(id, groups)))
+        }
+    }
     if (isTRUE(output_within)) {
         output_within <- within
     }
@@ -370,12 +384,28 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.sel_wide <- function(expr, groups, data, id, output_within, output) {
+.sel_wide <- function(expr, groups, data, id, top, order, output_within, output) {
     if (!is.null(groups)) {
         data <- data %>% group_by(!!!syms(groups))
     }
 
     out <- data %>% mutate(.indicator = !!parse_expr(expr))
+    if (!is.null(top)) {
+        if (is.null(order)) {
+            out <- out %>% mutate(
+                .indicator.index = ifelse(!!sym(".indicator"), cumsum(!!sym(".indicator")), Inf),
+                .indicator = !!sym(".indicator") & !!sym(".indicator.index") <= top
+            ) %>% select(-".indicator.index")
+        } else {
+            out2 <- out %>% arrange(!!parse_expr(order)) %>% mutate(
+                .indicator.index = ifelse(!!sym(".indicator"), cumsum(!!sym(".indicator")), Inf),
+                .indicator = !!sym(".indicator") & !!sym(".indicator.index") <= top
+            )
+            out <- out %>%
+                left_join(out2[, unique(c(id, groups, ".indicator"))], by = unique(c(id, groups)), suffix = c(".x", "")) %>%
+                select(-".indicator.x")
+        }
+    }
     if (!is.null(output_within) && !isFALSE(output_within)) {
         out <- out %>% mutate(.indicator = !!sym(".indicator") & !!parse_expr(output_within))
     }
@@ -585,10 +615,22 @@ top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form 
 
 #' @rdname clone_selectors
 #' @export
-sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+sel <- function(
+    expr,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(expr) || is.null(expr), error = function(e) FALSE)) expr <- expr_name(substitute(expr))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -610,19 +652,33 @@ sel <- function(expr, groups = NULL, data = NULL, id = NULL, in_form = NULL, wit
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     if (in_form == "long") {
         stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
-        .sel_long(expr, groups, data, id, within, output_within, output)
+        .sel_long(expr, groups, data, id, top, order, within, output_within, output)
     } else {
-        .sel_wide(expr, groups, data, id, output_within, output)
+        .sel_wide(expr, groups, data, id, top, order, output_within, output)
     }
 }
 
 #' @rdname clone_selectors
 #' @export
-uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+uniq <- function(
+    group1,
+    group2,
+    ...,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     other_groups <- as.character(substitute(list(...)))[-1]
@@ -651,16 +707,31 @@ uniq <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0("desc(", paste(sapply(c(group1, group2, other_groups), .bquote), collapse = " + "), ")")
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+shared <- function(
+    group1,
+    group2,
+    ...,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     other_groups <- as.character(substitute(list(...)))[-1]
@@ -689,16 +760,31 @@ shared <- function(group1, group2, ..., groups = NULL, data = NULL, id = NULL, i
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0("desc(", paste(sapply(c(group1, group2, other_groups), .bquote), collapse = " + "), ")")
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+gt <- function(
+    group1,
+    group2,
+    include_zeros = TRUE,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -726,16 +812,31 @@ gt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0("desc(", .bquote(group1), " - ", .bquote(group2), ")")
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+ge <- function(
+    group1,
+    group2,
+    include_zeros = TRUE,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -763,16 +864,31 @@ ge <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0("desc(", .bquote(group1), " - ", .bquote(group2), ")")
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+lt <- function(
+    group1,
+    group2,
+    include_zeros = TRUE,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -800,16 +916,31 @@ lt <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0(.bquote(group1), " - ", .bquote(group2))
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+le <- function(
+    group1,
+    group2,
+    include_zeros = TRUE,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -837,16 +968,30 @@ le <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0(.bquote(group1), " - ", .bquote(group2))
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+eq <- function(
+    group1,
+    group2,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    top = NULL,
+    order = NULL,
+    in_form = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -871,16 +1016,31 @@ eq <- function(group1, group2, groups = NULL, data = NULL, id = NULL, in_form = 
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0("desc(", .bquote(group1), " + ", .bquote(group2), ")")
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
 #' @export
-ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+ne <- function(
+    group1,
+    group2,
+    include_zeros = TRUE,
+    groups = NULL,
+    data = NULL,
+    id = NULL,
+    in_form = NULL,
+    top = NULL,
+    order = NULL,
+    within = NULL,
+    output_within = NULL,
+    output = NULL
+) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
     if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
+    if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
     if (!tryCatch(is.character(output_within) || is.null(output_within) || isTRUE(output_within) || isFALSE(output_within), error = function(e) FALSE)) output_within <- expr_name(substitute(output_within))
     envtype <- .get_envtype()
@@ -908,7 +1068,8 @@ ne <- function(group1, group2, include_zeros = TRUE, groups = NULL, data = NULL,
     if (in_form == "long" && length(groups) == 1) {
         data[[groups]] <- as.factor(data[[groups]])
     }
-    sel(expr, groups, data, id = id, in_form = in_form, within = within, output_within = output_within, output = output)
+    order <- order %||% paste0("desc(abs(", .bquote(group1), " - ", .bquote(group2), "))")
+    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors

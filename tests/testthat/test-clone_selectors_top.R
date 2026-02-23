@@ -103,3 +103,54 @@ test_that("top() respects output_within", {
     # with output_within = group == "B", only "B" from group B is returned, and "B" from group A is not returned
     expect_equal(result$TopClone, c(NA, NA, "B", NA))
 })
+
+test_that("top() order argument changes clone selection in long format", {
+    # A: 10 rows, B: 30 rows, C: 20 rows
+    df <- data.frame(
+        CTaa = c(rep("A", 10), rep("B", 30), rep("C", 20))
+    )
+    # Default order (-.n): B(30) > C(20) > A(10); top 1 = B
+    result <- top(1, data = df, id = "CTaa", in_form = "long", output = "id")
+    expect_equal(unique(result[!is.na(result)]), "B")
+
+    # Ascending order (.n): A(10) < C(20) < B(30); top 1 = A
+    result <- top(1, data = df, id = "CTaa", order = ".n", in_form = "long", output = "id")
+    expect_equal(unique(result[!is.na(result)]), "A")
+
+    # Ascending order, top 2: A(10) and C(20)
+    result <- top(2, data = df, id = "CTaa", order = ".n", in_form = "long", output = "id")
+    expect_setequal(unique(result[!is.na(result)]), c("A", "C"))
+})
+
+test_that("top() order argument changes selection within groups in long format", {
+    # A: 10 rows all in X; B: 20 rows in X, 10 rows in Y; C: 20 rows all in Y
+    df <- data.frame(
+        CTaa = c(rep("A", 10), rep("B", 30), rep("C", 20)),
+        group = c(rep("X", 30), rep("Y", 30))
+    )
+    # Default order (-.n): group X: B(20) > A(10), top 1 = B; group Y: C(20) > B(10), top 1 = C
+    result <- dplyr::mutate(df, Top1 = top(1, groups = "group"))
+    expect_equal(result$Top1, c(rep(NA, 10), rep("B", 20), rep(NA, 10), rep("C", 20)))
+
+    # Ascending order (.n): group X: A(10) < B(20), top 1 = A; group Y: B(10) < C(20), top 1 = B
+    result <- dplyr::mutate(df, Top1 = top(1, groups = "group", order = ".n"))
+    expect_equal(result$Top1, c(rep("A", 10), rep(NA, 20), rep("B", 10), rep(NA, 20)))
+})
+
+test_that("top() order argument changes selection in wide format", {
+    df <- data.frame(
+        x = c("A", "B", "C"),
+        y = c(30, 10, 20)
+    )
+    # Without order, first 2 rows are selected: A, B
+    result <- top(2, data = df, id = "x", in_form = "wide", output = "data")
+    expect_equal(result$x, c("A", "B"))
+
+    # Ascending order (y): sorted B(10), C(20), A(30); top 2 = B, C
+    result <- top(2, data = df, id = "x", order = "y", in_form = "wide", output = "data")
+    expect_equal(result$x, c("B", "C"))
+
+    # Descending order (desc(y)): sorted A(30), C(20), B(10); top 2 = A, C
+    result <- top(2, data = df, id = "x", order = "desc(y)", in_form = "wide", output = "data")
+    expect_equal(result$x, c("A", "C"))
+})
