@@ -18,7 +18,7 @@
 \usage{
 top(
   n,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   order = NULL,
   id = NULL,
@@ -30,10 +30,12 @@ top(
 
 sel(
   expr,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -43,10 +45,12 @@ uniq(
   group1,
   group2,
   ...,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -56,10 +60,12 @@ shared(
   group1,
   group2,
   ...,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -69,10 +75,12 @@ gt(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -82,10 +90,12 @@ ge(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -95,10 +105,12 @@ lt(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -108,10 +120,12 @@ le(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -120,9 +134,11 @@ le(
 eq(
   group1,
   group2,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
+  top = NULL,
+  order = NULL,
   in_form = NULL,
   within = NULL,
   output_within = NULL,
@@ -133,10 +149,12 @@ ne(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -149,7 +167,7 @@ or(x, y, ...)
 \arguments{
 \item{n}{The number of top clones to select or the threshold size.}
 
-\item{groups}{The column names in the meta data to group the cells.
+\item{group_by}{The column names in the meta data to group the cells.
 By default, it is assumed \code{facet_by} and \code{split_by} to be in the parent frame if used in scplotter functions.
 When used in dplyr verbs, it should be a character vector of the grouping columns, where the first column is used to
 extract the values (count) for \code{group1}, \code{group2}, and \code{...} and the rest are used to keep the groupings.}
@@ -222,7 +240,7 @@ functions to select clones based on various criteria.
 \itemize{
 \item When used in a dplyr pipeline, they will return a vector with the same length as the input data, with the selected
 clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame. For the
-functions that need \code{group1}, \code{group2}, and/or \code{...}, \code{groups} should be provided to specify the grouping columns.
+functions that need \code{group1}, \code{group2}, and/or \code{...}, \code{group_by} should be provided to specify the grouping columns.
 Then \code{group1}, \code{group2}, and \code{...} can be the values in the grouping column. To include more grouping columns, just use
 \code{c(grouping1, grouping2, ...)}, where \code{grouping1} is used for values of \code{group1}, \code{group2} and \code{...}; \code{grouping2} and
 so on will be kept as the groupings where the clones are selected in each combination of the grouping values.
@@ -230,7 +248,7 @@ so on will be kept as the groupings where the clones are selected in each combin
 This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in
 some other scplotter functions, such as \code{ClonalStatPlot}, to select clones. The groupings are also applied, and defaulting
 to \code{facet_by} and \code{split_by} in the parent frame.
-\item When used independently, you should pass the arguments explicitly, such as \code{groups} and \code{output}, to control the
+\item When used independently, you should pass the arguments explicitly, such as \code{group_by} and \code{output}, to control the
 behavior and the output of the function.
 }
 }
@@ -244,7 +262,7 @@ data <- data.frame(
 )
 data <- data[order(data$group1 + data$group2, decreasing = TRUE), ]
 top(3)
-top(3, groups = "groups")
+top(3, group_by = "groups")
 sel(group1 == 0 | group2 == 0)
 uniq(group1, group2)
 shared(group1, group2)
@@ -281,35 +299,35 @@ dplyr::distinct(
     dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
     CTaa, subset, Top3
 )
-unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
-unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
-unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)
-unique(dplyr::mutate(data, Shared = shared(group1, group2, groups = "group"))$Shared)
-unique(dplyr::mutate(data, Greater = gt(group1, group2, groups = "group"))$Greater)
-unique(dplyr::mutate(data, Less = lt(group1, group2, groups = "group"))$Less)
-unique(dplyr::mutate(data, LessEqual = le(group1, group2, groups = "group"))$LessEqual)
-unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, groups = "group"))$GreaterEqual)
-unique(dplyr::mutate(data, Equal = eq(group1, group2, groups = "group"))$Equal)
-unique(dplyr::mutate(data, NotEqual = ne(group1, group2, groups = "group"))$NotEqual)
+unique(dplyr::mutate(data, Top3 = top(3, group_by = "groups"))$Top3)
+unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, group_by = "group"))$Unique)
+unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, group_by = "group"))$UniqueInG1)
+unique(dplyr::mutate(data, Shared = shared(group1, group2, group_by = "group"))$Shared)
+unique(dplyr::mutate(data, Greater = gt(group1, group2, group_by = "group"))$Greater)
+unique(dplyr::mutate(data, Less = lt(group1, group2, group_by = "group"))$Less)
+unique(dplyr::mutate(data, LessEqual = le(group1, group2, group_by = "group"))$LessEqual)
+unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, group_by = "group"))$GreaterEqual)
+unique(dplyr::mutate(data, Equal = eq(group1, group2, group_by = "group"))$Equal)
+unique(dplyr::mutate(data, NotEqual = ne(group1, group2, group_by = "group"))$NotEqual)
 # Compond expressions
 unique(
     dplyr::mutate(data,
-        Top3OrEqual = or(top(3), eq(group1, group2, groups = "group"))
+        Top3OrEqual = or(top(3), eq(group1, group2, group_by = "group"))
     )$Top3OrEqual
 )
 
 unique(
     dplyr::mutate(data,
         SharedAndGreater = and(
-            shared(group1, group2, groups = "group"),
-            gt(group1, group2, groups = "group")
+            shared(group1, group2, group_by = "group"),
+            gt(group1, group2, group_by = "group")
         )
     )$SharedAndGreater
 )
 dplyr::mutate(data,
     SharedAndGreater = and(
-        shared(group1, group2, groups = "group", output = "logical"),
-        gt(group1, group2, groups = "group", output = "logical")
+        shared(group1, group2, group_by = "group", output = "logical"),
+        gt(group1, group2, group_by = "group", output = "logical")
     )
 )$SharedAndGreater
 }

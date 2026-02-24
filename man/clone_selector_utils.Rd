@@ -17,13 +17,13 @@
 
 .return_what(out, id, output)
 
-.top_long(n, groups, data, order, id, within, output_within, output)
+.top_long(n, group_by, data, order, id, within, output_within, output)
 
-.top_wide(n, groups, data, order, id, output_within, output)
+.top_wide(n, group_by, data, order, id, output_within, output)
 
-.sel_long(expr, groups, data, id, within, output_within, output)
+.sel_long(expr, group_by, data, id, top, order, within, output_within, output)
 
-.sel_wide(expr, groups, data, id, output_within, output)
+.sel_wide(expr, group_by, data, id, top, order, output_within, output)
 
 .bquote(x)
 }
@@ -44,7 +44,7 @@ By default, it is NULL, which will return "id" when used in dplyr verbs and "dat
 
 \item{n}{The number of top clones to select or the threshold size.}
 
-\item{groups}{The column names in the meta data to group the cells.
+\item{group_by}{The column names in the meta data to group the cells.
 By default, it is assumed \code{facet_by} and \code{split_by} to be in the parent frame if used in scplotter functions.
 When used in dplyr verbs, it should be a character vector of the grouping columns, where the first column is used to
 extract the values (count) for \code{group1}, \code{group2}, and \code{...} and the rest are used to keep the groupings.}

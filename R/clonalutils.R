@@ -215,7 +215,7 @@ screp_subset <- function(screp, subset) {
 #' @description These utility functions are used internally by the clone selectors to handle
 #' different environments and return the results in the desired format.
 #' @importFrom rlang caller_env env_has env_get sym
-#' @importFrom dplyr filter left_join mutate group_by summarise arrange
+#' @importFrom dplyr filter left_join mutate summarise arrange
 #' @importFrom tidyr pivot_wider
 #' @importFrom rlang parse_expr
 #' @importFrom dplyr across
@@ -272,7 +272,7 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.top_long <- function(n, groups, data, order, id, within, output_within, output) {
+.top_long <- function(n, group_by, data, order, id, within, output_within, output) {
     if (!is.null(within)) {
         data2 <- data %>% filter(!!parse_expr(within))
     } else {
@@ -281,24 +281,24 @@ screp_subset <- function(screp, subset) {
     # data from clonal_size_data()
     if ("count" %in% colnames(data2) && "fraction" %in% colnames(data2)) {
         data2 <- data2 %>%
-            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            dplyr::group_by(!!!syms(unique(c(id, group_by))), .drop = FALSE) %>%
             summarise(.n = sum(!!sym("count")), .groups = "drop")
     } else {
         data2 <- data2 %>%
-            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            dplyr::group_by(!!!syms(unique(c(id, group_by))), .drop = FALSE) %>%
             summarise(.n = n(), .groups = "drop")
     }
 
     order <- order %||% "-.n"
     data2 <- data2 %>% arrange(!!parse_expr(order))
 
-    if (!is.null(groups)) {
-        data2 <- data2 %>% group_by(!!!syms(groups))
+    if (!is.null(group_by)) {
+        data2 <- data2 %>% dplyr::group_by(!!!syms(group_by))
     }
     # to gain the ids
     out <- data2 %>% mutate(.indicator = row_number() <= n)
     # to attach indicator to the original data
-    out <- data %>% left_join(out, by = unique(c(id, groups)))
+    out <- data %>% left_join(out, by = unique(c(id, group_by)))
     if (isTRUE(output_within)) {
         output_within <- within
     }
@@ -310,9 +310,9 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.top_wide <- function(n, groups, data, order, id, output_within, output) {
-    if (!is.null(groups)) {
-        data <- data %>% group_by(!!!syms(groups))
+.top_wide <- function(n, group_by, data, order, id, output_within, output) {
+    if (!is.null(group_by)) {
+        data <- data %>% dplyr::group_by(!!!syms(group_by))
     }
 
     if (!is.null(order)) {
@@ -329,7 +329,7 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.sel_long <- function(expr, groups, data, id, top, order, within, output_within, output) {
+.sel_long <- function(expr, group_by, data, id, top, order, within, output_within, output) {
     if (!is.null(within)) {
         data2 <- data %>% filter(!!parse_expr(within))
     } else {
@@ -338,27 +338,27 @@ screp_subset <- function(screp, subset) {
     # data from clonal_size_data()
     if ("count" %in% colnames(data2) && "fraction" %in% colnames(data2)) {
         data2 <- data2 %>%
-            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            dplyr::group_by(!!!syms(unique(c(id, group_by))), .drop = FALSE) %>%
             summarise(.n = sum(!!sym("count")), .groups = "drop")
     } else {
         data2 <- data2 %>%
-            group_by(!!!syms(unique(c(id, groups))), .drop = FALSE) %>%
+            dplyr::group_by(!!!syms(unique(c(id, group_by))), .drop = FALSE) %>%
             summarise(.n = n(), .groups = "drop")
     }
-
-    if (!is.null(groups)) {
+    if (!is.null(group_by)) {
         data2 <- tidyr::pivot_wider(
             data2,
-            names_from = !!sym(groups[1]),
+            # id_cols = unique(c(id, group_by[-1])),
+            names_from = !!sym(group_by[1]),
             values_from = !!sym(".n"),
             values_fill = 0
         )
-        if (length(groups) > 1) {
-            data2 <- dplyr::group_by(data2, !!!syms(groups[-1]))
+        if (length(group_by) > 1) {
+            data2 <- dplyr::group_by(data2, !!!syms(group_by[-1]))
         }
     }
+
     out <- data2 %>% mutate(.indicator = !!parse_expr(expr))
-    out <- data %>% left_join(out, by = unique(c(id, groups[-1])))
     if (!is.null(top)) {
         if (is.null(order)) {
             out <- out %>% mutate(
@@ -370,9 +370,16 @@ screp_subset <- function(screp, subset) {
                 .indicator.index = ifelse(!!sym(".indicator"), cumsum(!!sym(".indicator")), Inf),
                 .indicator = !!sym(".indicator") & !!sym(".indicator.index") <= top
             )
-            out <- out %>% left_join(out2[, unique(c(id, groups, ".indicator"))], by = unique(c(id, groups)))
+            out <- out %>%
+                left_join(
+                    select(out2, !!!syms(unique(c(id, group_by[-1], ".indicator")))),
+                    by = unique(c(id, group_by[-1])),
+                    suffix = c(".x", "")
+                ) %>%
+                select(-".indicator.x")
         }
     }
+    out <- data %>% left_join(out, by = unique(c(id, group_by[-1])))
     if (isTRUE(output_within)) {
         output_within <- within
     }
@@ -384,9 +391,9 @@ screp_subset <- function(screp, subset) {
 
 #' @rdname clone_selector_utils
 #' @keywords internal
-.sel_wide <- function(expr, groups, data, id, top, order, output_within, output) {
-    if (!is.null(groups)) {
-        data <- data %>% group_by(!!!syms(groups))
+.sel_wide <- function(expr, group_by, data, id, top, order, output_within, output) {
+    if (!is.null(group_by)) {
+        data <- data %>% dplyr::group_by(!!!syms(group_by))
     }
 
     out <- data %>% mutate(.indicator = !!parse_expr(expr))
@@ -402,7 +409,7 @@ screp_subset <- function(screp, subset) {
                 .indicator = !!sym(".indicator") & !!sym(".indicator.index") <= top
             )
             out <- out %>%
-                left_join(out2[, unique(c(id, groups, ".indicator"))], by = unique(c(id, groups)), suffix = c(".x", "")) %>%
+                left_join(out2[, unique(c(id, group_by, ".indicator"))], by = unique(c(id, group_by)), suffix = c(".x", "")) %>%
                 select(-".indicator.x")
         }
     }
@@ -437,7 +444,7 @@ screp_subset <- function(screp, subset) {
 #' functions to select clones based on various criteria.
 #' * When used in a dplyr pipeline, they will return a vector with the same length as the input data, with the selected
 #' clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame. For the
-#' functions that need `group1`, `group2`, and/or `...`, `groups` should be provided to specify the grouping columns.
+#' functions that need `group1`, `group2`, and/or `...`, `group_by` should be provided to specify the grouping columns.
 #' Then `group1`, `group2`, and `...` can be the values in the grouping column. To include more grouping columns, just use
 #' `c(grouping1, grouping2, ...)`, where `grouping1` is used for values of `group1`, `group2` and `...`; `grouping2` and
 #' so on will be kept as the groupings where the clones are selected in each combination of the grouping values.
@@ -445,7 +452,7 @@ screp_subset <- function(screp, subset) {
 #' This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in
 #' some other scplotter functions, such as `ClonalStatPlot`, to select clones. The groupings are also applied, and defaulting
 #' to `facet_by` and `split_by` in the parent frame.
-#' * When used independently, you should pass the arguments explicitly, such as `groups` and `output`, to control the
+#' * When used independently, you should pass the arguments explicitly, such as `group_by` and `output`, to control the
 #' behavior and the output of the function.
 #'
 #' @param n The number of top clones to select or the threshold size.
@@ -457,7 +464,7 @@ screp_subset <- function(screp, subset) {
 #' @param include_zeros Whether to include clones with zero size in the comparison.
 #' If TRUE, in a comparison (s1 > s2) for a clone to be selected, both s1 and s2 must be greater than 0.
 #' If FALSE, only the first group must be greater than the second group.
-#' @param groups The column names in the meta data to group the cells.
+#' @param group_by The column names in the meta data to group the cells.
 #' By default, it is assumed `facet_by` and `split_by` to be in the parent frame if used in scplotter functions.
 #' When used in dplyr verbs, it should be a character vector of the grouping columns, where the first column is used to
 #' extract the values (count) for `group1`, `group2`, and `...` and the rest are used to keep the groupings.
@@ -496,7 +503,7 @@ screp_subset <- function(screp, subset) {
 #' @param ... Additional vectors to compare in logical operations (and/or).
 #' @return A vector of CTaas or a data frame with the selected clones based on the criteria.
 #' @importFrom rlang parse_expr syms sym caller_env env_has env_get enquo expr_name
-#' @importFrom dplyr group_by summarise filter reframe pull mutate select across everything row_number left_join
+#' @importFrom dplyr summarise filter reframe pull mutate select across everything row_number left_join
 #' @rdname clone_selectors
 #' @examples
 #' set.seed(8525)
@@ -508,7 +515,7 @@ screp_subset <- function(screp, subset) {
 #' )
 #' data <- data[order(data$group1 + data$group2, decreasing = TRUE), ]
 #' top(3)
-#' top(3, groups = "groups")
+#' top(3, group_by = "groups")
 #' sel(group1 == 0 | group2 == 0)
 #' uniq(group1, group2)
 #' shared(group1, group2)
@@ -545,43 +552,43 @@ screp_subset <- function(screp, subset) {
 #'     dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
 #'     CTaa, subset, Top3
 #' )
-#' unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
-#' unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
-#' unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)
-#' unique(dplyr::mutate(data, Shared = shared(group1, group2, groups = "group"))$Shared)
-#' unique(dplyr::mutate(data, Greater = gt(group1, group2, groups = "group"))$Greater)
-#' unique(dplyr::mutate(data, Less = lt(group1, group2, groups = "group"))$Less)
-#' unique(dplyr::mutate(data, LessEqual = le(group1, group2, groups = "group"))$LessEqual)
-#' unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, groups = "group"))$GreaterEqual)
-#' unique(dplyr::mutate(data, Equal = eq(group1, group2, groups = "group"))$Equal)
-#' unique(dplyr::mutate(data, NotEqual = ne(group1, group2, groups = "group"))$NotEqual)
+#' unique(dplyr::mutate(data, Top3 = top(3, group_by = "groups"))$Top3)
+#' unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, group_by = "group"))$Unique)
+#' unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, group_by = "group"))$UniqueInG1)
+#' unique(dplyr::mutate(data, Shared = shared(group1, group2, group_by = "group"))$Shared)
+#' unique(dplyr::mutate(data, Greater = gt(group1, group2, group_by = "group"))$Greater)
+#' unique(dplyr::mutate(data, Less = lt(group1, group2, group_by = "group"))$Less)
+#' unique(dplyr::mutate(data, LessEqual = le(group1, group2, group_by = "group"))$LessEqual)
+#' unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, group_by = "group"))$GreaterEqual)
+#' unique(dplyr::mutate(data, Equal = eq(group1, group2, group_by = "group"))$Equal)
+#' unique(dplyr::mutate(data, NotEqual = ne(group1, group2, group_by = "group"))$NotEqual)
 #' # Compond expressions
 #' unique(
 #'     dplyr::mutate(data,
-#'         Top3OrEqual = or(top(3), eq(group1, group2, groups = "group"))
+#'         Top3OrEqual = or(top(3), eq(group1, group2, group_by = "group"))
 #'     )$Top3OrEqual
 #' )
 #'
 #' unique(
 #'     dplyr::mutate(data,
 #'         SharedAndGreater = and(
-#'             shared(group1, group2, groups = "group"),
-#'             gt(group1, group2, groups = "group")
+#'             shared(group1, group2, group_by = "group"),
+#'             gt(group1, group2, group_by = "group")
 #'         )
 #'     )$SharedAndGreater
 #' )
 #' dplyr::mutate(data,
 #'     SharedAndGreater = and(
-#'         shared(group1, group2, groups = "group", output = "logical"),
-#'         gt(group1, group2, groups = "group", output = "logical")
+#'         shared(group1, group2, group_by = "group", output = "logical"),
+#'         gt(group1, group2, group_by = "group", output = "logical")
 #'     )
 #' )$SharedAndGreater
 NULL
 
 #' @rdname clone_selectors
 #' @export
-top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+top <- function(n, group_by = NULL, data = NULL, order = NULL, id = NULL, in_form = NULL, within = NULL, output_within = NULL, output = NULL) {
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -599,16 +606,16 @@ top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form 
     }
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     if (in_form == "long") {
         stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
-        .top_long(n, groups, data, order, id, within, output_within, output)
+        .top_long(n, group_by, data, order, id, within, output_within, output)
     } else {
-        .top_wide(n, groups, data, order, id, output_within, output)
+        .top_wide(n, group_by, data, order, id, output_within, output)
     }
 }
 
@@ -617,7 +624,7 @@ top <- function(n, groups = NULL, data = NULL, order = NULL, id = NULL, in_form 
 #' @export
 sel <- function(
     expr,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -628,7 +635,7 @@ sel <- function(
     output = NULL
 ) {
     if (!tryCatch(is.character(expr) || is.null(expr), error = function(e) FALSE)) expr <- expr_name(substitute(expr))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -645,16 +652,17 @@ sel <- function(
     }
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
+
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     if (in_form == "long") {
         stopifnot("`id` must be provided when `in_form` is 'long'." = !is.null(id))
-        .sel_long(expr, groups, data, id, top, order, within, output_within, output)
+        .sel_long(expr, group_by, data, id, top, order, within, output_within, output)
     } else {
-        .sel_wide(expr, groups, data, id, top, order, output_within, output)
+        .sel_wide(expr, group_by, data, id, top, order, output_within, output)
     }
 }
 
@@ -664,7 +672,7 @@ uniq <- function(
     group1,
     group2,
     ...,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -676,7 +684,7 @@ uniq <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -692,23 +700,23 @@ uniq <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " == 0")
     for (g in other_groups) {
         expr <- paste0(expr, " & ", .bquote(g), " == 0")
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0("desc(", paste(sapply(c(group1, group2, other_groups), .bquote), collapse = " + "), ")")
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -717,7 +725,7 @@ shared <- function(
     group1,
     group2,
     ...,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -729,7 +737,7 @@ shared <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -745,23 +753,23 @@ shared <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " > 0")
     for (g in other_groups) {
         expr <- paste0(expr, " & ", .bquote(g), " > 0")
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0("desc(", paste(sapply(c(group1, group2, other_groups), .bquote), collapse = " + "), ")")
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -770,7 +778,7 @@ gt <- function(
     group1,
     group2,
     include_zeros = TRUE,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -782,7 +790,7 @@ gt <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -797,23 +805,23 @@ gt <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " > ", .bquote(group2))
     if (!include_zeros) {
         expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0("desc(", .bquote(group1), " - ", .bquote(group2), ")")
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -822,7 +830,7 @@ ge <- function(
     group1,
     group2,
     include_zeros = TRUE,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -834,7 +842,7 @@ ge <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -849,23 +857,23 @@ ge <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " >= ", .bquote(group2))
     if (!include_zeros) {
         expr <- paste0(.bquote(group2), " > 0 & ", expr)
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0("desc(", .bquote(group1), " - ", .bquote(group2), ")")
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -874,7 +882,7 @@ lt <- function(
     group1,
     group2,
     include_zeros = TRUE,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -886,7 +894,7 @@ lt <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -901,23 +909,23 @@ lt <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " < ", .bquote(group2))
     if (!include_zeros) {
         expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0(.bquote(group1), " - ", .bquote(group2))
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -926,7 +934,7 @@ le <- function(
     group1,
     group2,
     include_zeros = TRUE,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -938,7 +946,7 @@ le <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -953,23 +961,23 @@ le <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " <= ", .bquote(group2))
     if (!include_zeros) {
         expr <- paste0(.bquote(group1), " > 0 & ", expr)
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0(.bquote(group1), " - ", .bquote(group2))
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -977,7 +985,7 @@ le <- function(
 eq <- function(
     group1,
     group2,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     top = NULL,
@@ -989,7 +997,7 @@ eq <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -1004,20 +1012,20 @@ eq <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " == ", .bquote(group2))
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0("desc(", .bquote(group1), " + ", .bquote(group2), ")")
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
@@ -1026,7 +1034,7 @@ ne <- function(
     group1,
     group2,
     include_zeros = TRUE,
-    groups = NULL,
+    group_by = NULL,
     data = NULL,
     id = NULL,
     in_form = NULL,
@@ -1038,7 +1046,7 @@ ne <- function(
 ) {
     if (!tryCatch(is.character(group1) || is.null(group1), error = function(e) FALSE)) group1 <- expr_name(substitute(group1))
     if (!tryCatch(is.character(group2) || is.null(group2), error = function(e) FALSE)) group2 <- expr_name(substitute(group2))
-    if (!tryCatch(is.character(groups) || is.null(groups), error = function(e) FALSE)) groups <- expr_name(substitute(groups))
+    if (!tryCatch(is.character(group_by) || is.null(group_by), error = function(e) FALSE)) group_by <- expr_name(substitute(group_by))
     if (!tryCatch(is.character(id) || is.null(id), error = function(e) FALSE)) id <- expr_name(substitute(id))
     if (!tryCatch(is.character(order) || is.null(order), error = function(e) FALSE)) order <- expr_name(substitute(order))
     if (!tryCatch(is.character(within) || is.null(within), error = function(e) FALSE)) within <- expr_name(substitute(within))
@@ -1053,23 +1061,23 @@ ne <- function(
         in_form <- in_form %||% ifelse(envtype == "tidy", "long", "wide")
         output <- output %||% ifelse(envtype == "tidy", "id", "data")
     }
-    if (envtype == "scplotter" && is.null(groups)) {
+    if (envtype == "scplotter" && is.null(group_by)) {
         env <- caller_env()
-        groups <- unique(c(env$facet_by, env$split_by))
+        group_by <- unique(c(env$facet_by, env$split_by))
     }
     id <- id %||% ifelse(envtype == "tidy", "CTaa", "CloneID")
     expr <- paste0(.bquote(group1), " != ", .bquote(group2))
     if (!include_zeros) {
         expr <- paste0(.bquote(group1), " > 0 & ", .bquote(group2), " > 0 & ", expr)
     }
-    stopifnot("`groups` must be provided when `in_form` is 'long'." = !is.null(groups) || in_form == "wide")
+    stopifnot("`group_by` must be provided when `in_form` is 'long'." = !is.null(group_by) || in_form == "wide")
     stopifnot("`within` can only be used with `long` format data." = is.null(within) || in_form == "long")
     stopifnot("`output_within = TRUE` can only be used when `within` is specified." = !isTRUE(output_within) || !is.null(within))
-    if (in_form == "long" && length(groups) == 1) {
-        data[[groups]] <- as.factor(data[[groups]])
+    if (in_form == "long" && length(group_by) == 1) {
+        data[[group_by]] <- as.factor(data[[group_by]])
     }
     order <- order %||% paste0("desc(abs(", .bquote(group1), " - ", .bquote(group2), "))")
-    sel(expr, groups, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
+    sel(expr, group_by, data, id = id, in_form = in_form, top = top, order = order, within = within, output_within = output_within, output = output)
 }
 
 #' @rdname clone_selectors
