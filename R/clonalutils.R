@@ -507,6 +507,9 @@ screp_subset <- function(screp, subset) {
 #' By default, it is assumed `facet_by` and `split_by` to be in the parent frame if used in scplotter functions.
 #' When used in dplyr verbs, it should be a character vector of the grouping columns, where the first column is used to
 #' extract the values (count) for `group1`, `group2`, and `...` and the rest are used to keep the groupings.
+#' @param top The number of top clones to select based on the expression.
+#' If specified, it will select the top N clones that meet the criteria defined by `expr` and ordered by `order`.
+#' If `order` is not specified, it will select the top N clones based on the order they appear in the data after filtering by `expr`.
 #' @param order The order of the clones to select. It can be an expression to order the clones by a specific column. Only used in `top()`.
 #' @param in_form The format of the input data. It can be "long" or "wide".
 #' If "long", the data should be in a long format with a column for the clone IDs and a column for the size.

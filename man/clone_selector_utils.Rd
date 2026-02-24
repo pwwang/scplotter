@@ -94,6 +94,10 @@ If FALSE or NULL (default), the \code{within} criteria will only be applied to d
 \item{expr}{The expression (in characters) to filter the clones
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}
 
+\item{top}{The number of top clones to select based on the expression.
+If specified, it will select the top N clones that meet the criteria defined by \code{expr} and ordered by \code{order}.
+If \code{order} is not specified, it will select the top N clones based on the order they appear in the data after filtering by \code{expr}.}
+
 \item{x}{The name to be backtick-quoted}
 
 \item{in_form}{The format of the input data. It can be "long" or "wide".

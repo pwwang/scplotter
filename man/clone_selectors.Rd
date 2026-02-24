@@ -214,6 +214,10 @@ By default, it is NULL, which will return "id" when used in dplyr verbs and "dat
 \item{expr}{The expression (in characters) to filter the clones
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}
 
+\item{top}{The number of top clones to select based on the expression.
+If specified, it will select the top N clones that meet the criteria defined by \code{expr} and ordered by \code{order}.
+If \code{order} is not specified, it will select the top N clones based on the order they appear in the data after filtering by \code{expr}.}
+
 \item{group1}{The first group to compare.}
 
 \item{group2}{The second group to compare.}
