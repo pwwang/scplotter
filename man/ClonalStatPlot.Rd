@@ -10,14 +10,14 @@ ClonalStatPlot(
   clone_call = "aa",
   chain = "both",
   values_by = c("count", "fraction", "n"),
-  plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend",
-    "col"),
+  plot_type = c("bar", "box", "violin", "heatmap", "pies", "circos", "chord", "sankey",
+    "alluvial", "trend", "col"),
   group_by = "Sample",
   groups = NULL,
   subgroup_by = NULL,
   subgroups = NULL,
   within_subgroup = match.arg(plot_type) != "pies",
-  relabel = identical(plot_type, "col"),
+  relabel = plot_type \%in\% c("col", "chord", "circos"),
   facet_by = NULL,
   split_by = NULL,
   y = NULL,
@@ -211,6 +211,11 @@ ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
     plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
     title = "Clones larger than 10 in P17L and existing in P17B (heatmap)")
+# chord plot
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')",
+    plot_type = "chord", labels_rot = TRUE,
+    title = "Clones larger than 10 in P17L and existing in P17B (chord plot)")
 # using heatmap with subgroups for groups of clones
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
     clones = list(

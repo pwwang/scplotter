@@ -166,6 +166,11 @@
 #'     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
 #'     plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
 #'     title = "Clones larger than 10 in P17L and existing in P17B (heatmap)")
+#' # chord plot
+#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+#'     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')",
+#'     plot_type = "chord", labels_rot = TRUE,
+#'     title = "Clones larger than 10 in P17L and existing in P17B (chord plot)")
 #' # using heatmap with subgroups for groups of clones
 #' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
 #'     clones = list(
@@ -192,9 +197,9 @@
 #' }
 ClonalStatPlot <- function(
     data, clones = "top(10)", clone_call = "aa", chain = "both", values_by = c("count", "fraction", "n"),
-    plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend", "col"),
+    plot_type = c("bar", "box", "violin", "heatmap", "pies", "circos", "chord", "sankey", "alluvial", "trend", "col"),
     group_by = "Sample", groups = NULL, subgroup_by = NULL, subgroups = NULL,
-    within_subgroup = match.arg(plot_type) != "pies", relabel = identical(plot_type, "col"),
+    within_subgroup = match.arg(plot_type) != "pies", relabel = plot_type %in% c("col", "chord", "circos"),
     facet_by = NULL, split_by = NULL, y = NULL, xlab = NULL, ylab = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
@@ -335,7 +340,10 @@ ClonalStatPlot <- function(
         summarise(count = sum(!!sym("count")), n = n(), fraction = sum(!!sym("fraction")), .groups = "drop") %>%
         arrange(!!sym(group_by), desc(!!sym("count")))
 
-    if (identical(plot_type, "col")) {
+    if (identical(plot_type, "chord")) {
+        ChordPlot(data, from = x, to = group_by, y = values_by,
+            facet_by = facet_by, split_by = split_by, xlab = xlab, ylab = ylab, ...)
+    } else if (identical(plot_type, "col")) {
         if (!is.null(facet_by)) {
             stop("'facet_by' is not supported for 'col' plot. Please use 'split_by' instead.")
         }
