@@ -12,37 +12,37 @@ test_that("gt()/ge()/lt()/le() returns selected elements", {
     result <- gt(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "E"))
 
-    result <- gt(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- gt(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "E"))
 
     result <- ge(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "D", "E"))
 
-    result <- ge(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- ge(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "D", "E"))
 
     result <- lt(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C"))
 
-    result <- lt(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- lt(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C"))
 
     result <- le(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C", "D"))
 
-    result <- le(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- le(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("C", "D"))
 
     result <- eq(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D"))
 
-    result <- eq(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- eq(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D"))
 
     result <- ne(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 
-    result <- ne(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- ne(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 })
 
@@ -57,7 +57,7 @@ test_that("gt()/ge()/lt()/le() respects output", {
                 data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", NA, NA))
 
-    result <- gt(g1, g2, groups = g, id = x,
+    result <- gt(g1, g2, group_by = g, id = x,
                 data = df, in_form = "wide", output = "bool")
     expect_equal(result, c(TRUE, TRUE, FALSE, FALSE))
 
@@ -69,7 +69,7 @@ test_that("gt()/ge()/lt()/le() respects output", {
                 data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", "C", NA))
 
-    result <- ge(g1, g2, groups = g, id = x,
+    result <- ge(g1, g2, group_by = g, id = x,
                 data = df, in_form = "wide", output = "bool")
     expect_equal(result, c(TRUE, TRUE, TRUE, FALSE))
 
@@ -81,7 +81,7 @@ test_that("gt()/ge()/lt()/le() respects output", {
                 data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, NA, "D"))
 
-    result <- lt(g1, g2, groups = g, id = x,
+    result <- lt(g1, g2, group_by = g, id = x,
                 data = df, in_form = "wide", output = "bool")
     expect_equal(result, c(FALSE, FALSE, FALSE, TRUE))
 
@@ -93,7 +93,7 @@ test_that("gt()/ge()/lt()/le() respects output", {
                 data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, "C", "D"))
 
-    result <- le(g1, g2, groups = g, id = x,
+    result <- le(g1, g2, group_by = g, id = x,
                 data = df, in_form = "wide", output = "bool")
     expect_equal(result, c(FALSE, FALSE, TRUE, TRUE))
 
@@ -105,7 +105,7 @@ test_that("gt()/ge()/lt()/le() respects output", {
                 data = df, in_form = "wide", output = "id")
     expect_equal(result, c(NA, NA, "C", NA))
 
-    result <- eq(g1, g2, groups = g, id = x,
+    result <- eq(g1, g2, group_by = g, id = x,
                 data = df, in_form = "wide", output = "bool")
     expect_equal(result, c(FALSE, FALSE, TRUE, FALSE))
 
@@ -117,7 +117,7 @@ test_that("gt()/ge()/lt()/le() respects output", {
                 data = df, in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", NA, "D"))
 
-    result <- ne(g1, g2, groups = g, id = x,
+    result <- ne(g1, g2, group_by = g, id = x,
                 data = df, in_form = "wide", output = "bool")
     expect_equal(result, c(TRUE, TRUE, FALSE, TRUE))
 
@@ -133,40 +133,40 @@ test_that("gt()/ge()/lt()/le() works with dplyr::mutate()", {
         group = c(sample(c("X", "Y"), 30, replace = TRUE), c(rep("X", 15), rep("Y", 15))),
         group2 = c(rep("M", 20), rep("N", 20), rep("O", 20))
     )
-    result <- dplyr::mutate(df, HighClones = gt(Y, X, groups = "group"))
+    result <- dplyr::mutate(df, HighClones = gt(Y, X, group_by = "group"))
     expect_equal(result$HighClones, c(rep(NA, 10), rep("B", 20), rep(NA, 30)))
 
-    result <- dplyr::mutate(df, HighClones = ge(Y, X, groups = "group"))
+    result <- dplyr::mutate(df, HighClones = ge(Y, X, group_by = "group"))
     expect_equal(result$HighClones, c(rep(NA, 10), rep("B", 20), rep("C", 30)))
 
-    result <- dplyr::mutate(df, HighClones = gt(Y, X, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, HighClones = gt(Y, X, group_by = c("group", "group2")))
     expect_equal(result$HighClones, c(rep(NA, 10), rep("B", 10), rep(NA, 20), rep("C", 20)))
 
-    result <- dplyr::mutate(df, HighClones = ge(Y, X, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, HighClones = ge(Y, X, group_by = c("group", "group2")))
     expect_equal(result$HighClones, c(rep(NA, 10), rep("B", 20), rep(NA, 10), rep("C", 20)))
 
-    result <- dplyr::mutate(df, LowClones = lt(Y, X, groups = "group"))
+    result <- dplyr::mutate(df, LowClones = lt(Y, X, group_by = "group"))
     expect_equal(result$LowClones, c(rep("A", 10), rep(NA, 50)))
 
-    result <- dplyr::mutate(df, LowClones = le(Y, X, groups = "group"))
+    result <- dplyr::mutate(df, LowClones = le(Y, X, group_by = "group"))
     expect_equal(result$LowClones, c(rep("A", 10), rep(NA, 20), rep("C", 30)))
 
-    result <- dplyr::mutate(df, LowClones = lt(Y, X, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, LowClones = lt(Y, X, group_by = c("group", "group2")))
     expect_equal(result$LowClones, c(rep("A", 10), rep(NA, 20), rep("C", 10), rep(NA, 20)))
 
-    result <- dplyr::mutate(df, LowClones = le(Y, X, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, LowClones = le(Y, X, group_by = c("group", "group2")))
     expect_equal(result$LowClones, c(rep("A", 10), rep(NA, 10), rep("B", 10), rep("C", 10), rep(NA, 20)))
 
-    result <- dplyr::mutate(df, EqualClones = eq(Y, X, groups = "group"))
+    result <- dplyr::mutate(df, EqualClones = eq(Y, X, group_by = "group"))
     expect_equal(result$EqualClones, c(rep(NA, 30), rep("C", 30)))
 
-    result <- dplyr::mutate(df, EqualClones = ne(Y, X, groups = "group"))
+    result <- dplyr::mutate(df, EqualClones = ne(Y, X, group_by = "group"))
     expect_equal(result$EqualClones, c(rep("A", 10), rep("B", 20), rep(NA, 30)))
 
-    result <- dplyr::mutate(df, EqualClones = eq(Y, X, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, EqualClones = eq(Y, X, group_by = c("group", "group2")))
     expect_equal(result$EqualClones, c(rep(NA, 20), rep("B", 10), rep(NA, 30)))
 
-    result <- dplyr::mutate(df, EqualClones = ne(Y, X, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, EqualClones = ne(Y, X, group_by = c("group", "group2")))
     expect_equal(result$EqualClones, c(rep("A", 10), rep("B", 10), rep(NA, 10), rep("C", 30)))
 })
 
@@ -210,23 +210,23 @@ test_that("eq() respects within and output_within", {
         group2 = c(rep("A", 35), rep("B", 35))
     )
 
-    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group"))
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, group_by = "group"))
     result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
     expect_equal(result$SelectedClones, c("A", NA, NA, "C"))
 
-    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", output_within = group2 == "A"))
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, group_by = c("group", "group2"), output_within = group2 == "A"))
     result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
     expect_equal(result$SelectedClones, c("A", NA, NA, NA))
 
-    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", output_within = group2 == "B"))
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, group_by = c("group", "group2"), output_within = group2 == "B"))
     result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
     expect_equal(result$SelectedClones, c(NA, NA, NA, "C"))
 
-    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", within = group2 == "A"))
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, group_by = c("group", "group2"), within = group2 == "A"))
     result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
     expect_equal(result$SelectedClones, c("A", NA, NA, NA))
 
-    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, groups = "group", within = group2 == "B"))
+    result <- dplyr::mutate(df, SelectedClones = eq(B, 20, group_by = c("group", "group2"), within = group2 == "B"))
     result <- dplyr::distinct(result, CTaa, group, group2, SelectedClones)
     expect_equal(result$SelectedClones, c(NA, NA, NA, "C"))
 })

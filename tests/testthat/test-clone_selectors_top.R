@@ -1,4 +1,4 @@
-test_that("top() returns the top n elements without groups", {
+test_that("top() returns the top n elements without group_by", {
     df <- data.frame(
         x = c("A", "B", "C", "D", "E"),
         y = c(10, 20, 30, 40, 50)
@@ -7,16 +7,16 @@ test_that("top() returns the top n elements without groups", {
     expect_equal(result$x, c("A", "B", "C"))
 })
 
-test_that("top() returns the top n elements with groups", {
+test_that("top() returns the top n elements with group_by", {
     df <- data.frame(
         group = c("A", "A", "B", "B", "C"),
         x = c("A", "B", "C", "D", "E"),
         y = c(10, 20, 30, 40, 50)
     )
-    result <- top(1, data = df, groups = "group", in_form = "wide", output = "data")
+    result <- top(1, data = df, group_by = "group", in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "C", "E"))
 
-    result <- top(1, data = df, groups = group, in_form = "wide", output = "data")
+    result <- top(1, data = df, group_by = group, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "C", "E"))
 })
 
@@ -37,7 +37,7 @@ test_that("top() respects output", {
         x = c("A", "B", "C", "D"),
         y = c(10, 20, 30, 40)
     )
-    result <- top(1, data = df, groups = group, id = x,
+    result <- top(1, data = df, group_by = group, id = x,
         in_form = "wide", output = "id")
     expect_equal(result, c("A", NA, "C", NA))
 })
@@ -50,7 +50,7 @@ test_that("top() works with dplyr::mutate()", {
     result <- dplyr::mutate(df, TopClones = top(1))
     expect_equal(result$TopClone, c(rep(NA, 30), rep("C", 30)))
 
-    result <- dplyr::mutate(df, TopClones = top(1, groups = "group"))
+    result <- dplyr::mutate(df, TopClones = top(1, group_by = "group"))
     expect_equal(result$TopClones, c(rep("A", 10), rep(NA, 20), rep("C", 30)))
 })
 
@@ -85,7 +85,7 @@ test_that("top() respects output_within", {
     )
     result <- dplyr::mutate(df, TopClones = top(1, within = group == "A"))
     result <- dplyr::distinct(result, CTaa, group, TopClones)
-    # without output_within, "B" from both groups A and B are returned
+    # without output_within, "B" from both group_by A and B are returned
     expect_equal(result$TopClone, c(NA, "B", "B", NA))
 
     result <- dplyr::mutate(df, TopClones = top(1, within = group == "A", output_within = TRUE))
@@ -95,7 +95,7 @@ test_that("top() respects output_within", {
 
     result <- dplyr::mutate(df, TopClones = top(1, within = group == "A", output_within = FALSE))
     result <- dplyr::distinct(result, CTaa, group, TopClones)
-    # with output_within = FALSE, "B" from both groups A and B are returned, same as the case without output_within
+    # with output_within = FALSE, "B" from both group_by A and B are returned, same as the case without output_within
     expect_equal(result$TopClone, c(NA, "B", "B", NA))
 
     result <- dplyr::mutate(df, TopClones = top(1, within = group == "A", output_within = group == "B"))
@@ -122,18 +122,18 @@ test_that("top() order argument changes clone selection in long format", {
     expect_setequal(unique(result[!is.na(result)]), c("A", "C"))
 })
 
-test_that("top() order argument changes selection within groups in long format", {
+test_that("top() order argument changes selection within group_by in long format", {
     # A: 10 rows all in X; B: 20 rows in X, 10 rows in Y; C: 20 rows all in Y
     df <- data.frame(
         CTaa = c(rep("A", 10), rep("B", 30), rep("C", 20)),
         group = c(rep("X", 30), rep("Y", 30))
     )
     # Default order (-.n): group X: B(20) > A(10), top 1 = B; group Y: C(20) > B(10), top 1 = C
-    result <- dplyr::mutate(df, Top1 = top(1, groups = "group"))
+    result <- dplyr::mutate(df, Top1 = top(1, group_by = "group"))
     expect_equal(result$Top1, c(rep(NA, 10), rep("B", 20), rep(NA, 10), rep("C", 20)))
 
     # Ascending order (.n): group X: A(10) < B(20), top 1 = A; group Y: B(10) < C(20), top 1 = B
-    result <- dplyr::mutate(df, Top1 = top(1, groups = "group", order = ".n"))
+    result <- dplyr::mutate(df, Top1 = top(1, group_by = "group", order = ".n"))
     expect_equal(result$Top1, c(rep("A", 10), rep(NA, 20), rep("B", 10), rep(NA, 20)))
 })
 

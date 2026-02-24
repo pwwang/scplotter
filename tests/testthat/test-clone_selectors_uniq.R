@@ -9,7 +9,7 @@ test_that("uniq() returns selected elements", {
     result <- uniq(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D", "E"))
 
-    result <- uniq(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- uniq(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("D", "E"))
 
     result <- uniq(g1, g2, g3, data = df, in_form = "wide", output = "data")
@@ -39,10 +39,10 @@ test_that("uniq() works with dplyr::mutate()", {
     # 1 A        10     0
     # 2 B         0    20
     # 3 C         0    30
-    result <- dplyr::mutate(df, UniqueClones = uniq(X, Y, groups = "group"))
+    result <- dplyr::mutate(df, UniqueClones = uniq(X, Y, group_by = "group"))
     expect_equal(result$UniqueClones, c(rep("A", 10), rep(NA, 50)))
 
-    result <- dplyr::mutate(df, UniqueClones = uniq(X, Y, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, UniqueClones = uniq(X, Y, group_by = c("group", "group2")))
     expect_equal(result$UniqueClones, c(rep("A", 10), rep(NA, 50)))
 })
 

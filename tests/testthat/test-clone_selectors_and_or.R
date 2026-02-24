@@ -11,11 +11,11 @@ test_that("and()/or() works with dplyr::mutate()", {
     # 2 B         9    11
     # 3 C        15    15
     # and()
-    result <- dplyr::mutate(df, AndClones = and(eq(Y, X, groups = "group"), ge(Y, X, groups = "group")))
+    result <- dplyr::mutate(df, AndClones = and(eq(Y, X, group_by = "group"), ge(Y, X, group_by = "group")))
     expect_equal(result$AndClones, c(rep(NA, 10), rep(NA, 20), rep("C", 30)))
 
     # or()
-    result <- dplyr::mutate(df, OrClones = or(eq(Y, X, groups = "group"), ge(Y, X, groups = "group")))
+    result <- dplyr::mutate(df, OrClones = or(eq(Y, X, group_by = "group"), ge(Y, X, group_by = "group")))
     expect_equal(result$OrClones, c(rep(NA, 10), rep("B", 20), rep("C", 30)))
 })
 

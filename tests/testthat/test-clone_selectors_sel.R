@@ -1,4 +1,4 @@
-test_that("sel() returns selected elements without groups", {
+test_that("sel() returns selected elements without group_by", {
     df <- data.frame(
         x = c("A", "B", "C", "D", "E"),
         y = c(10, 20, 30, 40, 50)
@@ -11,16 +11,16 @@ test_that("sel() returns selected elements without groups", {
     expect_equal(result$x, c("A"))
 })
 
-test_that("sel() returns selected elements with groups", {
+test_that("sel() returns selected elements with group_by", {
     df <- data.frame(
         group = c("A", "A", "B", "B", "C"),
         x = c("A", "B", "C", "D", "E"),
         y = c(50, 20, 30, 40, 50)
     )
-    result <- sel(y < 30, data = df, groups = "group", in_form = "wide", output = "data")
+    result <- sel(y < 30, data = df, group_by = "group", in_form = "wide", output = "data")
     expect_equal(result$x, c("B"))
 
-    result <- sel(mean(y) == 35, data = df, groups = group, in_form = "wide", output = "data")
+    result <- sel(mean(y) == 35, data = df, group_by = group, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "D"))
 })
 
@@ -30,7 +30,7 @@ test_that("sel() respects output", {
         x = c("A", "B", "C", "D"),
         y = c(10, 20, 30, 40)
     )
-    result <- sel(y < 30, data = df, groups = "group", id = x,
+    result <- sel(y < 30, data = df, group_by = "group", id = x,
                   in_form = "wide", output = "id")
     expect_equal(result, c("A", "B", NA, NA))
 })
@@ -45,7 +45,7 @@ test_that("sel() works with dplyr::mutate()", {
     result <- dplyr::mutate(df, SelectedClones = sel(.n > 20))
     expect_equal(result$SelectedClones, c(rep(NA, 30), rep("C", 30)))
 
-    result <- dplyr::mutate(df, SelectedClones = sel(X == 0, groups = "group"))
+    result <- dplyr::mutate(df, SelectedClones = sel(X == 0, group_by = "group"))
     expect_equal(result$SelectedClones, c(rep(NA, 10), rep("B", 20), rep("C", 30)))
 })
 
@@ -145,7 +145,7 @@ test_that("sel() order argument selects top n clones by specified order in wide 
     expect_equal(sum(is.na(result)), 3L)
 })
 
-test_that("sel() top argument works with groups in wide format", {
+test_that("sel() top argument works with group_by in wide format", {
     df <- data.frame(
         group = c("G1", "G1", "G1", "G2", "G2", "G2"),
         x     = c("A",  "B",  "C",  "D",  "E",  "F"),
@@ -154,14 +154,14 @@ test_that("sel() top argument works with groups in wide format", {
     # y > 12 matches all; top = 1 per group: first matching row in each group
     # Group G1 row order: A(50,T), B(10,T), C(30,T) -> top 1 = A
     # Group G2 row order: D(20,T), E(40,T), F(15,T) -> top 1 = D
-    result <- sel("y > 12", data = df, id = "x", groups = "group", top = 1,
+    result <- sel("y > 12", data = df, id = "x", group_by = "group", top = 1,
                   in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "D"))
 
     # top = 1, order = desc(y): largest y per group
     # Group G1: A(50) is largest -> top 1 = A
     # Group G2: E(40) is largest -> top 1 = E
-    result <- sel("y > 12", data = df, id = "x", groups = "group", top = 1,
+    result <- sel("y > 12", data = df, id = "x", group_by = "group", top = 1,
                   order = "desc(y)", in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "E"))
 })

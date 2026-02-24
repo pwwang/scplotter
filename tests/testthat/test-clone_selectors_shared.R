@@ -9,7 +9,7 @@ test_that("shared() returns selected elements", {
     result <- shared(g1, g2, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 
-    result <- shared(g1, g2, groups = g, data = df, in_form = "wide", output = "data")
+    result <- shared(g1, g2, group_by = g, data = df, in_form = "wide", output = "data")
     expect_equal(result$x, c("A", "B", "C", "E"))
 
     result <- shared(g1, g2, g3, data = df, in_form = "wide", output = "data")
@@ -35,10 +35,10 @@ test_that("shared() works with dplyr::mutate()", {
         group = c(sample(c("X", "Y"), 30, replace = TRUE), rep("Y", 30)),
         group2 = c(rep("M", 20), rep("N", 20), rep("O", 20))
     )
-    result <- dplyr::mutate(df, SharedClones = shared(X, Y, groups = "group"))
+    result <- dplyr::mutate(df, SharedClones = shared(X, Y, group_by = "group"))
     expect_equal(result$SharedClones, c(rep("A", 10), rep("B", 20), rep(NA, 30)))
 
-    result <- dplyr::mutate(df, SharedClones = shared(X, Y, groups = c("group", "group2")))
+    result <- dplyr::mutate(df, SharedClones = shared(X, Y, group_by = c("group", "group2")))
     expect_equal(result$SharedClones, c(rep("A", 10), rep("B", 20), rep(NA, 30)))
 })
 
