@@ -41,6 +41,7 @@
 #' for examples of using this function with .h5ad files.
 #' @examples
 #' \donttest{
+#' set.seed(8525)
 #' data(pancreas_sub)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP")
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
@@ -152,6 +153,14 @@
 #'   velocity = "stochastic_PCA", velocity_plot_type = "grid", pt_alpha = 0.5)
 #' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
 #'   velocity = "stochastic_PCA", velocity_plot_type = "stream", pt_alpha = 0.5)
+#'
+#' # 3D plot
+#' pancreas_sub@reductions$UMAP@cell.embeddings <- cbind(
+#'  pancreas_sub@reductions$UMAP@cell.embeddings,
+#'  umap_3 = rnorm(1000)  # fake the 3rd dimension
+#' )
+#' CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
+#'             dims = 1:3, label = TRUE)
 #' }
 CellDimPlot <- function(
     object, reduction = NULL, graph = NULL, group_by = NULL, ident = NULL,
@@ -273,6 +282,13 @@ CellDimPlot.Seurat <- function(
     }
 
     emb <- Embeddings(object, reduction = reduction)
+    dots <- list(...)
+    dims <- dots$dims %||% 1:2
+    # Check if dims exist
+    if (max(dims) > ncol(emb)) {
+        stop("[CellDimPlot] The reduction does not have enough dimensions for the specified 'dims' [",
+            paste(dims, collapse = ", "), "].")
+    }
 
     data <- cbind(emb, object@meta.data[rownames(emb), setdiff(colnames(object@meta.data), colnames(emb)), drop = FALSE])
     if (is.null(group_by)) {

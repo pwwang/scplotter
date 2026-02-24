@@ -72,6 +72,7 @@ for examples of using this function with .h5ad files.
 }
 \examples{
 \donttest{
+set.seed(8525)
 data(pancreas_sub)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP")
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
@@ -183,6 +184,14 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
   velocity = "stochastic_PCA", velocity_plot_type = "grid", pt_alpha = 0.5)
 CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "PCA",
   velocity = "stochastic_PCA", velocity_plot_type = "stream", pt_alpha = 0.5)
+
+# 3D plot
+pancreas_sub@reductions$UMAP@cell.embeddings <- cbind(
+ pancreas_sub@reductions$UMAP@cell.embeddings,
+ umap_3 = rnorm(1000)  # fake the 3rd dimension
+)
+CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
+            dims = 1:3, label = TRUE)
 }
 }
 \seealso{
