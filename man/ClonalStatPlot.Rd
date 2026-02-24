@@ -83,7 +83,7 @@ If NULL, the nodes will be grouped/colored by the clones}
 
 \item{relabel}{Whether to relabel the clones. Default is FALSE.
 The clone ids, especially using CDR3 sequences, can be long and hard to read.
-If TRUE, the clones will be relabeled as "clone1", "clone2", etc.
+If TRUE, the clones will be relabeled as "clone1", "clone2", etc. (ordered by the descending clone sizes)
 Only works for visualizations for single clones.}
 
 \item{facet_by}{The column name in the meta data to facet the plots. Default: NULL.

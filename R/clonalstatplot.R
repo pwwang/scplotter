@@ -25,7 +25,7 @@
 #' "n" can be used to represent the number of cells in each clone, same as "count".
 #' @param relabel Whether to relabel the clones. Default is FALSE.
 #' The clone ids, especially using CDR3 sequences, can be long and hard to read.
-#' If TRUE, the clones will be relabeled as "clone1", "clone2", etc.
+#' If TRUE, the clones will be relabeled as "clone1", "clone2", etc. (ordered by the descending clone sizes)
 #' Only works for visualizations for single clones.
 #' @param plot_type The type of plot to use. Default is "bar".
 #' Possible values are:
@@ -330,15 +330,16 @@ ClonalStatPlot <- function(
     x <- ifelse(by_clones, ".Clones", ".CloneGroups")
     xlab <- xlab %||% ifelse(by_clones, "Clones", "Clone Groups")
     ylab <- ifelse(values_by == "count", "Clone Size", ifelse(values_by == "fraction", "Relative Abundance", "Number of Clones"))
-    if (by_clones && relabel) {
-        clone_ids <- factor(data[[x]], levels = unique(data[[x]]))
-        data[[x]] <- paste0("clone", as.numeric(clone_ids))
-    }
 
     data <- data %>%
         dplyr::group_by(!!!syms(unique(c(x, group_by, subgroup_by, facet_by, split_by)))) %>%
         summarise(count = sum(!!sym("count")), n = n(), fraction = sum(!!sym("fraction")), .groups = "drop") %>%
         arrange(!!sym(group_by), desc(!!sym("count")))
+
+    if (by_clones && relabel) {
+        clone_ids <- factor(data[[x]], levels = unique(data[[x]]))
+        data[[x]] <- paste0("clone", as.numeric(clone_ids))
+    }
 
     if (identical(plot_type, "chord")) {
         ChordPlot(data, from = x, to = group_by, y = values_by,
