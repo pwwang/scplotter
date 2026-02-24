@@ -74,7 +74,6 @@ reference:
     - ClonalResidencyPlot
     - ClonalCompositionPlot
     - ClonalOverlapPlot
-    - ClonalDynamicsPlot
     - ClonalStatPlot
     - ClonalDiversityPlot
     - ClonalGeneUsagePlot

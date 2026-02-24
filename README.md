@@ -50,7 +50,7 @@ $ conda install pwwang::r-scplotter
 
 ### scTCR-seq/scBCR-seq
 
-[`ClonalVolumePlot`][11] | [`ClonalAbundancePlot`][12] | [`ClonalResidencyPlot`][13] | [`ClonalDynamicsPlot`][22] | [`ClonalCompositionPlot`][14] | [`ClonalOverlapPlot`][15] | [`ClonalGeneUsagePlot`][16]
+[`ClonalVolumePlot`][11] | [`ClonalAbundancePlot`][12] | [`ClonalResidencyPlot`][13] | [`ClonalCompositionPlot`][14] | [`ClonalOverlapPlot`][15] | [`ClonalGeneUsagePlot`][16]
 
 ![](./man/figures/clonalstat.png)
 
@@ -121,7 +121,6 @@ chat$ask("Do a heatmap instead")
 [19]: https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.html
 [20]: https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.html
 [21]: https://github.com/tjarkvandemerwe/tidyprompt
-[22]: https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html
 [23]: https://pwwang.github.io/scplotter/reference/SpatDimPlot.html
 [24]: https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.html
 [25]: https://satijalab.org/seurat/

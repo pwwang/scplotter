@@ -419,14 +419,3 @@ ClonalStatPlot <- function(
             facet_by = facet_by, split_by = split_by, xlab = xlab, ylab = ylab, ...)
     }
 }
-
-#' ClonalDynamicsPlot
-#'
-#' @description This function is deprecated. Please use [scplotter::ClonalStatPlot()] instead.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#' [scRepertoire::combineExpression].
-#' @param ... Other arguments.
-#' @export
-ClonalDynamicsPlot <- function(data, ...) {
-    stop("ClonalDynamicsPlot is deprecated. Please use ClonalStatPlot with plot_type 'sankey' instead.")
-}
