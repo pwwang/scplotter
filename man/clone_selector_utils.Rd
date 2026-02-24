@@ -9,6 +9,8 @@
 \alias{.sel_long}
 \alias{.sel_wide}
 \alias{.bquote}
+\alias{.to_chr}
+\alias{.selector_setup}
 \title{Utility functions for clone selectors}
 \usage{
 .get_envtype()
@@ -26,6 +28,23 @@
 .sel_wide(expr, group_by, data, id, top, order, output_within, output)
 
 .bquote(x)
+
+.to_chr(val, expr, allow_bool = FALSE)
+
+.selector_setup(
+  orig_data,
+  data,
+  in_form,
+  output,
+  group_by,
+  id,
+  within,
+  output_within,
+  envtype,
+  pframe,
+  check_group_by = FALSE,
+  factor_group = FALSE
+)
 }
 \arguments{
 \item{envtype}{The type of environment to use. It can be "tidy" for dplyr verbs, "scplotter" for scplotter functions, or "unknown" if the context cannot be determined.}
@@ -76,6 +95,12 @@ If FALSE or NULL (default), the \code{within} criteria will only be applied to d
 (e.g. "group1 > group2" to select clones where group1 is larger than group2).}
 
 \item{x}{The name to be backtick-quoted}
+
+\item{in_form}{The format of the input data. It can be "long" or "wide".
+If "long", the data should be in a long format with a column for the clone IDs and a column for the size.
+If "wide", the data should be in a wide format with columns for the clone IDs and the size for each group.
+When used in dplyr verbs, it should be "long" by default.
+If used in scplotter functions, it should be "wide" by default.#'}
 }
 \description{
 These utility functions are used internally by the clone selectors to handle
