@@ -37,8 +37,6 @@ Functions for plotting single cell TCR-seq/BCR-seq data
   : ClonalCompositionPlot
 - [`ClonalOverlapPlot()`](https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.md)
   : ClonalOverlapPlot
-- [`ClonalDynamicsPlot()`](https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.md)
-  : ClonalDynamicsPlot
 - [`ClonalStatPlot()`](https://pwwang.github.io/scplotter/reference/ClonalStatPlot.md)
   : ClonalStatPlot
 - [`ClonalDiversityPlot()`](https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.md)

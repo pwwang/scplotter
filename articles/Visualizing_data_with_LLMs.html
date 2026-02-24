@@ -242,8 +242,6 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    Plot the overlap of the clones in different samples/groups.</span></span>
 <span><span class="co">#&gt; -  ge :  Helper functions to select clones based on various criteria     </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
-<span><span class="co">#&gt; -  ClonalDynamicsPlot :  ClonalDynamicsPlot     </span></span>
-<span><span class="co">#&gt;    This function is deprecated. Please use    ClonalStatPlot()    instead.</span></span>
 <span><span class="co">#&gt; -  ClonalLengthPlot :  ClonalLengthPlot     </span></span>
 <span><span class="co">#&gt;    Plot the length distribution of the CDR3 sequences</span></span>
 <span><span class="co">#&gt; -  and :  Helper functions to select clones based on various criteria     </span></span>
@@ -322,18 +320,18 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Plot")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot", title = "Cell-Cell Communication Plot")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                     </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                              </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                          </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                            </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                 </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                          </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                  </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                      </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                        </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\", title = \"Cell-Cell Communication Plot\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -472,9 +470,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ge: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - ClonalDynamicsPlot: ClonalDynamicsPlot  </span></span>
-<span><span class="co">#&gt;    This function is deprecated. Please use    ClonalStatPlot()    instead.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalLengthPlot: ClonalLengthPlot  </span></span>
 <span><span class="co">#&gt;    Plot the length distribution of the CDR3 sequences</span></span>
@@ -1518,9 +1513,6 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ge: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - ClonalDynamicsPlot: ClonalDynamicsPlot  </span></span>
-<span><span class="co">#&gt;    This function is deprecated. Please use    ClonalStatPlot()    instead.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - ClonalLengthPlot: ClonalLengthPlot  </span></span>
 <span><span class="co">#&gt;    Plot the length distribution of the CDR3 sequences</span></span>

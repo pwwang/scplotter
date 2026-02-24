@@ -158,8 +158,6 @@ chat$list_tools()
 #>    Plot the overlap of the clones in different samples/groups.
 #> -  ge :  Helper functions to select clones based on various criteria     
 #>    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
-#> -  ClonalDynamicsPlot :  ClonalDynamicsPlot     
-#>    This function is deprecated. Please use    ClonalStatPlot()    instead.
 #> -  ClonalLengthPlot :  ClonalLengthPlot     
 #>    Plot the length distribution of the CDR3 sequences
 #> -  and :  Helper functions to select clones based on various criteria     
@@ -246,7 +244,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Plot")
+#> CCCPlot(cellphonedb_res, plot_type = "dot", title = "Cell-Cell Communication Plot")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -255,12 +253,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                     
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                              
-#> [3] "User: Do a heatmap instead"                                                                                                                                      
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                          
-#> [5] "User: Add a proper title to the plot"                                                                                                                            
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Plot\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                 
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                          
+#> [3] "User: Do a heatmap instead"                                                                                                                                  
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                      
+#> [5] "User: Add a proper title to the plot"                                                                                                                        
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\", title = \"Cell-Cell Communication Plot\")"
 
 # To clear the history
 chat$clear_history()
@@ -400,9 +398,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> 
 #> - ge: Helper functions to select clones based on various criteria  
 #>    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
-#> 
-#> - ClonalDynamicsPlot: ClonalDynamicsPlot  
-#>    This function is deprecated. Please use    ClonalStatPlot()    instead.
 #> 
 #> - ClonalLengthPlot: ClonalLengthPlot  
 #>    Plot the length distribution of the CDR3 sequences
@@ -1454,9 +1449,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> 
 #> - ge: Helper functions to select clones based on various criteria  
 #>    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
-#> 
-#> - ClonalDynamicsPlot: ClonalDynamicsPlot  
-#>    This function is deprecated. Please use    ClonalStatPlot()    instead.
 #> 
 #> - ClonalLengthPlot: ClonalLengthPlot  
 #>    Plot the length distribution of the CDR3 sequences

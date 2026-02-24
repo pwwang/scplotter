@@ -70,15 +70,32 @@ different environments and return the results in the desired format.</p>
 <span></span>
 <span><span class="fu">.return_what</span><span class="op">(</span><span class="va">out</span>, <span class="va">id</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.top_long</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
+<span><span class="fu">.top_long</span><span class="op">(</span><span class="va">n</span>, <span class="va">group_by</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.top_wide</span><span class="op">(</span><span class="va">n</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
+<span><span class="fu">.top_wide</span><span class="op">(</span><span class="va">n</span>, <span class="va">group_by</span>, <span class="va">data</span>, <span class="va">order</span>, <span class="va">id</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">within</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
+<span><span class="fu">.sel_long</span><span class="op">(</span><span class="va">expr</span>, <span class="va">group_by</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">top</span>, <span class="va">order</span>, <span class="va">within</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">groups</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
+<span><span class="fu">.sel_wide</span><span class="op">(</span><span class="va">expr</span>, <span class="va">group_by</span>, <span class="va">data</span>, <span class="va">id</span>, <span class="va">top</span>, <span class="va">order</span>, <span class="va">output_within</span>, <span class="va">output</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.bquote</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">.bquote</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.to_chr</span><span class="op">(</span><span class="va">val</span>, <span class="va">expr</span>, allow_bool <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.selector_setup</span><span class="op">(</span></span>
+<span>  <span class="va">orig_data</span>,</span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">in_form</span>,</span>
+<span>  <span class="va">output</span>,</span>
+<span>  <span class="va">group_by</span>,</span>
+<span>  <span class="va">id</span>,</span>
+<span>  <span class="va">within</span>,</span>
+<span>  <span class="va">output_within</span>,</span>
+<span>  <span class="va">envtype</span>,</span>
+<span>  <span class="va">pframe</span>,</span>
+<span>  check_group_by <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  factor_group <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -109,7 +126,7 @@ By default, it is NULL, which will return "id" when used in dplyr verbs and "dat
 <dd><p>The number of top clones to select or the threshold size.</p></dd>
 
 
-<dt id="arg-groups">groups<a class="anchor" aria-label="anchor" href="#arg-groups"></a></dt>
+<dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
 <dd><p>The column names in the meta data to group the cells.
 By default, it is assumed <code>facet_by</code> and <code>split_by</code> to be in the parent frame if used in scplotter functions.
 When used in dplyr verbs, it should be a character vector of the grouping columns, where the first column is used to
@@ -152,8 +169,22 @@ If FALSE or NULL (default), the <code>within</code> criteria will only be applie
 (e.g. "group1 &gt; group2" to select clones where group1 is larger than group2).</p></dd>
 
 
+<dt id="arg-top">top<a class="anchor" aria-label="anchor" href="#arg-top"></a></dt>
+<dd><p>The number of top clones to select based on the expression.
+If specified, it will select the top N clones that meet the criteria defined by <code>expr</code> and ordered by <code>order</code>.
+If <code>order</code> is not specified, it will select the top N clones based on the order they appear in the data after filtering by <code>expr</code>.</p></dd>
+
+
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>The name to be backtick-quoted</p></dd>
+
+
+<dt id="arg-in-form">in_form<a class="anchor" aria-label="anchor" href="#arg-in-form"></a></dt>
+<dd><p>The format of the input data. It can be "long" or "wide".
+If "long", the data should be in a long format with a column for the clone IDs and a column for the size.
+If "wide", the data should be in a wide format with columns for the clone IDs and the size for each group.
+When used in dplyr verbs, it should be "long" by default.
+If used in scplotter functions, it should be "wide" by default.#'</p></dd>
 
 </dl></div>
 

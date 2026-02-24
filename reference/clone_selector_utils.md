@@ -13,15 +13,32 @@ format.
 
 .return_what(out, id, output)
 
-.top_long(n, groups, data, order, id, within, output_within, output)
+.top_long(n, group_by, data, order, id, within, output_within, output)
 
-.top_wide(n, groups, data, order, id, output_within, output)
+.top_wide(n, group_by, data, order, id, output_within, output)
 
-.sel_long(expr, groups, data, id, within, output_within, output)
+.sel_long(expr, group_by, data, id, top, order, within, output_within, output)
 
-.sel_wide(expr, groups, data, id, output_within, output)
+.sel_wide(expr, group_by, data, id, top, order, output_within, output)
 
 .bquote(x)
+
+.to_chr(val, expr, allow_bool = FALSE)
+
+.selector_setup(
+  orig_data,
+  data,
+  in_form,
+  output,
+  group_by,
+  id,
+  within,
+  output_within,
+  envtype,
+  pframe,
+  check_group_by = FALSE,
+  factor_group = FALSE
+)
 ```
 
 ## Arguments
@@ -66,7 +83,7 @@ format.
 
   The number of top clones to select or the threshold size.
 
-- groups:
+- group_by:
 
   The column names in the meta data to group the cells. By default, it
   is assumed `facet_by` and `split_by` to be in the parent frame if used
@@ -123,6 +140,23 @@ format.
   The expression (in characters) to filter the clones (e.g. "group1 \>
   group2" to select clones where group1 is larger than group2).
 
+- top:
+
+  The number of top clones to select based on the expression. If
+  specified, it will select the top N clones that meet the criteria
+  defined by `expr` and ordered by `order`. If `order` is not specified,
+  it will select the top N clones based on the order they appear in the
+  data after filtering by `expr`.
+
 - x:
 
   The name to be backtick-quoted
+
+- in_form:
+
+  The format of the input data. It can be "long" or "wide". If "long",
+  the data should be in a long format with a column for the clone IDs
+  and a column for the size. If "wide", the data should be in a wide
+  format with columns for the clone IDs and the size for each group.
+  When used in dplyr verbs, it should be "long" by default. If used in
+  scplotter functions, it should be "wide" by default.#'

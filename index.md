@@ -63,8 +63,6 @@ $ conda install pwwang::r-scplotter
 \|
 [`ClonalResidencyPlot`](https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.html)
 \|
-[`ClonalDynamicsPlot`](https://pwwang.github.io/scplotter/reference/ClonalDynamicsPlot.html)
-\|
 [`ClonalCompositionPlot`](https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.html)
 \|
 [`ClonalOverlapPlot`](https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.html)

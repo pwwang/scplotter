@@ -7,19 +7,18 @@ Visualize the statistics of the clones.
 ``` r
 ClonalStatPlot(
   data,
-  clones = NULL,
-  top = 10,
-  orderby = NULL,
+  clones = "top(10)",
   clone_call = "aa",
   chain = "both",
-  plot_type = c("bar", "box", "violin", "heatmap", "pies", "sankey", "alluvial", "trend",
-    "col", "col-rel", "col-abs"),
+  values_by = c("count", "fraction", "n"),
+  plot_type = c("bar", "box", "violin", "heatmap", "pies", "circos", "chord", "sankey",
+    "alluvial", "trend", "col"),
   group_by = "Sample",
   groups = NULL,
   subgroup_by = NULL,
   subgroups = NULL,
   within_subgroup = match.arg(plot_type) != "pies",
-  relabel = FALSE,
+  relabel = plot_type %in% c("col", "chord", "circos"),
   facet_by = NULL,
   split_by = NULL,
   y = NULL,
@@ -45,29 +44,15 @@ ClonalStatPlot(
   multiple character values are provided, they will be treated as clone
   IDs. If a single character value is provided with parentheses, it will
   be evaluated as an expression to select the clones. The clones will be
-  selected per subgrouping/facetting/splitting group. For example, if
-  you have `top(3)` will select the top 3 clones in each
-  facetting/splitting group. You can change this behavior by passing the
-  `groups` argument explicitly. For example `top(3, groups = "Sample")`
-  will select the top 3 clones in each sample. For expression, see also
+  selected per facetting/splitting group. For example, if you have
+  `top(3)` will select the top 3 clones in each facetting/splitting
+  group. You can change this behavior by passing the `group_by` argument
+  explicitly. For example `top(3, group_by = "Sample")` will select the
+  top 3 clones in each sample. For expression, see also
   [`clone_selectors`](https://pwwang.github.io/scplotter/reference/clone_selectors.md).
   This can also be a named list of expressions, which need to be quoted.
   Then basic unit for visualization will be the the clone groups defined
   by the names of the list, instead of single clones.
-
-- top:
-
-  The number of top clones to select. Default is 10. A shortcut for
-  `top(10)` if `clones` is not provided. If `clones` is provided, this
-  will be a limit for the number of clones selected (based on the
-  `orderby` expression). If `clones` is a list, this will be applied to
-  each clone group.
-
-- orderby:
-
-  An expression to order the clones by. Default is NULL. Note that the
-  clones will be ordered by the value of this expression in descending
-  order.
 
 - clone_call:
 
@@ -79,6 +64,14 @@ ClonalStatPlot(
 
   indicate if both or a specific chain should be used - e.g. "both",
   "TRA", "TRG", "IGH", "IGL"
+
+- values_by:
+
+  The variable to use for the values of the clones. Default is "count",
+  which represents the number of cells in each clone. "fraction" can
+  also be used to represent the fraction of cells in each clone out of
+  the total cells in the group. "n" can be used to represent the number
+  of cells in each clone, same as "count".
 
 - plot_type:
 
@@ -109,16 +102,10 @@ ClonalStatPlot(
     group. The clone groups will be defined by the `clones` argument.
     The lines will be colored by the clone groups.
 
-  - "col" - same as "col-rel".
-
-  - "col-rel" - column plot showing the relative size of the clones in
-    each group.
-
-  - "col-abs" - column plot showing the absolute size of the clones in
-    each group. Note that for "col-rel" and "col-abs", the plot will be
-    faceted by the groups, so "facet_by" is not supported. Please use
-    "split_by" instead if you want to split the plot by another
-    variable.
+  - "col" - column plot showing the size of the clones in each group.
+    Note that for "col", the plot will be faceted by the groups, so
+    "facet_by" is not supported. Please use "split_by" instead if you
+    want to split the plot by another variable.
 
 - group_by:
 
@@ -148,8 +135,9 @@ ClonalStatPlot(
 
   Whether to relabel the clones. Default is FALSE. The clone ids,
   especially using CDR3 sequences, can be long and hard to read. If
-  TRUE, the clones will be relabeled as "clone1", "clone2", etc. Only
-  works for visualizations for single clones.
+  TRUE, the clones will be relabeled as "clone1", "clone2", etc.
+  (ordered by the descending clone sizes) Only works for visualizations
+  for single clones.
 
 - facet_by:
 
@@ -212,80 +200,139 @@ data <- scRepertoire::addVariable(data,
 # add a fake variable (e.g. cell type from scRNA-seq)
 data <- lapply(data, function(x) {
     x$CellType <- sample(c("CD4", "CD8", "B", "NK"), nrow(x), replace = TRUE)
-    # x <- x[x$CTaa == "CAVRKTTGTASKLTF_CASSLFGDKGETQYF", , drop = F]
     return(x)
 })
+# showing the top 10 clones (by default)
+ClonalStatPlot(data, group_by = "Sample", title = "Top 10 clones")
 
-# showing the top 10 clones in P17B and P17L
-ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"))
+# showing the top 10 clones in P17B and in P17L, with the clones relabeled
+ClonalStatPlot(data, clones = "top(10, group_by = 'Sample')", group_by = "Sample",
+    groups = c("P17B", "P17L"), relabel = TRUE, values_by = "fraction",
+    title = "Top 10 clones in P17B and in P17L (relabelled)")
 
-# showing the top 10 clones in P17B and P17L, with the clones relabeled
-ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"), relabel = TRUE)
-
-# showing the top 2 clones in groups B and L, with subgroups in each group
-ClonalStatPlot(data, group_by = "Type", subgroup_by = "Sample", top = 2,
-    subgroups = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L"), relabel = TRUE)
+# showing the top 10 clones in each sample using violin plots
+ClonalStatPlot(data, group_by = "Sample",
+    plot_type = "violin", clones = "top(10, group_by = 'Sample')",
+    subgroup_by = "CellType", subgroups = c("CD4", "CD8"), add_box = TRUE,
+    comparison = TRUE, title = "Violin plots showing top 10 clones in each sample")
 
 # showing selected clones in P17B and P17L
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-    clones = c("CVVSDNTGGFKTIF_CASSVRRERANTGELFF", "NA_CASSVRRERANTGELFF"), relabel = TRUE)
+    clones = c("CVVSDNTGGFKTIF_CASSVRRERANTGELFF", "NA_CASSVRRERANTGELFF"),
+    title = "Selected clones in P17B and P17L")
 
-# facetting is supported
+# facetting is supported, note that selection of clones is done within each facet
 ClonalStatPlot(data, group_by = "Subject", groups = c("P17", "P19"),
-    facet_by = "Type", relabel = TRUE)
+    facet_by = "Type", relabel = TRUE,
+    title = "Top 10 clones in Type B and L for P17 and P19")
 
 # as well as splitting
 ClonalStatPlot(data, group_by = "Subject", groups = c("P17", "P19"),
     split_by = "Type", relabel = TRUE)
 
-# showing shared clones between P17B and P17L (top 10 clones that are present in both samples)
+# showing top 10 shared clones between P17B and P17L
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-     clones = "shared(P17B, P17L)", relabel = TRUE, top = 10)
-
-# showing shared clones but with a different order
-ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"), top = 10,
-     clones = "shared(P17B, P17L)", relabel = TRUE, orderby = "P17B")
+    clones = "shared(P17B, P17L, group_by = 'Sample', top = 10)", relabel = TRUE,
+    title = "Shared clones between P17B and P17L")
 
 # showing clones larger than 10 in P17L and ordered by the clone size in P17L descendingly
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-     clones = "sel(P17L > 10)", relabel = TRUE, top = 5, orderby = "P17L")
+     clones = "sel(P17B > 10, group_by = 'Sample', top = 5, order = desc(P17B))",
+     relabel = TRUE, position = "stack", title = "Top 5 clones larger than 10 in P17B")
 
 # using trend plot
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-    clones = sel(P17L > 10 & P17B > 0), relabel = TRUE, orderby = "P17L",
-    plot_type = "trend")
+    clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
+    plot_type = "trend", title = "Clones larger than 10 in P17L and existing in P17B")
 
 # using heatmap
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-    clones = sel(P17L > 10 & P17B > 0), relabel = TRUE, orderby = "P17L",
-    plot_type = "heatmap")
+    clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
+    plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
+    title = "Clones larger than 10 in P17L and existing in P17B (heatmap)")
 
-# using heatmap with subgroups
+# using heatmap with subgroups for groups of clones
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
     clones = list(
-        ExpandedClonesInP17L = "sel(P17L > 20)",
-        ExpandedClonesInP17B = "sel(P17B > 20)"
+        ExpandedClonesInP17L = "sel(P17L > 20, group_by = 'Sample')",
+        ExpandedClonesInP17B = "sel(P17B > 20, group_by = 'Sample')"
     ), subgroup_by = "CellType", pie_size = sqrt,
-    plot_type = "pies", show_row_names = TRUE, show_column_names = TRUE)
+    plot_type = "pies", show_row_names = TRUE, show_column_names = TRUE,
+    title = "Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)")
 
 # using clone groups and showing dynamics using sankey plot
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
     clones = list(
-      "Hyper-expanded clones in P17B" = "sel(P17B > 10)",
-      "Hyper-expanded clones in P17L" = "sel(P17L > 10)"
-    ), plot_type = "sankey")
+      "Hyper-expanded clones in P17B" = "sel(P17B > 10, group_by = 'Sample')",
+      "Hyper-expanded clones in P17L" = "sel(P17L > 10, group_by = 'Sample')"
+    ), plot_type = "sankey", title = "Hyper-expanded clones in P17B and P17L")
 
-# col-rel/col-abs
-ClonalStatPlot(data, plot_type = "col-rel")
+# col plot
+ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
+    title = "Top 5 clones in each sample (col plot)")
 
-ClonalStatPlot(data, plot_type = "col-abs", facet_scale = "free")
+ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
+    values_by = "fraction", facet_scale = "free",
+    title = "Top 5 clones in each sample (col plot, showing fraction)")
 
 ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
-    top = 20, facet_ncol = 1, legend.position = "right")
+    facet_ncol = 1, legend.position = "right",
+    relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
+
+# showing top 10 shared clones between P17B and P17L
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = "shared(P17B, P17L, group_by = 'Sample', top = 10)", relabel = TRUE,
+    title = "Shared clones between P17B and P17L")
+
+# showing clones larger than 10 in P17L and ordered by the clone size in P17L descendingly
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+     clones = "sel(P17B > 10, group_by = 'Sample', top = 5, order = desc(P17B))",
+     relabel = TRUE, position = "stack", title = "Top 5 clones larger than 10 in P17B")
+
+# using trend plot
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
+    plot_type = "trend", title = "Clones larger than 10 in P17L and existing in P17B")
+
+# using heatmap
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
+    plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
+    title = "Clones larger than 10 in P17L and existing in P17B (heatmap)")
+
+# chord plot
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')",
+    plot_type = "chord", labels_rot = TRUE,
+    title = "Clones larger than 10 in P17L and existing in P17B (chord plot)")
+
+# using heatmap with subgroups for groups of clones
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = list(
+        ExpandedClonesInP17L = "sel(P17L > 20, group_by = 'Sample')",
+        ExpandedClonesInP17B = "sel(P17B > 20, group_by = 'Sample')"
+    ), subgroup_by = "CellType", pie_size = sqrt,
+    plot_type = "pies", show_row_names = TRUE, show_column_names = TRUE,
+    title = "Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)")
+
+# using clone groups and showing dynamics using sankey plot
+ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
+    clones = list(
+      "Hyper-expanded clones in P17B" = "sel(P17B > 10, group_by = 'Sample')",
+      "Hyper-expanded clones in P17L" = "sel(P17L > 10, group_by = 'Sample')"
+    ), plot_type = "sankey", title = "Hyper-expanded clones in P17B and P17L")
+
+# col plot
+ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
+    title = "Top 5 clones in each sample (col plot)")
+
+ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
+    values_by = "fraction", facet_scale = "free",
+    title = "Top 5 clones in each sample (col plot, showing fraction)")
 
 ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
-    top = 20, facet_ncol = 1, legend.position = "right",
-    relabel = TRUE, fill_by = "CloneGroups", fill_name = "Clones")
+    facet_ncol = 1, legend.position = "right",
+    relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
 
 # }
 ```

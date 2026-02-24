@@ -9,7 +9,7 @@ specific groups.
 ``` r
 top(
   n,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   order = NULL,
   id = NULL,
@@ -21,10 +21,12 @@ top(
 
 sel(
   expr,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -34,10 +36,12 @@ uniq(
   group1,
   group2,
   ...,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -47,10 +51,12 @@ shared(
   group1,
   group2,
   ...,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -60,10 +66,12 @@ gt(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -73,10 +81,12 @@ ge(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -86,10 +96,12 @@ lt(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -99,10 +111,12 @@ le(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -111,9 +125,11 @@ le(
 eq(
   group1,
   group2,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
+  top = NULL,
+  order = NULL,
   in_form = NULL,
   within = NULL,
   output_within = NULL,
@@ -124,10 +140,12 @@ ne(
   group1,
   group2,
   include_zeros = TRUE,
-  groups = NULL,
+  group_by = NULL,
   data = NULL,
   id = NULL,
   in_form = NULL,
+  top = NULL,
+  order = NULL,
   within = NULL,
   output_within = NULL,
   output = NULL
@@ -144,7 +162,7 @@ or(x, y, ...)
 
   The number of top clones to select or the threshold size.
 
-- groups:
+- group_by:
 
   The column names in the meta data to group the cells. By default, it
   is assumed `facet_by` and `split_by` to be in the parent frame if used
@@ -235,6 +253,14 @@ or(x, y, ...)
   The expression (in characters) to filter the clones (e.g. "group1 \>
   group2" to select clones where group1 is larger than group2).
 
+- top:
+
+  The number of top clones to select based on the expression. If
+  specified, it will select the top N clones that meet the criteria
+  defined by `expr` and ordered by `order`. If `order` is not specified,
+  it will select the top N clones based on the order they appear in the
+  data after filtering by `expr`.
+
 - group1:
 
   The first group to compare.
@@ -277,7 +303,7 @@ various criteria.
   length as the input data, with the selected clones' CTaa values (clone
   IDs) and NA for others. It is useful for adding a new column to the
   data frame. For the functions that need `group1`, `group2`, and/or
-  `...`, `groups` should be provided to specify the grouping columns.
+  `...`, `group_by` should be provided to specify the grouping columns.
   Then `group1`, `group2`, and `...` can be the values in the grouping
   column. To include more grouping columns, just use
   `c(grouping1, grouping2, ...)`, where `grouping1` is used for values
@@ -293,8 +319,8 @@ various criteria.
   and defaulting to `facet_by` and `split_by` in the parent frame.
 
 - When used independently, you should pass the arguments explicitly,
-  such as `groups` and `output`, to control the behavior and the output
-  of the function.
+  such as `group_by` and `output`, to control the behavior and the
+  output of the function.
 
 ## Examples
 
@@ -312,7 +338,7 @@ top(3)
 #> 1  AA7      6      9      B
 #> 2  AA9      8      6      B
 #> 3  AA8      7      4      B
-top(3, groups = "groups")
+top(3, group_by = "groups")
 #> # A tibble: 6 × 4
 #> # Groups:   groups [2]
 #>   CTaa  group1 group2 groups
@@ -381,8 +407,10 @@ ne(group1, group2)
 #> 9  AA2      1      3      A
 
 # Use them in a dplyr pipeline
-data <- tidyr::pivot_longer(data, cols = c("group1", "group2"),
-    names_to = "group", values_to = "value")
+data <- tidyr::pivot_longer(data,
+    cols = c("group1", "group2"),
+    names_to = "group", values_to = "value"
+)
 data <- tidyr::uncount(data, !!rlang::sym("value"))
 data$subset <- sample(c("S1", "S2"), nrow(data), replace = TRUE)
 # Take a glimpse of the data
@@ -405,8 +433,8 @@ unique(dplyr::mutate(data, Top3 = top(3))$Top3)
 #> [1] "AA7" "AA9" "AA8" NA   
 # Note that AA9 also reported in S2, even though the comparison is only applied within S1
 dplyr::distinct(
-   dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
-   CTaa, subset, Top3
+    dplyr::mutate(data, Top3 = top(3, within = subset == "S1")),
+    CTaa, subset, Top3
 )
 #> # A tibble: 19 × 3
 #>    CTaa  subset Top3 
@@ -432,8 +460,8 @@ dplyr::distinct(
 #> 19 AA2   S2     NA   
 # Note that AA9 is now excluded
 dplyr::distinct(
-   dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
-   CTaa, subset, Top3
+    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = TRUE)),
+    CTaa, subset, Top3
 )
 #> # A tibble: 19 × 3
 #>    CTaa  subset Top3 
@@ -459,8 +487,8 @@ dplyr::distinct(
 #> 19 AA2   S2     NA   
 # We can also exclude S1 clones even when the comparison is applied within S1
 dplyr::distinct(
-   dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
-   CTaa, subset, Top3
+    dplyr::mutate(data, Top3 = top(3, within = subset == "S1", output_within = subset == "S2")),
+    CTaa, subset, Top3
 )
 #> # A tibble: 19 × 3
 #>    CTaa  subset Top3 
@@ -484,46 +512,48 @@ dplyr::distinct(
 #> 17 AA5   S1     NA   
 #> 18 AA2   S1     NA   
 #> 19 AA2   S2     NA   
-unique(dplyr::mutate(data, Top3 = top(3, groups = "groups"))$Top3)
+unique(dplyr::mutate(data, Top3 = top(3, group_by = "groups"))$Top3)
 #> [1] "AA7" "AA9" "AA8" "AA3" NA    "AA1" "AA4"
-unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, groups = "group"))$Unique)
+unique(dplyr::mutate(data, Unique = sel(group1 == 0 | group2 == 0, group_by = "group"))$Unique)
 #> [1] NA     "AA10" "AA1" 
-unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, groups = "group"))$UniqueInG1)
+unique(dplyr::mutate(data, UniqueInG1 = uniq(group1, group2, group_by = "group"))$UniqueInG1)
 #> [1] NA     "AA10"
-unique(dplyr::mutate(data, Shared = shared(group1, group2, groups = "group"))$Shared)
+unique(dplyr::mutate(data, Shared = shared(group1, group2, group_by = "group"))$Shared)
 #> [1] "AA7" "AA9" "AA8" "AA3" "AA6" NA    "AA4" "AA5" "AA2"
-unique(dplyr::mutate(data, Greater = gt(group1, group2, groups = "group"))$Greater)
+unique(dplyr::mutate(data, Greater = gt(group1, group2, group_by = "group"))$Greater)
 #> [1] NA     "AA9"  "AA8"  "AA10" "AA4"  "AA5" 
-unique(dplyr::mutate(data, Less = lt(group1, group2, groups = "group"))$Less)
+unique(dplyr::mutate(data, Less = lt(group1, group2, group_by = "group"))$Less)
 #> [1] "AA7" NA    "AA3" "AA1" "AA2"
-unique(dplyr::mutate(data, LessEqual = le(group1, group2, groups = "group"))$LessEqual)
+unique(dplyr::mutate(data, LessEqual = le(group1, group2, group_by = "group"))$LessEqual)
 #> [1] "AA7" NA    "AA3" "AA6" "AA1" "AA2"
-unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, groups = "group"))$GreaterEqual)
+unique(dplyr::mutate(data, GreaterEqual = ge(group1, group2, group_by = "group"))$GreaterEqual)
 #> [1] NA     "AA9"  "AA8"  "AA6"  "AA10" "AA4"  "AA5" 
-unique(dplyr::mutate(data, Equal = eq(group1, group2, groups = "group"))$Equal)
+unique(dplyr::mutate(data, Equal = eq(group1, group2, group_by = "group"))$Equal)
 #> [1] NA    "AA6"
-unique(dplyr::mutate(data, NotEqual = ne(group1, group2, groups = "group"))$NotEqual)
+unique(dplyr::mutate(data, NotEqual = ne(group1, group2, group_by = "group"))$NotEqual)
 #>  [1] "AA7"  "AA9"  "AA8"  "AA3"  NA     "AA10" "AA1"  "AA4"  "AA5"  "AA2" 
 # Compond expressions
 unique(
-  dplyr::mutate(data,
-     Top3OrEqual = or(top(3), eq(group1, group2, groups = "group")))$Top3OrEqual
+    dplyr::mutate(data,
+        Top3OrEqual = or(top(3), eq(group1, group2, group_by = "group"))
+    )$Top3OrEqual
 )
 #> [1] "AA7" "AA9" "AA8" NA    "AA6"
 
 unique(
-  dplyr::mutate(data,
-     SharedAndGreater = and(
-        shared(group1, group2, groups = "group"),
-        gt(group1, group2, groups = "group")
-     ))$SharedAndGreater
+    dplyr::mutate(data,
+        SharedAndGreater = and(
+            shared(group1, group2, group_by = "group"),
+            gt(group1, group2, group_by = "group")
+        )
+    )$SharedAndGreater
 )
 #> [1] NA    "AA9" "AA8" "AA4" "AA5"
 dplyr::mutate(data,
-   SharedAndGreater = and(
-      shared(group1, group2, groups = "group", output = "logical"),
-      gt(group1, group2, groups = "group", output = "logical")
-   )
+    SharedAndGreater = and(
+        shared(group1, group2, group_by = "group", output = "logical"),
+        gt(group1, group2, group_by = "group", output = "logical")
+    )
 )$SharedAndGreater
 #>  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 #> [13] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
