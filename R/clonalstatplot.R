@@ -328,7 +328,6 @@ ClonalStatPlot <- function(
         rm(cg_data)
     }
     x <- ifelse(by_clones, ".Clones", ".CloneGroups")
-    xlab <- xlab %||% ifelse(by_clones, "Clones", "Clone Groups")
     ylab <- ifelse(values_by == "count", "Clone Size", ifelse(values_by == "fraction", "Relative Abundance", "Number of Clones"))
 
     data <- data %>%
@@ -343,7 +342,7 @@ ClonalStatPlot <- function(
 
     if (identical(plot_type, "chord")) {
         ChordPlot(data, from = x, to = group_by, y = values_by,
-            facet_by = facet_by, split_by = split_by, xlab = xlab, ylab = ylab, ...)
+            facet_by = facet_by, split_by = split_by, ...)
     } else if (identical(plot_type, "col")) {
         if (!is.null(facet_by)) {
             stop("'facet_by' is not supported for 'col' plot. Please use 'split_by' instead.")
@@ -356,7 +355,7 @@ ClonalStatPlot <- function(
         args$facet_by <- group_by
         args$facet_scales <- args$facet_scale %||% "free_x"
         args$fill_by <- args$fill_by %||% FALSE
-        args$xlab <- xlab
+        args$xlab <- xlab %||% ifelse(by_clones, "Clones", "Clone Groups")
         args$ylab <- ylab
         args$x_text_angle <- args$x_text_angle %||% 90
         args$legend.position <- args$legend.position %||% "none"
@@ -379,6 +378,7 @@ ClonalStatPlot <- function(
         if (!is.null(facet_by)) {
             stop("'facet_by' is not supported for 'heatmap' plot. Please use 'split_by' instead.")
         }
+        xlab <- xlab %||% ifelse(by_clones, "Clones", "Clone Groups")
         data[[xlab]] <- data[[x]]
         data[[x]] <- NULL
         Heatmap(data, in_form = "long", values_by = values_by,
@@ -391,6 +391,7 @@ ClonalStatPlot <- function(
         if (is.null(subgroup_by)) {
             stop("'subgroup_by' is required for 'pies' plot. Please provide it.")
         }
+        xlab <- xlab %||% ifelse(by_clones, "Clones", "Clone Groups")
         data[[xlab]] <- data[[x]]
         data[[x]] <- NULL
         args <- rlang::dots_list(...)
@@ -413,10 +414,11 @@ ClonalStatPlot <- function(
         do.call(Heatmap, args)
     } else if (identical(plot_type, "sankey")) {
         SankeyPlot(data, x = group_by, y = values_by, links_name = xlab, in_form = "long",
-            alluvium = x, links_fill_by = x, flow = TRUE, xlab = xlab %||% group_by, ylab = ylab,
+            alluvium = x, links_fill_by = x, flow = TRUE, xlab = xlab, ylab = ylab,
             facet_by = facet_by, split_by = split_by, ...)
     } else {
-        TrendPlot(data, x = group_by, y = values_by, group_by = x, group_name = xlab,
+        TrendPlot(data, x = group_by, y = values_by, group_by = x,
+            group_name = ifelse(by_clones, "Clones", "Clone Groups"),
             facet_by = facet_by, split_by = split_by, xlab = xlab, ylab = ylab, ...)
     }
 }
