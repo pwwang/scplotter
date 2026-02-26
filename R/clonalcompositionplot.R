@@ -667,6 +667,8 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #'  Possible values are "max" and "total".
 #'  * "max" - The max size of the clone in the two groups.
 #'  * "total" - The total size of the clone in the two groups.
+#' @param with_class Whether include the clonal class in the plot. Default is TRUE.
+#' Only applicable for "venn" and "upset" plot.
 #' @param order The order of the x-axis items or groups. Default is an empty list.
 #'  It should be a list of values. The names are the column names, and the values are the order.
 #' @param combine Whether to combine the plots into a single plot. Default is TRUE.
@@ -706,7 +708,11 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #'  split_by = "Subject")
 #' ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"),
 #'  group_by = "Type", split_by = "Subject")
+#' ClonalResidencyPlot(data, groups = c("P17_B", "P17_L", "P18_X", "P18_Y"),
+#'    plot_type = "venn", with_class = TRUE, palette = "Blues",
+#'    group_by = c("Subject", "Type"))
 #' ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
+#' ClonalResidencyPlot(data, plot_type = "upset", with_class = FALSE)
 #' }
 ClonalResidencyPlot <- function(
     data, clone_call = "aa", chain = "both", plot_type = c("scatter", "venn", "upset"),
@@ -825,8 +831,12 @@ ClonalResidencyPlot <- function(
                     if (!is.null(split_by)) {
                         indicator <- indicator & data$.split == df$.split[i]
                     }
-                    ns <- data[indicator, , drop = FALSE]
-                    label <- c(label, paste0(df$count[i], "\n(singlets: ", nrow(ns), ")"))
+                    if (with_class) {
+                        ns <- data[indicator, , drop = FALSE]
+                        label <- c(label, paste0(df$count[i], "\n(singlets: ", nrow(ns), ")"))
+                    } else {
+                        label <- c(label, df$count[i])
+                    }
                 }
             }
             label
@@ -841,18 +851,36 @@ ClonalResidencyPlot <- function(
         data <- data[data[[group_by]] %in% groups, , drop = FALSE]
         data <- data[data$count > 0, , drop = FALSE]
         data <- data %>%
-            pivot_wider(names_from = !!sym("group_by"), names_prefix = "count_", values_from = !!sym("count"), values_fill = 0) %>%
-            mutate(across(
-                .cols = starts_with("count_"),
-                .names = "{.col} Singlet",
-                .fns = ~ .x == 1
-            )) %>%
-            mutate(across(
-                .cols = starts_with("count_") & !ends_with(" Singlet"),
-                .names = "{.col} Expanded",
-                .fns = ~ .x > 1
-            )) %>%
-            dplyr::select(!starts_with("count_") | ends_with(" Singlet") | ends_with(" Expanded")) %>%
+            pivot_wider(
+                names_from = !!sym("group_by"),
+                names_prefix = "count_",
+                values_from = !!sym("count"),
+                values_fill = 0
+            )
+
+        if (with_class) {
+            data <- data %>%
+                mutate(across(
+                    .cols = starts_with("count_"),
+                    .names = "{.col} Singlet",
+                    .fns = ~ .x == 1
+                )) %>%
+                mutate(across(
+                    .cols = starts_with("count_") & !ends_with(" Singlet"),
+                    .names = "{.col} Expanded",
+                    .fns = ~ .x > 1
+                )) %>%
+                dplyr::select(!starts_with("count_") | ends_with(" Singlet") | ends_with(" Expanded"))
+        } else {
+            data <- data %>%
+                mutate(across(
+                    .cols = starts_with("count_"),
+                    .names = "{.col}",
+                    .fns = ~ .x > 0
+                ))
+        }
+
+        data <- data %>%
             rename_with(
                 function(x) substring(x, 7),
                 .cols = starts_with("count_")

@@ -17,6 +17,7 @@ ClonalResidencyPlot(
   split_by_sep = "_",
   scatter_cor = "pearson",
   scatter_size_by = c("max", "total"),
+  with_class = TRUE,
   order = list(),
   combine = TRUE,
   nrow = NULL,
@@ -64,6 +65,9 @@ Possible values are "max" and "total".
 \item "total" - The total size of the clone in the two groups.
 }}
 
+\item{with_class}{Whether include the clonal class in the plot. Default is TRUE.
+Only applicable for "venn" and "upset" plot.}
+
 \item{order}{The order of the x-axis items or groups. Default is an empty list.
 It should be a list of values. The names are the column names, and the values are the order.}
 
@@ -110,6 +114,10 @@ ClonalResidencyPlot(data, group_by = "Type", groups = c("L:B", "Y:X"),
  split_by = "Subject")
 ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"),
  group_by = "Type", split_by = "Subject")
+ClonalResidencyPlot(data, groups = c("P17_B", "P17_L", "P18_X", "P18_Y"),
+   plot_type = "venn", with_class = TRUE, palette = "Blues",
+   group_by = c("Subject", "Type"))
 ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
+ClonalResidencyPlot(data, plot_type = "upset", with_class = FALSE)
 }
 }
