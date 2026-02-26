@@ -653,6 +653,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' @param plot_type The type of plot to use. Default is "scatter".
 #'  Possible values are "scatter", "venn", and "upset".
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
+#' @param group_by_sep The separator to use when combining multiple group_by columns. Default: "_"
 #' @param groups The groups to compare. Default is NULL.
 #'  If NULL, all the groups in `group_by` will be compared.
 #'  Note that for "scatter" plot, only two groups can be compared. So when there are more than two groups,
@@ -709,12 +710,11 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #' }
 ClonalResidencyPlot <- function(
     data, clone_call = "aa", chain = "both", plot_type = c("scatter", "venn", "upset"),
-    group_by = "Sample", groups = NULL, facet_by = NULL, split_by = NULL, split_by_sep = "_",
-    scatter_cor = "pearson", scatter_size_by = c("max", "total"),
+    group_by = "Sample", group_by_sep = "_", groups = NULL, facet_by = NULL, split_by = NULL, split_by_sep = "_",
+    scatter_cor = "pearson", scatter_size_by = c("max", "total"), with_class = TRUE,
     order = list(), combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, ...
 ) {
 
-    stopifnot("[ClonalResidencyPlot] only a single `group_by` column supported" = length(group_by) == 1)
     stopifnot("[ClonalResidencyPlot] 'facet_by' is not supported" = is.null(facet_by))
 
     plot_type <- match.arg(plot_type)
@@ -722,6 +722,19 @@ ClonalResidencyPlot <- function(
 
     all_groupings <- unique(c(group_by, facet_by, split_by))
     data <- clonal_size_data(data, clone_call, chain, all_groupings)
+
+    check_columns <- utils::getFromNamespace("check_columns", "plotthis")
+    orig_group_by <- group_by
+    group_by <- check_columns(
+        data, group_by, force_factor = TRUE,
+        allow_multi = TRUE, concat_multi = TRUE, concat_sep = group_by_sep
+    )
+    all_groupings <- unique(c(group_by, facet_by, split_by))
+    if (length(orig_group_by) > 1) {
+        for (og in orig_group_by) {
+            data[[og]] <- NULL
+        }
+    }
 
     # restore the groups
     for (group in all_groupings) {

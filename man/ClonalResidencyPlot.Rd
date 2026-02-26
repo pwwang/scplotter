@@ -10,6 +10,7 @@ ClonalResidencyPlot(
   chain = "both",
   plot_type = c("scatter", "venn", "upset"),
   group_by = "Sample",
+  group_by_sep = "_",
   groups = NULL,
   facet_by = NULL,
   split_by = NULL,
@@ -39,6 +40,8 @@ in the data}
 Possible values are "scatter", "venn", and "upset".}
 
 \item{group_by}{The column name in the meta data to group the cells. Default: "Sample"}
+
+\item{group_by_sep}{The separator to use when combining multiple group_by columns. Default: "_"}
 
 \item{groups}{The groups to compare. Default is NULL.
 If NULL, all the groups in \code{group_by} will be compared.
