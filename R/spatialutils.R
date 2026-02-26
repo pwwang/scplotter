@@ -112,7 +112,7 @@ NULL
     image_args$ymax = Inf
     image_args$fill <- fill
     image_args$color <- NA
-    do.call(ggplot2::geom_rect, image_args)
+    do_call(ggplot2::geom_rect, image_args)
 }
 
 #' Get points arguments from the dot-dot-dot arguments in the spatial plot function
@@ -246,7 +246,7 @@ NULL
     points_args$legend.direction <- legend.direction
     points_args$flip_y <- flip_y
     points_args$return_layer <- TRUE
-    player <- do.call(SpatPointsPlot, points_args)
+    player <- do_call(SpatPointsPlot, points_args)
 
     list(player = player, facet_by = facet_by)
 }
@@ -289,7 +289,7 @@ NULL
     points_args$legend.direction <- legend.direction
     points_args$flip_y <- flip_y
     points_args$return_layer <- TRUE
-    player <- do.call(SpatPointsPlot, points_args)
+    player <- do_call(SpatPointsPlot, points_args)
 
     list(player = player, facet_by = facet_by)
 }

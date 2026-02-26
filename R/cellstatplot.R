@@ -355,7 +355,7 @@ CellStatPlot.data.frame <- function(
             }
         } else if (length(group_by) > 1 && !plot_type %in% c("sankey", "violin", "box")) {
             # calculate the frac for each group. we don't want them to be concatenated.
-            object <- do.call(rbind, lapply(group_by, function(g) {
+            object <- do_call(rbind, lapply(group_by, function(g) {
                 dat <- object %>%
                     dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident, g)))) %>%
                     summarise(.n = !!parse_expr(agg), .groups = "drop")
@@ -505,7 +505,7 @@ CellStatPlot.data.frame <- function(
         args$columns_split_by <- columns_split_by
         args$split_by <- split_by
 
-        do.call(Heatmap, args)
+        do_call(Heatmap, args)
     } else if (plot_type == "heatmap") {
         if (is.null(group_by)) {
             stop("Cannot create a heatmap plot without specifying 'group_by', which should work as the columns of the heatmap.")

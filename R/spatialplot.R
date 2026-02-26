@@ -204,7 +204,7 @@ SpatPlot.Seurat.Visium <- function(
                 image_args$flip_y <- flip_y
                 image_args$return_layer <- TRUE
                 image_args$ext <- if (!is.null(ext_unscaled)) ext_unscaled * the_scale_factor
-                player <- do.call(SpatImagePlot, image_args)
+                player <- do_call(SpatImagePlot, image_args)
                 scales_reused <- intersect(scales_used, attr(player, "scales"))
                 players <- c(players, list(player))
                 scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -522,7 +522,7 @@ SpatPlot.Seurat.FOV <- function(
             shapes_args$alpha <- ifelse("points" %in% layers, 0.5, 1)
             shapes_args$legend.direction <- legend.direction
             shapes_args$legend.position <- legend.position
-            player <- do.call(SpatShapesPlot, shapes_args)
+            player <- do_call(SpatShapesPlot, shapes_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, .new_scale_layers(scales_reused), list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -685,7 +685,7 @@ SpatPlot.giotto <- function(
                     image_args$ext <- ext
                     image_colors <- attr(imobj, "colors")
                     if (!is.null(image_colors)) { image_args$palcolor <- image_colors }
-                    player <- do.call(SpatImagePlot, image_args)
+                    player <- do_call(SpatImagePlot, image_args)
                     scales_reused <- intersect(scales_used, attr(player, "scales"))
                     players <- c(players, .new_scale_layers(scales_reused), list(player))
                     scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -763,7 +763,7 @@ SpatPlot.giotto <- function(
             shapes_args$return_layer <- TRUE
             shapes_args$alpha <- shapes_alpha
             shapes_args$ext <- ext %||% c(range(shapes_dt$x, na.rm = TRUE), range(shapes_dt$y, na.rm = TRUE))
-            player <- do.call(SpatShapesPlot, shapes_args)
+            player <- do_call(SpatShapesPlot, shapes_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, .new_scale_layers(scales_reused), list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))
@@ -939,7 +939,7 @@ SpatPlot.giotto <- function(
             points_args$flip_y <- flip_y
             points_args$return_layer <- TRUE
             points_args$ext <- ext
-            player <- do.call(SpatPointsPlot, points_args)
+            player <- do_call(SpatPointsPlot, points_args)
             scales_reused <- intersect(scales_used, attr(player, "scales"))
             players <- c(players, .new_scale_layers(scales_reused), list(player))
             scales_used <- unique(c(scales_used, attr(player, "scales")))

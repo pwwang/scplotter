@@ -362,7 +362,7 @@ ClonalStatPlot <- function(
         args$aspect.ratio <- args$aspect.ratio %||% 0.6
         args$theme_args <- args$theme_args %||% list()
         args$theme_args$panel.grid.major.x <- args$theme_args$panel.grid.major.x %||% ggplot2::element_blank()
-        p <- do.call(BarPlot, args)
+        p <- do_call(BarPlot, args)
         attr(p, "height") <- 0.6 * attr(p, "width")
         p
     } else if (identical(plot_type, "bar")) {
@@ -411,7 +411,7 @@ ClonalStatPlot <- function(
         args$show_column_names <- args$show_column_names %||% TRUE
         args$add_reticle <- args$add_reticle %||% TRUE
 
-        do.call(Heatmap, args)
+        do_call(Heatmap, args)
     } else if (identical(plot_type, "sankey")) {
         SankeyPlot(data, x = group_by, y = values_by, links_name = xlab, in_form = "long",
             alluvium = x, links_fill_by = x, flow = TRUE, xlab = xlab, ylab = ylab,

@@ -386,11 +386,11 @@ ClonalLengthPlot <- function(
         )
         if (is.null(args$split_by)) {
             suppressMessages({
-                do.call(BarPlot, args) + scale_x_discrete(breaks = breaks)
+                do_call(BarPlot, args) + scale_x_discrete(breaks = breaks)
             })
         } else {
             suppressMessages({
-                do.call(BarPlot, args) & scale_x_discrete(breaks = breaks)
+                do_call(BarPlot, args) & scale_x_discrete(breaks = breaks)
             })
         }
     } else if (plot_type == "box") {
@@ -410,7 +410,7 @@ ClonalLengthPlot <- function(
         args$theme_args$panel.grid.major.y <- args$theme_args$panel.grid.major.y %||%
             element_line(color = "grey", linetype = 2)
         args$legend.position <- args$legend.position %||% ifelse(is.null(args$split_by), "none", "right")
-        do.call(BoxPlot, args)
+        do_call(BoxPlot, args)
     } else if (plot_type == "violin") {
         args <- list(...)
         args$data <- data
@@ -428,7 +428,7 @@ ClonalLengthPlot <- function(
         args$theme_args$panel.grid.major.y <- args$theme_args$panel.grid.major.y %||%
             element_line(color = "grey", linetype = 2)
         args$legend.position <- args$legend.position %||% ifelse(is.null(args$split_by), "none", "right")
-        do.call(ViolinPlot, args)
+        do_call(ViolinPlot, args)
     } else if (plot_type == "density") {
         DensityPlot(
             rawdata,
@@ -607,7 +607,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     label_df$TypeName <- factor(label_df$TypeName, levels = labels)
     label_df <- label_df[order(label_df$TypeName), , drop = FALSE]
 
-    p <- do.call(ScatterPlot, args) +
+    p <- do_call(ScatterPlot, args) +
         guides(color = "none") +
         new_scale_fill() +
         geom_point(data = label_df, aes(x = !!sym("x"), y = !!sym("y"), fill = !!sym("TypeName")), shape = 21, alpha = 0) +

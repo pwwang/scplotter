@@ -239,7 +239,7 @@ MarkersPlot <- function(
         } else if (!is.null(subset_by_1)) {
             args$split_by <- subset_by_1
         }
-        do.call(plotthis::VolcanoPlot, args)
+        do_call(plotthis::VolcanoPlot, args)
     } else if (plot_type %in% c("jitter", "jitter_log2fc", "jitter_pct")) {
         if (is.null(subset_by_1)) {
             stop("[MarkersPlot] `subset_by` is required for plot_type '", plot_type, "'. Consider using volcano plot if you don't have groups.")
@@ -260,7 +260,7 @@ MarkersPlot <- function(
         if (!is.null(order_by)) {
             args$order_by <- order_by
         }
-        do.call(plotthis::JitterPlot, args)
+        do_call(plotthis::JitterPlot, args)
     } else if (plot_type %in% c("heatmap_log2fc", "heatmap_pct", "dot_log2fc", "dot_pct")) {
         if (is.null(subset_by)) {
             stop("[MarkersPlot] `subset_by` is required for plot_type '", plot_type, "'")
@@ -368,7 +368,7 @@ MarkersPlot <- function(
             }
             args$dot_size_name <- paste0("-log10(", pcol, ")")
         }
-        do.call(plotthis::Heatmap, args)
+        do_call(plotthis::Heatmap, args)
     } else {  # if (plot_type %in% c("heatmap", "violin", "box", "bar", "ridge", "dot")) {
         if (is.null(comparison_by)) {
             stop("[MarkersPlot] `comparison_by` is required for plot_type '", plot_type, "'")
@@ -446,6 +446,6 @@ MarkersPlot <- function(
                 args$facet_by <- NULL
             }
         }
-        do.call(scplotter::FeatureStatPlot, args)
+        do_call(scplotter::FeatureStatPlot, args)
     }
 }

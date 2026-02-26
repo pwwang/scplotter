@@ -164,3 +164,59 @@ subset_seurat <- function(object, ...) {
 
   return(result)
 }
+
+#' Call a function with a list of arguments
+#'
+#' Different from `do.call`, this is a faster version, especially when there are
+#' big objects in the list.
+#'
+#' @param fn A function to call
+#' @param args A list of arguments to pass to the function
+#' @param quote Whether to quote the arguments
+#' @param envir The environment to evaluate the function in
+#' @return The result of the function call
+#' @keywords internal
+do_call <- function(fn, args, quote = FALSE, envir = parent.frame()) {
+    # source: Gmisc
+    # author: Max Gordon <max@gforge.se>
+
+    if (quote) {
+        args <- lapply(args, enquote)  # nocov
+    }
+
+    if (is.null(names(args)) ||
+        is.data.frame(args)) {
+        argn <- args
+        args <- list()
+    } else {
+        # Add all the named arguments
+        argn <- lapply(names(args)[names(args) != ""], as.name)
+        names(argn) <- names(args)[names(args) != ""]
+        # Add the unnamed arguments
+        argn <- c(argn, args[names(args) == ""])
+        args <- args[names(args) != ""]
+    }
+
+    if (inherits(fn, "character")) {
+        if (is.character(fn)) {
+            fn <- strsplit(fn, "[:]{2,3}")[[1]]
+            fn <- if (length(fn) == 1) {
+                get(fn[[1]], envir = envir, mode = "function")
+            } else {
+                get(fn[[2]], envir = asNamespace(fn[[1]]), mode = "function")
+            }
+        }
+        call <- as.call(c(list(fn), argn))
+    } else if (inherits(fn, "function")) {
+        f_name <- deparse(substitute(fn))
+        call <- as.call(c(list(as.name(f_name)), argn))
+        args[[f_name]] <- fn
+    } else if (inherits(fn, "name")) {  # nocov
+        call <- as.call(c(list(fn, argn)))  # nocov
+    }
+
+    eval(call,
+        envir = args,
+        enclos = envir
+    )
+}

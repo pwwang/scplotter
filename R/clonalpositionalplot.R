@@ -351,6 +351,6 @@ ClonalKmerPlot <- function (
         args$name <- "Frequency"
         args$show_row_names <- args$show_row_names %||% TRUE
         args$show_column_names <- args$show_column_names %||% TRUE
-        do.call(Heatmap, args)
+        do_call(Heatmap, args)
     }
 }

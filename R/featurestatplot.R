@@ -95,7 +95,7 @@
                 stop("[FeatureStatPlot] Cannot use both `rows_split_by` and named features.")
             }
             feature_groups <- lapply(names(features), function(x) rep(x, length(features[[x]])))
-            feature_groups <- do.call(c, feature_groups)
+            feature_groups <- do_call(c, feature_groups)
             fdata <- data.frame(
                 Feautures = unlisted_features,
                 FeatureGroups = feature_groups
@@ -109,7 +109,7 @@
                 args$rows_data <- fdata
             }
         }
-        do.call(Heatmap, args)
+        do_call(Heatmap, args)
     } else if (plot_type == "dot") {
         args <- rlang::dots_list(...)
         args$data <- data
@@ -148,7 +148,7 @@
                 args$rows_data <- fdata
             }
         }
-        do.call(Heatmap, args)
+        do_call(Heatmap, args)
     } else if (plot_type == "cor") {
         if (length(unlisted_features) < 2) {
             stop("[FeatureStatPlot] The number of features should be at least 2 for correlation plot.")

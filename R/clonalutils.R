@@ -78,7 +78,7 @@ clonal_size_data <- function(data, clone_call, chain, groupings) {
     }
     clone_call <- .theCall(data, clone_call)
 
-    df <- do.call(rbind, lapply(gv_pairs, function(gv) {
+    df <- do_call(rbind, lapply(gv_pairs, function(gv) {
         if (length(gv) == 1) {
             mat <- as.data.frame(table(data[[gv[1]]][, clone_call]))
             x_col <- colnames(mat)[2] <- paste0(gv[1], ".count")
