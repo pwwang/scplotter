@@ -11,12 +11,14 @@ ClonalResidencyPlot(
   chain = "both",
   plot_type = c("scatter", "venn", "upset"),
   group_by = "Sample",
+  group_by_sep = "_",
   groups = NULL,
   facet_by = NULL,
   split_by = NULL,
   split_by_sep = "_",
   scatter_cor = "pearson",
   scatter_size_by = c("max", "total"),
+  with_class = TRUE,
   order = list(),
   combine = TRUE,
   nrow = NULL,
@@ -56,6 +58,11 @@ ClonalResidencyPlot(
 
   The column name in the meta data to group the cells. Default: "Sample"
 
+- group_by_sep:
+
+  The separator to use when combining multiple group_by columns.
+  Default: "\_"
+
 - groups:
 
   The groups to compare. Default is NULL. If NULL, all the groups in
@@ -91,6 +98,11 @@ ClonalResidencyPlot(
   - "max" - The max size of the clone in the two groups.
 
   - "total" - The total size of the clone in the two groups.
+
+- with_class:
+
+  Whether include the clonal class in the plot. Default is TRUE. Only
+  applicable for "venn" and "upset" plot.
 
 - order:
 
@@ -181,7 +193,15 @@ ClonalResidencyPlot(data, group_by = "Type", groups = c("L:B", "Y:X"),
 ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"),
  group_by = "Type", split_by = "Subject")
 
+ClonalResidencyPlot(data, groups = c("P17_B", "P17_L", "P18_X", "P18_Y"),
+   plot_type = "venn", with_class = TRUE, palette = "Blues",
+   group_by = c("Subject", "Type"))
+#> Multiple columns are provided in 'group_by'. They will be concatenated into one column.
+#> Warning: Unknown or uninitialised column: `.split`.
+
 ClonalResidencyPlot(data, plot_type = "upset", groups = c("P18B", "P18L"))
+
+ClonalResidencyPlot(data, plot_type = "upset", with_class = FALSE)
 
 # }
 ```
