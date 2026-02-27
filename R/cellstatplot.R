@@ -526,11 +526,19 @@ CellStatPlot.data.frame <- function(
         rows_name <- rows_name %||% ident
         name <- name %||% ifelse(identical(frac, "none"), "Number of cells", "Fraction of cells")
 
-        Heatmap(
-            object, rows_by = idents, rows_name = rows_name, values_by = name,
-            columns_by = if (swap) columns_split_by else group_by, values_fill = 0,
-            columns_split_by = if (swap) group_by else columns_split_by,
-            split_by = split_by, ...)
+        args <- rlang::dots_list(...)
+        args$data <- object
+        args$rows_by <- idents
+        args$rows_name <- rows_name
+        args$values_by <- name
+        args$columns_by <- if (swap) columns_split_by else group_by
+        args$values_fill <- args$values_fill %||% 0
+        args$columns_split_by <- if (swap) group_by else columns_split_by
+        args$split_by <- split_by
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
+
+        do_call(Heatmap, args)
     } else if (plot_type %in% c("violin", "box")) {
         if (is.null(group_by)) {
             stop("Cannot create a 'violin'/'box' plot without specifying 'group_by'.")
