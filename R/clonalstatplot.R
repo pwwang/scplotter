@@ -381,9 +381,18 @@ ClonalStatPlot <- function(
         xlab <- xlab %||% ifelse(by_clones, "Clones", "Clone Groups")
         data[[xlab]] <- data[[x]]
         data[[x]] <- NULL
-        Heatmap(data, in_form = "long", values_by = values_by,
-            rows_by = group_by, columns_by = xlab, name = ylab,
-            split_by = split_by, ...)
+        args <- rlang::dots_list(...)
+        args$data <- data
+        args$in_form <- "long"
+        args$values_by <- values_by
+        args$rows_by <- group_by
+        args$columns_by <- xlab
+        args$name <- ylab
+        args$split_by <- split_by
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
+
+        do_call(Heatmap, args)
     } else if (identical(plot_type, "pies")) {
         if (!is.null(facet_by)) {
             stop("'facet_by' is not supported for 'pies' plot. Please use 'split_by' instead.")
