@@ -24,9 +24,8 @@
 #'  Each split will be plotted in a separate plot.
 #' @param split_by_sep The separator to use when combining multiple columns in `split_by`. Default: "_"
 #' @param columns_split_by The column name in the meta data to split the columns of the 'pies'/'heatmap' plot. Default: NULL
-#' @param rows_by The column names in the data used as the rows of the 'pies' (heatmap with cell_type = 'pie').
-#'  Default: NULL. Only available for 'pies' plot.
-#'  The values don't matter, and they only indicate the cells overlapping with the columns and distributed in different `ident` values.
+#' @param rows_by The column names in the data used as the rows of 'heatmap' or 'pies' (heatmap with cell_type = 'pie').
+#'  Default: NULL. Only available for 'heatmap'/'pies' plot.
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
 #'  Not available for 'circos', 'sankey', and 'heatmap' plots.
 #' @param plot_type The type of plot to use. Default is "bar".
@@ -146,20 +145,30 @@
 #' CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,
 #'              group_by = "seurat_annotations", split_by = "stim")
 #'
+#' # Heatmap
+#' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
+#' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
+#'    frac = "group", columns_split_by = "seurat_annotations", swap = TRUE)
+#'
 #' # Pies
 #' # Simulate some sets of cells (e.g. clones)
 #' ifnb_sub$r1 <- ifelse(ifnb_sub$seurat_clusters %in% c("0", "1", "2"), 1, 0)
 #' ifnb_sub$r2 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.5, 0.5), replace = TRUE)
 #' ifnb_sub$r3 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.7, 0.3), replace = TRUE)
 #' CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim", rows_name = "Clones",
-#'    rows_by = c("r1", "r2", "r3"), show_row_names = TRUE, add_reticle = TRUE,
-#'    show_column_names = TRUE, column_names_side = "top", cluster_columns = FALSE,
+#'    rows_by = c("r1", "r2", "r3"), column_names_side = "top", cluster_columns = FALSE,
 #'    row_names_side = "right", pie_size = "identity", pie_values = "sum")
 #'
-#' # Heatmap
-#' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
-#' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
-#'    frac = "group", columns_split_by = "seurat_annotations", swap = TRUE)
+#' # Expand pies into heatmap
+#' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", rows_name = "Clones",
+#'    rows_by = c("r1", "r2", "r3"), column_names_side = "top", cluster_columns = FALSE,
+#'    row_names_side = "right")
+#'
+#' # Rows split by clones instead of idents and show fraction of cells in each clone.
+#' CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", frac = "group",
+#'   rows_split_by = c("r1", "r2", "r3"), column_names_side = "top", cluster_columns = FALSE,
+#'   row_names_side = "right", label = function(x) scales::number(x, accuracy = 0.01),
+#'   cell_type = "label")
 #'
 #' # Radar plot/Spider plot
 #' pr <- CellStatPlot(ifnb_sub, plot_type = "radar", group_by = "stim")
@@ -319,6 +328,10 @@ CellStatPlot.data.frame <- function(
     facet_by <- check_columns(object, facet_by, force_factor = TRUE,
         allow_multi = TRUE)
     rows_by <- check_columns(object, rows_by, allow_multi = TRUE)
+    rows_split_by <- list(...)[["rows_split_by"]]
+    rows_split_by <- check_columns(object, rows_split_by, allow_multi = TRUE)
+    stopifnot("[CellStatPlot] Can't have both 'rows_by' and 'rows_split_by' for plot_type = 'heatmap'" = !(plot_type == "heatmap" && !is.null(rows_by) && !is.null(rows_split_by)))
+    stopifnot("[CellStatPlot] Can't have a single 'rows_by' column as the heatmap rows for plot_type will be idents. Do you mean 'rows_split_by'?" = !(plot_type == "heatmap" && length(rows_by) == 1))
 
     frac <- match.arg(frac)
     if (frac == "cluster") frac <- "ident"
@@ -383,24 +396,69 @@ CellStatPlot.data.frame <- function(
                 dat[, setdiff(group_by, g)] <- NA
                 dat
             }))
+        } else if (plot_type == "heatmap" && (length(c(rows_by, rows_split_by)) > 1)) {
+            is_rows_by <- length(rows_by) > 0
+            row_cols <- if (is_rows_by) rows_by else rows_split_by
+            # if multiple columns provided, they must be logical or numeric columns
+            rc_obj <- NULL
+            for (col in row_cols) {
+                col_agg <- if (is.list(agg)) agg[[col]] else agg
+                col_agg <- col_agg %||% "n()"
+                if (!is.logical(object[[col]]) && !is.numeric(object[[col]])) {
+                    stop("[CellStatPlot] For 'heatmap' plot, multiple columns specified in 'rows_by' and 'rows_split_by' must be logical or numeric. But column '", col, "' is not.")
+                }
+                tmp <- object %>% dplyr::filter(!is.na(!!sym(col)) & (!!sym(col) == TRUE | !!sym(col) > 0)) %>%
+                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by, ident)))) %>%
+                    summarise(.n = !!parse_expr(col_agg), .groups = "drop")
+
+                tmp[[".rows_by_or_rows_split_by"]] <- as.character(col)
+                if (frac == "group") {
+                    tmp <- tmp %>%
+                        dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by)))) %>%
+                        mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
+                        ungroup()
+                } else if (frac == "ident") {
+                    tmp <- tmp %>%
+                        dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
+                        mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
+                        ungroup()
+                } else if (frac == "all") {
+                    tmp <- tmp %>%
+                        dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
+                        mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
+                        ungroup()
+                } else {
+                    tmp <- tmp %>% mutate(.frac = 1)  # not used
+                }
+                rc_obj <- rbind(rc_obj, tmp)
+            }
+            rc_obj[[".rows_by_or_rows_split_by"]] <- factor(rc_obj[[".rows_by_or_rows_split_by"]], levels = row_cols)
+            object <- rc_obj
+            rm(rc_obj)
+            if (is_rows_by) {
+                rows_by <- ".rows_by_or_rows_split_by"
+            } else {
+                rows_split_by <- ".rows_by_or_rows_split_by"
+            }
         } else {
+            row_cols <- if (plot_type == "heatmap") c(rows_by, rows_split_by) else NULL
             object <- object %>%
-                dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by, ident)))) %>%
+                dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, row_cols, columns_split_by, ident)))) %>%
                 summarise(.n = !!parse_expr(agg), .groups = "drop")
 
             if (frac == "group") {
                 object <- object %>%
-                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, columns_split_by)))) %>%
+                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, group_by, row_cols, columns_split_by)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else if (frac == "ident") {
                 object <- object %>%
-                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by, ident)))) %>%
+                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, row_cols, columns_split_by, ident)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else if (frac == "all") {
                 object <- object %>%
-                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, columns_split_by)))) %>%
+                    dplyr::group_by(!!!syms(unique(c(split_by, facet_by, row_cols, columns_split_by)))) %>%
                     mutate(.frac = !!sym(".n") / sum(!!sym(".n"))) %>%
                     ungroup()
             } else {
@@ -504,6 +562,9 @@ CellStatPlot.data.frame <- function(
         args$pie_group_by <- if (swap) group_by else ident
         args$columns_split_by <- columns_split_by
         args$split_by <- split_by
+        args$show_row_names <- args$show_row_names %||% TRUE
+        args$show_column_names <- args$show_column_names %||% TRUE
+        args$add_reticle <- args$add_reticle %||% TRUE
 
         do_call(Heatmap, args)
     } else if (plot_type == "heatmap") {
@@ -516,27 +577,29 @@ CellStatPlot.data.frame <- function(
         if (swap && is.null(columns_split_by)) {
             stop("Cannot swap between 'group_by' and 'columns_split_by' without specifying 'columns_split_by'.")
         }
-        idents <- if (is.factor(object[[ident]])) levels(object[[ident]]) else unique(object[[ident]])
-        object <- pivot_wider(
-            object, id_cols = unique(c(split_by, group_by, columns_split_by)),
-            names_from = ident, values_fill = 0,
-            values_from = if (identical(frac, "none")) ".n" else ".frac"
-        )
-
-        rows_name <- rows_name %||% ident
-        name <- name %||% ifelse(identical(frac, "none"), "Number of cells", "Fraction of cells")
 
         args <- rlang::dots_list(...)
         args$data <- object
-        args$rows_by <- idents
-        args$rows_name <- rows_name
-        args$values_by <- name
+        args$name <- args$name %||% ifelse(identical(frac, "none"), "Number of cells", "Fraction of cells")
+        args$values_by <- ifelse(identical(frac, "none"), ".n", ".frac")
+        args$in_form <- "long"
         args$columns_by <- if (swap) columns_split_by else group_by
         args$values_fill <- args$values_fill %||% 0
         args$columns_split_by <- if (swap) group_by else columns_split_by
         args$split_by <- split_by
         args$show_row_names <- args$show_row_names %||% TRUE
         args$show_column_names <- args$show_column_names %||% TRUE
+        if (!is.null(rows_by)) {
+            args$rows_split_by <- ident
+            args$rows_by <- rows_by
+            args$rows_name <- rows_name %||% ""
+        } else if (!is.null(rows_split_by)) {
+            args$rows_split_by <- rows_split_by
+            args$rows_split_name <- args$rows_split_name %||% " "
+            args$rows_by <- ident
+        } else {
+            args$rows_by <- ident
+        }
 
         do_call(Heatmap, args)
     } else if (plot_type %in% c("violin", "box")) {
