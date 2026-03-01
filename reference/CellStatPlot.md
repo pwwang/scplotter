@@ -93,11 +93,9 @@ CellStatPlot(
 
 - rows_by:
 
-  The column names in the data used as the rows of the 'pies' (heatmap
-  with cell_type = 'pie'). Default: NULL. Only available for 'pies'
-  plot. The values don't matter, and they only indicate the cells
-  overlapping with the columns and distributed in different `ident`
-  values.
+  The column names in the data used as the rows of 'heatmap' or 'pies'
+  (heatmap with cell_type = 'pie'). Default: NULL. Only available for
+  'heatmap'/'pies' plot.
 
 - columns_split_by:
 
@@ -308,22 +306,34 @@ CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,
              group_by = "seurat_annotations", split_by = "stim")
 
 
+# Heatmap
+CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
+
+CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
+   frac = "group", columns_split_by = "seurat_annotations", swap = TRUE)
+
+
 # Pies
 # Simulate some sets of cells (e.g. clones)
 ifnb_sub$r1 <- ifelse(ifnb_sub$seurat_clusters %in% c("0", "1", "2"), 1, 0)
 ifnb_sub$r2 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.5, 0.5), replace = TRUE)
 ifnb_sub$r3 <- sample(c(1, 0), ncol(ifnb_sub), prob = c(0.7, 0.3), replace = TRUE)
 CellStatPlot(ifnb_sub, plot_type = "pies", group_by = "stim", rows_name = "Clones",
-   rows_by = c("r1", "r2", "r3"), show_row_names = TRUE, add_reticle = TRUE,
-   show_column_names = TRUE, column_names_side = "top", cluster_columns = FALSE,
+   rows_by = c("r1", "r2", "r3"), column_names_side = "top", cluster_columns = FALSE,
    row_names_side = "right", pie_size = "identity", pie_values = "sum")
 
 
-# Heatmap
-CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", palette = "Blues")
+# Expand pies into heatmap
+CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", rows_name = "Clones",
+   rows_by = c("r1", "r2", "r3"), column_names_side = "top", cluster_columns = FALSE,
+   row_names_side = "right")
 
-CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim",
-   frac = "group", columns_split_by = "seurat_annotations", swap = TRUE)
+
+# Rows split by clones instead of idents and show fraction of cells in each clone.
+CellStatPlot(ifnb_sub, plot_type = "heatmap", group_by = "stim", frac = "group",
+  rows_split_by = c("r1", "r2", "r3"), column_names_side = "top", cluster_columns = FALSE,
+  row_names_side = "right", label = function(x) scales::number(x, accuracy = 0.01),
+  cell_type = "label")
 
 
 # Radar plot/Spider plot

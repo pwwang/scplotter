@@ -155,6 +155,7 @@ data <- scRepertoire::addVariable(data,
 ClonalGeneUsagePlot(data)
 
 ClonalGeneUsagePlot(data, genes = c("TRBJ", "TRBV"))
+#> Warning: Content-based width (6.9) conflicts with aspect.ratio (0.1). Using content width; plot panel aspect ratio will differ from specified.
 
 ClonalGeneUsagePlot(data, top = 40, plot_type = "heatmap")
 

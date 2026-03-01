@@ -272,7 +272,7 @@ This argument is not supported and will raise an error if provided.</p></dd>
 <span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Clones larger than 10 in P17L and existing in P17B (heatmap)"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ClonalStatPlot-10.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># using heatmap with subgroups for groups of clones</span></span></span>
+<span class="r-in"><span><span class="co"># using pies with subgroups for groups of clones</span></span></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>        ExpandedClonesInP17L <span class="op">=</span> <span class="st">"sel(P17L &gt; 20, group_by = 'Sample')"</span>,</span></span>
@@ -281,80 +281,34 @@ This argument is not supported and will raise an error if provided.</p></dd>
 <span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"pies"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ClonalStatPlot-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># using clone groups and showing dynamics using sankey plot</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"Hyper-expanded clones in P17B"</span> <span class="op">=</span> <span class="st">"sel(P17B &gt; 10, group_by = 'Sample')"</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"Hyper-expanded clones in P17L"</span> <span class="op">=</span> <span class="st">"sel(P17L &gt; 10, group_by = 'Sample')"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"sankey"</span>, title <span class="op">=</span> <span class="st">"Hyper-expanded clones in P17B and P17L"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-12.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># col plot</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, clones <span class="op">=</span> <span class="st">"top(5, group_by = 'Sample')"</span>, plot_type <span class="op">=</span> <span class="st">"col"</span>,</span></span>
-<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Top 5 clones in each sample (col plot)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-13.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, clones <span class="op">=</span> <span class="st">"top(5, group_by = 'Sample')"</span>, plot_type <span class="op">=</span> <span class="st">"col"</span>,</span></span>
-<span class="r-in"><span>    values_by <span class="op">=</span> <span class="st">"fraction"</span>, facet_scale <span class="op">=</span> <span class="st">"free"</span>,</span></span>
-<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Top 5 clones in each sample (col plot, showing fraction)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-14.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, plot_type <span class="op">=</span> <span class="st">"col"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    facet_ncol <span class="op">=</span> <span class="fl">1</span>, legend.position <span class="op">=</span> <span class="st">"right"</span>,</span></span>
-<span class="r-in"><span>    relabel <span class="op">=</span> <span class="cn">TRUE</span>, fill_by <span class="op">=</span> <span class="st">".Clones"</span>, fill_name <span class="op">=</span> <span class="st">"Clones"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-15.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># showing top 10 shared clones between P17B and P17L</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    clones <span class="op">=</span> <span class="st">"shared(P17B, P17L, group_by = 'Sample', top = 10)"</span>, relabel <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Shared clones between P17B and P17L"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-16.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># showing clones larger than 10 in P17L and ordered by the clone size in P17L descendingly</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>     clones <span class="op">=</span> <span class="st">"sel(P17B &gt; 10, group_by = 'Sample', top = 5, order = desc(P17B))"</span>,</span></span>
-<span class="r-in"><span>     relabel <span class="op">=</span> <span class="cn">TRUE</span>, position <span class="op">=</span> <span class="st">"stack"</span>, title <span class="op">=</span> <span class="st">"Top 5 clones larger than 10 in P17B"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-17.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># using trend plot</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    clones <span class="op">=</span> <span class="st">"sel(P17L &gt; 10 &amp; P17B &gt; 0, group_by = 'Sample')"</span>, relabel <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"trend"</span>, title <span class="op">=</span> <span class="st">"Clones larger than 10 in P17L and existing in P17B"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-18.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># using heatmap</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    clones <span class="op">=</span> <span class="st">"sel(P17L &gt; 10 &amp; P17B &gt; 0, group_by = 'Sample')"</span>, relabel <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Clones larger than 10 in P17L and existing in P17B (heatmap)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-19.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># chord plot</span></span></span>
-<span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    clones <span class="op">=</span> <span class="st">"sel(P17L &gt; 10 &amp; P17B &gt; 0, group_by = 'Sample')"</span>,</span></span>
-<span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"chord"</span>, labels_rot <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Clones larger than 10 in P17L and existing in P17B (chord plot)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># using heatmap with subgroups for groups of clones</span></span></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        ExpandedClonesInP17L <span class="op">=</span> <span class="st">"sel(P17L &gt; 20, group_by = 'Sample')"</span>,</span></span>
-<span class="r-in"><span>        ExpandedClonesInP17B <span class="op">=</span> <span class="st">"sel(P17B &gt; 20, group_by = 'Sample')"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span>, subgroup_by <span class="op">=</span> <span class="st">"CellType"</span>, pie_size <span class="op">=</span> <span class="va">sqrt</span>,</span></span>
-<span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"pies"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-21.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span>   clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>       ExpandedClonesInP17L <span class="op">=</span> <span class="st">"sel(P17L &gt; 20, group_by = 'Sample')"</span>,</span></span>
+<span class="r-in"><span>       ExpandedClonesInP17B <span class="op">=</span> <span class="st">"sel(P17B &gt; 20, group_by = 'Sample')"</span></span></span>
+<span class="r-in"><span>   <span class="op">)</span>, subgroup_by <span class="op">=</span> <span class="st">"CellType"</span>, pie_size <span class="op">=</span> <span class="va">sqrt</span>, within_subgroup <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>   title <span class="op">=</span> <span class="st">"Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="ClonalStatPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># using clone groups and showing dynamics using sankey plot</span></span></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, group_by <span class="op">=</span> <span class="st">"Sample"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    clones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>      <span class="st">"Hyper-expanded clones in P17B"</span> <span class="op">=</span> <span class="st">"sel(P17B &gt; 10, group_by = 'Sample')"</span>,</span></span>
 <span class="r-in"><span>      <span class="st">"Hyper-expanded clones in P17L"</span> <span class="op">=</span> <span class="st">"sel(P17L &gt; 10, group_by = 'Sample')"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"sankey"</span>, title <span class="op">=</span> <span class="st">"Hyper-expanded clones in P17B and P17L"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-22.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-13.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># col plot</span></span></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, clones <span class="op">=</span> <span class="st">"top(5, group_by = 'Sample')"</span>, plot_type <span class="op">=</span> <span class="st">"col"</span>,</span></span>
 <span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Top 5 clones in each sample (col plot)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-23.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, clones <span class="op">=</span> <span class="st">"top(5, group_by = 'Sample')"</span>, plot_type <span class="op">=</span> <span class="st">"col"</span>,</span></span>
 <span class="r-in"><span>    values_by <span class="op">=</span> <span class="st">"fraction"</span>, facet_scale <span class="op">=</span> <span class="st">"free"</span>,</span></span>
 <span class="r-in"><span>    title <span class="op">=</span> <span class="st">"Top 5 clones in each sample (col plot, showing fraction)"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-24.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">ClonalStatPlot</span><span class="op">(</span><span class="va">data</span>, plot_type <span class="op">=</span> <span class="st">"col"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P17B"</span>, <span class="st">"P17L"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    facet_ncol <span class="op">=</span> <span class="fl">1</span>, legend.position <span class="op">=</span> <span class="st">"right"</span>,</span></span>
 <span class="r-in"><span>    relabel <span class="op">=</span> <span class="cn">TRUE</span>, fill_by <span class="op">=</span> <span class="st">".Clones"</span>, fill_name <span class="op">=</span> <span class="st">"Clones"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ClonalStatPlot-25.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ClonalStatPlot-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
