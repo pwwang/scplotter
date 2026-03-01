@@ -126,7 +126,7 @@
 #'     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
 #'     plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
 #'     title = "Clones larger than 10 in P17L and existing in P17B (heatmap)")
-#' # using heatmap with subgroups for groups of clones
+#' # using pies with subgroups for groups of clones
 #' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
 #'     clones = list(
 #'         ExpandedClonesInP17L = "sel(P17L > 20, group_by = 'Sample')",
@@ -134,51 +134,14 @@
 #'     ), subgroup_by = "CellType", pie_size = sqrt,
 #'     plot_type = "pies", show_row_names = TRUE, show_column_names = TRUE,
 #'     title = "Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)")
-#' # using clone groups and showing dynamics using sankey plot
-#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = list(
-#'       "Hyper-expanded clones in P17B" = "sel(P17B > 10, group_by = 'Sample')",
-#'       "Hyper-expanded clones in P17L" = "sel(P17L > 10, group_by = 'Sample')"
-#'     ), plot_type = "sankey", title = "Hyper-expanded clones in P17B and P17L")
-#' # col plot
-#' ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
-#'     title = "Top 5 clones in each sample (col plot)")
-#' ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
-#'     values_by = "fraction", facet_scale = "free",
-#'     title = "Top 5 clones in each sample (col plot, showing fraction)")
-#' ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
-#'     facet_ncol = 1, legend.position = "right",
-#'     relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
-#' # showing top 10 shared clones between P17B and P17L
-#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = "shared(P17B, P17L, group_by = 'Sample', top = 10)", relabel = TRUE,
-#'     title = "Shared clones between P17B and P17L")
-#' # showing clones larger than 10 in P17L and ordered by the clone size in P17L descendingly
-#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'      clones = "sel(P17B > 10, group_by = 'Sample', top = 5, order = desc(P17B))",
-#'      relabel = TRUE, position = "stack", title = "Top 5 clones larger than 10 in P17B")
-#' # using trend plot
-#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
-#'     plot_type = "trend", title = "Clones larger than 10 in P17L and existing in P17B")
-#' # using heatmap
-#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')", relabel = TRUE,
-#'     plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
-#'     title = "Clones larger than 10 in P17L and existing in P17B (heatmap)")
-#' # chord plot
-#' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = "sel(P17L > 10 & P17B > 0, group_by = 'Sample')",
-#'     plot_type = "chord", labels_rot = TRUE,
-#'     title = "Clones larger than 10 in P17L and existing in P17B (chord plot)")
 #' # using heatmap with subgroups for groups of clones
 #' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
-#'     clones = list(
-#'         ExpandedClonesInP17L = "sel(P17L > 20, group_by = 'Sample')",
-#'         ExpandedClonesInP17B = "sel(P17B > 20, group_by = 'Sample')"
-#'     ), subgroup_by = "CellType", pie_size = sqrt,
-#'     plot_type = "pies", show_row_names = TRUE, show_column_names = TRUE,
-#'     title = "Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)")
+#'    clones = list(
+#'        ExpandedClonesInP17L = "sel(P17L > 20, group_by = 'Sample')",
+#'        ExpandedClonesInP17B = "sel(P17B > 20, group_by = 'Sample')"
+#'    ), subgroup_by = "CellType", pie_size = sqrt, within_subgroup = FALSE,
+#'    plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE,
+#'    title = "Clones larger than 20 in P17L and P17B (pies with subgroups by CellType)")
 #' # using clone groups and showing dynamics using sankey plot
 #' ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),
 #'     clones = list(
@@ -385,12 +348,17 @@ ClonalStatPlot <- function(
         args$data <- data
         args$in_form <- "long"
         args$values_by <- values_by
-        args$rows_by <- group_by
         args$columns_by <- xlab
         args$name <- ylab
         args$split_by <- split_by
         args$show_row_names <- args$show_row_names %||% TRUE
         args$show_column_names <- args$show_column_names %||% TRUE
+        if (!is.null(subgroup_by)) {
+            args$rows_split_by <- group_by
+            args$rows_by <- subgroup_by
+        } else {
+            args$rows_by <- group_by
+        }
 
         do_call(Heatmap, args)
     } else if (identical(plot_type, "pies")) {
