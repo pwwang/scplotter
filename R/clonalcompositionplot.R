@@ -88,7 +88,7 @@ ClonalVolumePlot <- function(
             if (!is.factor(dg)) dg <- factor(dg)
             levels(dg)
         }
-    })
+    }, simplify = FALSE)
     grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
     data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalQuant(data,
