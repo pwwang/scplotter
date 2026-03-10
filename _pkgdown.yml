@@ -8,7 +8,7 @@ template:
 navbar:
   structure:
     right: [search, github]
-    left: [intro, reference, articles, spatial-examples]
+    left: [intro, reference, articles, spatial-examples, news]
   components:
     articles:
       text: "Articles"
