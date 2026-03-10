@@ -160,6 +160,7 @@ ClonalCompositionPlot(data, plot_type = "ring")
 
 ClonalCompositionPlot(data, group_by = "Type", plot_type = "box", comparison = TRUE,
  clone_split = list(Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1))
+#> Warning: [Box/Violin/BeeswarmPlot] Some pairwise comparisons may fail due to insufficient data points or variability. Adjusting data to ensure valid comparisons.
 
 ClonalCompositionPlot(data, group_by = "Type", plot_type = "violin", add_box = TRUE,
  add_bg = TRUE)

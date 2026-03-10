@@ -347,20 +347,7 @@ ifnb_sub$group <- sample(paste0("g", 1:10), nrow(ifnb_sub), replace = TRUE)
 CellStatPlot(ifnb_sub, group_by = c("group", "stim"), frac = "group",
    plot_type = "violin", add_box = TRUE, ident = "seurat_annotations",
    x_text_angle = 60, comparisons = TRUE, aspect.ratio = 0.8)
-#> Warning: Computation failed in `stat_pwc()`.
-#> Caused by error in `mutate()`:
-#> ℹ In argument: `data = map(.data$data, .f, ...)`.
-#> Caused by error in `map()`:
-#> ℹ In index: 13.
-#> Caused by error in `utils::combn()`:
-#> ! n < m
-#> Warning: Computation failed in `stat_pwc()`.
-#> Caused by error in `mutate()`:
-#> ℹ In argument: `data = map(.data$data, .f, ...)`.
-#> Caused by error in `map()`:
-#> ℹ In index: 13.
-#> Caused by error in `utils::combn()`:
-#> ! n < m
+#> Warning: [Box/Violin/BeeswarmPlot] Some pairwise comparisons may fail due to insufficient data points or variability. Adjusting data to ensure valid comparisons.
 
 
 # Use different agg other than counting the number of cells.

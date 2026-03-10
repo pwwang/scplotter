@@ -215,6 +215,7 @@ ClonalStatPlot(data, group_by = "Sample",
     plot_type = "violin", clones = "top(10, group_by = 'Sample')",
     subgroup_by = "CellType", subgroups = c("CD4", "CD8"), add_box = TRUE,
     comparison = TRUE, title = "Violin plots showing top 10 clones in each sample")
+#> Warning: [Box/Violin/BeeswarmPlot] Some pairwise comparisons may fail due to insufficient data points or variability. Adjusting data to ensure valid comparisons.
 
 # showing selected clones in P17B and P17L
 ClonalStatPlot(data, group_by = "Sample", groups = c("P17B", "P17L"),

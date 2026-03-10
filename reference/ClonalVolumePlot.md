@@ -127,6 +127,7 @@ ClonalVolumePlot(data,
     plot_type = "box", x = "Type", comparisons = TRUE,
     group_by = "Sex"
 )
+#> Warning: [Box/Violin/BeeswarmPlot] Some pairwise comparisons may fail due to insufficient data points or variability. Adjusting data to ensure valid comparisons.
 
 ClonalVolumePlot(data, plot_type = "violin", x = "Type", add_box = TRUE)
 

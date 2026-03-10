@@ -120,7 +120,7 @@ ClonalLengthPlot(data, plot_type = "box")
 
 ClonalLengthPlot(data, clone_call = "nt", plot_type = "violin", chain = "TRB",
  group_by = "Type", comparisons = TRUE)
-#> Warning: Some pairwise comparisons may fail due to insufficient variability. Adjusting data to ensure valid comparisons.
+#> Warning: [Box/Violin/BeeswarmPlot] Some pairwise comparisons may fail due to insufficient data points or variability. Adjusting data to ensure valid comparisons.
 #> Warning: Groups with fewer than two datapoints have been dropped.
 #> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: Groups with fewer than two datapoints have been dropped.

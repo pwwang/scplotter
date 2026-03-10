@@ -213,7 +213,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "network")
+#> CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -229,7 +229,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -244,7 +244,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -253,12 +253,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                             
-#> [3] "User: Do a heatmap instead"                                                                                                                                                
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             
-#> [5] "User: Add a proper title to the plot"                                                                                                                                      
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\", magnitude_agg = mean, magnitude_name = \"Average Interaction Strength\")"
+#> [3] "User: Do a heatmap instead"                                                                                                                                                                 
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", show_row_names = TRUE, show_column_names = TRUE)"                    
+#> [5] "User: Add a proper title to the plot"                                                                                                                                                       
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -1001,6 +1001,15 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       that are passed to ComplexHeatmap::Heatmap() directly.
     #>       - alpha: A numeric value between 0 and 1 specifying the transparency of the heatmap cells.
     #>       - seed: The random seed to use. Default is 8525.
+    #>       - padding: A numeric vector of length 4 specifying the padding of the heatmap in the order of top, right, bottom, left.
+    #>       Like padding in css. Note that it is different than the padding argument in ComplexHeatmap::draw(), which is the padding
+    #>       in the order of bottom, left, top, right.
+    #>       It also support 1, 2, 3 values like css padding.
+    #>       When 1 element is provided, it will be used for all sides.
+    #>       When 2 elements are provided, the first one will be used for top and bottom, and the second one will be used for left and right.
+    #>       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.
+    #>       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.
+    #>       If no unit is provided, the default unit will be "mm".
     #>       - layer_fun_callback: A function to add additional layers to the heatmap.
     #>       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.
     #>       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.
@@ -1310,11 +1319,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
+    #> CCCPlot(cellphonedb_res, plot_type = "dot")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
+    #> CCCPlot(cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -2052,6 +2061,15 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       that are passed to ComplexHeatmap::Heatmap() directly.
     #>       - alpha: A numeric value between 0 and 1 specifying the transparency of the heatmap cells.
     #>       - seed: The random seed to use. Default is 8525.
+    #>       - padding: A numeric vector of length 4 specifying the padding of the heatmap in the order of top, right, bottom, left.
+    #>       Like padding in css. Note that it is different than the padding argument in ComplexHeatmap::draw(), which is the padding
+    #>       in the order of bottom, left, top, right.
+    #>       It also support 1, 2, 3 values like css padding.
+    #>       When 1 element is provided, it will be used for all sides.
+    #>       When 2 elements are provided, the first one will be used for top and bottom, and the second one will be used for left and right.
+    #>       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.
+    #>       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.
+    #>       If no unit is provided, the default unit will be "mm".
     #>       - layer_fun_callback: A function to add additional layers to the heatmap.
     #>       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.
     #>       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.

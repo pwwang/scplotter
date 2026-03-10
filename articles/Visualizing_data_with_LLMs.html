@@ -295,7 +295,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean, magnitude_name = "Average Interaction Strength")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -308,7 +308,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", show_row_names = TRUE, show_column_names = TRUE)</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a proper title to the plot"</span><span class="op">)</span></span>
@@ -320,18 +320,18 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                             </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\", magnitude_agg = mean, magnitude_name = \"Average Interaction Strength\")"</span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                                 </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", show_row_names = TRUE, show_column_names = TRUE)"                    </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                                       </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -1071,6 +1071,15 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       that are passed to ComplexHeatmap::Heatmap() directly.</span></span>
 <span><span class="co">#&gt;       - alpha: A numeric value between 0 and 1 specifying the transparency of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - seed: The random seed to use. Default is 8525.</span></span>
+<span><span class="co">#&gt;       - padding: A numeric vector of length 4 specifying the padding of the heatmap in the order of top, right, bottom, left.</span></span>
+<span><span class="co">#&gt;       Like padding in css. Note that it is different than the padding argument in ComplexHeatmap::draw(), which is the padding</span></span>
+<span><span class="co">#&gt;       in the order of bottom, left, top, right.</span></span>
+<span><span class="co">#&gt;       It also support 1, 2, 3 values like css padding.</span></span>
+<span><span class="co">#&gt;       When 1 element is provided, it will be used for all sides.</span></span>
+<span><span class="co">#&gt;       When 2 elements are provided, the first one will be used for top and bottom, and the second one will be used for left and right.</span></span>
+<span><span class="co">#&gt;       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.</span></span>
+<span><span class="co">#&gt;       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.</span></span>
+<span><span class="co">#&gt;       If no unit is provided, the default unit will be "mm".</span></span>
 <span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
 <span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
 <span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
@@ -1378,10 +1387,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean, magnitude_name = "Average Interaction Strength")</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot", magnitude_agg = mean, magnitude_name = "Average Interaction Strength")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -2114,6 +2123,15 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       that are passed to ComplexHeatmap::Heatmap() directly.</span></span>
 <span><span class="co">#&gt;       - alpha: A numeric value between 0 and 1 specifying the transparency of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - seed: The random seed to use. Default is 8525.</span></span>
+<span><span class="co">#&gt;       - padding: A numeric vector of length 4 specifying the padding of the heatmap in the order of top, right, bottom, left.</span></span>
+<span><span class="co">#&gt;       Like padding in css. Note that it is different than the padding argument in ComplexHeatmap::draw(), which is the padding</span></span>
+<span><span class="co">#&gt;       in the order of bottom, left, top, right.</span></span>
+<span><span class="co">#&gt;       It also support 1, 2, 3 values like css padding.</span></span>
+<span><span class="co">#&gt;       When 1 element is provided, it will be used for all sides.</span></span>
+<span><span class="co">#&gt;       When 2 elements are provided, the first one will be used for top and bottom, and the second one will be used for left and right.</span></span>
+<span><span class="co">#&gt;       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.</span></span>
+<span><span class="co">#&gt;       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.</span></span>
+<span><span class="co">#&gt;       If no unit is provided, the default unit will be "mm".</span></span>
 <span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
 <span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
 <span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
