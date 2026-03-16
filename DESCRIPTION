@@ -1,10 +1,10 @@
 Package: scplotter
-Title: Publication Quality Plots for Single Cell Data Analysis
+Title: Publication Quality Plots for Single Cell and Spatial Data Analysis
 Version: 0.7.1
 Authors@R:
     person("Panwen", "Wang", , "pwwang@pwwang.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4614-8970"))
-Description: Publication quality plots for single cell data analysis.
+Description: Publication quality plots for single cell and spatial data analysis.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
