@@ -10,6 +10,7 @@ ClonalRarefactionPlot(
   chain = "both",
   group_by = "Sample",
   group_by_sep = "_",
+  order = NULL,
   n_boots = 20,
   q = 0,
   facet_by = NULL,
@@ -36,6 +37,8 @@ CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable}
 \item{group_by}{A character vector of column names to group the samples. Default is "Sample".}
 
 \item{group_by_sep}{The separator for the group_by column. Default is "_".}
+
+\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
 
 \item{n_boots}{The number of bootstrap samples. Default is 20.}
 
@@ -78,7 +81,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

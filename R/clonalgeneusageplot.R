@@ -10,6 +10,7 @@
 #' @param plot_type The type of plot to be generated. Default is "bar".
 #'  Options are "bar", "heatmap", "circos" (aka "chord").
 #' @param group_by The variable to group the data by. Default is "Sample".
+#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
 #' @param facet_by A character vector of column names to facet the plots. Default is NULL.
 #'  Should not be specified manually.
 #' @param facet_ncol The number of columns in the facet grid. Default is 1.
@@ -44,7 +45,7 @@
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -63,7 +64,7 @@
 #'      group_by = NULL)
 #' }
 ClonalGeneUsagePlot <- function(
-    data, genes = "TRBV", scale = TRUE, top = 20,
+    data, genes = "TRBV", scale = TRUE, top = 20, order = NULL,
     plot_type = c("bar", "heatmap", "circos", "chord", "alluvial", "sankey"),
     group_by = "Sample", facet_by = NULL, facet_ncol = 1, split_by = NULL,
     aspect.ratio = 2 / top, theme_args = list(), ylab = NULL,
@@ -85,18 +86,7 @@ ClonalGeneUsagePlot <- function(
     }
 
     all_groupings <- unique(c(group_by, split_by))
-    grouping_levels <- sapply(all_groupings, function(g) {
-        dg <- if (inherits(data, "Seurat")) {
-            data@meta.data[[g]]
-        } else {
-            data[[g]]
-        }
-        if (is.null(dg)) return(NULL)
-        if (!is.factor(dg)) dg <- factor(dg)
-        levels(dg)
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
     data <- vizGenes(data, x.axis = genes, y.axis = genes2, group.by = ".group", scale = scale, exportTable = TRUE)
     if (is.null(genes2)) {

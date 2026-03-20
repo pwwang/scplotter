@@ -4,7 +4,7 @@
 \alias{clonal_size_data}
 \title{clonal_size_data}
 \usage{
-clonal_size_data(data, clone_call, chain, groupings)
+clonal_size_data(data, clone_call, chain, groupings, order)
 }
 \arguments{
 \item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
@@ -18,6 +18,8 @@ in the data}
 "TRA", "TRG", "IGH", "IGL"}
 
 \item{groupings}{The column names in the meta data to group the cells.}
+
+\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
 }
 \value{
 A data frame with the clonal size data.

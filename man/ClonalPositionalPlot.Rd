@@ -13,6 +13,7 @@ ClonalPositionalPlot(
   split_by = NULL,
   method = c("AA", "shannon", "inv.simpson", "norm.entropy", "Atchley", "Kidera",
     "stScales", "tScales", "VHSE"),
+  order = NULL,
   plot_type = c("bar", "line", "heatmap", "box", "violin"),
   theme_args = list(),
   xlab = NULL,
@@ -52,6 +53,8 @@ ClonalPositionalPlot(
 See also \link[scRepertoire:percentAA]{scRepertoire::percentAA}, \link[scRepertoire:positionalEntropy]{scRepertoire::positionalEntropy} and
 \link[scRepertoire:positionalProperty]{scRepertoire::positionalProperty}.
 }}
+
+\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
 
 \item{plot_type}{The type of plot to generate. Default is "bar".
 \itemize{
@@ -99,7 +102,7 @@ data <- scRepertoire::combineTCR(contig_list,
    samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
   variable.name = "Type",
-  variables = rep(c("B", "L"), 4)
+  variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 
 ClonalPositionalPlot(data)

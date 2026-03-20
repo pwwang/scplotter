@@ -11,7 +11,7 @@ ClonalLengthPlot(
   plot_type = c("bar", "box", "violin", "density"),
   x_nbreaks = 10,
   group_by = "Sample",
-  order = list(),
+  order = NULL,
   xlab = "Length",
   ylab = NULL,
   position = "dodge",
@@ -69,9 +69,9 @@ set.seed(8525)
 data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list)
 data <- scRepertoire::addVariable(data, variable.name = "Type",
- variables = sample(c("B", "L"), 8, replace = TRUE))
+ variables = factor(sample(c("B", "L"), 8, replace = TRUE), levels = c("L", "B")))
 data <- scRepertoire::addVariable(data, variable.name = "Sex",
- variables = sample(c("M", "F"), 8, replace = TRUE))
+ variables = factor(sample(c("M", "F"), 8, replace = TRUE), levels = c("M", "F")))
 
 ClonalLengthPlot(data)
 ClonalLengthPlot(data, plot_type = "box")

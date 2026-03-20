@@ -21,6 +21,7 @@
 #'  * "VHSE": Vectors of Hydrophobic, Steric, and Electronic properties.
 #'  See also [scRepertoire::percentAA], [scRepertoire::positionalEntropy] and
 #'  [scRepertoire::positionalProperty].
+#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
 #' @param plot_type The type of plot to generate. Default is "bar".
 #'  * "bar": Bar plot.
 #'  * "line": Line plot.
@@ -53,7 +54,7 @@
 #'    samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'   variable.name = "Type",
-#'   variables = rep(c("B", "L"), 4)
+#'   variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #'
 #' ClonalPositionalPlot(data)
@@ -65,7 +66,7 @@
 ClonalPositionalPlot <- function (
     data, chain = "TRB", aa_length = 20, group_by = "Sample", group_by_sep = "_", split_by = NULL,
     method = c("AA", "shannon", "inv.simpson", "norm.entropy", "Atchley",
-        "Kidera", "stScales", "tScales", "VHSE"),
+        "Kidera", "stScales", "tScales", "VHSE"), order = NULL,
     plot_type = c("bar", "line", "heatmap", "box", "violin"), theme_args = list(),
     xlab = NULL, ylab = NULL, facet_by = NULL, facet_ncol = NULL, facet_nrow = NULL,
     aspect.ratio = NULL,
@@ -81,18 +82,7 @@ ClonalPositionalPlot <- function (
     } else {
         all_groupings <- unique(c(group_by, facet_by, split_by))
     }
-    grouping_levels <- sapply(all_groupings, function(g) {
-        dg <- if (inherits(data, "Seurat")) {
-            data@meta.data[[g]]
-        } else {
-            data[[g]]
-        }
-        if (is.null(dg)) return(NULL)
-        if (!is.factor(dg)) dg <- factor(dg)
-        levels(dg)
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
 
     if (method == "AA") {
@@ -241,6 +231,7 @@ ClonalPositionalPlot <- function (
 #' @param top The number of top k-mers to display. Default is 25.
 #' @param group_by The variable to group the data by. Default is "Sample".
 #' @param group_by_sep The separator to use when combining groupings. Default is "_".
+#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
 #' @param facet_by A character vector of column names to facet the plots. Default is NULL.
 #' @param split_by A character vector of column names to split the plots. Default is NULL.
 #' @param plot_type The type of plot to generate. Default is "bar".
@@ -268,7 +259,7 @@ ClonalPositionalPlot <- function (
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -282,24 +273,13 @@ ClonalPositionalPlot <- function (
 #' }
 ClonalKmerPlot <- function (
     data, chain = "TRB", clone_call = "aa", k = 3, top = 25, group_by = "Sample",
-    group_by_sep = "_", facet_by = NULL, split_by = NULL,
+    group_by_sep = "_", facet_by = NULL, split_by = NULL, order = NULL,
     plot_type = c("bar", "line", "heatmap"), theme_args = list(), aspect.ratio = NULL,
     facet_ncol = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
     all_groupings <- unique(c(group_by, split_by))
-    grouping_levels <- sapply(all_groupings, function(g) {
-        dg <- if (inherits(data, "Seurat")) {
-            data@meta.data[[g]]
-        } else {
-            data[[g]]
-        }
-        if (is.null(dg)) return(NULL)
-        if (!is.factor(dg)) dg <- factor(dg)
-        levels(dg)
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
     data <- percentKmer(data, chain = chain, cloneCall = clone_call, motif.length = k,
         top.motifs = top, group.by = ".group", exportTable = TRUE)

@@ -42,6 +42,8 @@
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
 #' @param groups The groups to include in the plot. Default is NULL.
 #'  If NULL, all the groups in `group_by` will be included.
+#' @param order A list specifying the order of the levels for the `group_by` variable. Default is NULL, which will use the order in the data.
+#' For `group_by`, this has lower priority than `groups`.
 #' @param subgroup_by The column name in the meta data to subgroup the nodes (group nodes on each `x`). Default: NULL.
 #' This argument is only supported for "sankey"/"alluvial" plot.
 #' If NULL, the nodes will be grouped/colored by the clones
@@ -76,7 +78,7 @@
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -84,7 +86,10 @@
 #' )
 #' # add a fake variable (e.g. cell type from scRNA-seq)
 #' data <- lapply(data, function(x) {
-#'     x$CellType <- sample(c("CD4", "CD8", "B", "NK"), nrow(x), replace = TRUE)
+#'     x$CellType <- factor(
+#'         sample(c("CD4", "CD8", "B", "NK"), nrow(x), replace = TRUE),
+#'        levels = c("CD8", "CD4", "B", "NK")
+#'     )
 #'     return(x)
 #' })
 #' # showing the top 10 clones (by default)
@@ -161,7 +166,7 @@
 ClonalStatPlot <- function(
     data, clones = "top(10)", clone_call = "aa", chain = "both", values_by = c("count", "fraction", "n"),
     plot_type = c("bar", "box", "violin", "heatmap", "pies", "circos", "chord", "sankey", "alluvial", "trend", "col"),
-    group_by = "Sample", groups = NULL, subgroup_by = NULL, subgroups = NULL,
+    group_by = "Sample", groups = NULL, subgroup_by = NULL, subgroups = NULL, order = NULL,
     within_subgroup = match.arg(plot_type) != "pies", relabel = plot_type %in% c("col", "chord", "circos"),
     facet_by = NULL, split_by = NULL, y = NULL, xlab = NULL, ylab = NULL, ...
 ) {
@@ -175,7 +180,7 @@ ClonalStatPlot <- function(
     stopifnot("'subgroup_by' is not supported for 'ClonalStatPlot' with plot_type = 'col'" = is.null(subgroup_by) || plot_type != "col")
 
     all_groupings <- unique(c(group_by, subgroup_by, facet_by, split_by))
-    data <- clonal_size_data(data, clone_call, chain, all_groupings)
+    data <- clonal_size_data(data, clone_call, chain, all_groupings, order)
     # Selectors need CTaa in tidy environment
     data$CTaa <- data$CloneID
     data$CloneID <- NULL
@@ -205,6 +210,7 @@ ClonalStatPlot <- function(
             stop(paste("The following subgroups do not exist in the data:", paste(nonexist_subgroups, collapse = ", ")))
         }
         data <- data %>% filter(!!sym(subgroup_by) %in% subgroups)
+        data[[subgroup_by]] <- factor(data[[subgroup_by]], levels = subgroups)
     }
     if (length(groups) < 2 && !plot_type %in% c("bar", "col")) {
         stop("At least 2 groups are required for ClonalStatPlot")

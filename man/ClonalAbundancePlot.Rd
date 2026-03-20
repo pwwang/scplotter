@@ -18,7 +18,7 @@ ClonalAbundancePlot(
   group_by_sep = "_",
   facet_by = NULL,
   split_by = NULL,
-  order = list(),
+  order = NULL,
   xlab = "Abundance",
   ylab = NULL,
   theme_args = list(),
@@ -87,11 +87,11 @@ data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list)
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = sample(c("B", "L"), 8, replace = TRUE)
+    variables = factor(sample(c("B", "L"), 8, replace = TRUE), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Sex",
-    variables = sample(c("M", "F"), 8, replace = TRUE)
+    variables = factor(sample(c("M", "F"), 8, replace = TRUE), levels = c("M", "F"))
 )
 
 ClonalAbundancePlot(data)
@@ -99,5 +99,6 @@ ClonalAbundancePlot(data, ytrans = "log10")
 ClonalAbundancePlot(data, plot_type = "histogram")
 ClonalAbundancePlot(data, plot_type = "histogram", add_trend = TRUE, trend_skip_zero = TRUE)
 ClonalAbundancePlot(data, plot_type = "density")
+ClonalAbundancePlot(data, group_by = "Type")
 }
 }

@@ -13,6 +13,7 @@ ClonalDiversityPlot(
   d = 50,
   plot_type = c("bar", "box", "violin"),
   position = "dodge",
+  order = NULL,
   group_by = NULL,
   facet_by = NULL,
   split_by = NULL,
@@ -49,6 +50,8 @@ The last 3 methods are supported by \code{scplotter} only:
 
 \item{position}{The position adjustment for the bars. Default is "dodge".}
 
+\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
+
 \item{group_by}{A character vector of column names to group the samples. Default is NULL.}
 
 \item{facet_by}{A character vector of column names to facet the plots. Default is NULL.}
@@ -79,7 +82,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

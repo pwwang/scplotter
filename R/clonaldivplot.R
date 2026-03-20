@@ -99,6 +99,7 @@ ClonalDiversity <- function(
 #' @param d The percentage for the "dXX" method. Default is 50.
 #' @param plot_type The type of plot. Options are "bar", "box" and "violin".
 #' @param position The position adjustment for the bars. Default is "dodge".
+#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
 #' @param group_by A character vector of column names to group the samples. Default is NULL.
 #' @param facet_by A character vector of column names to facet the plots. Default is NULL.
 #' @param split_by A character vector of column names to split the plots. Default is NULL.
@@ -120,7 +121,7 @@ ClonalDiversity <- function(
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -140,7 +141,7 @@ ClonalDiversity <- function(
 ClonalDiversityPlot <- function(
     data, clone_call = "gene", chain = "both",
     method = c("shannon", "gini.coeff", "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "d50", "dXX"),
-    d = 50, plot_type = c("bar", "box", "violin"), position = "dodge",
+    d = 50, plot_type = c("bar", "box", "violin"), position = "dodge", order = NULL,
     group_by = NULL, facet_by = NULL, split_by = NULL,
     xlab = NULL, ylab = NULL,
     ...) {
@@ -161,19 +162,8 @@ ClonalDiversityPlot <- function(
         ACE = "ACE Index"
     )
 
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
-    grouping_levels <- sapply(all_groupings, function(g) {
-        dg <- if (inherits(data, "Seurat")) {
-            data@meta.data[[g]]
-        } else {
-            data[[g]]
-        }
-        if (is.null(dg)) return(NULL)
-        if (!is.factor(dg)) dg <- factor(dg)
-        levels(dg)
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
     data <- ClonalDiversity(data,
         cloneCall = clone_call, chain = chain, method = method, d = d, group_by = ".group"
     )
@@ -219,6 +209,7 @@ ClonalDiversityPlot <- function(
 #'  "TRA", "TRG", "IGH", "IGL"
 #' @param group_by A character vector of column names to group the samples. Default is "Sample".
 #' @param group_by_sep The separator for the group_by column. Default is "_".
+#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
 #' @param n_boots The number of bootstrap samples. Default is 20.
 #' @param q The hill number. Default is 0.
 #'  * 0 - Species richness
@@ -244,7 +235,7 @@ ClonalDiversityPlot <- function(
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -260,7 +251,7 @@ ClonalDiversityPlot <- function(
 #' }
 ClonalRarefactionPlot <- function(
     data, clone_call = "aa", chain = "both",
-    group_by = "Sample", group_by_sep = "_",
+    group_by = "Sample", group_by_sep = "_", order = NULL,
     n_boots = 20, q = 0, facet_by = NULL, split_by = NULL, split_by_sep = "_",
     palette = "Paired", combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, ...
 ) {
@@ -269,7 +260,7 @@ ClonalRarefactionPlot <- function(
     }
 
     all_groupings <- unique(c(group_by, split_by))
-    # TODO (maybe): keep the ordering of the grouping levels?
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
 
     .data.wrangle <- getFromNamespace(".data.wrangle", "scRepertoire")
@@ -283,12 +274,21 @@ ClonalRarefactionPlot <- function(
 
     if (!is_seurat_object(data) && !is_se_object(data)) {
         data <- .groupList(data, group.by = ".group")
+        if (length(grouping_levels) == 1) {
+            data <- data[order(match(names(data), grouping_levels[[1]]))]
+        } else if (length(grouping_levels) > 1) {
+            # all combinations of grouping levels, concat with ' // '
+            combs <- expand.grid(grouping_levels, stringsAsFactors = FALSE)
+            combs <- apply(combs, 1, paste, collapse = " // ")
+            data <- data[match(combs, names(data))]
+        }
     }
 
     if (is.null(split_by)) {
         matlist <- lapply(data, function(x) { table(x[, cloneCall]) })
+        names(matlist) <- gsub(" // ", group_by_sep, names(data), fixed = TRUE)
         RarefactionPlot(matlist, q = q, nboot = n_boots, palette = palette,
-            group_name = paste(group_by, sep = group_by_sep), ...)
+            group_name = paste(group_by, collapse = group_by_sep), ...)
     } else {
         datas <- list()
         for (nm in names(data)) {
@@ -303,7 +303,7 @@ ClonalRarefactionPlot <- function(
 
         plots <- lapply(names(datas), function(nm) {
             RarefactionPlot(datas[[nm]], q = q, nboot = n_boots, palette = palette,
-                group_name = paste(group_by, sep = group_by_sep), title = nm, ...)
+                group_name = paste(group_by, collapse = group_by_sep), title = nm, ...)
         })
 
         combine_plots(plots, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow)

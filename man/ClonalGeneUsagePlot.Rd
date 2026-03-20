@@ -9,6 +9,7 @@ ClonalGeneUsagePlot(
   genes = "TRBV",
   scale = TRUE,
   top = 20,
+  order = NULL,
   plot_type = c("bar", "heatmap", "circos", "chord", "alluvial", "sankey"),
   group_by = "Sample",
   facet_by = NULL,
@@ -37,6 +38,8 @@ second set of genes instead of the group_by variable.}
 \item{scale}{Whether to use the proportion that is scaled to the group or the count.}
 
 \item{top}{The number of top genes/genepairs to be plotted.}
+
+\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
 
 \item{plot_type}{The type of plot to be generated. Default is "bar".
 Options are "bar", "heatmap", "circos" (aka "chord").}
@@ -90,7 +93,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

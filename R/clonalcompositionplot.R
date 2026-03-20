@@ -35,11 +35,11 @@
 #' data <- scRepertoire::combineTCR(contig_list)
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = sample(c("B", "L"), 8, replace = TRUE)
+#'     variables = factor(sample(c("B", "L"), 8, replace = TRUE), levels = c("B", "L"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Sex",
-#'     variables = sample(c("M", "F"), 8, replace = TRUE)
+#'     variables = factor(sample(c("M", "F"), 8, replace = TRUE), levels = c("M", "F"))
 #' )
 #'
 #' ClonalVolumePlot(data)
@@ -68,28 +68,14 @@
 ClonalVolumePlot <- function(
     data, clone_call = "aa", chain = "both", scale = FALSE,
     plot_type = c("bar", "box", "violin"), x = "Sample", group_by = NULL,
-    facet_by = NULL, split_by = NULL, order = list(), ylab = NULL, ...) {
+    facet_by = NULL, split_by = NULL, order = NULL, ylab = NULL, ...) {
     plot_type <- match.arg(plot_type)
     if (plot_type %in% c("box", "violin")) {
         all_groupings <- unique(c("Sample", x, group_by, facet_by, split_by))
     } else {
         all_groupings <- unique(c(x, group_by, facet_by, split_by))
     }
-    grouping_levels <- sapply(all_groupings, function(g) {
-        if (!is.null(order[[g]])) {
-            order[[g]]
-        } else {
-            dg <- if (inherits(data, "Seurat")) {
-                data@meta.data[[g]]
-            } else {
-                data[[g]]
-            }
-            if (is.null(dg)) return(NULL)
-            if (!is.factor(dg)) dg <- factor(dg)
-            levels(dg)
-        }
-    }, simplify = FALSE)
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalQuant(data,
         cloneCall = clone_call, chain = chain, scale = scale,
@@ -176,11 +162,11 @@ ClonalVolumePlot <- function(
 #' data <- scRepertoire::combineTCR(contig_list)
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = sample(c("B", "L"), 8, replace = TRUE)
+#'     variables = factor(sample(c("B", "L"), 8, replace = TRUE), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Sex",
-#'     variables = sample(c("M", "F"), 8, replace = TRUE)
+#'     variables = factor(sample(c("M", "F"), 8, replace = TRUE), levels = c("M", "F"))
 #' )
 #'
 #' ClonalAbundancePlot(data)
@@ -188,31 +174,17 @@ ClonalVolumePlot <- function(
 #' ClonalAbundancePlot(data, plot_type = "histogram")
 #' ClonalAbundancePlot(data, plot_type = "histogram", add_trend = TRUE, trend_skip_zero = TRUE)
 #' ClonalAbundancePlot(data, plot_type = "density")
+#' ClonalAbundancePlot(data, group_by = "Type")
 #' }
 ClonalAbundancePlot <- function(
     data, clone_call = "aa", chain = "both", xtrans = "log10", ytrans = "identity",
     plot_type = c("trend", "histogram", "density"), binwidth = 0.1, trend_skip_zero = TRUE,
     bw = 0.5, group_by = "Sample", group_by_sep = "_", facet_by = NULL, split_by = NULL,
-    order = list(), xlab = "Abundance", ylab = NULL, theme_args = list(), ...) {
+    order = NULL, xlab = "Abundance", ylab = NULL, theme_args = list(), ...) {
     plot_type <- match.arg(plot_type)
 
     all_groupings <- unique(c(group_by, facet_by, split_by))
-    grouping_levels <- sapply(all_groupings, function(g) {
-        if (!is.null(order[[g]])) {
-            order[[g]]
-        } else {
-            dg <- if (inherits(data, "Seurat")) {
-                data@meta.data[[g]]
-            } else {
-                data[[g]]
-            }
-            if (is.null(dg)) return(NULL)
-            if (!is.factor(dg)) dg <- factor(dg)
-            levels(dg)
-        }
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
     if (length(all_groupings) > 0) {
         data <- clonalAbundance(data,
@@ -287,7 +259,7 @@ ClonalAbundancePlot <- function(
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom stats quantile
 #' @importFrom rlang syms
-#' @importFrom dplyr summarise n
+#' @importFrom dplyr summarise n n_distinct
 #' @importFrom tidyr separate
 #' @importFrom ggplot2 element_blank scale_x_discrete element_line
 #' @importFrom plotthis BarPlot
@@ -299,9 +271,9 @@ ClonalAbundancePlot <- function(
 #' data(contig_list, package = "scRepertoire")
 #' data <- scRepertoire::combineTCR(contig_list)
 #' data <- scRepertoire::addVariable(data, variable.name = "Type",
-#'  variables = sample(c("B", "L"), 8, replace = TRUE))
+#'  variables = factor(sample(c("B", "L"), 8, replace = TRUE), levels = c("L", "B")))
 #' data <- scRepertoire::addVariable(data, variable.name = "Sex",
-#'  variables = sample(c("M", "F"), 8, replace = TRUE))
+#'  variables = factor(sample(c("M", "F"), 8, replace = TRUE), levels = c("M", "F")))
 #'
 #' ClonalLengthPlot(data)
 #' ClonalLengthPlot(data, plot_type = "box")
@@ -311,7 +283,7 @@ ClonalAbundancePlot <- function(
 #' }
 ClonalLengthPlot <- function(
     data, clone_call = "aa", chain = "both", plot_type = c("bar", "box", "violin", "density"),
-    x_nbreaks = 10, group_by = "Sample", order = list(), xlab = "Length", ylab = NULL,
+    x_nbreaks = 10, group_by = "Sample", order = NULL, xlab = "Length", ylab = NULL,
     position = "dodge", facet_by = NULL, split_by = NULL, ...) {
     plot_type <- match.arg(plot_type)
 
@@ -320,22 +292,7 @@ ClonalLengthPlot <- function(
     } else {
         all_groupings <- unique(c(group_by, facet_by, split_by))
     }
-    grouping_levels <- sapply(all_groupings, function(g) {
-        if (!is.null(order[[g]])) {
-            order[[g]]
-        } else {
-            dg <- if (inherits(data, "Seurat")) {
-                data@meta.data[[g]]
-            } else {
-                data[[g]]
-            }
-            if (is.null(dg)) return(NULL)
-            if (!is.factor(dg)) dg <- factor(dg)
-            levels(dg)
-        }
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
 
     if (identical(all_groupings, "Sample")) {
@@ -393,7 +350,7 @@ ClonalLengthPlot <- function(
                 do_call(BarPlot, args) & scale_x_discrete(breaks = breaks)
             })
         }
-    } else if (plot_type == "box") {
+    } else if (plot_type == "box" || plot_type == "violin") {
         args <- list(...)
         args$data <- data
         args$x <- "length"
@@ -409,26 +366,13 @@ ClonalLengthPlot <- function(
         }
         args$theme_args$panel.grid.major.y <- args$theme_args$panel.grid.major.y %||%
             element_line(color = "grey", linetype = 2)
-        args$legend.position <- args$legend.position %||% ifelse(is.null(args$split_by), "none", "right")
-        do_call(BoxPlot, args)
-    } else if (plot_type == "violin") {
-        args <- list(...)
-        args$data <- data
-        args$x <- "length"
-        args$y <- ".n"
-        args$group_by <- if (identical(group_by, "Sample")) NULL else group_by
-        args$facet_by <- facet_by
-        args$split_by <- split_by
-        args$xlab <- "Length"
-        args$ylab <- ylab %||% default_ylab
-        args$theme_args <- args$theme_args %||% list()
-        if (clone_call == "nt" || chain == "both") {
-            args$theme_args$panel.grid.major.x <- args$theme_args$panel.grid.major.x %||% element_blank()
-        }
-        args$theme_args$panel.grid.major.y <- args$theme_args$panel.grid.major.y %||%
-            element_line(color = "grey", linetype = 2)
-        args$legend.position <- args$legend.position %||% ifelse(is.null(args$split_by), "none", "right")
-        do_call(ViolinPlot, args)
+        args$legend.position <- args$legend.position %||% ifelse(
+            is.null(args$split_by),
+            ifelse(!is.null(args$group_by) && n_distinct(data[[group_by]]) < 10, "right", "none"),
+            "right"
+        )
+        fn <- if (plot_type == "box") BoxPlot else ViolinPlot
+        do_call(fn, args)
     } else if (plot_type == "density") {
         DensityPlot(
             rawdata,
@@ -694,7 +638,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L", "X", "Y"), 2)
+#'     variables = factor(rep(c("B", "L", "X", "Y"), 2), levels = c("Y", "B", "L", "X"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -718,7 +662,7 @@ ClonalResidencyPlot <- function(
     data, clone_call = "aa", chain = "both", plot_type = c("scatter", "venn", "upset"),
     group_by = "Sample", group_by_sep = "_", groups = NULL, facet_by = NULL, split_by = NULL, split_by_sep = "_",
     scatter_cor = "pearson", scatter_size_by = c("max", "total"), with_class = TRUE,
-    order = list(), combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, ...
+    order = NULL, combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, ...
 ) {
 
     stopifnot("[ClonalResidencyPlot] 'facet_by' is not supported" = is.null(facet_by))
@@ -727,7 +671,7 @@ ClonalResidencyPlot <- function(
     scatter_size_by <- match.arg(scatter_size_by)
 
     all_groupings <- unique(c(group_by, facet_by, split_by))
-    data <- clonal_size_data(data, clone_call, chain, all_groupings)
+    data <- clonal_size_data(data, clone_call, chain, all_groupings, order)
 
     check_columns <- utils::getFromNamespace("check_columns", "plotthis")
     orig_group_by <- group_by
@@ -777,11 +721,17 @@ ClonalResidencyPlot <- function(
 
     if (plot_type == "scatter") {
         if (!is.null(split_by)) {
-            data <- unite(data, ".split", split_by, sep = split_by_sep, remove = FALSE)
+            # data <- unite(data, ".split", split_by, sep = split_by_sep, remove = FALSE)
+            # keep the order of the splits in the data
+            split_by <- check_columns(
+                data, split_by,
+                force_factor = TRUE, allow_multi = TRUE, concat_multi = TRUE, concat_sep = split_by_sep
+            )
         } else {
             data$.split <- "..."
+            split_by <- ".split"
         }
-        data <- split(data, data$.split)
+        data <- split(data, data[[split_by]])
         if (any(grepl(":", groups, fixed = TRUE))) {
             groups <- lapply(groups, function(g) {
                 gs <- strsplit(g, ":", fixed = TRUE)[[1]]
@@ -816,7 +766,11 @@ ClonalResidencyPlot <- function(
         data <- data[data[[group_by]] %in% groups, , drop = FALSE]
         data <- data[data$count > 0, , drop = FALSE]
         if (!is.null(split_by)) {
-            data <- unite(data, ".split", split_by, sep = split_by_sep, remove = FALSE)
+            # # data <- unite(data, ".split", split_by, sep = split_by_sep, remove = FALSE)
+            split_by <- check_columns(
+                data, split_by,
+                force_factor = TRUE, allow_multi = TRUE, concat_multi = TRUE, concat_sep = split_by_sep
+            )
         }
         # Calculate the # singlets for each group
         label_fun <- function(df) {
@@ -829,7 +783,7 @@ ClonalResidencyPlot <- function(
                         data[[group_by]] == df$name[i] &
                         data$count == 1
                     if (!is.null(split_by)) {
-                        indicator <- indicator & data$.split == df$.split[i]
+                        indicator <- indicator & data[[split_by]] == df$.split[i]
                     }
                     if (with_class) {
                         ns <- data[indicator, , drop = FALSE]
@@ -844,9 +798,17 @@ ClonalResidencyPlot <- function(
 
         VennDiagram(data,
             in_form = "long", id_by = "CloneID", group_by = group_by, label = label_fun,
-            split_by = split_by, split_by_sep = split_by_sep, ...
+            split_by = split_by, ...
         )
     } else if (plot_type == "upset") {
+        # keep the order of group_by
+        columns <- if (is.factor(data[[group_by]])) {
+            levels(data[[group_by]])
+        } else {
+            unique(data[[group_by]])
+        }
+        columns <- paste0("count_", columns)
+
         data$fraction <- NULL
         data <- data[data[[group_by]] %in% groups, , drop = FALSE]
         data <- data[data$count > 0, , drop = FALSE]
@@ -857,6 +819,7 @@ ClonalResidencyPlot <- function(
                 values_from = !!sym("count"),
                 values_fill = 0
             )
+        data <- data[, intersect(c("CloneID", columns), colnames(data)), drop = FALSE]
 
         if (with_class) {
             data <- data %>%
@@ -944,7 +907,7 @@ ClonalResidencyPlot <- function(
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -963,7 +926,7 @@ ClonalResidencyPlot <- function(
 ClonalCompositionPlot <- function(
     data, clone_call = "aa", chain = "both", method = c("homeostasis", "homeo", "rel", "top", "rare"),
     clone_split = NULL, scale = TRUE, facet_by = NULL, group_by = NULL, split_by = NULL,
-    xlab = NULL, ylab = NULL, plot_type = c("bar", "ring", "box", "violin"), order = list(), ...
+    xlab = NULL, ylab = NULL, plot_type = c("bar", "ring", "box", "violin"), order = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
     method <- match.arg(method)
@@ -983,24 +946,9 @@ ClonalCompositionPlot <- function(
         }
     }
     all_groupings <- unique(c("Sample", group_by, facet_by, split_by))
-    grouping_levels <- sapply(all_groupings, function(g) {
-        if (!is.null(order[[g]])) {
-            order[[g]]
-        } else {
-            dg <- if (inherits(data, "Seurat")) {
-                data@meta.data[[g]]
-            } else {
-                data[[g]]
-            }
-            if (is.null(dg)) return(NULL)
-            if (!is.factor(dg)) dg <- factor(dg)
-            levels(dg)
-        }
-    })
-    # remove NULL entries
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
 
     if (method == "homeostasis" || method == "homeo" || method == "rel" || method == "top") {
+        grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
         data <- merge_clonal_groupings(data, all_groupings)
         if (method == "top") {
             data <- clonalProportion(data, cloneCall = clone_call, chain = chain,
@@ -1023,7 +971,8 @@ ClonalCompositionPlot <- function(
         # Sample Type  .names        .values
         name_levels <- unique(data$.names)
     } else {  # rare
-        data <- clonal_size_data(data, clone_call, chain, all_groupings)
+        data <- clonal_size_data(data, clone_call, chain, all_groupings, order)
+
         # CloneID Sample Type count fraction
         clone_split <- sort(clone_split)
         clone_split <- c(-Inf, clone_split, Inf)
@@ -1160,7 +1109,7 @@ ClonalCompositionPlot <- function(
 #'     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Type",
-#'     variables = rep(c("B", "L"), 4)
+#'     variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 #' )
 #' data <- scRepertoire::addVariable(data,
 #'     variable.name = "Subject",
@@ -1175,29 +1124,14 @@ ClonalCompositionPlot <- function(
 #' }
 ClonalOverlapPlot <- function(
     data, clone_call = "aa", chain = "both", group_by = "Sample", group_by_sep = "_", full = TRUE,
-    split_by = NULL, order = list(), method = c("raw", "overlap", "morisita", "jaccard", "cosine"),
+    split_by = NULL, order = NULL, method = c("raw", "overlap", "morisita", "jaccard", "cosine"),
     palette = "Blues", label_accuracy = NULL, label_cutoff = 1e-3, cluster_rows = FALSE, cluster_columns = FALSE,
     show_row_names = TRUE, show_column_names = TRUE, ...
 ) {
     method <- match.arg(method)
 
     all_groupings <- unique(c(group_by, split_by))
-    grouping_levels <- sapply(all_groupings, function(g) {
-        if (!is.null(order[[g]])) {
-            order[[g]]
-        } else {
-            dg <- if (inherits(data, "Seurat")) {
-                data@meta.data[[g]]
-            } else {
-                data[[g]]
-            }
-            if (is.null(dg)) return(NULL)
-            if (!is.factor(dg)) dg <- factor(dg)
-            levels(dg)
-        }
-    })
-    grouping_levels <- grouping_levels[!sapply(grouping_levels, is.null)]
-
+    grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
     data <- clonalOverlap(data, cloneCall = clone_call, chain = chain, group.by = ".group",
         method = method, exportTable = TRUE)

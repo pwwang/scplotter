@@ -12,7 +12,7 @@ ClonalOverlapPlot(
   group_by_sep = "_",
   full = TRUE,
   split_by = NULL,
-  order = list(),
+  order = NULL,
   method = c("raw", "overlap", "morisita", "jaccard", "cosine"),
   palette = "Blues",
   label_accuracy = NULL,
@@ -87,7 +87,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",
