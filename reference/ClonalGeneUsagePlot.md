@@ -10,6 +10,7 @@ ClonalGeneUsagePlot(
   genes = "TRBV",
   scale = TRUE,
   top = 20,
+  order = NULL,
   plot_type = c("bar", "heatmap", "circos", "chord", "alluvial", "sankey"),
   group_by = "Sample",
   facet_by = NULL,
@@ -52,6 +53,11 @@ ClonalGeneUsagePlot(
 - top:
 
   The number of top genes/genepairs to be plotted.
+
+- order:
+
+  A list specifying the order of the levels for each grouping variable.
+  Default is NULL, which will use the order in the data.
 
 - plot_type:
 
@@ -145,7 +151,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

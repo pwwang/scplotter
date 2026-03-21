@@ -15,7 +15,7 @@ ClonalVolumePlot(
   group_by = NULL,
   facet_by = NULL,
   split_by = NULL,
-  order = list(),
+  order = NULL,
   ylab = NULL,
   ...
 )
@@ -105,11 +105,11 @@ data(contig_list, package = "scRepertoire")
 data <- scRepertoire::combineTCR(contig_list)
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = sample(c("B", "L"), 8, replace = TRUE)
+    variables = factor(sample(c("B", "L"), 8, replace = TRUE), levels = c("B", "L"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Sex",
-    variables = sample(c("M", "F"), 8, replace = TRUE)
+    variables = factor(sample(c("M", "F"), 8, replace = TRUE), levels = c("M", "F"))
 )
 
 ClonalVolumePlot(data)

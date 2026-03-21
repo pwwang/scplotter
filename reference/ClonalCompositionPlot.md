@@ -18,7 +18,7 @@ ClonalCompositionPlot(
   xlab = NULL,
   ylab = NULL,
   plot_type = c("bar", "ring", "box", "violin"),
-  order = list(),
+  order = NULL,
   ...
 )
 ```
@@ -145,7 +145,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

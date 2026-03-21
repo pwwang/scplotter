@@ -1,11 +1,13 @@
-# clonal_size_data
+# Get the grouping levels for clonal data for later to restore
 
-Function to get the clonal size data for all group_by values.
+Data transform with multiple groupings may lose the original grouping
+levels. This function is to get the grouping levels for later to
+restore.
 
 ## Usage
 
 ``` r
-clonal_size_data(data, clone_call, chain, groupings, order)
+get_clonal_grouping_levels(data, groupings, order = NULL)
 ```
 
 ## Arguments
@@ -18,17 +20,6 @@ clonal_size_data(data, clone_call, chain, groupings, order)
   or
   [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
-- clone_call:
-
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
-
-- chain:
-
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
-
 - groupings:
 
   The column names in the meta data to group the cells.
@@ -36,8 +27,7 @@ clonal_size_data(data, clone_call, chain, groupings, order)
 - order:
 
   A list specifying the order of the levels for each grouping variable.
-  Default is NULL, which will use the order in the data.
 
 ## Value
 
-A data frame with the clonal size data.
+A list of the grouping levels for each grouping variable.

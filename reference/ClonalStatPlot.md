@@ -17,6 +17,7 @@ ClonalStatPlot(
   groups = NULL,
   subgroup_by = NULL,
   subgroups = NULL,
+  order = NULL,
   within_subgroup = match.arg(plot_type) != "pies",
   relabel = plot_type %in% c("col", "chord", "circos"),
   facet_by = NULL,
@@ -127,6 +128,12 @@ ClonalStatPlot(
 
   The subgroups to include in the plot. Default is NULL.
 
+- order:
+
+  A list specifying the order of the levels for the `group_by` variable.
+  Default is NULL, which will use the order in the data. For `group_by`,
+  this has lower priority than `groups`.
+
 - within_subgroup:
 
   Whether to select the clones within each subgroup.
@@ -191,7 +198,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",
@@ -199,7 +206,10 @@ data <- scRepertoire::addVariable(data,
 )
 # add a fake variable (e.g. cell type from scRNA-seq)
 data <- lapply(data, function(x) {
-    x$CellType <- sample(c("CD4", "CD8", "B", "NK"), nrow(x), replace = TRUE)
+    x$CellType <- factor(
+        sample(c("CD4", "CD8", "B", "NK"), nrow(x), replace = TRUE),
+       levels = c("CD8", "CD4", "B", "NK")
+    )
     return(x)
 })
 # showing the top 10 clones (by default)

@@ -15,6 +15,7 @@ ClonalPositionalPlot(
   split_by = NULL,
   method = c("AA", "shannon", "inv.simpson", "norm.entropy", "Atchley", "Kidera",
     "stScales", "tScales", "VHSE"),
+  order = NULL,
   plot_type = c("bar", "line", "heatmap", "box", "violin"),
   theme_args = list(),
   xlab = NULL,
@@ -83,6 +84,11 @@ ClonalPositionalPlot(
     [scRepertoire::positionalEntropy](https://www.borch.dev/uploads/scRepertoire/reference/positionalEntropy.html)
     and
     [scRepertoire::positionalProperty](https://www.borch.dev/uploads/scRepertoire/reference/positionalProperty.html).
+
+- order:
+
+  A list specifying the order of the levels for each grouping variable.
+  Default is NULL, which will use the order in the data.
 
 - plot_type:
 
@@ -162,7 +168,7 @@ data <- scRepertoire::combineTCR(contig_list,
    samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
   variable.name = "Type",
-  variables = rep(c("B", "L"), 4)
+  variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 
 ClonalPositionalPlot(data)

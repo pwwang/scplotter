@@ -15,6 +15,7 @@ ClonalKmerPlot(
   group_by_sep = "_",
   facet_by = NULL,
   split_by = NULL,
+  order = NULL,
   plot_type = c("bar", "line", "heatmap"),
   theme_args = list(),
   aspect.ratio = NULL,
@@ -67,6 +68,11 @@ ClonalKmerPlot(
   A character vector of column names to split the plots. Default is
   NULL.
 
+- order:
+
+  A list specifying the order of the levels for each grouping variable.
+  Default is NULL, which will use the order in the data.
+
 - plot_type:
 
   The type of plot to generate. Default is "bar".
@@ -118,7 +124,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

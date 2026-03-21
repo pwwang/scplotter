@@ -19,7 +19,7 @@ ClonalResidencyPlot(
   scatter_cor = "pearson",
   scatter_size_by = c("max", "total"),
   with_class = TRUE,
-  order = list(),
+  order = NULL,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
@@ -153,7 +153,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L", "X", "Y"), 2)
+    variables = factor(rep(c("B", "L", "X", "Y"), 2), levels = c("Y", "B", "L", "X"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",

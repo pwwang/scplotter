@@ -11,6 +11,7 @@ ClonalRarefactionPlot(
   chain = "both",
   group_by = "Sample",
   group_by_sep = "_",
+  order = NULL,
   n_boots = 20,
   q = 0,
   facet_by = NULL,
@@ -54,6 +55,11 @@ ClonalRarefactionPlot(
 - group_by_sep:
 
   The separator for the group_by column. Default is "\_".
+
+- order:
+
+  A list specifying the order of the levels for each grouping variable.
+  Default is NULL, which will use the order in the data.
 
 - n_boots:
 
@@ -122,7 +128,7 @@ data <- scRepertoire::combineTCR(contig_list,
     samples = c("P17B", "P17L", "P18B", "P18L", "P19B","P19L", "P20B", "P20L"))
 data <- scRepertoire::addVariable(data,
     variable.name = "Type",
-    variables = rep(c("B", "L"), 4)
+    variables = factor(rep(c("B", "L"), 4), levels = c("L", "B"))
 )
 data <- scRepertoire::addVariable(data,
     variable.name = "Subject",
