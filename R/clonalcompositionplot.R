@@ -261,6 +261,7 @@ ClonalAbundancePlot <- function(
 #' @importFrom rlang syms
 #' @importFrom dplyr summarise n n_distinct
 #' @importFrom tidyr separate
+#' @importFrom SeuratObject Idents<-
 #' @importFrom ggplot2 element_blank scale_x_discrete element_line
 #' @importFrom plotthis BarPlot
 #' @importFrom scRepertoire clonalLength
@@ -296,6 +297,9 @@ ClonalLengthPlot <- function(
     data <- merge_clonal_groupings(data, all_groupings)
 
     if (identical(all_groupings, "Sample")) {
+        if (inherits(data, "Seurat")) {
+            Idents(data) <- "Sample"
+        }
         data <- clonalLength(data, cloneCall = clone_call, chain = chain, exportTable = TRUE)
         data$Sample <- data$values
     } else {
