@@ -338,13 +338,28 @@ ClonalLengthPlot <- function(
         args$ylab <- ylab %||% default_ylab
         args$theme_args <- args$theme_args %||% list()
         args$theme_args$panel.grid.major.x <- element_blank()
+        minx <- min(data$length, na.rm = TRUE)
+        maxx <- max(data$length, na.rm = TRUE)
+        # Make both minx and maxx to the nearest 10s
+        minx <- floor(minx / 10) * 10
+        maxx <- ceiling(maxx / 10) * 10
         breaks <- unname(
             quantile(
-                min(data$length, na.rm = TRUE):max(data$length, na.rm = TRUE),
-                probs = seq(0, 1, length.out = x_nbreaks),
+                minx:maxx,
+                probs = seq(0, 1, length.out = x_nbreaks + 1),
                 type = 3
             )
         )
+        missing_breaks <- setdiff(breaks, data$length)
+        missing_data <- data.frame(
+            length = missing_breaks,
+            .n = 0
+        )
+        for (col in setdiff(colnames(data), c("length", ".n"))) {
+            missing_data[[col]] <- data[[col]][1]
+        }
+        args$data <- rbind(data, missing_data)
+        args$data <- args$data[order(args$data$length), , drop = FALSE]
         if (is.null(args$split_by)) {
             suppressMessages({
                 do_call(BarPlot, args) + scale_x_discrete(breaks = breaks)
