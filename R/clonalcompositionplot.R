@@ -334,6 +334,7 @@ ClonalLengthPlot <- function(
         args$facet_by <- facet_by
         args$split_by <- split_by
         args$position <- position
+        args$position_dodge_preserve <- args$position_dodge_preserve %||% "single"
         args$xlab <- "Length"
         args$ylab <- ylab %||% default_ylab
         args$theme_args <- args$theme_args %||% list()
