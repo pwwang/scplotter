@@ -839,7 +839,7 @@ ClonalResidencyPlot <- function(
                 values_from = !!sym("count"),
                 values_fill = 0
             )
-        data <- data[, intersect(c("CloneID", columns), colnames(data)), drop = FALSE]
+        data <- data[, intersect(unique(c("CloneID", split_by, columns)), colnames(data)), drop = FALSE]
 
         if (with_class) {
             data <- data %>%
