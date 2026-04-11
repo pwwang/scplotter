@@ -65,6 +65,7 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
       - name: Install scplotter
         run: |
@@ -76,6 +77,7 @@ jobs:
           pkgdown::build_site_github_pages(new_process = TRUE, install = TRUE)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
       - name: Deploy to GitHub pages
         if: github.event_name != 'pull_request'
