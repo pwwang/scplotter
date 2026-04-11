@@ -23,10 +23,11 @@ provided by `tidyprompt`.
 ``` r
 # Set up LLM provider
 provider <- tidyprompt::llm_provider_openai(
-    parameters = list(model = "gpt-5-nano", stream = getOption("tidyprompt.stream", TRUE)),
+    parameters = list(model = "openai/gpt-5.4-nano", stream =
+      getOption("tidyprompt.stream", TRUE)),
     verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://api.openai.com/v1/chat/completions",
-    api_key = Sys.getenv("OPENAI_API_KEY")
+    url = "https://openrouter.ai/api/v1/chat/completions",
+    api_key = Sys.getenv("OPENROUTER_API_KEY")
 )
 
 chat <- SCPlotterChat$new(provider = provider)
@@ -213,7 +214,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "dot")
+#> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -229,7 +230,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -244,7 +245,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -253,12 +254,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                                 
-#> [3] "User: Do a heatmap instead"                                                                                                                                         
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
-#> [5] "User: Add a proper title to the plot"                                                                                                                               
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                            
+#> [3] "User: Do a heatmap instead"                                                                                                                                                    
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                        
+#> [5] "User: Add a proper title to the plot"                                                                                                                                          
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"
 
 # To clear the history
 chat$clear_history()
@@ -276,7 +277,7 @@ chat <- SCPlotterChat$new(
     verbose = TRUE
 )
 chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
-#> --- Sending request to LLM provider (gpt-5-nano): ---
+#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
 #> Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.
 #> 
 #> Decision Process:
@@ -445,7 +446,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> --- Receiving response from LLM provider: ---
 #> CCCPlot
 #> Tool identified:  CCCPlot
-#> --- Sending request to LLM provider (gpt-5-nano): ---
+#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
 #> Objective: Identify the data object to be used.
 #> 
 #> Decision Process:
@@ -476,7 +477,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> --- Sending request to LLM provider (gpt-5-nano): ---
+#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
 ```
 
     #> Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.
@@ -883,18 +884,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.
     #>       - palette: A character string specifying the palette of the heatmap cells.
     #>       - palcolor: A character vector of colors to override the palette of the heatmap cells.
-    #>       - rows_palette: A character string specifying the palette of the row group annotation.
-    #>       The default is "Paired".
-    #>       - rows_palcolor: A character vector of colors to override the palette of the row group annotation.
-    #>       - rows_split_palette: A character string specifying the palette of the row split annotation.
-    #>       The default is "simspec".
-    #>       - rows_split_palcolor: A character vector of colors to override the palette of the row split annotation.
-    #>       - columns_palette: A character string specifying the palette of the column group annotation.
-    #>       The default is "Paired".
-    #>       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.
-    #>       - columns_split_palette: A character string specifying the palette of the column split annotation.
-    #>       The default is "simspec".
-    #>       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.
     #>       - pie_size_name: A character string specifying the name of the legend for the pie size.
     #>       - pie_size: A numeric value or a function specifying the size of the pie chart.
     #>       If it is a function, the function should take count as the argument and return the size.
@@ -910,14 +899,74 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - pie_palcolor: A character vector of colors to override the palette of the pie chart.
     #>       - bars_sample: An integer specifying the number of samples to draw the bars.
     #>       - label: A function to calculate the labels for the heatmap cells.
-    #>       It can take either 1, 3, or 5 arguments. The first argument is the aggregated values.
-    #>       If it takes 3 arguments, the second and third arguments are the row and column indices.
+    #>       It can take either 1, 3, or 5 arguments. The first argument is the aggregated value for a single cell.
+    #>       If it takes 3 arguments, the second and third arguments are the row and column indices of that cell.
     #>       If it takes 5 arguments, the second and third arguments are the row and column indices,
-    #>       the fourth and fifth arguments are the row and column names.
-    #>       The function should return a character vector of the same length as the aggregated values.
-    #>       If the function returns NA, no label will be shown for that cell.
+    #>       and the fourth and fifth arguments are the row and column names.
+    #>       The function should return one of:
+    #>       
+    #>        NA — no label is drawn for this cell.
+    #>        A character scalar — used as the label text; label_size and label_color are used for size and color.
+    #>        A named list with any of the following fields:
+    #>       
+    #>        label: character scalar for the label text.
+    #>        size: numeric pt size (overrides label_size).
+    #>        color: character color string (overrides label_color).
+    #>        legend: character string used as the legend entry for this cell's color/label combination.
+    #>        order: integer controlling the position of this legend entry — smaller values appear first (top) in the legend.
+    #>       Entries without an order are appended after all explicitly ordered entries.
     #>       For the indices, if you have the same dimension of data (same order of rows and columns) as the heatmap, you need to use ComplexHeatmap::pindex() to get the correct values.
-    #>       - label_size: A numeric value specifying the size of the labels when cell_type = "label".
+    #>       
+    #>       
+    #>       - label_size: A numeric value specifying the default size (pt) of the labels when cell_type = "label".
+    #>       Used as fallback when the label function does not return a size field.
+    #>       - label_color: A character string specifying the default color of the labels when cell_type = "label".
+    #>       Used as fallback when the label function does not return a color field. Default is "black".
+    #>       - label_name: A character string specifying the title of the label legend. Default is "label".
+    #>       The legend is shown automatically when the label function returns a list with a legend field for at least
+    #>       one cell — no extra configuration needed. Set legend.position = "none" to suppress all legends.
+    #>       - mark: A function to calculate the marks drawn on top of heatmap cells when cell_type = "mark".
+    #>       Same dispatch rules as label (1, 3, or 5 arguments).
+    #>       The function should return one of:
+    #>       
+    #>        NA — no mark is drawn for this cell.
+    #>        A character scalar — the mark type string; mark_color and mark_size are used for appearance.
+    #>        A named list with any of the following fields:
+    #>       
+    #>        mark (or first unnamed element): character scalar, the mark type string.
+    #>        size: numeric stroke width (lwd), overrides mark_size.
+    #>        color: character color string, overrides mark_color.
+    #>        legend: character string used as the legend entry key.
+    #>        order: integer controlling legend entry position (smaller = higher).
+    #>       Supported mark types:
+    #>       
+    #>        Primitives: - (h-line), | (v-line), + (cross), / (l-diag), \ (r-diag),
+    #>       x (both diags), o (circle with gap), () (circle touching edge), <> (diamond).
+    #>        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [<>].
+    #>        With full circle: (-), (|), (+), (/), (\), (x), (o), (<>).
+    #>        With diamond: <->, <|>, <+>, </>, <\>, <x>, <o>.
+    #>        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(<>)].
+    #>       
+    #>       
+    #>       []: R:%5C
+    #>       [x]: R:x
+    #>       [o]: R:o
+    #>       [()]: R:()
+    #>       [<>]: R:%3C%3E
+    #>       [(|)]: R:(%7C)
+    #>       [(-)]: R:(-)
+    #>       [(+)]: R:(+)
+    #>       [(/)]: R:(/)
+    #>       [(\)]: R:(%5C%5C)
+    #>       [(x)]: R:(x)
+    #>       [(o)]: R:(o)
+    #>       [(<>)]: R:(%3C%3E)
+    #>       - mark_color: A character string specifying the default color of the marks when cell_type = "mark".
+    #>       Used as fallback when the mark function does not return a color field. Default is "black".
+    #>       - mark_size: A numeric value specifying the default stroke width (lwd) of the marks when cell_type = "mark".
+    #>       Used as fallback when the mark function does not return a size field. Default is 1.
+    #>       - mark_name: A character string specifying the title of the mark legend. Default is "mark".
+    #>       The legend is shown automatically when the mark function returns a list with a legend field.
     #>       - violin_fill: A character vector of colors to override the fill color of the violin plot.
     #>       If NULL, the fill color will be the same as the annotion.
     #>       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.
@@ -940,12 +989,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.
     #>       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.
     #>       - reticle_color: A character string specifying the color of the reticle.
-    #>       - column_name_annotation: A logical value indicating whether to add the column annotation for the column names.
-    #>       which is a simple annotaion indicating the column names.
-    #>       - column_name_legend: A logical value indicating whether to show the legend of the column name annotation.
-    #>       - row_name_annotation: A logical value indicating whether to add the row annotation for the row names.
-    #>       which is a simple annotaion indicating the row names.
-    #>       - row_name_legend: A logical value indicating whether to show the legend of the row name annotation.
     #>       - cluster_columns: A logical value indicating whether to cluster the columns.
     #>       If TRUE and columns_split_by is provided, the clustering will only be applied to the columns within the same split.
     #>       - cluster_rows: A logical value indicating whether to cluster the rows.
@@ -975,7 +1018,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       Could be a list with the keys as the names of the annotation and the values as the types.
     #>       If the type is "auto", the type will be determined by the type and number of the column data.
     #>       - column_annotation_params: A list of parameters passed to the annotation function.
-    #>       Could be a list with the keys as the names of the annotation and the values as the parameters passed to the annotation function. For the parameters for names (columns_by, rows_by, columns_split_by, rows_split_by), the key should be "name.(name)", where (name) is the name of the annotation.
+    #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
+    #>       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split
+    #>       for columns_split_by. Setting a key to FALSE disables that annotation.
+    #>       $<key>$show_legend controls the legend for that annotation.
     #>       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.
     #>       - column_annotation_agg: A function to aggregate the values in the column annotation.
     #>       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.
@@ -993,7 +1039,9 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       If the type is "auto", the type will be determined by the type and number of the row data.
     #>       - row_annotation_params: A list of parameters passed to the annotation function.
     #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
-    #>       Same as column_annotation_params.
+    #>       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.
+    #>       Setting a key to FALSE disables that annotation. $<key>$show_legend controls the legend.
+    #>       Same structure as column_annotation_params.
     #>       - row_annotation_agg: A function to aggregate the values in the row annotation.
     #>       - flip: A logical value indicating whether to flip the heatmap.
     #>       The idea is that, you can simply set flip = TRUE to flip the heatmap.
@@ -1010,11 +1058,31 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.
     #>       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.
     #>       If no unit is provided, the default unit will be "mm".
+    #>       - base_size: A positive numeric scalar used as a scaling factor for the overall heatmap size.
+    #>       Default is 1 (no scaling). Values greater than 1 enlarge the heatmap; values less than 1 shrink it.
+    #>       Internally, all calculated cell dimensions are multiplied by this factor.
+    #>       - aspect.ratio: A positive numeric scalar giving the height-to-width ratio of a single heatmap
+    #>       cell. When NULL (default), sensible per-cell_type defaults are used:
+    #>       
+    #>        tile, label, dot: square cells (ratio = 1).
+    #>        bars: wider-than-tall cells (ratio = 0.5) so individual bars are legible.
+    #>        violin, boxplot, pie: square cells with a larger base size (0.5 in) so embedded
+    #>       sub-plots have enough room.
+    #>       Provide an explicit value to override these defaults (e.g. aspect.ratio = 2 for
+    #>       portrait cells, aspect.ratio = 0.5 for landscape cells).
+    #>       Note that for cell_type = "pie" the cells are always drawn square by ComplexHeatmap
+    #>       regardless of this setting; use it primarily to budget the figure size.
+    #>       Note that the aspect ratio is not guaranteed to be perfectly preserved; it will also be restricted by the size and height/width ratio of the entire plot itself.
+    #>       
+    #>       - draw_opts: A named list of additional arguments passed to ComplexHeatmap::draw(). Arguments already managed
+    #>       internally (annotation_legend_list, padding, show_annotation_legend, annotation_legend_side,
+    #>       column_title) take precedence over any values supplied here.
+    #>       See https://jokergoo.github.io/ComplexHeatmap/reference/draw-HeatmapList-method.html for available options.
     #>       - layer_fun_callback: A function to add additional layers to the heatmap.
     #>       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.
     #>       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.
     #>       - cell_type: A character string specifying the type of the heatmap cells.
-    #>       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".
+    #>       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".
     #>       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values
     #>       will just be counted in different pie_group_by groups. NA values will not be counted.
     #>       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".
@@ -1319,11 +1387,14 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(
+    #>   data = cellphonedb_res,
+    #>   plot_type = "dot"
+    #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -1336,7 +1407,7 @@ chat <- SCPlotterChat$new(
     verbose = FALSE
 )
 chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.", verbose = TRUE)
-#> --- Sending request to LLM provider (gpt-5-nano): ---
+#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
 #> Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.
 #> 
 #> Decision Process:
@@ -1505,7 +1576,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> --- Receiving response from LLM provider: ---
 #> CCCPlot
 #> Tool identified:  CCCPlot
-#> --- Sending request to LLM provider (gpt-5-nano): ---
+#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
 #> Objective: Identify the data object to be used.
 #> 
 #> Decision Process:
@@ -1536,7 +1607,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> --- Sending request to LLM provider (gpt-5-nano): ---
+#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
 ```
 
     #> Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.
@@ -1943,18 +2014,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.
     #>       - palette: A character string specifying the palette of the heatmap cells.
     #>       - palcolor: A character vector of colors to override the palette of the heatmap cells.
-    #>       - rows_palette: A character string specifying the palette of the row group annotation.
-    #>       The default is "Paired".
-    #>       - rows_palcolor: A character vector of colors to override the palette of the row group annotation.
-    #>       - rows_split_palette: A character string specifying the palette of the row split annotation.
-    #>       The default is "simspec".
-    #>       - rows_split_palcolor: A character vector of colors to override the palette of the row split annotation.
-    #>       - columns_palette: A character string specifying the palette of the column group annotation.
-    #>       The default is "Paired".
-    #>       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.
-    #>       - columns_split_palette: A character string specifying the palette of the column split annotation.
-    #>       The default is "simspec".
-    #>       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.
     #>       - pie_size_name: A character string specifying the name of the legend for the pie size.
     #>       - pie_size: A numeric value or a function specifying the size of the pie chart.
     #>       If it is a function, the function should take count as the argument and return the size.
@@ -1970,14 +2029,74 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - pie_palcolor: A character vector of colors to override the palette of the pie chart.
     #>       - bars_sample: An integer specifying the number of samples to draw the bars.
     #>       - label: A function to calculate the labels for the heatmap cells.
-    #>       It can take either 1, 3, or 5 arguments. The first argument is the aggregated values.
-    #>       If it takes 3 arguments, the second and third arguments are the row and column indices.
+    #>       It can take either 1, 3, or 5 arguments. The first argument is the aggregated value for a single cell.
+    #>       If it takes 3 arguments, the second and third arguments are the row and column indices of that cell.
     #>       If it takes 5 arguments, the second and third arguments are the row and column indices,
-    #>       the fourth and fifth arguments are the row and column names.
-    #>       The function should return a character vector of the same length as the aggregated values.
-    #>       If the function returns NA, no label will be shown for that cell.
+    #>       and the fourth and fifth arguments are the row and column names.
+    #>       The function should return one of:
+    #>       
+    #>        NA — no label is drawn for this cell.
+    #>        A character scalar — used as the label text; label_size and label_color are used for size and color.
+    #>        A named list with any of the following fields:
+    #>       
+    #>        label: character scalar for the label text.
+    #>        size: numeric pt size (overrides label_size).
+    #>        color: character color string (overrides label_color).
+    #>        legend: character string used as the legend entry for this cell's color/label combination.
+    #>        order: integer controlling the position of this legend entry — smaller values appear first (top) in the legend.
+    #>       Entries without an order are appended after all explicitly ordered entries.
     #>       For the indices, if you have the same dimension of data (same order of rows and columns) as the heatmap, you need to use ComplexHeatmap::pindex() to get the correct values.
-    #>       - label_size: A numeric value specifying the size of the labels when cell_type = "label".
+    #>       
+    #>       
+    #>       - label_size: A numeric value specifying the default size (pt) of the labels when cell_type = "label".
+    #>       Used as fallback when the label function does not return a size field.
+    #>       - label_color: A character string specifying the default color of the labels when cell_type = "label".
+    #>       Used as fallback when the label function does not return a color field. Default is "black".
+    #>       - label_name: A character string specifying the title of the label legend. Default is "label".
+    #>       The legend is shown automatically when the label function returns a list with a legend field for at least
+    #>       one cell — no extra configuration needed. Set legend.position = "none" to suppress all legends.
+    #>       - mark: A function to calculate the marks drawn on top of heatmap cells when cell_type = "mark".
+    #>       Same dispatch rules as label (1, 3, or 5 arguments).
+    #>       The function should return one of:
+    #>       
+    #>        NA — no mark is drawn for this cell.
+    #>        A character scalar — the mark type string; mark_color and mark_size are used for appearance.
+    #>        A named list with any of the following fields:
+    #>       
+    #>        mark (or first unnamed element): character scalar, the mark type string.
+    #>        size: numeric stroke width (lwd), overrides mark_size.
+    #>        color: character color string, overrides mark_color.
+    #>        legend: character string used as the legend entry key.
+    #>        order: integer controlling legend entry position (smaller = higher).
+    #>       Supported mark types:
+    #>       
+    #>        Primitives: - (h-line), | (v-line), + (cross), / (l-diag), \ (r-diag),
+    #>       x (both diags), o (circle with gap), () (circle touching edge), <> (diamond).
+    #>        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [<>].
+    #>        With full circle: (-), (|), (+), (/), (\), (x), (o), (<>).
+    #>        With diamond: <->, <|>, <+>, </>, <\>, <x>, <o>.
+    #>        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(<>)].
+    #>       
+    #>       
+    #>       []: R:%5C
+    #>       [x]: R:x
+    #>       [o]: R:o
+    #>       [()]: R:()
+    #>       [<>]: R:%3C%3E
+    #>       [(|)]: R:(%7C)
+    #>       [(-)]: R:(-)
+    #>       [(+)]: R:(+)
+    #>       [(/)]: R:(/)
+    #>       [(\)]: R:(%5C%5C)
+    #>       [(x)]: R:(x)
+    #>       [(o)]: R:(o)
+    #>       [(<>)]: R:(%3C%3E)
+    #>       - mark_color: A character string specifying the default color of the marks when cell_type = "mark".
+    #>       Used as fallback when the mark function does not return a color field. Default is "black".
+    #>       - mark_size: A numeric value specifying the default stroke width (lwd) of the marks when cell_type = "mark".
+    #>       Used as fallback when the mark function does not return a size field. Default is 1.
+    #>       - mark_name: A character string specifying the title of the mark legend. Default is "mark".
+    #>       The legend is shown automatically when the mark function returns a list with a legend field.
     #>       - violin_fill: A character vector of colors to override the fill color of the violin plot.
     #>       If NULL, the fill color will be the same as the annotion.
     #>       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.
@@ -2000,12 +2119,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.
     #>       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.
     #>       - reticle_color: A character string specifying the color of the reticle.
-    #>       - column_name_annotation: A logical value indicating whether to add the column annotation for the column names.
-    #>       which is a simple annotaion indicating the column names.
-    #>       - column_name_legend: A logical value indicating whether to show the legend of the column name annotation.
-    #>       - row_name_annotation: A logical value indicating whether to add the row annotation for the row names.
-    #>       which is a simple annotaion indicating the row names.
-    #>       - row_name_legend: A logical value indicating whether to show the legend of the row name annotation.
     #>       - cluster_columns: A logical value indicating whether to cluster the columns.
     #>       If TRUE and columns_split_by is provided, the clustering will only be applied to the columns within the same split.
     #>       - cluster_rows: A logical value indicating whether to cluster the rows.
@@ -2035,7 +2148,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       Could be a list with the keys as the names of the annotation and the values as the types.
     #>       If the type is "auto", the type will be determined by the type and number of the column data.
     #>       - column_annotation_params: A list of parameters passed to the annotation function.
-    #>       Could be a list with the keys as the names of the annotation and the values as the parameters passed to the annotation function. For the parameters for names (columns_by, rows_by, columns_split_by, rows_split_by), the key should be "name.(name)", where (name) is the name of the annotation.
+    #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
+    #>       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split
+    #>       for columns_split_by. Setting a key to FALSE disables that annotation.
+    #>       $<key>$show_legend controls the legend for that annotation.
     #>       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.
     #>       - column_annotation_agg: A function to aggregate the values in the column annotation.
     #>       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.
@@ -2053,7 +2169,9 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       If the type is "auto", the type will be determined by the type and number of the row data.
     #>       - row_annotation_params: A list of parameters passed to the annotation function.
     #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
-    #>       Same as column_annotation_params.
+    #>       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.
+    #>       Setting a key to FALSE disables that annotation. $<key>$show_legend controls the legend.
+    #>       Same structure as column_annotation_params.
     #>       - row_annotation_agg: A function to aggregate the values in the row annotation.
     #>       - flip: A logical value indicating whether to flip the heatmap.
     #>       The idea is that, you can simply set flip = TRUE to flip the heatmap.
@@ -2070,11 +2188,31 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.
     #>       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.
     #>       If no unit is provided, the default unit will be "mm".
+    #>       - base_size: A positive numeric scalar used as a scaling factor for the overall heatmap size.
+    #>       Default is 1 (no scaling). Values greater than 1 enlarge the heatmap; values less than 1 shrink it.
+    #>       Internally, all calculated cell dimensions are multiplied by this factor.
+    #>       - aspect.ratio: A positive numeric scalar giving the height-to-width ratio of a single heatmap
+    #>       cell. When NULL (default), sensible per-cell_type defaults are used:
+    #>       
+    #>        tile, label, dot: square cells (ratio = 1).
+    #>        bars: wider-than-tall cells (ratio = 0.5) so individual bars are legible.
+    #>        violin, boxplot, pie: square cells with a larger base size (0.5 in) so embedded
+    #>       sub-plots have enough room.
+    #>       Provide an explicit value to override these defaults (e.g. aspect.ratio = 2 for
+    #>       portrait cells, aspect.ratio = 0.5 for landscape cells).
+    #>       Note that for cell_type = "pie" the cells are always drawn square by ComplexHeatmap
+    #>       regardless of this setting; use it primarily to budget the figure size.
+    #>       Note that the aspect ratio is not guaranteed to be perfectly preserved; it will also be restricted by the size and height/width ratio of the entire plot itself.
+    #>       
+    #>       - draw_opts: A named list of additional arguments passed to ComplexHeatmap::draw(). Arguments already managed
+    #>       internally (annotation_legend_list, padding, show_annotation_legend, annotation_legend_side,
+    #>       column_title) take precedence over any values supplied here.
+    #>       See https://jokergoo.github.io/ComplexHeatmap/reference/draw-HeatmapList-method.html for available options.
     #>       - layer_fun_callback: A function to add additional layers to the heatmap.
     #>       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.
     #>       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.
     #>       - cell_type: A character string specifying the type of the heatmap cells.
-    #>       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".
+    #>       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".
     #>       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values
     #>       will just be counted in different pie_group_by groups. NA values will not be counted.
     #>       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".
@@ -2379,10 +2517,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

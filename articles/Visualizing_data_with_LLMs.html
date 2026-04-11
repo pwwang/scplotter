@@ -112,10 +112,11 @@ provided by <code>tidyprompt</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set up LLM provider</span></span>
 <span><span class="va">provider</span> <span class="op">&lt;-</span> <span class="fu">tidyprompt</span><span class="fu">::</span><span class="fu"><a href="https://kennispunttwente.github.io/tidyprompt/reference/llm_provider_openai.html" class="external-link">llm_provider_openai</a></span><span class="op">(</span></span>
-<span>    parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-5-nano"</span>, stream <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.stream"</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"openai/gpt-5.4-nano"</span>, stream <span class="op">=</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.stream"</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    url <span class="op">=</span> <span class="st">"https://api.openai.com/v1/chat/completions"</span>,</span>
-<span>    api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span></span>
+<span>    url <span class="op">=</span> <span class="st">"https://openrouter.ai/api/v1/chat/completions"</span>,</span>
+<span>    api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENROUTER_API_KEY"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/SCPlotterChat.html">SCPlotterChat</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>provider <span class="op">=</span> <span class="va">provider</span><span class="op">)</span></span></code></pre></div>
@@ -296,7 +297,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -309,7 +310,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a proper title to the plot"</span><span class="op">)</span></span>
@@ -321,18 +322,18 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"dot\")"                                                 </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                         </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                               </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                            </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                    </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                        </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                          </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -349,7 +350,7 @@ print the prompt and the response from the LLM.</p>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Generate a cell-cell communication plot for the cellphonedb_res data."</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -518,7 +519,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; CCCPlot</span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Identify the data object to be used.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -549,7 +550,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -954,18 +955,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - palette: A character string specifying the palette of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - palcolor: A character vector of colors to override the palette of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       - rows_palette: A character string specifying the palette of the row group annotation.</span></span>
-<span><span class="co">#&gt;       The default is "Paired".</span></span>
-<span><span class="co">#&gt;       - rows_palcolor: A character vector of colors to override the palette of the row group annotation.</span></span>
-<span><span class="co">#&gt;       - rows_split_palette: A character string specifying the palette of the row split annotation.</span></span>
-<span><span class="co">#&gt;       The default is "simspec".</span></span>
-<span><span class="co">#&gt;       - rows_split_palcolor: A character vector of colors to override the palette of the row split annotation.</span></span>
-<span><span class="co">#&gt;       - columns_palette: A character string specifying the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       The default is "Paired".</span></span>
-<span><span class="co">#&gt;       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       - columns_split_palette: A character string specifying the palette of the column split annotation.</span></span>
-<span><span class="co">#&gt;       The default is "simspec".</span></span>
-<span><span class="co">#&gt;       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.</span></span>
 <span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
 <span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
 <span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
@@ -981,14 +970,74 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
 <span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
 <span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
-<span><span class="co">#&gt;       It can take either 1, 3, or 5 arguments. The first argument is the aggregated values.</span></span>
-<span><span class="co">#&gt;       If it takes 3 arguments, the second and third arguments are the row and column indices.</span></span>
+<span><span class="co">#&gt;       It can take either 1, 3, or 5 arguments. The first argument is the aggregated value for a single cell.</span></span>
+<span><span class="co">#&gt;       If it takes 3 arguments, the second and third arguments are the row and column indices of that cell.</span></span>
 <span><span class="co">#&gt;       If it takes 5 arguments, the second and third arguments are the row and column indices,</span></span>
-<span><span class="co">#&gt;       the fourth and fifth arguments are the row and column names.</span></span>
-<span><span class="co">#&gt;       The function should return a character vector of the same length as the aggregated values.</span></span>
-<span><span class="co">#&gt;       If the function returns NA, no label will be shown for that cell.</span></span>
+<span><span class="co">#&gt;       and the fourth and fifth arguments are the row and column names.</span></span>
+<span><span class="co">#&gt;       The function should return one of:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        NA — no label is drawn for this cell.</span></span>
+<span><span class="co">#&gt;        A character scalar — used as the label text; label_size and label_color are used for size and color.</span></span>
+<span><span class="co">#&gt;        A named list with any of the following fields:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        label: character scalar for the label text.</span></span>
+<span><span class="co">#&gt;        size: numeric pt size (overrides label_size).</span></span>
+<span><span class="co">#&gt;        color: character color string (overrides label_color).</span></span>
+<span><span class="co">#&gt;        legend: character string used as the legend entry for this cell's color/label combination.</span></span>
+<span><span class="co">#&gt;        order: integer controlling the position of this legend entry — smaller values appear first (top) in the legend.</span></span>
+<span><span class="co">#&gt;       Entries without an order are appended after all explicitly ordered entries.</span></span>
 <span><span class="co">#&gt;       For the indices, if you have the same dimension of data (same order of rows and columns) as the heatmap, you need to use ComplexHeatmap::pindex() to get the correct values.</span></span>
-<span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       - label_size: A numeric value specifying the default size (pt) of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the label function does not return a size field.</span></span>
+<span><span class="co">#&gt;       - label_color: A character string specifying the default color of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the label function does not return a color field. Default is "black".</span></span>
+<span><span class="co">#&gt;       - label_name: A character string specifying the title of the label legend. Default is "label".</span></span>
+<span><span class="co">#&gt;       The legend is shown automatically when the label function returns a list with a legend field for at least</span></span>
+<span><span class="co">#&gt;       one cell — no extra configuration needed. Set legend.position = "none" to suppress all legends.</span></span>
+<span><span class="co">#&gt;       - mark: A function to calculate the marks drawn on top of heatmap cells when cell_type = "mark".</span></span>
+<span><span class="co">#&gt;       Same dispatch rules as label (1, 3, or 5 arguments).</span></span>
+<span><span class="co">#&gt;       The function should return one of:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        NA — no mark is drawn for this cell.</span></span>
+<span><span class="co">#&gt;        A character scalar — the mark type string; mark_color and mark_size are used for appearance.</span></span>
+<span><span class="co">#&gt;        A named list with any of the following fields:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        mark (or first unnamed element): character scalar, the mark type string.</span></span>
+<span><span class="co">#&gt;        size: numeric stroke width (lwd), overrides mark_size.</span></span>
+<span><span class="co">#&gt;        color: character color string, overrides mark_color.</span></span>
+<span><span class="co">#&gt;        legend: character string used as the legend entry key.</span></span>
+<span><span class="co">#&gt;        order: integer controlling legend entry position (smaller = higher).</span></span>
+<span><span class="co">#&gt;       Supported mark types:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        Primitives: - (h-line), | (v-line), + (cross), / (l-diag), \ (r-diag),</span></span>
+<span><span class="co">#&gt;       x (both diags), o (circle with gap), () (circle touching edge), &lt;&gt; (diamond).</span></span>
+<span><span class="co">#&gt;        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [&lt;&gt;].</span></span>
+<span><span class="co">#&gt;        With full circle: (-), (|), (+), (/), (\), (x), (o), (&lt;&gt;).</span></span>
+<span><span class="co">#&gt;        With diamond: &lt;-&gt;, &lt;|&gt;, &lt;+&gt;, &lt;/&gt;, &lt;\&gt;, &lt;x&gt;, &lt;o&gt;.</span></span>
+<span><span class="co">#&gt;        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(&lt;&gt;)].</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       []: R:%5C</span></span>
+<span><span class="co">#&gt;       [x]: R:x</span></span>
+<span><span class="co">#&gt;       [o]: R:o</span></span>
+<span><span class="co">#&gt;       [()]: R:()</span></span>
+<span><span class="co">#&gt;       [&lt;&gt;]: R:%3C%3E</span></span>
+<span><span class="co">#&gt;       [(|)]: R:(%7C)</span></span>
+<span><span class="co">#&gt;       [(-)]: R:(-)</span></span>
+<span><span class="co">#&gt;       [(+)]: R:(+)</span></span>
+<span><span class="co">#&gt;       [(/)]: R:(/)</span></span>
+<span><span class="co">#&gt;       [(\)]: R:(%5C%5C)</span></span>
+<span><span class="co">#&gt;       [(x)]: R:(x)</span></span>
+<span><span class="co">#&gt;       [(o)]: R:(o)</span></span>
+<span><span class="co">#&gt;       [(&lt;&gt;)]: R:(%3C%3E)</span></span>
+<span><span class="co">#&gt;       - mark_color: A character string specifying the default color of the marks when cell_type = "mark".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the mark function does not return a color field. Default is "black".</span></span>
+<span><span class="co">#&gt;       - mark_size: A numeric value specifying the default stroke width (lwd) of the marks when cell_type = "mark".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the mark function does not return a size field. Default is 1.</span></span>
+<span><span class="co">#&gt;       - mark_name: A character string specifying the title of the mark legend. Default is "mark".</span></span>
+<span><span class="co">#&gt;       The legend is shown automatically when the mark function returns a list with a legend field.</span></span>
 <span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
 <span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
 <span><span class="co">#&gt;       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.</span></span>
@@ -1011,12 +1060,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.</span></span>
 <span><span class="co">#&gt;       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.</span></span>
 <span><span class="co">#&gt;       - reticle_color: A character string specifying the color of the reticle.</span></span>
-<span><span class="co">#&gt;       - column_name_annotation: A logical value indicating whether to add the column annotation for the column names.</span></span>
-<span><span class="co">#&gt;       which is a simple annotaion indicating the column names.</span></span>
-<span><span class="co">#&gt;       - column_name_legend: A logical value indicating whether to show the legend of the column name annotation.</span></span>
-<span><span class="co">#&gt;       - row_name_annotation: A logical value indicating whether to add the row annotation for the row names.</span></span>
-<span><span class="co">#&gt;       which is a simple annotaion indicating the row names.</span></span>
-<span><span class="co">#&gt;       - row_name_legend: A logical value indicating whether to show the legend of the row name annotation.</span></span>
 <span><span class="co">#&gt;       - cluster_columns: A logical value indicating whether to cluster the columns.</span></span>
 <span><span class="co">#&gt;       If TRUE and columns_split_by is provided, the clustering will only be applied to the columns within the same split.</span></span>
 <span><span class="co">#&gt;       - cluster_rows: A logical value indicating whether to cluster the rows.</span></span>
@@ -1046,7 +1089,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the column data.</span></span>
 <span><span class="co">#&gt;       - column_annotation_params: A list of parameters passed to the annotation function.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters passed to the annotation function. For the parameters for names (columns_by, rows_by, columns_split_by, rows_split_by), the key should be "name.(name)", where (name) is the name of the annotation.</span></span>
+<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
+<span><span class="co">#&gt;       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split</span></span>
+<span><span class="co">#&gt;       for columns_split_by. Setting a key to FALSE disables that annotation.</span></span>
+<span><span class="co">#&gt;       $&lt;key&gt;$show_legend controls the legend for that annotation.</span></span>
 <span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.</span></span>
 <span><span class="co">#&gt;       - column_annotation_agg: A function to aggregate the values in the column annotation.</span></span>
 <span><span class="co">#&gt;       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.</span></span>
@@ -1064,7 +1110,9 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the row data.</span></span>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
-<span><span class="co">#&gt;       Same as column_annotation_params.</span></span>
+<span><span class="co">#&gt;       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.</span></span>
+<span><span class="co">#&gt;       Setting a key to FALSE disables that annotation. $&lt;key&gt;$show_legend controls the legend.</span></span>
+<span><span class="co">#&gt;       Same structure as column_annotation_params.</span></span>
 <span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
 <span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
@@ -1081,11 +1129,31 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.</span></span>
 <span><span class="co">#&gt;       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.</span></span>
 <span><span class="co">#&gt;       If no unit is provided, the default unit will be "mm".</span></span>
+<span><span class="co">#&gt;       - base_size: A positive numeric scalar used as a scaling factor for the overall heatmap size.</span></span>
+<span><span class="co">#&gt;       Default is 1 (no scaling). Values greater than 1 enlarge the heatmap; values less than 1 shrink it.</span></span>
+<span><span class="co">#&gt;       Internally, all calculated cell dimensions are multiplied by this factor.</span></span>
+<span><span class="co">#&gt;       - aspect.ratio: A positive numeric scalar giving the height-to-width ratio of a single heatmap</span></span>
+<span><span class="co">#&gt;       cell. When NULL (default), sensible per-cell_type defaults are used:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        tile, label, dot: square cells (ratio = 1).</span></span>
+<span><span class="co">#&gt;        bars: wider-than-tall cells (ratio = 0.5) so individual bars are legible.</span></span>
+<span><span class="co">#&gt;        violin, boxplot, pie: square cells with a larger base size (0.5 in) so embedded</span></span>
+<span><span class="co">#&gt;       sub-plots have enough room.</span></span>
+<span><span class="co">#&gt;       Provide an explicit value to override these defaults (e.g. aspect.ratio = 2 for</span></span>
+<span><span class="co">#&gt;       portrait cells, aspect.ratio = 0.5 for landscape cells).</span></span>
+<span><span class="co">#&gt;       Note that for cell_type = "pie" the cells are always drawn square by ComplexHeatmap</span></span>
+<span><span class="co">#&gt;       regardless of this setting; use it primarily to budget the figure size.</span></span>
+<span><span class="co">#&gt;       Note that the aspect ratio is not guaranteed to be perfectly preserved; it will also be restricted by the size and height/width ratio of the entire plot itself.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       - draw_opts: A named list of additional arguments passed to ComplexHeatmap::draw(). Arguments already managed</span></span>
+<span><span class="co">#&gt;       internally (annotation_legend_list, padding, show_annotation_legend, annotation_legend_side,</span></span>
+<span><span class="co">#&gt;       column_title) take precedence over any values supplied here.</span></span>
+<span><span class="co">#&gt;       See https://jokergoo.github.io/ComplexHeatmap/reference/draw-HeatmapList-method.html for available options.</span></span>
 <span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
 <span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
 <span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
 <span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".</span></span>
+<span><span class="co">#&gt;       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".</span></span>
 <span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
 <span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
 <span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
@@ -1388,10 +1456,13 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
+<span><span class="co">#&gt; CCCPlot(</span></span>
+<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
+<span><span class="co">#&gt;   plot_type = "dot"</span></span>
+<span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -1401,7 +1472,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Generate a cell-cell communication plot for the cellphonedb_res data."</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -1570,7 +1641,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; CCCPlot</span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Identify the data object to be used.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -1601,7 +1672,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (gpt-5-nano): ---</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -2006,18 +2077,6 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - palette: A character string specifying the palette of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - palcolor: A character vector of colors to override the palette of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       - rows_palette: A character string specifying the palette of the row group annotation.</span></span>
-<span><span class="co">#&gt;       The default is "Paired".</span></span>
-<span><span class="co">#&gt;       - rows_palcolor: A character vector of colors to override the palette of the row group annotation.</span></span>
-<span><span class="co">#&gt;       - rows_split_palette: A character string specifying the palette of the row split annotation.</span></span>
-<span><span class="co">#&gt;       The default is "simspec".</span></span>
-<span><span class="co">#&gt;       - rows_split_palcolor: A character vector of colors to override the palette of the row split annotation.</span></span>
-<span><span class="co">#&gt;       - columns_palette: A character string specifying the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       The default is "Paired".</span></span>
-<span><span class="co">#&gt;       - columns_palcolor: A character vector of colors to override the palette of the column group annotation.</span></span>
-<span><span class="co">#&gt;       - columns_split_palette: A character string specifying the palette of the column split annotation.</span></span>
-<span><span class="co">#&gt;       The default is "simspec".</span></span>
-<span><span class="co">#&gt;       - columns_split_palcolor: A character vector of colors to override the palette of the column split annotation.</span></span>
 <span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
 <span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
 <span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
@@ -2033,14 +2092,74 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - pie_palcolor: A character vector of colors to override the palette of the pie chart.</span></span>
 <span><span class="co">#&gt;       - bars_sample: An integer specifying the number of samples to draw the bars.</span></span>
 <span><span class="co">#&gt;       - label: A function to calculate the labels for the heatmap cells.</span></span>
-<span><span class="co">#&gt;       It can take either 1, 3, or 5 arguments. The first argument is the aggregated values.</span></span>
-<span><span class="co">#&gt;       If it takes 3 arguments, the second and third arguments are the row and column indices.</span></span>
+<span><span class="co">#&gt;       It can take either 1, 3, or 5 arguments. The first argument is the aggregated value for a single cell.</span></span>
+<span><span class="co">#&gt;       If it takes 3 arguments, the second and third arguments are the row and column indices of that cell.</span></span>
 <span><span class="co">#&gt;       If it takes 5 arguments, the second and third arguments are the row and column indices,</span></span>
-<span><span class="co">#&gt;       the fourth and fifth arguments are the row and column names.</span></span>
-<span><span class="co">#&gt;       The function should return a character vector of the same length as the aggregated values.</span></span>
-<span><span class="co">#&gt;       If the function returns NA, no label will be shown for that cell.</span></span>
+<span><span class="co">#&gt;       and the fourth and fifth arguments are the row and column names.</span></span>
+<span><span class="co">#&gt;       The function should return one of:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        NA — no label is drawn for this cell.</span></span>
+<span><span class="co">#&gt;        A character scalar — used as the label text; label_size and label_color are used for size and color.</span></span>
+<span><span class="co">#&gt;        A named list with any of the following fields:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        label: character scalar for the label text.</span></span>
+<span><span class="co">#&gt;        size: numeric pt size (overrides label_size).</span></span>
+<span><span class="co">#&gt;        color: character color string (overrides label_color).</span></span>
+<span><span class="co">#&gt;        legend: character string used as the legend entry for this cell's color/label combination.</span></span>
+<span><span class="co">#&gt;        order: integer controlling the position of this legend entry — smaller values appear first (top) in the legend.</span></span>
+<span><span class="co">#&gt;       Entries without an order are appended after all explicitly ordered entries.</span></span>
 <span><span class="co">#&gt;       For the indices, if you have the same dimension of data (same order of rows and columns) as the heatmap, you need to use ComplexHeatmap::pindex() to get the correct values.</span></span>
-<span><span class="co">#&gt;       - label_size: A numeric value specifying the size of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       - label_size: A numeric value specifying the default size (pt) of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the label function does not return a size field.</span></span>
+<span><span class="co">#&gt;       - label_color: A character string specifying the default color of the labels when cell_type = "label".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the label function does not return a color field. Default is "black".</span></span>
+<span><span class="co">#&gt;       - label_name: A character string specifying the title of the label legend. Default is "label".</span></span>
+<span><span class="co">#&gt;       The legend is shown automatically when the label function returns a list with a legend field for at least</span></span>
+<span><span class="co">#&gt;       one cell — no extra configuration needed. Set legend.position = "none" to suppress all legends.</span></span>
+<span><span class="co">#&gt;       - mark: A function to calculate the marks drawn on top of heatmap cells when cell_type = "mark".</span></span>
+<span><span class="co">#&gt;       Same dispatch rules as label (1, 3, or 5 arguments).</span></span>
+<span><span class="co">#&gt;       The function should return one of:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        NA — no mark is drawn for this cell.</span></span>
+<span><span class="co">#&gt;        A character scalar — the mark type string; mark_color and mark_size are used for appearance.</span></span>
+<span><span class="co">#&gt;        A named list with any of the following fields:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        mark (or first unnamed element): character scalar, the mark type string.</span></span>
+<span><span class="co">#&gt;        size: numeric stroke width (lwd), overrides mark_size.</span></span>
+<span><span class="co">#&gt;        color: character color string, overrides mark_color.</span></span>
+<span><span class="co">#&gt;        legend: character string used as the legend entry key.</span></span>
+<span><span class="co">#&gt;        order: integer controlling legend entry position (smaller = higher).</span></span>
+<span><span class="co">#&gt;       Supported mark types:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        Primitives: - (h-line), | (v-line), + (cross), / (l-diag), \ (r-diag),</span></span>
+<span><span class="co">#&gt;       x (both diags), o (circle with gap), () (circle touching edge), &lt;&gt; (diamond).</span></span>
+<span><span class="co">#&gt;        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [&lt;&gt;].</span></span>
+<span><span class="co">#&gt;        With full circle: (-), (|), (+), (/), (\), (x), (o), (&lt;&gt;).</span></span>
+<span><span class="co">#&gt;        With diamond: &lt;-&gt;, &lt;|&gt;, &lt;+&gt;, &lt;/&gt;, &lt;\&gt;, &lt;x&gt;, &lt;o&gt;.</span></span>
+<span><span class="co">#&gt;        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(&lt;&gt;)].</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       []: R:%5C</span></span>
+<span><span class="co">#&gt;       [x]: R:x</span></span>
+<span><span class="co">#&gt;       [o]: R:o</span></span>
+<span><span class="co">#&gt;       [()]: R:()</span></span>
+<span><span class="co">#&gt;       [&lt;&gt;]: R:%3C%3E</span></span>
+<span><span class="co">#&gt;       [(|)]: R:(%7C)</span></span>
+<span><span class="co">#&gt;       [(-)]: R:(-)</span></span>
+<span><span class="co">#&gt;       [(+)]: R:(+)</span></span>
+<span><span class="co">#&gt;       [(/)]: R:(/)</span></span>
+<span><span class="co">#&gt;       [(\)]: R:(%5C%5C)</span></span>
+<span><span class="co">#&gt;       [(x)]: R:(x)</span></span>
+<span><span class="co">#&gt;       [(o)]: R:(o)</span></span>
+<span><span class="co">#&gt;       [(&lt;&gt;)]: R:(%3C%3E)</span></span>
+<span><span class="co">#&gt;       - mark_color: A character string specifying the default color of the marks when cell_type = "mark".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the mark function does not return a color field. Default is "black".</span></span>
+<span><span class="co">#&gt;       - mark_size: A numeric value specifying the default stroke width (lwd) of the marks when cell_type = "mark".</span></span>
+<span><span class="co">#&gt;       Used as fallback when the mark function does not return a size field. Default is 1.</span></span>
+<span><span class="co">#&gt;       - mark_name: A character string specifying the title of the mark legend. Default is "mark".</span></span>
+<span><span class="co">#&gt;       The legend is shown automatically when the mark function returns a list with a legend field.</span></span>
 <span><span class="co">#&gt;       - violin_fill: A character vector of colors to override the fill color of the violin plot.</span></span>
 <span><span class="co">#&gt;       If NULL, the fill color will be the same as the annotion.</span></span>
 <span><span class="co">#&gt;       - boxplot_fill: A character vector of colors to override the fill color of the boxplot.</span></span>
@@ -2063,12 +2182,6 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - bg_alpha: A numeric value between 0 and 1 specifying the transparency of the background.</span></span>
 <span><span class="co">#&gt;       - add_reticle: A logical value indicating whether to add a reticle to the heatmap.</span></span>
 <span><span class="co">#&gt;       - reticle_color: A character string specifying the color of the reticle.</span></span>
-<span><span class="co">#&gt;       - column_name_annotation: A logical value indicating whether to add the column annotation for the column names.</span></span>
-<span><span class="co">#&gt;       which is a simple annotaion indicating the column names.</span></span>
-<span><span class="co">#&gt;       - column_name_legend: A logical value indicating whether to show the legend of the column name annotation.</span></span>
-<span><span class="co">#&gt;       - row_name_annotation: A logical value indicating whether to add the row annotation for the row names.</span></span>
-<span><span class="co">#&gt;       which is a simple annotaion indicating the row names.</span></span>
-<span><span class="co">#&gt;       - row_name_legend: A logical value indicating whether to show the legend of the row name annotation.</span></span>
 <span><span class="co">#&gt;       - cluster_columns: A logical value indicating whether to cluster the columns.</span></span>
 <span><span class="co">#&gt;       If TRUE and columns_split_by is provided, the clustering will only be applied to the columns within the same split.</span></span>
 <span><span class="co">#&gt;       - cluster_rows: A logical value indicating whether to cluster the rows.</span></span>
@@ -2098,7 +2211,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the column data.</span></span>
 <span><span class="co">#&gt;       - column_annotation_params: A list of parameters passed to the annotation function.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters passed to the annotation function. For the parameters for names (columns_by, rows_by, columns_split_by, rows_split_by), the key should be "name.(name)", where (name) is the name of the annotation.</span></span>
+<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
+<span><span class="co">#&gt;       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split</span></span>
+<span><span class="co">#&gt;       for columns_split_by. Setting a key to FALSE disables that annotation.</span></span>
+<span><span class="co">#&gt;       $&lt;key&gt;$show_legend controls the legend for that annotation.</span></span>
 <span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.</span></span>
 <span><span class="co">#&gt;       - column_annotation_agg: A function to aggregate the values in the column annotation.</span></span>
 <span><span class="co">#&gt;       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.</span></span>
@@ -2116,7 +2232,9 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the row data.</span></span>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
-<span><span class="co">#&gt;       Same as column_annotation_params.</span></span>
+<span><span class="co">#&gt;       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.</span></span>
+<span><span class="co">#&gt;       Setting a key to FALSE disables that annotation. $&lt;key&gt;$show_legend controls the legend.</span></span>
+<span><span class="co">#&gt;       Same structure as column_annotation_params.</span></span>
 <span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
 <span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
@@ -2133,11 +2251,31 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       When 3 elements are provided, the first one will be used for top, the second one will be used for left and right, and the third one will be used for bottom.</span></span>
 <span><span class="co">#&gt;       When 4 elements are provided, they will be used for top, right, bottom, and left respectively.</span></span>
 <span><span class="co">#&gt;       If no unit is provided, the default unit will be "mm".</span></span>
+<span><span class="co">#&gt;       - base_size: A positive numeric scalar used as a scaling factor for the overall heatmap size.</span></span>
+<span><span class="co">#&gt;       Default is 1 (no scaling). Values greater than 1 enlarge the heatmap; values less than 1 shrink it.</span></span>
+<span><span class="co">#&gt;       Internally, all calculated cell dimensions are multiplied by this factor.</span></span>
+<span><span class="co">#&gt;       - aspect.ratio: A positive numeric scalar giving the height-to-width ratio of a single heatmap</span></span>
+<span><span class="co">#&gt;       cell. When NULL (default), sensible per-cell_type defaults are used:</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        tile, label, dot: square cells (ratio = 1).</span></span>
+<span><span class="co">#&gt;        bars: wider-than-tall cells (ratio = 0.5) so individual bars are legible.</span></span>
+<span><span class="co">#&gt;        violin, boxplot, pie: square cells with a larger base size (0.5 in) so embedded</span></span>
+<span><span class="co">#&gt;       sub-plots have enough room.</span></span>
+<span><span class="co">#&gt;       Provide an explicit value to override these defaults (e.g. aspect.ratio = 2 for</span></span>
+<span><span class="co">#&gt;       portrait cells, aspect.ratio = 0.5 for landscape cells).</span></span>
+<span><span class="co">#&gt;       Note that for cell_type = "pie" the cells are always drawn square by ComplexHeatmap</span></span>
+<span><span class="co">#&gt;       regardless of this setting; use it primarily to budget the figure size.</span></span>
+<span><span class="co">#&gt;       Note that the aspect ratio is not guaranteed to be perfectly preserved; it will also be restricted by the size and height/width ratio of the entire plot itself.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       - draw_opts: A named list of additional arguments passed to ComplexHeatmap::draw(). Arguments already managed</span></span>
+<span><span class="co">#&gt;       internally (annotation_legend_list, padding, show_annotation_legend, annotation_legend_side,</span></span>
+<span><span class="co">#&gt;       column_title) take precedence over any values supplied here.</span></span>
+<span><span class="co">#&gt;       See https://jokergoo.github.io/ComplexHeatmap/reference/draw-HeatmapList-method.html for available options.</span></span>
 <span><span class="co">#&gt;       - layer_fun_callback: A function to add additional layers to the heatmap.</span></span>
 <span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
 <span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
 <span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       The default is values. Other options are "bars", "label", "dot", "violin", "boxplot".</span></span>
+<span><span class="co">#&gt;       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".</span></span>
 <span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
 <span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
 <span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
@@ -2440,10 +2578,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
