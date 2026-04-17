@@ -4,7 +4,7 @@
 \alias{DummyClonalScatterPlot}
 \title{DummyClonalScatterPlot}
 \usage{
-DummyClonalScatterPlot(df, title, group_by, scatter_cor, size_by, ...)
+DummyClonalScatterPlot(df, group_by, scatter_cor, size_by, ...)
 }
 \arguments{
 \item{df}{The data frame with the clonal data.

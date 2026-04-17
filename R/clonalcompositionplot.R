@@ -422,14 +422,15 @@ ClonalLengthPlot <- function(
 #' @importFrom ggnewscale new_scale_fill
 #' @importFrom plotthis ScatterPlot palette_this
 #' @keywords internal
-DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ...) {
+DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
     if (nrow(df) == 0) {
         stop("[ClonalResidencyPlot] No data found for the group_by: ", group_by,
             ". Did you specify the correct 'group_by'/'groups' parameters?")
     }
     pair <- unique(as.character(df[[group_by]]))
+
     if (length(pair) != 2) {
-        stop("[ClonalResidencyPlot] The group_by should have exactly 2 unique values.")
+        stop("[ClonalResidencyPlot] The group_by should have exactly 2 unique values, got: ", length(pair))
     }
 
     exponent <- function(x) { floor(log10(abs(x))) }
@@ -552,7 +553,7 @@ DummyClonalScatterPlot <- function(df, title, group_by, scatter_cor, size_by, ..
     args$x <- pair[1]
     args$y <- pair[2]
     args$color_by <- "NumType"
-    args$title <- if (identical(title, "...")) NULL else title
+    args$title <- if (identical(args$title, "...")) NULL else args$title
     args$subtitle <- subtitle
     args$border_color <- TRUE
     args$size_by <- ifelse(size_by == "max", "Max_Size", "Total_Size")
@@ -774,7 +775,14 @@ ClonalResidencyPlot <- function(
                     next
                 }
                 d[[group_by]] <- factor(d[[group_by]], levels = g)
-                plots[[length(plots) + 1]] <- DummyClonalScatterPlot(d, nm, group_by, scatter_cor, scatter_size_by, ...)
+                plots[[length(plots) + 1]] <- DummyClonalScatterPlot(
+                    df = d,
+                    title = nm,
+                    group_by = group_by,
+                    scatter_cor = scatter_cor,
+                    size_by = scatter_size_by,
+                    ...
+                )
             }
         }
 
