@@ -29,7 +29,4 @@ A ggplot object or a list if `combine` is FALSE
 ``` r
 data(ifnb_sub)
 ClustreePlot(ifnb_sub, prefix = "RNA_snn_res.")
-#> Registered S3 method overwritten by 'gglogger':
-#>   method from   
-#>   +.gg   ggplot2
 ```

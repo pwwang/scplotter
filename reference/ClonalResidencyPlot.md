@@ -161,17 +161,11 @@ data <- scRepertoire::addVariable(data,
 )
 
 ClonalResidencyPlot(data, groups = c("P18B", "P18L"))
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
 
 ClonalResidencyPlot(data, group_by = "Type", groups = c("L", "B"),
  split_by = "Subject")
 #> Warning: [ClonalResidencyPlot] Not both groups 'L, B' is not present in the data for 'P18'. Skipping.
 #> Warning: [ClonalResidencyPlot] Not both groups 'L, B' is not present in the data for 'P20'. Skipping.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
 
 ClonalResidencyPlot(data, group_by = "Type", groups = c("L:B", "Y:X"),
  split_by = "Subject")
@@ -179,16 +173,6 @@ ClonalResidencyPlot(data, group_by = "Type", groups = c("L:B", "Y:X"),
 #> Warning: [ClonalResidencyPlot] Not both groups 'L, B' is not present in the data for 'P18'. Skipping.
 #> Warning: [ClonalResidencyPlot] Not both groups 'Y, X' is not present in the data for 'P19'. Skipping.
 #> Warning: [ClonalResidencyPlot] Not both groups 'L, B' is not present in the data for 'P20'. Skipping.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-#> Warning: Removed 201 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_point()`).
 
 ClonalResidencyPlot(data, plot_type = "venn", groups = c("B", "L"),
  group_by = "Type", split_by = "Subject")

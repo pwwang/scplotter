@@ -6,7 +6,7 @@ pair.
 ## Usage
 
 ``` r
-DummyClonalScatterPlot(df, title, group_by, scatter_cor, size_by, ...)
+DummyClonalScatterPlot(df, group_by, scatter_cor, size_by, ...)
 ```
 
 ## Arguments
