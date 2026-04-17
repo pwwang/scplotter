@@ -519,10 +519,9 @@ DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
         0.01 + 1 / sum_counts_max,
         0.1 + 1 / sum_counts_max
     )
-
     minx <- min(plotdata[[pair[1]]], na.rm = TRUE)
-    miny <- min(plotdata[[pair[1]]], na.rm = TRUE)
-    maxx <- max(plotdata[[pair[2]]], na.rm = TRUE)
+    maxx <- max(plotdata[[pair[1]]], na.rm = TRUE)
+    miny <- min(plotdata[[pair[2]]], na.rm = TRUE)
     maxy <- max(plotdata[[pair[2]]], na.rm = TRUE)
 
     n_formatted <- formatC(length(oo), format = "f", big.mark = ",", digits = 0)
@@ -572,6 +571,13 @@ DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
     label_df$TypeName <- factor(label_df$TypeName, levels = labels)
     label_df <- label_df[order(label_df$TypeName), , drop = FALSE]
 
+    diag_df <- data.frame(
+        # diagnal, horizontal, vertical, horizontal short, vertical short
+        x = c(1.5 / sum_counts_max, minx, 1.5 / sum_counts_max, minx, 2.5 / sum_counts_max),
+        xend = c(maxx, maxx, 1.5 / sum_counts_max, 1.5 / sum_counts_max, 2.5 / sum_counts_max),
+        y = c(1.5 / sum_counts_max, 1.5 / sum_counts_max, miny, 2.5 / sum_counts_max, miny),
+        yend = c(maxy, 1.5 / sum_counts_max, maxy, 2.5 / sum_counts_max, 1.5 / sum_counts_max)
+    )
     p <- do_call(ScatterPlot, args) +
         guides(color = "none") +
         new_scale_fill() +
@@ -586,13 +592,7 @@ DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
             )) +
         theme(panel.grid.major = element_blank()) +
         geom_segment(
-            data = data.frame(
-                # diagnal, horizontal, vertical, horizontal short, vertical short
-                x = c(1.5 / sum_counts_max, minx, 1.5 / sum_counts_max, minx, 2.5 / sum_counts_max),
-                xend = c(maxx, maxx, 1.5 / sum_counts_max, 1.5 / sum_counts_max, 2.5 / sum_counts_max),
-                y = c(1.5 / sum_counts_max, 1.5 / sum_counts_max, miny, 2.5 / sum_counts_max, miny),
-                yend = c(maxy, 1.5 / sum_counts_max, maxy, 2.5 / sum_counts_max, 1.5 / sum_counts_max)
-            ),
+            data = diag_df,
             aes(x = !!sym("x"), y = !!sym("y"), xend = !!sym("xend"), yend = !!sym("yend")), color = "gray90"
         )
 
