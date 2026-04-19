@@ -21,7 +21,7 @@
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @seealso [scplotter::CellStatPlot()] [scplotter::CellVelocityPlot()]
-#' @importFrom SeuratObject DefaultDimReduc Embeddings Graphs Reductions Idents
+#' @importFrom SeuratObject Embeddings Graphs Reductions Idents
 #' @importFrom plotthis DimPlot
 #' @details
 #' See
@@ -268,7 +268,7 @@ CellDimPlot.Seurat <- function(
         is.null(group_by) || is.null(ident) || identical(group_by, ident))
     group_by <- group_by %||% ident
 
-    reduction <- reduction %||% DefaultDimReduc(object)
+    reduction <- reduction %||% default_dimreduc(object)
 
     if (!reduction %in% Reductions(object)) {
         stop("The object does not have reduction:", reduction)
@@ -397,7 +397,7 @@ CellDimPlot.H5File <- function(
 #' @return A ggplot object
 #' @export
 #' @seealso [scplotter::CellDimPlot()]
-#' @importFrom SeuratObject DefaultDimReduc Embeddings Reductions
+#' @importFrom SeuratObject Embeddings Reductions
 #' @importFrom plotthis VelocityPlot
 #' @details See:
 #' * <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>

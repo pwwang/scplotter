@@ -212,7 +212,7 @@
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @export
 #' @importFrom rlang %||%
-#' @importFrom SeuratObject GetAssayData Embeddings DefaultDimReduc Graphs Reductions Idents
+#' @importFrom SeuratObject GetAssayData Embeddings Graphs Reductions Idents
 #' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
 #' @details
 #' See:
@@ -567,7 +567,7 @@ FeatureStatPlot.Seurat <- function(
     stopifnot("[FeatureStatPlot] 'spat_unit' and 'feat_type' should not be used for Seurat object." = is.null(spat_unit) && is.null(feat_type))
 
     reduction <- reduction %||% (
-        if(is.null(Reductions(object))) NULL else DefaultDimReduc(object)
+        if(is.null(Reductions(object))) NULL else default_dimreduc(object)
     )
     # dim plot may use expression for highlighting cells
     # Heatmap may use other variables as annotations, but shrinking only includes minimal columns

@@ -220,3 +220,51 @@ do_call <- function(fn, args, quote = FALSE, envir = parent.frame()) {
         enclos = envir
     )
 }
+
+#' Set default dimension reduction for Seurat object
+#'
+#' @details
+#' `DefaultDimReduc<-` was just introduced in Seurat v5.4.0
+#' See: https://github.com/satijalab/seurat-object/pull/268
+#' and https://github.com/satijalab/seurat-object/releases/tag/v5.4.0
+#' This function is a fallback for older Seurat versions that do not have this setter function.
+#' It will simply save the default dimension reduction name in the Seurat object's misc slot under `DefaultDimReduc`.
+#' When the setter function is available, it will use that instead.
+#'
+#' @param object Seurat object to modify
+#' @param value Name of the default dimension reduction to set
+#' @return Modified Seurat object with updated default dimension reduction
+#' @keywords internal
+`default_dimreduc<-` <- function(object, value) {
+    if (exists("DefaultDimReduc<-", where = asNamespace("SeuratObject"), mode = "function")) {
+        # Use the official setter if available
+        get("DefaultDimReduc<-", envir = asNamespace("SeuratObject"))(object, value)
+    } else {
+        # Fallback: store in misc slot
+        object@misc$DefaultDimReduc <- value
+    }
+    return(object)
+}
+
+#' Get default dimension reduction for Seurat object
+#'
+#' @details
+#' `DefaultDimReduc` was just introduced in Seurat v5.4.0.
+#' This function will first check if we have `DefaultDimReduc` value in the misc slot (set by our fallback setter),
+#' and if not, it will try to call the official `DefaultDimReduc` getter function. If that also fails, it will return NULL.
+#'
+#' @param object Seurat object to query
+#' @return Name of the default dimension reduction, or NULL if not set
+#' @keywords internal
+`default_dimreduc` <- function(object) {
+    # If we have SeuratObject >= 5.4.0, we can use the official getter
+    if (exists("DefaultDimReduc<-", where = asNamespace("SeuratObject"), mode = "function")) {
+        return(get("DefaultDimReduc", envir = asNamespace("SeuratObject"))(object))
+    }
+    # Fallback: check misc slot
+    if (!is.null(object@misc$DefaultDimReduc)) {
+        return(object@misc$DefaultDimReduc)
+    }
+    # Try to call official getter, may return NULL if not set
+    return(SeuratObject::DefaultDimReduc(object))
+}
