@@ -208,7 +208,7 @@ SpatFeaturePlot(
 
   The name of the graph to use for the spatial plot. Currently only
   supported for Giotto objects. The graph data is obtained using
-  [`GiottoClass::getSpatialNetwork()`](https://drieslab.github.io/GiottoClass/reference/getSpatialNetwork.html).
+  [`GiottoClass::getSpatialNetwork()`](https://rdrr.io/pkg/GiottoClass/man/getSpatialNetwork.html).
   When TRUE, the default graph will be used. When given as a character,
   it should be the name of the graph to use. If there is ":" in the
   name, the first part will be used as spat_unit, and the second part as
