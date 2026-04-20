@@ -53,8 +53,8 @@ jobs:
           cache-version: 2
           # gsl v2.1-9 requires R>4.5
           extra-packages: |
-            any::remotes, any::devtools, any::pkgdown, any::plotthis, any::ComplexHeatmap,
-            any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
+            any::remotes, any::devtools, any::pkgdown, any::plotthis, github::jokergoo/ComplexHeatmap,
+            any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram, github::cran/multtest,
             any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
