@@ -15,6 +15,8 @@ MarkersPlot(
   comparison_by = NULL,
   p_adjust = TRUE,
   cutoff = NULL,
+  show_labels = FALSE,
+  sig_mark = "*",
   order_by = NULL,
   select = ifelse(plot_type \%in\% c("volcano", "volcano_log2fc", "volcano_pct",
     "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
@@ -74,6 +76,15 @@ Default is TRUE.}
 \item{cutoff}{Numeric, p-value or adjusted p-value cutoff to label significance in heatmap plots.
 Default is NULL, no cutoff.}
 
+\item{show_labels}{Logical, whether to show the values in heatmap cells. Default is FALSE.
+Only works for \code{heatmap_log2fc} and \code{heatmap_pct}. If \code{cutoff} is provided, the significant cells will be labeled with \code{sig_mark}, otherwise all cells will be labeled with their values.}
+
+\item{sig_mark}{Character, the symbol to use for significant markers in heatmap plots. Default is "\emph{".
+See \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} for more details.
+Note that "}" will not work if \code{show_labels} is TRUE, since they are both using \code{label} in \code{Heatmap}. Try
+other marks instead, e.g., \code{-}, \code{|}, \code{+}, \code{/}, \verb{\\\\}, \code{x}, \code{o}, or compound marks like \verb{[*]}, \verb{<*>}, \verb{(*)}, \verb{\{*\}}.
+Only works for \code{heatmap_log2fc} and \code{heatmap_pct}. If \code{cutoff} is provided, the significant cells will be labeled with \code{sig_mark}, otherwise all cells will be labeled with their values.}
+
 \item{order_by}{A string of expression to order the markers within each group defined by \code{subset_by}.
 In addition to the columns in \code{markers}, you can also use the columns from the object's metadata if \code{object} is provided.
 The object's metadata will be merged with \code{markers} by \code{subset_by}. Be carefull that only the first value of other columns will be used.}
@@ -120,6 +131,9 @@ MarkersPlot(allmarkers, plot_type = "jitter_pct",
     subset_by = "cluster", add_hline = 0, shape = 16)
 
 MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster",
+    label = scales::label_number(accuracy = 0.01),
+    cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
 MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
     cutoff = 0.05)
 

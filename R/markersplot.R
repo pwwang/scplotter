@@ -44,6 +44,13 @@
 #' Default is TRUE.
 #' @param cutoff Numeric, p-value or adjusted p-value cutoff to label significance in heatmap plots.
 #' Default is NULL, no cutoff.
+#' @param show_labels Logical, whether to show the values in heatmap cells. Default is FALSE.
+#' Only works for `heatmap_log2fc` and `heatmap_pct`. If `cutoff` is provided, the significant cells will be labeled with `sig_mark`, otherwise all cells will be labeled with their values.
+#' @param sig_mark Character, the symbol to use for significant markers in heatmap plots. Default is "*".
+#' See [plotthis::Heatmap()] for more details.
+#' Note that "*" will not work if `show_labels` is TRUE, since they are both using `label` in `Heatmap`. Try
+#' other marks instead, e.g., `-`, `|`, `+`, `/`, `\\`, `x`, `o`, or compound marks like `[*]`, `<*>`, `(*)`, `{*}`.
+#' Only works for `heatmap_log2fc` and `heatmap_pct`. If `cutoff` is provided, the significant cells will be labeled with `sig_mark`, otherwise all cells will be labeled with their values.
 #' @param order_by A string of expression to order the markers within each group defined by `subset_by`.
 #' In addition to the columns in `markers`, you can also use the columns from the object's metadata if `object` is provided.
 #' The object's metadata will be merged with `markers` by `subset_by`. Be carefull that only the first value of other columns will be used.
@@ -79,6 +86,9 @@
 #'     subset_by = "cluster", add_hline = 0, shape = 16)
 #'
 #' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
+#' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster",
+#'     label = scales::label_number(accuracy = 0.01),
+#'     cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
 #' MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
 #'     cutoff = 0.05)
 #'
@@ -123,6 +133,8 @@ MarkersPlot <- function(
     comparison_by = NULL,
     p_adjust = TRUE,
     cutoff = NULL,
+    show_labels = FALSE,
+    sig_mark = "*",
     order_by = NULL,
     select = ifelse(plot_type %in% c(
         "volcano", "volcano_log2fc", "volcano_pct",
@@ -329,10 +341,44 @@ MarkersPlot <- function(
             sig_mat <- sig_mat[genes, groups, drop = FALSE]
             sig_mat <- as.matrix(sig_mat)
 
-            args$cell_type <- "label"
-            args$label <- function(x, i, j) {
-                pval <- ComplexHeatmap::pindex(sig_mat, i, j)
-                ifelse(pval < cutoff, "*", NA)
+            # Using Heatmap' mark
+            if (
+                sig_mark %in% c('-', '|', '+', '/', '\\', 'x', 'o') |
+                startsWith(sig_mark, "[") && endsWith(sig_mark, "]") |
+                startsWith(sig_mark, "<") && endsWith(sig_mark, ">") |
+                startsWith(sig_mark, "(") && endsWith(sig_mark, ")") |
+                startsWith(sig_mark, "{") && endsWith(sig_mark, "}")
+            ) {
+                pname <- ifelse(p_adjust, "padj", "p")
+                if (show_labels) {
+                    args$cell_type <- "label+mark"
+                    args$mark <- function(x, i, j) {
+                        pval <- ComplexHeatmap::pindex(sig_mat, i, j)
+                        if (pval < cutoff) list(sig_mark, legend = paste0(pname, " < ", cutoff))
+                        else NA
+                    }
+                } else {
+                    args$cell_type <- "mark"
+                    args$mark <- function(x, i, j) {
+                        pval <- ComplexHeatmap::pindex(sig_mat, i, j)
+                        if (pval < cutoff) list(sig_mark, legend = paste0(pname, " < ", cutoff))
+                        else NA
+                    }
+                }
+            } else if (show_labels && !(isFALSE(sig_mark) || is.null(sig_mark) || sig_mark == "")) {
+                stop(
+                    "[MarkersPlot] `cutoff` is provided and `show_labels` is TRUE, ",
+                    "`sig_mark` must be a valid `mark` for Heatmap ",
+                    "(e.g., '-', '|', '+', '/', '\\', 'x', 'o', '[]', '<>', '()', '{}', or a compound mark like '[*]')"
+                )
+            } else if (show_labels) {
+                args$cell_type <- "label"
+            } else {  # arbitrary sig_mark
+                args$cell_type <- "label"
+                args$label <- function(x, i, j) {
+                    pval <- ComplexHeatmap::pindex(sig_mat, i, j)
+                    ifelse(pval < cutoff, sig_mark, NA)
+                }
             }
         }
 
