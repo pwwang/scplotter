@@ -945,6 +945,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [<>].
     #>        With full circle: (-), (|), (+), (/), (\), (x), (o), (<>).
     #>        With diamond: <->, <|>, <+>, </>, <\>, <x>, <o>.
+    #>        Octagon (standalone or wrapper): {}, {-}, {|}, {+}, {/}, {\\}, {x}, {o}, {()}, {<>}.
     #>        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(<>)].
     #>       
     #>       
@@ -1082,7 +1083,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.
     #>       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.
     #>       - cell_type: A character string specifying the type of the heatmap cells.
-    #>       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".
+    #>       The default is "tile" Other options are "bars", "label", "mark", "label+mark" (or equivalently "mark+label"),
+    #>       "dot", "violin", "boxplot" and "pie".
+    #>       Use "label+mark" to render both marks (drawn first, as background) and text labels (drawn on top)
+    #>       in each cell simultaneously, combining all label_* and mark_* parameters.
     #>       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values
     #>       will just be counted in different pie_group_by groups. NA values will not be counted.
     #>       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".
@@ -2075,6 +2079,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [<>].
     #>        With full circle: (-), (|), (+), (/), (\), (x), (o), (<>).
     #>        With diamond: <->, <|>, <+>, </>, <\>, <x>, <o>.
+    #>        Octagon (standalone or wrapper): {}, {-}, {|}, {+}, {/}, {\\}, {x}, {o}, {()}, {<>}.
     #>        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(<>)].
     #>       
     #>       
@@ -2212,7 +2217,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.
     #>       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.
     #>       - cell_type: A character string specifying the type of the heatmap cells.
-    #>       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".
+    #>       The default is "tile" Other options are "bars", "label", "mark", "label+mark" (or equivalently "mark+label"),
+    #>       "dot", "violin", "boxplot" and "pie".
+    #>       Use "label+mark" to render both marks (drawn first, as background) and text labels (drawn on top)
+    #>       in each cell simultaneously, combining all label_* and mark_* parameters.
     #>       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values
     #>       will just be counted in different pie_group_by groups. NA values will not be counted.
     #>       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".
@@ -2517,14 +2525,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(
-    #>   data = cellphonedb_res,
-    #>   plot_type = "dot",
-    #>   method = "aggregation"
-    #> )
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

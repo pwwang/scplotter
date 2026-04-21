@@ -19,6 +19,8 @@ MarkersPlot(
   comparison_by = NULL,
   p_adjust = TRUE,
   cutoff = NULL,
+  show_labels = FALSE,
+  sig_mark = "*",
   order_by = NULL,
   select = ifelse(plot_type %in% c("volcano", "volcano_log2fc", "volcano_pct",
     "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
@@ -140,6 +142,26 @@ MarkersPlot(
   Numeric, p-value or adjusted p-value cutoff to label significance in
   heatmap plots. Default is NULL, no cutoff.
 
+- show_labels:
+
+  Logical, whether to show the values in heatmap cells. Default is
+  FALSE. Only works for `heatmap_log2fc` and `heatmap_pct`. If `cutoff`
+  is provided, the significant cells will be labeled with `sig_mark`,
+  otherwise all cells will be labeled with their values.
+
+- sig_mark:
+
+  Character, the symbol to use for significant markers in heatmap plots.
+  Default is "*". See
+  [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
+  for more details. Note that "*" will not work if `show_labels` is
+  TRUE, since they are both using `label` in `Heatmap`. Try other marks
+  instead, e.g., `-`, `|`, `+`, `/`, `\\`, `x`, `o`, or compound marks
+  like `[*]`, `<*>`, `(*)`, `{*}`. Only works for `heatmap_log2fc` and
+  `heatmap_pct`. If `cutoff` is provided, the significant cells will be
+  labeled with `sig_mark`, otherwise all cells will be labeled with
+  their values.
+
 - order_by:
 
   A string of expression to order the markers within each group defined
@@ -232,6 +254,10 @@ MarkersPlot(allmarkers, plot_type = "jitter_pct",
 
 
 MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
+
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster",
+    label = scales::label_number(accuracy = 0.01),
+    cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
 
 MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
     cutoff = 0.05)

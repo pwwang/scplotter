@@ -1016,6 +1016,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [&lt;&gt;].</span></span>
 <span><span class="co">#&gt;        With full circle: (-), (|), (+), (/), (\), (x), (o), (&lt;&gt;).</span></span>
 <span><span class="co">#&gt;        With diamond: &lt;-&gt;, &lt;|&gt;, &lt;+&gt;, &lt;/&gt;, &lt;\&gt;, &lt;x&gt;, &lt;o&gt;.</span></span>
+<span><span class="co">#&gt;        Octagon (standalone or wrapper): {}, {-}, {|}, {+}, {/}, {\\}, {x}, {o}, {()}, {&lt;&gt;}.</span></span>
 <span><span class="co">#&gt;        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(&lt;&gt;)].</span></span>
 <span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       </span></span>
@@ -1153,7 +1154,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
 <span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
 <span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".</span></span>
+<span><span class="co">#&gt;       The default is "tile" Other options are "bars", "label", "mark", "label+mark" (or equivalently "mark+label"),</span></span>
+<span><span class="co">#&gt;       "dot", "violin", "boxplot" and "pie".</span></span>
+<span><span class="co">#&gt;       Use "label+mark" to render both marks (drawn first, as background) and text labels (drawn on top)</span></span>
+<span><span class="co">#&gt;       in each cell simultaneously, combining all label_* and mark_* parameters.</span></span>
 <span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
 <span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
 <span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
@@ -2138,6 +2142,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;        With rectangular border: [], [-], [|], [+], [/], [\], [x], [o], [()], [&lt;&gt;].</span></span>
 <span><span class="co">#&gt;        With full circle: (-), (|), (+), (/), (\), (x), (o), (&lt;&gt;).</span></span>
 <span><span class="co">#&gt;        With diamond: &lt;-&gt;, &lt;|&gt;, &lt;+&gt;, &lt;/&gt;, &lt;\&gt;, &lt;x&gt;, &lt;o&gt;.</span></span>
+<span><span class="co">#&gt;        Octagon (standalone or wrapper): {}, {-}, {|}, {+}, {/}, {\\}, {x}, {o}, {()}, {&lt;&gt;}.</span></span>
 <span><span class="co">#&gt;        Combinations: e.g. [(|)], [(-)], [(+)], [(/)], [(\)], [(x)], [(o)], [(&lt;&gt;)].</span></span>
 <span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       </span></span>
@@ -2275,7 +2280,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       The function should have the following arguments: j, i, x, y, w, h, fill, sr and sc.</span></span>
 <span><span class="co">#&gt;       Please also refer to the layer_fun argument in ComplexHeatmap::Heatmap.</span></span>
 <span><span class="co">#&gt;       - cell_type: A character string specifying the type of the heatmap cells.</span></span>
-<span><span class="co">#&gt;       The default is "tile" Other options are "bars", "label", "mark", "dot", "violin", "boxplot" and "pie".</span></span>
+<span><span class="co">#&gt;       The default is "tile" Other options are "bars", "label", "mark", "label+mark" (or equivalently "mark+label"),</span></span>
+<span><span class="co">#&gt;       "dot", "violin", "boxplot" and "pie".</span></span>
+<span><span class="co">#&gt;       Use "label+mark" to render both marks (drawn first, as background) and text labels (drawn on top)</span></span>
+<span><span class="co">#&gt;       in each cell simultaneously, combining all label_* and mark_* parameters.</span></span>
 <span><span class="co">#&gt;       Note that for pie chart, the values under columns specified by rows will not be used directly. Instead, the values</span></span>
 <span><span class="co">#&gt;       will just be counted in different pie_group_by groups. NA values will not be counted.</span></span>
 <span><span class="co">#&gt;       - cell_agg: A function to aggregate the values in the cell, for the cell type "tile" and "label".</span></span>
@@ -2578,14 +2586,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(</span></span>
-<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "dot",</span></span>
-<span><span class="co">#&gt;   method = "aggregation"</span></span>
-<span><span class="co">#&gt; )</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

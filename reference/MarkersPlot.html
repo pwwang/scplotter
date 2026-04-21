@@ -73,6 +73,8 @@
 <span>  comparison_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_adjust <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  sig_mark <span class="op">=</span> <span class="st">"*"</span>,</span>
 <span>  order_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"volcano"</span>, <span class="st">"volcano_log2fc"</span>, <span class="st">"volcano_pct"</span>,</span>
 <span>    <span class="st">"jitter"</span>, <span class="st">"jitter_log2fc"</span>, <span class="st">"jitter_pct"</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
@@ -150,6 +152,19 @@ Default is TRUE.</p></dd>
 Default is NULL, no cutoff.</p></dd>
 
 
+<dt id="arg-show-labels">show_labels<a class="anchor" aria-label="anchor" href="#arg-show-labels"></a></dt>
+<dd><p>Logical, whether to show the values in heatmap cells. Default is FALSE.
+Only works for <code>heatmap_log2fc</code> and <code>heatmap_pct</code>. If <code>cutoff</code> is provided, the significant cells will be labeled with <code>sig_mark</code>, otherwise all cells will be labeled with their values.</p></dd>
+
+
+<dt id="arg-sig-mark">sig_mark<a class="anchor" aria-label="anchor" href="#arg-sig-mark"></a></dt>
+<dd><p>Character, the symbol to use for significant markers in heatmap plots. Default is "<em>".
+See <code><a href="https://pwwang.github.io/plotthis/reference/Heatmap.html" class="external-link">plotthis::Heatmap()</a></code> for more details.
+Note that "</em>" will not work if <code>show_labels</code> is TRUE, since they are both using <code>label</code> in <code>Heatmap</code>. Try
+other marks instead, e.g., <code>-</code>, <code>|</code>, <code>+</code>, <code>/</code>, <code>\\</code>, <code>x</code>, <code>o</code>, or compound marks like <code>[*]</code>, <code>&lt;*&gt;</code>, <code>(*)</code>, <code>{*}</code>.
+Only works for <code>heatmap_log2fc</code> and <code>heatmap_pct</code>. If <code>cutoff</code> is provided, the significant cells will be labeled with <code>sig_mark</code>, otherwise all cells will be labeled with their values.</p></dd>
+
+
 <dt id="arg-order-by">order_by<a class="anchor" aria-label="anchor" href="#arg-order-by"></a></dt>
 <dd><p>A string of expression to order the markers within each group defined by <code>subset_by</code>.
 In addition to the columns in <code>markers</code>, you can also use the columns from the object's metadata if <code>object</code> is provided.
@@ -223,41 +238,45 @@ See Details.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>    label <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    cutoff <span class="op">=</span> <span class="fl">0.05</span>, show_labels <span class="op">=</span> <span class="cn">TRUE</span>, sig_mark <span class="op">=</span> <span class="st">'{}'</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="MarkersPlot-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_pct"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
 <span class="r-in"><span>    cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MarkersPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"dot_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
 <span class="r-in"><span>    add_reticle <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MarkersPlot-9.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
 <span class="r-in"><span>   columns_split_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-plt img"><img src="MarkersPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Suppose we did a DE between g1 and g2 in each cluster</span></span></span>
 <span class="r-in"><span><span class="va">allmarkers</span><span class="op">$</span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="st">"g1:g2"</span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-plt img"><img src="MarkersPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Unknown arguments to ComplexHeatmap::Heatmap(): row_name_annotation, column_name_annotation</span>
-<span class="r-plt img"><img src="MarkersPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-13.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-plt img"><img src="MarkersPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-plt img"><img src="MarkersPlot-14.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
@@ -459,7 +478,7 @@ See Details.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
-<span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
