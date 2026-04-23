@@ -238,7 +238,8 @@ do_call <- function(fn, args, quote = FALSE, envir = parent.frame()) {
 `default_dimreduc<-` <- function(object, value) {
     if (exists("DefaultDimReduc<-", where = asNamespace("SeuratObject"), mode = "function")) {
         # Use the official setter if available
-        get("DefaultDimReduc<-", envir = asNamespace("SeuratObject"))(object, value)
+        fn <- get("DefaultDimReduc<-", envir = asNamespace("SeuratObject"))
+        object <- fn(object = object, value = value)
     } else {
         # Fallback: store in misc slot
         object@misc$DefaultDimReduc <- value
@@ -259,7 +260,8 @@ do_call <- function(fn, args, quote = FALSE, envir = parent.frame()) {
 `default_dimreduc` <- function(object) {
     # If we have SeuratObject >= 5.4.0, we can use the official getter
     if (exists("DefaultDimReduc<-", where = asNamespace("SeuratObject"), mode = "function")) {
-        return(get("DefaultDimReduc", envir = asNamespace("SeuratObject"))(object))
+        fn <- get("DefaultDimReduc", envir = asNamespace("SeuratObject"))
+        return(fn(object))
     }
     # Fallback: check misc slot
     if (!is.null(object@misc$DefaultDimReduc)) {
