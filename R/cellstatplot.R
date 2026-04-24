@@ -597,8 +597,10 @@ CellStatPlot.data.frame <- function(
             args$rows_split_by <- rows_split_by
             args$rows_split_name <- args$rows_split_name %||% " "
             args$rows_by <- ident
+            args$rows_name <- rows_name %||% ""
         } else {
             args$rows_by <- ident
+            args$rows_name <- rows_name %||% ""
         }
 
         do_call(Heatmap, args)
