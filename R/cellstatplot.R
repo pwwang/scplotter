@@ -542,10 +542,10 @@ CellStatPlot.data.frame <- function(
             split_by = split_by, facet_by = facet_by, ...)
     } else if (plot_type == "pies") {
         if (is.null(group_by)) {
-            stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'group_by'.")
+            stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'group_by' (works as columns of the plot).")
         }
         if (is.null(rows_by)) {
-            stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'rows_by'.")
+            stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'rows_by' (works as rows of the plot).")
         }
         if (!is.null(facet_by)) {
             stop("Cannot create a heatmap (cell_type = 'pie') plot with 'facet_by'.")
