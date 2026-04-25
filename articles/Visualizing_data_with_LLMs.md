@@ -214,7 +214,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "network")
+#> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -223,77 +223,43 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 # Previous conversation is memorized
 chat$ask("Do a heatmap instead")
 #> 
-#> Tool identified:  CellStatPlot 
+#> Tool identified:  CCCPlot 
 #> 
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> Warning in tidyprompt::send_prompt(wrapt_prompt, private$provider, verbose =
-#> verbose): Failed to reach a valid answer after 10 interactions
 #> Code ran:
-#> 
-#> NULL
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
 ```
+
+![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
 
 ``` r
 chat$ask("Add a proper title to the plot")
 #> 
-#> Tool identified:  CellStatPlot 
+#> Tool identified:  CCCPlot 
 #> 
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> Warning in tidyprompt::send_prompt(wrapt_prompt, private$provider, verbose =
-#> verbose): Failed to reach a valid answer after 10 interactions
 #> Code ran:
-#> 
-#> NULL
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication")
 ```
+
+![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
 
 ``` r
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#>  [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                                                                              
-#>  [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                                                                                                            
-#>  [3] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#>  [4] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                                                       
-#>  [5] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#>  [6] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"seurat_annotations\",\n  plot_type = \"heatmap\",\n  group_by = \"stim\",\n  frac = \"none\"\n)"                        
-#>  [7] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#>  [8] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                                                       
-#>  [9] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#> [10] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                                                       
-#> [11] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#> [12] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = \"seurat_annotations\"\n)"                                                                    
-#> [13] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#> [14] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1]\n)"                                                              
-#> [15] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#> [16] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1]\n)"                                                              
-#> [17] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#> [18] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = \"group\",\n  ident = NULL,\n  frac = \"none\"\n)"                                         
-#> [19] "User: Do a heatmap instead"                                                                                                                                                                                                                               
-#> [20] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                                                       
-#> [21] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [22] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell Statistics Plot\"\n)"                                                                  
-#> [23] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [24] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = \"seurat_annotations\",\n  title = \"Cell Statistics Plot\"\n)"                               
-#> [25] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [26] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell Statistics Plot\"\n)"                                                                  
-#> [27] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [28] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell Statistics Plot\"\n)"                                                                  
-#> [29] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [30] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell Statistics Plot\"\n)"                                                                  
-#> [31] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [32] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = \"\",\n  title = \"Cell Statistics Plot\"\n)"                                                 
-#> [33] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [34] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1],\n  title = \"Cell Statistics Plot\"\n)"                         
-#> [35] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [36] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1],\n  title = \"Cell Statistics Plot\"\n)"                         
-#> [37] "User: Add a proper title to the plot"                                                                                                                                                                                                                     
-#> [38] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1],\n  ident = \"Identity\",\n  title = \"Cell Statistics Plot\"\n)"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                                     
+#> [3] "User: Do a heatmap instead"                                                                                                                                                    
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                                 
+#> [5] "User: Add a proper title to the plot"                                                                                                                                          
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"
 
 # To clear the history
 chat$clear_history()
@@ -1425,11 +1391,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(
-    #>   data = cellphonedb_res,
-    #>   plot_type = "dot",
-    #>   method = "aggregation"
-    #> )
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
     #> ```
 
     #> Code ran:
@@ -2560,10 +2522,13 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(
+    #>   data = cellphonedb_res,
+    #>   plot_type = "dot"
+    #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

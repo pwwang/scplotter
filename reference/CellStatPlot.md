@@ -26,7 +26,6 @@ CellStatPlot(
   rows_by = NULL,
   columns_split_by = NULL,
   frac = c("none", "group", "ident", "cluster", "all"),
-  rows_name = NULL,
   name = NULL,
   agg = "n()",
   plot_type = c("bar", "circos", "pie", "pies", "ring", "donut", "trend", "area",
@@ -123,10 +122,6 @@ CellStatPlot(
 
   - none: do not calculate the fraction, use the number of cells
     instead.
-
-- rows_name:
-
-  The name of the rows in the 'pies'/'heatmap' plot. Default is NULL.
 
 - name:
 
