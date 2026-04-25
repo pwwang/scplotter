@@ -121,8 +121,8 @@
         args$name <- args$name %||% "Expression Level"
         args$dot_size <- args$dot_size %||% function(x) sum(x > 0, na.rm = TRUE) / length(x)
         args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
-        args$row_name_annotation <- args$row_name_annotation %||% TRUE
-        args$column_name_annotation <- args$column_name_annotation %||% TRUE
+        # args$row_name_annotation <- args$row_name_annotation %||% TRUE
+        # args$column_name_annotation <- args$column_name_annotation %||% TRUE
         args$show_row_names <- args$show_row_names %||% TRUE
         args$show_column_names <- args$show_column_names %||% TRUE
         args$add_reticle <- args$add_reticle %||% TRUE
