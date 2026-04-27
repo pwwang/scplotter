@@ -1391,11 +1391,14 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(
+    #>   data = cellphonedb_res,
+    #>   plot_type = "dot"
+    #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -2524,11 +2527,13 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> ```r
     #> CCCPlot(
     #>   data = cellphonedb_res,
-    #>   plot_type = "dot"
+    #>   plot_type = "dot",
+    #>   method = "aggregation",
+    #>   magnitude_name = "No. of interactions"
     #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation", magnitude_name = "No. of interactions")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

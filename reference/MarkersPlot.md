@@ -282,7 +282,6 @@ MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
    comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
 #> Warning: Layer counts isn't present in the assay object; returning NULL
-#> Warning: [Heatmap] Unknown arguments to ComplexHeatmap::Heatmap(): row_name_annotation, column_name_annotation
 
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,

@@ -458,7 +458,6 @@ FeatureStatPlot(pancreas_sub,
 
 # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", plot_type = "dot")
-#> Warning: [Heatmap] Unknown arguments to ComplexHeatmap::Heatmap(): row_name_annotation, column_name_annotation
 
 
 named_features <- list(
