@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -1460,13 +1460,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(</span></span>
-<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "dot"</span></span>
-<span><span class="co">#&gt; )</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -2589,12 +2586,11 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; CCCPlot(</span></span>
 <span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
 <span><span class="co">#&gt;   plot_type = "dot",</span></span>
-<span><span class="co">#&gt;   method = "aggregation",</span></span>
-<span><span class="co">#&gt;   magnitude_name = "No. of interactions"</span></span>
+<span><span class="co">#&gt;   method = "aggregation"</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation", magnitude_name = "No. of interactions")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
