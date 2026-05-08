@@ -41,7 +41,10 @@
 #' Note that for "col", the plot will be faceted by the groups, so "facet_by" is not supported. Please use "split_by" instead if you want to split the plot by another variable.
 #' @param group_by The column name in the meta data to group the cells. Default: "Sample"
 #' @param groups The groups to include in the plot. Default is NULL.
-#'  If NULL, all the groups in `group_by` will be included.
+#' If NULL, all the groups in `group_by` will be included.
+#' If a vector, the groups will be included in the order of the vector.
+#' If a named vector/list, the names will be used for the group labels in the plot, and the values will be used to match the groups in the data.
+#' For example, `c(B = "P17B", L = "P17L")` will include groups "P17B" and "P17L" in the plot, but label them as "B" and "L", respectively.
 #' @param order A list specifying the order of the levels for the `group_by` variable. Default is NULL, which will use the order in the data.
 #' For `group_by`, this has lower priority than `groups`.
 #' @param subgroup_by The column name in the meta data to subgroup the nodes (group nodes on each `x`). Default: NULL.
@@ -162,6 +165,10 @@
 #' ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
 #'     facet_ncol = 1, legend.position = "right",
 #'     relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
+#' # Rename groups
+#' ClonalStatPlot(data, plot_type = "col", groups = c(P17B = "B", P17L = "L"),
+#'     facet_ncol = 1, legend.position = "right",
+#'     relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
 #' }
 ClonalStatPlot <- function(
     data, clones = "top(10)", clone_call = "aa", chain = "both", values_by = c("count", "fraction", "n"),
@@ -195,11 +202,18 @@ ClonalStatPlot <- function(
         check_columns <- utils::getFromNamespace("check_columns", "plotthis")
         group_by <- check_columns(data, group_by, force_factor = TRUE)
         groups <- groups %||% levels(data[[group_by]])
-        nonexist_groups <- setdiff(groups, levels(data[[group_by]]))
+        groups <- unlist(groups)
+        if (is.null(names(groups))) {
+            names(groups) <- groups
+        }
+        nonexist_groups <- setdiff(names(groups), levels(data[[group_by]]))
         if (length(nonexist_groups) > 0) {
             stop(paste("The following groups do not exist in the data:", paste(nonexist_groups, collapse = ", ")))
         }
-        data <- data %>% filter(!!sym(group_by) %in% groups)
+        data <- data %>% filter(!!sym(group_by) %in% names(groups))
+        # Reverse the names and values for fct_recode to rename the groups
+        groups <- stats::setNames(names(groups), groups)
+        data[[group_by]] <- forcats::fct_recode(data[[group_by]], !!!groups)
     }
     if (!is.null(subgroup_by)) {
         check_columns <- utils::getFromNamespace("check_columns", "plotthis")

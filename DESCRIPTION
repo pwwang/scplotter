@@ -23,6 +23,7 @@ Imports:
     rlang,
     stringr,
     tidyr,
+    forcats,
     plotthis,
     R6
 Suggests:
