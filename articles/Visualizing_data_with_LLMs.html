@@ -215,7 +215,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   </span></span>
 <span><span class="co">#&gt; -  CCCPlot :  Cell-Cell Communication Plot     </span></span>
 <span><span class="co">#&gt;    Plot the cell-cell communication.</span></span>
 <span><span class="co">#&gt;    See also:</span></span>
@@ -269,7 +269,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   </span></span>
 <span><span class="co">#&gt; -  or :  Helper functions to select clones based on various criteria     </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
 <span><span class="co">#&gt; -  ListTools :  List all available tools</span></span>
@@ -297,7 +297,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -328,12 +328,12 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                                     </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                    </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                                 </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                          </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                       </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                     </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                        </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                     </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                              </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -432,7 +432,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - CCCPlot: Cell-Cell Communication Plot  </span></span>
 <span><span class="co">#&gt;    Plot the cell-cell communication.</span></span>
@@ -506,7 +506,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - or: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
@@ -752,6 +752,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - palcolor: A character string specifying the color to use in the palette.</span></span>
 <span><span class="co">#&gt;       A named list can be used to specify the colors for different split_by values.</span></span>
 <span><span class="co">#&gt;       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - link_palette: A character string specifying the palette of the links.</span></span>
 <span><span class="co">#&gt;       When link_color_by is "from" or "to", the palette of the links defaults to the palette of the nodes.</span></span>
 <span><span class="co">#&gt;       - link_palcolor: A character vector specifying the colors of the link palette.</span></span>
@@ -840,6 +841,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - palcolor: A character string specifying the color to use in the palette.</span></span>
 <span><span class="co">#&gt;       A named list can be used to specify the colors for different split_by values.</span></span>
 <span><span class="co">#&gt;       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - alpha: A numeric value specifying the transparency of the plot.</span></span>
 <span><span class="co">#&gt;       - labels_rot: A logical value to rotate the labels by 90 degrees.</span></span>
 <span><span class="co">#&gt;       - title: A character string specifying the title of the plot.</span></span>
@@ -955,6 +957,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - palette: A character string specifying the palette of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - palcolor: A character vector of colors to override the palette of the heatmap cells.</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
 <span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
 <span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
@@ -1254,6 +1257,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - nodes_width: A numeric value to specify the width of nodes.</span></span>
 <span><span class="co">#&gt;       - links_palette: A character string to specify the palette of links fill.</span></span>
 <span><span class="co">#&gt;       - links_palcolor: A character vector to specify the colors of links fill.</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - links_alpha: A numeric value to specify the transparency of links fill.</span></span>
 <span><span class="co">#&gt;       - legend.box: A character string to specify the box of the legend, either "vertical" or "horizontal".</span></span>
 <span><span class="co">#&gt;       - aspect.ratio: A numeric value specifying the aspect ratio of the plot.</span></span>
@@ -1335,10 +1339,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - fill_by: Which column to use as the fill the dots. It must be a numeric column.</span></span>
 <span><span class="co">#&gt;       If not provided, all dots will be filled with the same color at the middle of the palette.</span></span>
 <span><span class="co">#&gt;       - fill_cutoff: A numeric value specifying the cutoff for the fill column.</span></span>
-<span><span class="co">#&gt;       - fill_reverse: A logical value indicating whether to reverse the fill direction. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       By default, the fill direction is "up". If TRUE, the fill direction is "down".</span></span>
 <span><span class="co">#&gt;       When the direction is "up", the values less than the cutoff will be filled with grey.</span></span>
 <span><span class="co">#&gt;       When the direction is "down", the values greater than the cutoff will be filled with grey.</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.</span></span>
 <span><span class="co">#&gt;       Default is "theme_this".</span></span>
 <span><span class="co">#&gt;       - theme_args: A list of arguments to pass to the theme function.</span></span>
@@ -1460,10 +1464,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -1555,7 +1559,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - CCCPlot: Cell-Cell Communication Plot  </span></span>
 <span><span class="co">#&gt;    Plot the cell-cell communication.</span></span>
@@ -1629,7 +1633,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    below to see their documentation.</span></span>
 <span><span class="co">#&gt;    </span></span>
 <span><span class="co">#&gt;    </span></span>
-<span><span class="co">#&gt;         plotthis   GSEAPlot   ,    GSEASummaryPlot   </span></span>
+<span><span class="co">#&gt;         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; - or: Helper functions to select clones based on various criteria  </span></span>
 <span><span class="co">#&gt;    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.</span></span>
@@ -1875,6 +1879,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - palcolor: A character string specifying the color to use in the palette.</span></span>
 <span><span class="co">#&gt;       A named list can be used to specify the colors for different split_by values.</span></span>
 <span><span class="co">#&gt;       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - link_palette: A character string specifying the palette of the links.</span></span>
 <span><span class="co">#&gt;       When link_color_by is "from" or "to", the palette of the links defaults to the palette of the nodes.</span></span>
 <span><span class="co">#&gt;       - link_palcolor: A character vector specifying the colors of the link palette.</span></span>
@@ -1963,6 +1968,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - palcolor: A character string specifying the color to use in the palette.</span></span>
 <span><span class="co">#&gt;       A named list can be used to specify the colors for different split_by values.</span></span>
 <span><span class="co">#&gt;       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - alpha: A numeric value specifying the transparency of the plot.</span></span>
 <span><span class="co">#&gt;       - labels_rot: A logical value to rotate the labels by 90 degrees.</span></span>
 <span><span class="co">#&gt;       - title: A character string specifying the title of the plot.</span></span>
@@ -2078,6 +2084,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.</span></span>
 <span><span class="co">#&gt;       - palette: A character string specifying the palette of the heatmap cells.</span></span>
 <span><span class="co">#&gt;       - palcolor: A character vector of colors to override the palette of the heatmap cells.</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - pie_size_name: A character string specifying the name of the legend for the pie size.</span></span>
 <span><span class="co">#&gt;       - pie_size: A numeric value or a function specifying the size of the pie chart.</span></span>
 <span><span class="co">#&gt;       If it is a function, the function should take count as the argument and return the size.</span></span>
@@ -2377,6 +2384,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - nodes_width: A numeric value to specify the width of nodes.</span></span>
 <span><span class="co">#&gt;       - links_palette: A character string to specify the palette of links fill.</span></span>
 <span><span class="co">#&gt;       - links_palcolor: A character vector to specify the colors of links fill.</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - links_alpha: A numeric value to specify the transparency of links fill.</span></span>
 <span><span class="co">#&gt;       - legend.box: A character string to specify the box of the legend, either "vertical" or "horizontal".</span></span>
 <span><span class="co">#&gt;       - aspect.ratio: A numeric value specifying the aspect ratio of the plot.</span></span>
@@ -2458,10 +2466,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - fill_by: Which column to use as the fill the dots. It must be a numeric column.</span></span>
 <span><span class="co">#&gt;       If not provided, all dots will be filled with the same color at the middle of the palette.</span></span>
 <span><span class="co">#&gt;       - fill_cutoff: A numeric value specifying the cutoff for the fill column.</span></span>
-<span><span class="co">#&gt;       - fill_reverse: A logical value indicating whether to reverse the fill direction. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       By default, the fill direction is "up". If TRUE, the fill direction is "down".</span></span>
 <span><span class="co">#&gt;       When the direction is "up", the values less than the cutoff will be filled with grey.</span></span>
 <span><span class="co">#&gt;       When the direction is "down", the values greater than the cutoff will be filled with grey.</span></span>
+<span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
 <span><span class="co">#&gt;       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.</span></span>
 <span><span class="co">#&gt;       Default is "theme_this".</span></span>
 <span><span class="co">#&gt;       - theme_args: A list of arguments to pass to the theme function.</span></span>
@@ -2585,12 +2593,11 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
 <span><span class="co">#&gt; CCCPlot(</span></span>
 <span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "dot",</span></span>
-<span><span class="co">#&gt;   method = "aggregation"</span></span>
+<span><span class="co">#&gt;   plot_type = "dot"</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

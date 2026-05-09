@@ -84,7 +84,8 @@ EnrichmentPlot(
 - expand:
 
   A numeric vector of length 1, 2 or 4 to expand the plot. Default is
-  NULL. Works only for "bar" plot. See also plotthis::BarPlot.
+  NULL. Works only for "bar" plot. See also
+  [plotthis::BarPlot](https://pwwang.github.io/plotthis/reference/barplot.html).
 
 - word_type:
 

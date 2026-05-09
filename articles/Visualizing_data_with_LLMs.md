@@ -130,7 +130,7 @@ chat$list_tools()
 #>    below to see their documentation.
 #>    
 #>    
-#>         plotthis   GSEAPlot   ,    GSEASummaryPlot   
+#>         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   
 #> -  CCCPlot :  Cell-Cell Communication Plot     
 #>    Plot the cell-cell communication.
 #>    See also:
@@ -184,7 +184,7 @@ chat$list_tools()
 #>    below to see their documentation.
 #>    
 #>    
-#>         plotthis   GSEAPlot   ,    GSEASummaryPlot   
+#>         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   
 #> -  or :  Helper functions to select clones based on various criteria     
 #>    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
 #> -  ListTools :  List all available tools
@@ -214,7 +214,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+#> CCCPlot(data = cellphonedb_res, plot_type = "network")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -254,12 +254,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                                     
-#> [3] "User: Do a heatmap instead"                                                                                                                                                    
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                                 
-#> [5] "User: Add a proper title to the plot"                                                                                                                                          
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                       
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                     
+#> [3] "User: Do a heatmap instead"                                                                                                                                        
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                     
+#> [5] "User: Add a proper title to the plot"                                                                                                                              
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication\")"
 
 # To clear the history
 chat$clear_history()
@@ -359,7 +359,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    below to see their documentation.
 #>    
 #>    
-#>         plotthis   GSEAPlot   ,    GSEASummaryPlot   
+#>         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   
 #> 
 #> - CCCPlot: Cell-Cell Communication Plot  
 #>    Plot the cell-cell communication.
@@ -433,7 +433,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    below to see their documentation.
 #>    
 #>    
-#>         plotthis   GSEAPlot   ,    GSEASummaryPlot   
+#>         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   
 #> 
 #> - or: Helper functions to select clones based on various criteria  
 #>    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
@@ -681,6 +681,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - palcolor: A character string specifying the color to use in the palette.
     #>       A named list can be used to specify the colors for different split_by values.
     #>       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - link_palette: A character string specifying the palette of the links.
     #>       When link_color_by is "from" or "to", the palette of the links defaults to the palette of the nodes.
     #>       - link_palcolor: A character vector specifying the colors of the link palette.
@@ -769,6 +770,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - palcolor: A character string specifying the color to use in the palette.
     #>       A named list can be used to specify the colors for different split_by values.
     #>       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - alpha: A numeric value specifying the transparency of the plot.
     #>       - labels_rot: A logical value to rotate the labels by 90 degrees.
     #>       - title: A character string specifying the title of the plot.
@@ -884,6 +886,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.
     #>       - palette: A character string specifying the palette of the heatmap cells.
     #>       - palcolor: A character vector of colors to override the palette of the heatmap cells.
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - pie_size_name: A character string specifying the name of the legend for the pie size.
     #>       - pie_size: A numeric value or a function specifying the size of the pie chart.
     #>       If it is a function, the function should take count as the argument and return the size.
@@ -1183,6 +1186,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - nodes_width: A numeric value to specify the width of nodes.
     #>       - links_palette: A character string to specify the palette of links fill.
     #>       - links_palcolor: A character vector to specify the colors of links fill.
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - links_alpha: A numeric value to specify the transparency of links fill.
     #>       - legend.box: A character string to specify the box of the legend, either "vertical" or "horizontal".
     #>       - aspect.ratio: A numeric value specifying the aspect ratio of the plot.
@@ -1264,10 +1268,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - fill_by: Which column to use as the fill the dots. It must be a numeric column.
     #>       If not provided, all dots will be filled with the same color at the middle of the palette.
     #>       - fill_cutoff: A numeric value specifying the cutoff for the fill column.
-    #>       - fill_reverse: A logical value indicating whether to reverse the fill direction. Default is FALSE.
     #>       By default, the fill direction is "up". If TRUE, the fill direction is "down".
     #>       When the direction is "up", the values less than the cutoff will be filled with grey.
     #>       When the direction is "down", the values greater than the cutoff will be filled with grey.
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.
     #>       Default is "theme_this".
     #>       - theme_args: A list of arguments to pass to the theme function.
@@ -1391,11 +1395,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -1490,7 +1494,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    below to see their documentation.
 #>    
 #>    
-#>         plotthis   GSEAPlot   ,    GSEASummaryPlot   
+#>         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   
 #> 
 #> - CCCPlot: Cell-Cell Communication Plot  
 #>    Plot the cell-cell communication.
@@ -1564,7 +1568,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    below to see their documentation.
 #>    
 #>    
-#>         plotthis   GSEAPlot   ,    GSEASummaryPlot   
+#>         plotthis   GSEAPlot()   ,    GSEASummaryPlot()   
 #> 
 #> - or: Helper functions to select clones based on various criteria  
 #>    These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
@@ -1812,6 +1816,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - palcolor: A character string specifying the color to use in the palette.
     #>       A named list can be used to specify the colors for different split_by values.
     #>       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - link_palette: A character string specifying the palette of the links.
     #>       When link_color_by is "from" or "to", the palette of the links defaults to the palette of the nodes.
     #>       - link_palcolor: A character vector specifying the colors of the link palette.
@@ -1900,6 +1905,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - palcolor: A character string specifying the color to use in the palette.
     #>       A named list can be used to specify the colors for different split_by values.
     #>       If some values are missing, the values from the palette will be used (palcolor will be NULL for those values).
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - alpha: A numeric value specifying the transparency of the plot.
     #>       - labels_rot: A logical value to rotate the labels by 90 degrees.
     #>       - title: A character string specifying the title of the plot.
@@ -2015,6 +2021,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - rows_split_name: A character string to rename the column created by rows_split_by, which will be reflected in the name of the annotation or legend.
     #>       - palette: A character string specifying the palette of the heatmap cells.
     #>       - palcolor: A character vector of colors to override the palette of the heatmap cells.
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - pie_size_name: A character string specifying the name of the legend for the pie size.
     #>       - pie_size: A numeric value or a function specifying the size of the pie chart.
     #>       If it is a function, the function should take count as the argument and return the size.
@@ -2314,6 +2321,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - nodes_width: A numeric value to specify the width of nodes.
     #>       - links_palette: A character string to specify the palette of links fill.
     #>       - links_palcolor: A character vector to specify the colors of links fill.
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - links_alpha: A numeric value to specify the transparency of links fill.
     #>       - legend.box: A character string to specify the box of the legend, either "vertical" or "horizontal".
     #>       - aspect.ratio: A numeric value specifying the aspect ratio of the plot.
@@ -2395,10 +2403,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - fill_by: Which column to use as the fill the dots. It must be a numeric column.
     #>       If not provided, all dots will be filled with the same color at the middle of the palette.
     #>       - fill_cutoff: A numeric value specifying the cutoff for the fill column.
-    #>       - fill_reverse: A logical value indicating whether to reverse the fill direction. Default is FALSE.
     #>       By default, the fill direction is "up". If TRUE, the fill direction is "down".
     #>       When the direction is "up", the values less than the cutoff will be filled with grey.
     #>       When the direction is "down", the values greater than the cutoff will be filled with grey.
+    #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.
     #>       Default is "theme_this".
     #>       - theme_args: A list of arguments to pass to the theme function.
@@ -2524,12 +2532,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> ```r
     #> CCCPlot(
     #>   data = cellphonedb_res,
-    #>   plot_type = "dot",
-    #>   method = "aggregation"
+    #>   plot_type = "dot"
     #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot", method = "aggregation")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

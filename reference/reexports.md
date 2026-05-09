@@ -5,7 +5,8 @@ to see their documentation.
 
 - plotthis:
 
-  `GSEAPlot`, `GSEASummaryPlot`
+  [`GSEAPlot()`](https://pwwang.github.io/plotthis/reference/gsea.html),
+  [`GSEASummaryPlot()`](https://pwwang.github.io/plotthis/reference/gsea.html)
 
 ## See also
 

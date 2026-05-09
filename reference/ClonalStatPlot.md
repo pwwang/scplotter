@@ -115,7 +115,12 @@ ClonalStatPlot(
 - groups:
 
   The groups to include in the plot. Default is NULL. If NULL, all the
-  groups in `group_by` will be included.
+  groups in `group_by` will be included. If a vector, the groups will be
+  included in the order of the vector. If a named vector/list, the names
+  will be used for the group labels in the plot, and the values will be
+  used to match the groups in the data. For example,
+  `c(B = "P17B", L = "P17L")` will include groups "P17B" and "P17L" in
+  the plot, but label them as "B" and "L", respectively.
 
 - subgroup_by:
 
@@ -296,6 +301,11 @@ ClonalStatPlot(data, clones = "top(5, group_by = 'Sample')", plot_type = "col",
     title = "Top 5 clones in each sample (col plot, showing fraction)")
 
 ClonalStatPlot(data, plot_type = "col", groups = c("P17B", "P17L"),
+    facet_ncol = 1, legend.position = "right",
+    relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
+
+# Rename groups
+ClonalStatPlot(data, plot_type = "col", groups = c(P17B = "B", P17L = "L"),
     facet_ncol = 1, legend.position = "right",
     relabel = TRUE, fill_by = ".Clones", fill_name = "Clones")
 

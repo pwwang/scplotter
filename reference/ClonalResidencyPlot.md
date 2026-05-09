@@ -70,7 +70,15 @@ ClonalResidencyPlot(
   groups can be compared. So when there are more than two groups, the
   combination of the pairs will be used. For "scatter" plot, the groups
   can be specified as the comparisons separated by ":", e.g. "L:B",
-  "Y:X".
+  "Y:X". If a vector, the groups will be included in the order of the
+  vector. If a named vector/list, the names will be used for the group
+  labels in the plot, and the values will be used to match the groups in
+  the data. For example, `c(B = "P17B", L = "P17L")` will include groups
+  "P17B" and "P17L" in the plot, but label them as "B" and "L",
+  respectively. For "scatter" plot, the values should be in the format
+  of "group1:group2", e.g. `c("L:B" = "group1:group2")`. The group comes
+  first in the comparison will be on the y-axis, and the group comes
+  second will be on the x-axis.
 
 - facet_by:
 

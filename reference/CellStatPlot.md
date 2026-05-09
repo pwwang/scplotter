@@ -58,7 +58,8 @@ CellStatPlot(
   violin/box plot, at most 2 `group_by` columns are allowed and they
   will not be concatenated. The first one is used to break down the
   values in groups, and the second one works as the `group_by` argument
-  in plotthis::ViolinPlot/plotthis::BoxPlot.
+  in
+  [plotthis::ViolinPlot](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)/[plotthis::BoxPlot](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
 
 - group_by_sep:
 

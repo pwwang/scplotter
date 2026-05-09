@@ -1,18 +1,12 @@
 # SCPlotterChat Class
 
-SCPlotterChat Class
-
-SCPlotterChat Class
-
-## Details
-
 An R6 class that provides chat functionality for SCPlotter
 
 ## Methods
 
 ### Public methods
 
-- [`SCPlotterChat$new()`](#method-SCPlotterChat-new)
+- [`SCPlotterChat$new()`](#method-SCPlotterChat-initialize)
 
 - [`SCPlotterChat$clear_history()`](#method-SCPlotterChat-clear_history)
 
@@ -32,7 +26,7 @@ An R6 class that provides chat functionality for SCPlotter
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `SCPlotterChat$new()`
 
 Create a new instance of the SCPlotterChat class
 
@@ -59,7 +53,7 @@ A new instance of the SCPlotterChat class
 
 ------------------------------------------------------------------------
 
-### Method `clear_history()`
+### `SCPlotterChat$clear_history()`
 
 Clear the chat history
 
@@ -73,7 +67,7 @@ NULL
 
 ------------------------------------------------------------------------
 
-### Method `get_history()`
+### `SCPlotterChat$get_history()`
 
 Get the chat history
 
@@ -87,7 +81,7 @@ The chat history
 
 ------------------------------------------------------------------------
 
-### Method `list_tools()`
+### `SCPlotterChat$list_tools()`
 
 Print the list of available tools
 
@@ -101,7 +95,7 @@ NULL
 
 ------------------------------------------------------------------------
 
-### Method `list_data()`
+### `SCPlotterChat$list_data()`
 
 Print the list of available data objects that can be used
 
@@ -115,7 +109,7 @@ NULL
 
 ------------------------------------------------------------------------
 
-### Method `set_data()`
+### `SCPlotterChat$set_data()`
 
 Set the data to be analyzed
 
@@ -139,7 +133,7 @@ NULL
 
 ------------------------------------------------------------------------
 
-### Method `get_data()`
+### `SCPlotterChat$get_data()`
 
 Get the data to be analyzed
 
@@ -153,7 +147,7 @@ The data object
 
 ------------------------------------------------------------------------
 
-### Method `ask()`
+### `SCPlotterChat$ask()`
 
 Send a prompt to the chat interface and receive a response
 
@@ -184,7 +178,7 @@ A response from the chat system
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `SCPlotterChat$clone()`
 
 The objects of this class are cloneable with this method.
 
