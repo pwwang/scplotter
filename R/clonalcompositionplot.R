@@ -427,7 +427,7 @@ DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
         stop("[ClonalResidencyPlot] No data found for the group_by: ", group_by,
             ". Did you specify the correct 'group_by'/'groups' parameters?")
     }
-    pair <- unique(as.character(df[[group_by]]))
+    pair <- rev(levels(df[[group_by]]))
 
     if (length(pair) != 2) {
         stop("[ClonalResidencyPlot] The group_by should have exactly 2 unique values, got: ", length(pair))
@@ -624,6 +624,11 @@ DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
 #'  Note that for "scatter" plot, only two groups can be compared. So when there are more than two groups,
 #'  the combination of the pairs will be used.
 #'  For "scatter" plot, the groups can be specified as the comparisons separated by ":", e.g. "L:B", "Y:X".
+#'  If a vector, the groups will be included in the order of the vector.
+#'  If a named vector/list, the names will be used for the group labels in the plot, and the values will be used to match the groups in the data.
+#'  For example, `c(B = "P17B", L = "P17L")` will include groups "P17B" and "P17L" in the plot, but label them as "B" and "L", respectively.
+#'  For "scatter" plot, the values should be in the format of "group1:group2", e.g. `c("L:B" = "group1:group2")`.
+#'  The group comes first in the comparison will be on the y-axis, and the group comes second will be on the x-axis.
 #' @param facet_by The column name in the meta data to facet the plots. Default: NULL
 #' @param split_by The column name in the meta data to split the plots. Default: NULL
 #' @param split_by_sep The separator used to concatenate the split_by when multiple columns are used.
@@ -717,26 +722,55 @@ ClonalResidencyPlot <- function(
     # handle the groups
     # the order of groups should override the order in the data, even specified by `order`
     if (is.null(groups)) {
-        if (!is.factor(data[[group_by]])) {
-            data[[group_by]] <- factor(data[[group_by]])
-        }
         groups <- levels(data[[group_by]])
     } else {
-        groups <- unique(groups)
-        if (any(grepl(":", groups, fixed = TRUE))) {
-            if (!identical(plot_type, "scatter")) {
-                stop("[ClonalResidencyPlot] The 'groups' parameter should not contain ':' for non-scatter plots.")
+        groups <- unlist(groups)
+        if (is.null(names(groups))) {
+            names(groups) <- groups
+        }
+
+        if (
+            identical(plot_type, "scatter") &&
+            any(grepl(":", c(names(groups), groups), fixed = TRUE)) &&
+            !all(grepl(":", c(names(groups), groups), fixed = TRUE))) {
+            stop("[ClonalResidencyPlot] All 'groups' should contain ':' for scatter plot if any of them does.")
+        }
+
+        if (identical(plot_type, "scatter") && any(grepl(":", groups, fixed = TRUE))) {
+            recoded_groups <- list()
+            # recode the groups to the format of "group1:group2"
+            for (old_group in names(groups)) {
+                new_group <- groups[old_group]
+                old_groups <- strsplit(old_group, ":", fixed = TRUE)[[1]]
+                new_groups <- strsplit(new_group, ":", fixed = TRUE)[[1]]
+                if (length(old_groups) != 2 || length(new_groups) != 2) {
+                    stop("[ClonalResidencyPlot] The name and value of 'groups' parameter should contain exactly two values separated by ':' for scatter plot.")
+                }
+                old_groups <- trimws(old_groups)
+                new_groups <- trimws(new_groups)
+                for (i in 1:2) {
+                    if (!old_groups[i] %in% data[[group_by]]) {
+                        stop(paste0("[ClonalResidencyPlot] '", old_groups[i], "' in the values of 'groups' parameter are not present in the data."))
+                    }
+                    if (is.null(recoded_groups[[new_groups[i]]])) {
+                        recoded_groups[[new_groups[i]]] <- old_groups[i]
+                    } else {
+                        if (!identical(recoded_groups[[new_groups[i]]], old_groups[i])) {
+                            stop(paste0("[ClonalResidencyPlot] The name '", new_groups[i], "' in 'groups' parameter is mapped to different groups in the data: '", paste(recoded_groups[[new_groups[i]]], collapse = ", "), "' and '", old_groups[i], "'."))
+                        }
+                    }
+                }
             }
-            if (!all(grepl(":", groups, fixed = TRUE))) {
-                stop("[ClonalResidencyPlot] All 'groups' should contain ':' for scatter plot if any of them does.")
-            }
-            lvls <- rev(unique(rev(unlist(strsplit(groups, ":", fixed = TRUE)))))
-            if (any(!lvls %in% data[[group_by]])) {
-                stop(paste0("[ClonalResidencyPlot] '", paste(setdiff(lvls, data[[group_by]]), collapse = ", "), "' in `groups` parameter are not present in the data."))
-            }
-            data[[group_by]] <- factor(data[[group_by]], levels = lvls)
+            data[[group_by]] <- forcats::fct_recode(data[[group_by]], !!!recoded_groups)
+            data[[group_by]] <- factor(data[[group_by]], levels = rev(unique(names(recoded_groups))))
         } else {
-            data[[group_by]] <- factor(data[[group_by]], levels = groups)
+            # Handle case where names are single-column names (without : or even if they contain : but not in scatter plot)
+            non_existing_groups <- unique(setdiff(names(groups), data[[group_by]]))
+            if (length(non_existing_groups) > 0) {
+                stop(paste0("[ClonalResidencyPlot] '", paste(non_existing_groups, collapse = ", "), "' in the names of 'groups' parameter are not present in the data."))
+            }
+            data[[group_by]] <- forcats::fct_recode(data[[group_by]], !!!stats::setNames(names(groups), groups))
+            data[[group_by]] <- factor(data[[group_by]], levels = unname(groups))
         }
     }
 
@@ -839,6 +873,7 @@ ClonalResidencyPlot <- function(
 
         data$fraction <- NULL
         data <- data[data[[group_by]] %in% groups, , drop = FALSE]
+        data[[group_by]] <- factor(data[[group_by]], levels = rev(groups))
         data <- data[data$count > 0, , drop = FALSE]
         data <- data %>%
             pivot_wider(
