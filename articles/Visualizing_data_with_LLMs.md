@@ -214,7 +214,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "network")
+#> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -254,12 +254,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                       
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"network\")"                                     
-#> [3] "User: Do a heatmap instead"                                                                                                                                        
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                     
-#> [5] "User: Add a proper title to the plot"                                                                                                                              
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                            
+#> [3] "User: Do a heatmap instead"                                                                                                                                                    
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                        
+#> [5] "User: Add a proper title to the plot"                                                                                                                                          
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"
 
 # To clear the history
 chat$clear_history()
@@ -1395,11 +1395,14 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
+    #> CCCPlot(
+    #>   data = cellphonedb_res,
+    #>   plot_type = "dot"
+    #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -2532,11 +2535,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> ```r
     #> CCCPlot(
     #>   data = cellphonedb_res,
-    #>   plot_type = "dot"
+    #>   plot_type = "network"
     #> )
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(data = cellphonedb_res, plot_type = "network")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

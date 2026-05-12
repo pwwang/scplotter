@@ -176,7 +176,16 @@ The object's metadata will be merged with <code>markers</code> by <code>subset_b
 It will be evaluated by <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code>.
 For <code>volcano</code>, <code>volcano_log2fc</code>, <code>volcano_pct</code>, <code>jitter</code>, <code>jitter_log2fc</code>, and <code>jitter_pct</code> plots, the selected markers will be labeled in the plot.
 FOr  other plot types, only the selected markers will be plotted.
-Default is 5 for <code>volcano</code>, <code>volcano_log2fc</code>, <code>volcano_pct</code>, <code>jitter</code>, <code>jitter_log2fc</code>, <code>jitter_pct</code>, and 10 for other plot types.</p></dd>
+Default is 5 for <code>volcano</code>, <code>volcano_log2fc</code>, <code>volcano_pct</code>, <code>jitter</code>, <code>jitter_log2fc</code>, <code>jitter_pct</code>, and 10 for other plot types.
+Note that if this is a numeric value, it will select the top N markers for each group defined by <code>subset_by</code>. If this is a string of expression, it will be evaluated by <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> to select markers.
+If this is an (character) expression, it will be used to only filter the markers.
+For example, if you want to plot the markers that are significant in cluster 0,
+you can set <code>select = "p_val_adj &lt; 0.05 &amp; cluster == '0'"</code> for the markers identified in cluster 0,
+but in the plot, other clusters will also be included if they have markers that satisfy the condition.
+If you want to filter the data by <code>subset_by</code>, you should use a multiple value expression
+like <code>select = c("p_val_adj &lt; 0.05", "cluster == '0'")</code>, where <code>subset_by = "cluster"</code>.
+This also works: <code>select = c(5, "cluster %in% c('0', '1')")</code>, which will select top 5 markers in cluster 0 and 1,
+and keeps only cluster 0 and 1 in the plot.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -272,10 +281,31 @@ See Details.</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># select markers with a custom condition, e.g.,</span></span></span>
+<span class="r-in"><span><span class="co"># significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 &gt; 0.6</span></span></span>
+<span class="r-in"><span><span class="co"># Note that other clusters are still included in the plot</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>   select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cluster %in% c("1", "2", "0") &amp; pct.2 - pct.1 &gt; 0.6'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
+<span class="r-in"><span>   cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:&lt;object_metadata_column&gt;' to make it work.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
+<span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># To exclude other clusters, you can separate the filtering conditions into</span></span></span>
+<span class="r-in"><span><span class="co"># multiple expressions</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>   select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cluster %in% c("1", "2", "0")'</span>, <span class="st">'pct.2 - pct.1 &gt; 0.6'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
+<span class="r-in"><span>   cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:&lt;object_metadata_column&gt;' to make it work.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
+<span class="r-plt img"><img src="MarkersPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-17.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
@@ -477,7 +507,7 @@ See Details.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
-<span class="r-plt img"><img src="MarkersPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="MarkersPlot-18.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

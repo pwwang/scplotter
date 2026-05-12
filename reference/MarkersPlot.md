@@ -181,7 +181,22 @@ MarkersPlot(
   labeled in the plot. FOr other plot types, only the selected markers
   will be plotted. Default is 5 for `volcano`, `volcano_log2fc`,
   `volcano_pct`, `jitter`, `jitter_log2fc`, `jitter_pct`, and 10 for
-  other plot types.
+  other plot types. Note that if this is a numeric value, it will select
+  the top N markers for each group defined by `subset_by`. If this is a
+  string of expression, it will be evaluated by
+  [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+  to select markers. If this is an (character) expression, it will be
+  used to only filter the markers. For example, if you want to plot the
+  markers that are significant in cluster 0, you can set
+  `select = "p_val_adj < 0.05 & cluster == '0'"` for the markers
+  identified in cluster 0, but in the plot, other clusters will also be
+  included if they have markers that satisfy the condition. If you want
+  to filter the data by `subset_by`, you should use a multiple value
+  expression like `select = c("p_val_adj < 0.05", "cluster == '0'")`,
+  where `subset_by = "cluster"`. This also works:
+  `select = c(5, "cluster %in% c('0', '1')")`, which will select top 5
+  markers in cluster 0 and 1, and keeps only cluster 0 and 1 in the
+  plot.
 
 - ...:
 
@@ -286,6 +301,27 @@ MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
    comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+
+
+# select markers with a custom condition, e.g.,
+# significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 > 0.6
+# Note that other clusters are still included in the plot
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+   select = c('cluster %in% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
+   comparison_by = "cluster:seurat_clusters",
+   cutoff = 0.05)
+#> Warning: [MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:<object_metadata_column>' to make it work.
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+
+
+# To exclude other clusters, you can separate the filtering conditions into
+# multiple expressions
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+   select = c('cluster %in% c("1", "2", "0")', 'pct.2 - pct.1 > 0.6'),
+   comparison_by = "cluster:seurat_clusters",
+   cutoff = 0.05)
+#> Warning: [MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:<object_metadata_column>' to make it work.
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
