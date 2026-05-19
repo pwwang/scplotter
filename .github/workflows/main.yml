@@ -54,11 +54,12 @@ jobs:
           # gsl v2.1-9 requires R>4.5
           extra-packages: |
             any::remotes, any::devtools, any::pkgdown, any::plotthis, github::jokergoo/ComplexHeatmap,
-            any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram, github::cran/multtest,
+            any::Seurat, any::concaveman, any::gridGraphics, any::ggVennDiagram,
             any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
-            any::terra, github::GiottoClass@R4.4.0, any::GiottoData, any::proxyC, any::metR,
+            any::terra, github::GiottoClass@R4.4.0, github::giotto-suite/GiottoUtils@R4.4.0,
+            any::GiottoData, github::drieslab/GiottoUtils@R4.4.0, any::proxyC, any::metR,
             any::hdf5r, github::RobinHankin/gsl@2.1-8, any::plotly, any::htmlwidgets,
             github::slowkow/ggrepel@0.9.5
 
