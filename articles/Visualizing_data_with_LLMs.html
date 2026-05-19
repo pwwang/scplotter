@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Visualizing data with LLMs">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -303,37 +303,67 @@ for visualization.</p>
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Do a heatmap instead"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
+<span><span class="co">#&gt; Tool identified:  CellStatPlot </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CellStatPlot(object = cellphonedb_res, plot_type = "heatmap", group_by = names(cellphonedb_res)[1], ident = names(cellphonedb_res)[2])</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a proper title to the plot"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
+<span><span class="co">#&gt; Tool identified:  CellStatPlot </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
+<span><span class="co">#&gt; Warning in tidyprompt::send_prompt(wrapt_prompt, private$provider, verbose =</span></span>
+<span><span class="co">#&gt; verbose): Failed to reach a valid answer after 10 interactions</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication")</span></span></code></pre></div>
-<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                   </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                            </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                    </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                        </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                          </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication\"\n)"</span></span>
+<span><span class="co">#&gt;  [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                                                      </span></span>
+<span><span class="co">#&gt;  [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                                                                               </span></span>
+<span><span class="co">#&gt;  [3] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt;  [4] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                               </span></span>
+<span><span class="co">#&gt;  [5] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt;  [6] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"ident\",\n  plot_type = \"heatmap\"\n)"                                                         </span></span>
+<span><span class="co">#&gt;  [7] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt;  [8] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"Identity\",\n  plot_type = \"heatmap\"\n)"                                                      </span></span>
+<span><span class="co">#&gt;  [9] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt; [10] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = \"cluster\"\n)"                                                    </span></span>
+<span><span class="co">#&gt; [11] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt; [12] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1]\n)"                                      </span></span>
+<span><span class="co">#&gt; [13] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt; [14] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = names(cellphonedb_res)[1]\n)"                                         </span></span>
+<span><span class="co">#&gt; [15] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
+<span><span class="co">#&gt; [16] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1],\n  ident = names(cellphonedb_res)[2]\n)"</span></span>
+<span><span class="co">#&gt; [17] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [18] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [19] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [20] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = \"Identity\",\n  title = \"Cell statistics plot\"\n)"                 </span></span>
+<span><span class="co">#&gt; [21] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [22] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [23] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [24] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [25] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [26] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [27] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [28] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [29] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [30] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [31] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [32] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
+<span><span class="co">#&gt; [33] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt; [34] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\",\n  ident = names(cellphonedb_res)[1]\n)"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -1464,13 +1494,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(</span></span>
-<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "dot"</span></span>
-<span><span class="co">#&gt; )</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -2596,11 +2623,13 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
 <span><span class="co">#&gt; CCCPlot(</span></span>
 <span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "network"</span></span>
+<span><span class="co">#&gt;   plot_type = "network",</span></span>
+<span><span class="co">#&gt;   method = "aggregation",</span></span>
+<span><span class="co">#&gt;   legend.position = "none"</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network", method = "aggregation", legend.position = "none")</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
