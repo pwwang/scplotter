@@ -58,7 +58,7 @@ jobs:
             any::clustree, any::ggwordcloud, any::ggalluvial, any::ggpubr, any::callr,
             any::ggforce, any::ggraph, any::ggridges, any::hexbin, any::igraph,
             any::scattermore, any::ggupset, any::iNEXT, any::metap, any::tidyprompt,
-            any::terra, github::GiottoClass@fbc47b6, any::GiottoData, any::proxyC, any::metR,
+            any::terra, github::GiottoClass@v0.4.7, any::GiottoData, any::proxyC, any::metR,
             any::hdf5r, github::RobinHankin/gsl@2.1-8, any::plotly, any::htmlwidgets,
             github::slowkow/ggrepel@0.9.5
 
