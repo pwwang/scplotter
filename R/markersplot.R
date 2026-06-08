@@ -471,18 +471,31 @@ MarkersPlot <- function(
         if (!is.null(subset_by_1) && is.null(subset_by_2)) {
             if (subset_by_1 %in% colnames(object@meta.data)) {
                 subset_by_2 <- subset_by_1
+            } else if (is.numeric(select)) {
+                warning(
+                    "[MarkersPlot] `subset_by` '", subset_by_1, "' is only used to select markers, ",
+                    "but not in plotting, since it is not found in the object's metadata. ",
+                    "Set `subset_by` to '", subset_by_1, ":<object_metadata_column>' to make it work.",
+                    immediate. = TRUE)
             } else {
                 warning(
                     "[MarkersPlot] `subset_by` '", subset_by_1, "' is ignored, ",
                     "since it is not found in the object's metadata. ",
                     "Set `subset_by` to '", subset_by_1, ":<object_metadata_column>' to make it work.",
                     immediate. = TRUE)
+
             }
         }
 
         if (is.numeric(select)) {
             if (!is.null(subset_by)) {
-                genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(subset_by_1))$gene
+                genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(subset_by_1))
+                if (plot_type %in% c("heatmap", "dot")) {
+                    genes <- dplyr::summarise(genes, gene = list(!!sym("gene")), .by = !!rlang::sym(subset_by_1))
+                    genes <- stats::setNames(genes$gene, genes[[subset_by_1]])
+                } else {
+                    genes <- genes$gene
+                }
             } else {
                 genes <- dplyr::slice_head(markers, n = select)$gene
             }
@@ -521,11 +534,15 @@ MarkersPlot <- function(
             object@meta.data[[comparison_by_2]] <- ifelse(object@meta.data[[comparison_by_2]] == comp_groups, comp_groups, "Other")
             object@meta.data[[comparison_by_2]] <- factor(object@meta.data[[comparison_by_2]], levels = c(comp_groups, "Other"))
         }
-        genes <- unique(genes)
+        if (!is.list(genes)) {
+            unigenes <- unique(genes)
+        } else {
+            unigenes <- unique(unlist(genes))
+        }
         # subset the object to only include the selected genes
         object <- tryCatch({
             # In case the features do not exist in some assays
-            subset_seurat(object, features = genes)
+            subset_seurat(object, features = unigenes)
         }, error = function(e) {
             object
         })
