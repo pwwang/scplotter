@@ -112,11 +112,11 @@ provided by <code>tidyprompt</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set up LLM provider</span></span>
 <span><span class="va">provider</span> <span class="op">&lt;-</span> <span class="fu">tidyprompt</span><span class="fu">::</span><span class="fu"><a href="https://kennispunttwente.github.io/tidyprompt/reference/llm_provider_openai.html" class="external-link">llm_provider_openai</a></span><span class="op">(</span></span>
-<span>    parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"openai/gpt-5.4-nano"</span>, stream <span class="op">=</span></span>
+<span>    parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"deepseek-v4-flash"</span>, stream <span class="op">=</span></span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.stream"</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    url <span class="op">=</span> <span class="st">"https://openrouter.ai/api/v1/chat/completions"</span>,</span>
-<span>    api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENROUTER_API_KEY"</span><span class="op">)</span></span>
+<span>    url <span class="op">=</span> <span class="st">"https://api.deepseek.com/chat/completions"</span>,</span>
+<span>    api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/SCPlotterChat.html">SCPlotterChat</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>provider <span class="op">=</span> <span class="va">provider</span><span class="op">)</span></span></code></pre></div>
@@ -297,73 +297,43 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "dot")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Do a heatmap instead"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Tool identified:  CellStatPlot </span></span>
+<span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CellStatPlot(object = cellphonedb_res, plot_type = "heatmap", group_by = names(cellphonedb_res)[1], ident = names(cellphonedb_res)[2])</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a proper title to the plot"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Tool identified:  CellStatPlot </span></span>
+<span><span class="co">#&gt; Tool identified:  CCCPlot </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; Warning in tidyprompt::send_prompt(wrapt_prompt, private$provider, verbose =</span></span>
-<span><span class="co">#&gt; verbose): Failed to reach a valid answer after 10 interactions</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
+<p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                                                      </span></span>
-<span><span class="co">#&gt;  [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                                                                               </span></span>
-<span><span class="co">#&gt;  [3] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt;  [4] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                               </span></span>
-<span><span class="co">#&gt;  [5] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt;  [6] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"ident\",\n  plot_type = \"heatmap\"\n)"                                                         </span></span>
-<span><span class="co">#&gt;  [7] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt;  [8] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"Identity\",\n  plot_type = \"heatmap\"\n)"                                                      </span></span>
-<span><span class="co">#&gt;  [9] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt; [10] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = \"cluster\"\n)"                                                    </span></span>
-<span><span class="co">#&gt; [11] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt; [12] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1]\n)"                                      </span></span>
-<span><span class="co">#&gt; [13] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt; [14] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = names(cellphonedb_res)[1]\n)"                                         </span></span>
-<span><span class="co">#&gt; [15] "User: Do a heatmap instead"                                                                                                                                                                                                       </span></span>
-<span><span class="co">#&gt; [16] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1],\n  ident = names(cellphonedb_res)[2]\n)"</span></span>
-<span><span class="co">#&gt; [17] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [18] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [19] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [20] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = \"Identity\",\n  title = \"Cell statistics plot\"\n)"                 </span></span>
-<span><span class="co">#&gt; [21] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [22] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [23] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [24] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [25] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [26] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [27] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [28] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [29] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [30] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [31] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [32] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          </span></span>
-<span><span class="co">#&gt; [33] "User: Add a proper title to the plot"                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [34] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\",\n  ident = names(cellphonedb_res)[1]\n)"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                      </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -380,7 +350,7 @@ print the prompt and the response from the LLM.</p>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Generate a cell-cell communication plot for the cellphonedb_res data."</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -549,7 +519,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; CCCPlot</span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Identify the data object to be used.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -580,7 +550,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -1111,43 +1081,89 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       The default is "bottom".</span></span>
 <span><span class="co">#&gt;       - column_annotation: A character string/vector of the column name(s) to use as the column annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
-<span><span class="co">#&gt;       - column_annotation_side: A character string specifying the side of the column annotation.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the sides.</span></span>
+<span><span class="co">#&gt;       - column_annotation_side: A character string or named list specifying which side each column</span></span>
+<span><span class="co">#&gt;       annotation is placed on. Accepts "top" (default) or "bottom".</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        String: All column annotations go to that side (e.g. "bottom").</span></span>
+<span><span class="co">#&gt;        Named list: Per-annotation side control. Keys are annotation names or aliases</span></span>
+<span><span class="co">#&gt;       (.col, .col.split, etc.). Values are "top" or "bottom".</span></span>
+<span><span class="co">#&gt;       Use the special .default key to set the side for unspecified annotations</span></span>
+<span><span class="co">#&gt;       (e.g. list(.default = "top", my_anno = "bottom")).</span></span>
+<span><span class="co">#&gt;        Ordering within each side: Name annotations (columns_by) are always</span></span>
+<span><span class="co">#&gt;       placed closest to the heatmap body; split annotations (columns_split_by) are</span></span>
+<span><span class="co">#&gt;       placed farthest away; user-defined annotations sit in between.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       Note: Placing column annotations on "bottom" conflicts with</span></span>
+<span><span class="co">#&gt;       legend.position = "bottom" — the legend may overlap the annotation names.</span></span>
+<span><span class="co">#&gt;       Consider using a different legend position in that case.</span></span>
 <span><span class="co">#&gt;       - column_annotation_palette: A character string specifying the palette of the column annotation.</span></span>
 <span><span class="co">#&gt;       The default is "Paired".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palettes.</span></span>
 <span><span class="co">#&gt;       - column_annotation_palcolor: A character vector of colors to override the palette of the column annotation.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palcolors.</span></span>
 <span><span class="co">#&gt;       - column_annotation_type: A character string specifying the type of the column annotation.</span></span>
-<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".</span></span>
+<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",</span></span>
+<span><span class="co">#&gt;       "label".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the column data.</span></span>
+<span><span class="co">#&gt;       For split or name annotations, use aliases (e.g. .col.split, .col) to set the type.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        "simple" — simple annotation via anno_simple() (for split/name annotations)</span></span>
+<span><span class="co">#&gt;        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - column_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
 <span><span class="co">#&gt;       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split</span></span>
 <span><span class="co">#&gt;       for columns_split_by. Setting a key to FALSE disables that annotation.</span></span>
 <span><span class="co">#&gt;       $&lt;key&gt;$show_legend controls the legend for that annotation.</span></span>
-<span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.</span></span>
-<span><span class="co">#&gt;       - column_annotation_agg: A function to aggregate the values in the column annotation.</span></span>
+<span><span class="co">#&gt;       For "label" type annotations, use labels_gp to style the label text</span></span>
+<span><span class="co">#&gt;       (e.g. labels_gp = grid::gpar(col = "white", fontsize = 12)).</span></span>
+<span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points(), anno_lines() and anno_block() for the parameters of each annotation function.</span></span>
+<span><span class="co">#&gt;       - column_annotation_agg: A function or named list of functions to aggregate values for</span></span>
+<span><span class="co">#&gt;       each column annotation. If a single function, it applies to all annotations. If a named list,</span></span>
+<span><span class="co">#&gt;       keys are annotation names. Defaults vary by annotation type: dplyr::first for</span></span>
+<span><span class="co">#&gt;       "simple"/"points"/"lines", function(x) paste(unique(x), collapse = ", ")</span></span>
+<span><span class="co">#&gt;       for "label", and no aggregation for others (e.g. "pie", "violin").</span></span>
 <span><span class="co">#&gt;       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
-<span><span class="co">#&gt;       - row_annotation_side: A character string specifying the side of the row annotation.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the sides.</span></span>
+<span><span class="co">#&gt;       - row_annotation_side: A character string or named list specifying which side each row</span></span>
+<span><span class="co">#&gt;       annotation is placed on. Accepts "left" (default) or "right".</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        String: All row annotations go to that side (e.g. "right").</span></span>
+<span><span class="co">#&gt;        Named list: Per-annotation side control. Keys are annotation names or aliases</span></span>
+<span><span class="co">#&gt;       (.row, .rows.split, etc.). Values are "left" or "right".</span></span>
+<span><span class="co">#&gt;       Use the special .default key to set the side for unspecified annotations</span></span>
+<span><span class="co">#&gt;       (e.g. list(.default = "left", .row = "right")).</span></span>
+<span><span class="co">#&gt;        Ordering within each side: Name annotations (rows_by) are always</span></span>
+<span><span class="co">#&gt;       placed closest to the heatmap body; split annotations (rows_split_by) are</span></span>
+<span><span class="co">#&gt;       placed farthest away; user-defined annotations sit in between.</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - row_annotation_palette: A character string specifying the palette of the row annotation.</span></span>
 <span><span class="co">#&gt;       The default is "Paired".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palettes.</span></span>
 <span><span class="co">#&gt;       - row_annotation_palcolor: A character vector of colors to override the palette of the row annotation.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palcolors.</span></span>
 <span><span class="co">#&gt;       - row_annotation_type: A character string specifying the type of the row annotation.</span></span>
-<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".</span></span>
+<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",</span></span>
+<span><span class="co">#&gt;       "label".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the row data.</span></span>
+<span><span class="co">#&gt;       For split or name annotations, use aliases (e.g. .rows.split, .row) to set the type.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        "simple" — Simple annotation via anno_simple(). Only valid for row/column name and</span></span>
+<span><span class="co">#&gt;       split label annotation</span></span>
+<span><span class="co">#&gt;        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
 <span><span class="co">#&gt;       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.</span></span>
 <span><span class="co">#&gt;       Setting a key to FALSE disables that annotation. $&lt;key&gt;$show_legend controls the legend.</span></span>
+<span><span class="co">#&gt;       For "label" type row (name) annotations, use label_rot to control text rotation</span></span>
+<span><span class="co">#&gt;       (default -90 on the left side, 90 on the right side).</span></span>
+<span><span class="co">#&gt;       For "label" type, use labels_gp to style the label text.</span></span>
 <span><span class="co">#&gt;       Same structure as column_annotation_params.</span></span>
-<span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
+<span><span class="co">#&gt;       - row_annotation_agg: A function or named list of functions to aggregate values for</span></span>
+<span><span class="co">#&gt;       each row annotation. Same behavior as column_annotation_agg.</span></span>
 <span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       You don't need to swap the arguments related to rows and columns, except those you specify via ...</span></span>
@@ -1373,6 +1389,8 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       When the direction is "up", the values less than the cutoff will be filled with grey.</span></span>
 <span><span class="co">#&gt;       When the direction is "down", the values greater than the cutoff will be filled with grey.</span></span>
 <span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
+<span><span class="co">#&gt;       - size_min: A numeric value specifying the minimum size of the dots. Default is 1.</span></span>
+<span><span class="co">#&gt;       - size_max: A numeric value specifying the maximum size of the dots. Default is 10.</span></span>
 <span><span class="co">#&gt;       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.</span></span>
 <span><span class="co">#&gt;       Default is "theme_this".</span></span>
 <span><span class="co">#&gt;       - theme_args: A list of arguments to pass to the theme function.</span></span>
@@ -1494,10 +1512,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -1507,7 +1525,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Generate a cell-cell communication plot for the cellphonedb_res data."</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -1676,7 +1694,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; CCCPlot</span></span>
 <span><span class="co">#&gt; Tool identified:  CCCPlot</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span>
 <span><span class="co">#&gt; Objective: Identify the data object to be used.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -1707,7 +1725,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (openai/gpt-5.4-nano): ---</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Decision Process:</span></span>
@@ -2238,43 +2256,89 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       The default is "bottom".</span></span>
 <span><span class="co">#&gt;       - column_annotation: A character string/vector of the column name(s) to use as the column annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
-<span><span class="co">#&gt;       - column_annotation_side: A character string specifying the side of the column annotation.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the sides.</span></span>
+<span><span class="co">#&gt;       - column_annotation_side: A character string or named list specifying which side each column</span></span>
+<span><span class="co">#&gt;       annotation is placed on. Accepts "top" (default) or "bottom".</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        String: All column annotations go to that side (e.g. "bottom").</span></span>
+<span><span class="co">#&gt;        Named list: Per-annotation side control. Keys are annotation names or aliases</span></span>
+<span><span class="co">#&gt;       (.col, .col.split, etc.). Values are "top" or "bottom".</span></span>
+<span><span class="co">#&gt;       Use the special .default key to set the side for unspecified annotations</span></span>
+<span><span class="co">#&gt;       (e.g. list(.default = "top", my_anno = "bottom")).</span></span>
+<span><span class="co">#&gt;        Ordering within each side: Name annotations (columns_by) are always</span></span>
+<span><span class="co">#&gt;       placed closest to the heatmap body; split annotations (columns_split_by) are</span></span>
+<span><span class="co">#&gt;       placed farthest away; user-defined annotations sit in between.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;       Note: Placing column annotations on "bottom" conflicts with</span></span>
+<span><span class="co">#&gt;       legend.position = "bottom" — the legend may overlap the annotation names.</span></span>
+<span><span class="co">#&gt;       Consider using a different legend position in that case.</span></span>
 <span><span class="co">#&gt;       - column_annotation_palette: A character string specifying the palette of the column annotation.</span></span>
 <span><span class="co">#&gt;       The default is "Paired".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palettes.</span></span>
 <span><span class="co">#&gt;       - column_annotation_palcolor: A character vector of colors to override the palette of the column annotation.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palcolors.</span></span>
 <span><span class="co">#&gt;       - column_annotation_type: A character string specifying the type of the column annotation.</span></span>
-<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".</span></span>
+<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",</span></span>
+<span><span class="co">#&gt;       "label".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the column data.</span></span>
+<span><span class="co">#&gt;       For split or name annotations, use aliases (e.g. .col.split, .col) to set the type.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        "simple" — simple annotation via anno_simple() (for split/name annotations)</span></span>
+<span><span class="co">#&gt;        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - column_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
 <span><span class="co">#&gt;       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split</span></span>
 <span><span class="co">#&gt;       for columns_split_by. Setting a key to FALSE disables that annotation.</span></span>
 <span><span class="co">#&gt;       $&lt;key&gt;$show_legend controls the legend for that annotation.</span></span>
-<span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.</span></span>
-<span><span class="co">#&gt;       - column_annotation_agg: A function to aggregate the values in the column annotation.</span></span>
+<span><span class="co">#&gt;       For "label" type annotations, use labels_gp to style the label text</span></span>
+<span><span class="co">#&gt;       (e.g. labels_gp = grid::gpar(col = "white", fontsize = 12)).</span></span>
+<span><span class="co">#&gt;       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points(), anno_lines() and anno_block() for the parameters of each annotation function.</span></span>
+<span><span class="co">#&gt;       - column_annotation_agg: A function or named list of functions to aggregate values for</span></span>
+<span><span class="co">#&gt;       each column annotation. If a single function, it applies to all annotations. If a named list,</span></span>
+<span><span class="co">#&gt;       keys are annotation names. Defaults vary by annotation type: dplyr::first for</span></span>
+<span><span class="co">#&gt;       "simple"/"points"/"lines", function(x) paste(unique(x), collapse = ", ")</span></span>
+<span><span class="co">#&gt;       for "label", and no aggregation for others (e.g. "pie", "violin").</span></span>
 <span><span class="co">#&gt;       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.</span></span>
 <span><span class="co">#&gt;       Or a list with the keys as the names of the annotation and the values as the column names.</span></span>
-<span><span class="co">#&gt;       - row_annotation_side: A character string specifying the side of the row annotation.</span></span>
-<span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the sides.</span></span>
+<span><span class="co">#&gt;       - row_annotation_side: A character string or named list specifying which side each row</span></span>
+<span><span class="co">#&gt;       annotation is placed on. Accepts "left" (default) or "right".</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        String: All row annotations go to that side (e.g. "right").</span></span>
+<span><span class="co">#&gt;        Named list: Per-annotation side control. Keys are annotation names or aliases</span></span>
+<span><span class="co">#&gt;       (.row, .rows.split, etc.). Values are "left" or "right".</span></span>
+<span><span class="co">#&gt;       Use the special .default key to set the side for unspecified annotations</span></span>
+<span><span class="co">#&gt;       (e.g. list(.default = "left", .row = "right")).</span></span>
+<span><span class="co">#&gt;        Ordering within each side: Name annotations (rows_by) are always</span></span>
+<span><span class="co">#&gt;       placed closest to the heatmap body; split annotations (rows_split_by) are</span></span>
+<span><span class="co">#&gt;       placed farthest away; user-defined annotations sit in between.</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - row_annotation_palette: A character string specifying the palette of the row annotation.</span></span>
 <span><span class="co">#&gt;       The default is "Paired".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palettes.</span></span>
 <span><span class="co">#&gt;       - row_annotation_palcolor: A character vector of colors to override the palette of the row annotation.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the palcolors.</span></span>
 <span><span class="co">#&gt;       - row_annotation_type: A character string specifying the type of the row annotation.</span></span>
-<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".</span></span>
+<span><span class="co">#&gt;       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",</span></span>
+<span><span class="co">#&gt;       "label".</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the types.</span></span>
 <span><span class="co">#&gt;       If the type is "auto", the type will be determined by the type and number of the row data.</span></span>
+<span><span class="co">#&gt;       For split or name annotations, use aliases (e.g. .rows.split, .row) to set the type.</span></span>
+<span><span class="co">#&gt;       </span></span>
+<span><span class="co">#&gt;        "simple" — Simple annotation via anno_simple(). Only valid for row/column name and</span></span>
+<span><span class="co">#&gt;       split label annotation</span></span>
+<span><span class="co">#&gt;        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)</span></span>
+<span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       - row_annotation_params: A list of parameters passed to the annotation function.</span></span>
 <span><span class="co">#&gt;       Could be a list with the keys as the names of the annotation and the values as the parameters.</span></span>
 <span><span class="co">#&gt;       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.</span></span>
 <span><span class="co">#&gt;       Setting a key to FALSE disables that annotation. $&lt;key&gt;$show_legend controls the legend.</span></span>
+<span><span class="co">#&gt;       For "label" type row (name) annotations, use label_rot to control text rotation</span></span>
+<span><span class="co">#&gt;       (default -90 on the left side, 90 on the right side).</span></span>
+<span><span class="co">#&gt;       For "label" type, use labels_gp to style the label text.</span></span>
 <span><span class="co">#&gt;       Same structure as column_annotation_params.</span></span>
-<span><span class="co">#&gt;       - row_annotation_agg: A function to aggregate the values in the row annotation.</span></span>
+<span><span class="co">#&gt;       - row_annotation_agg: A function or named list of functions to aggregate values for</span></span>
+<span><span class="co">#&gt;       each row annotation. Same behavior as column_annotation_agg.</span></span>
 <span><span class="co">#&gt;       - flip: A logical value indicating whether to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       The idea is that, you can simply set flip = TRUE to flip the heatmap.</span></span>
 <span><span class="co">#&gt;       You don't need to swap the arguments related to rows and columns, except those you specify via ...</span></span>
@@ -2500,6 +2564,8 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       When the direction is "up", the values less than the cutoff will be filled with grey.</span></span>
 <span><span class="co">#&gt;       When the direction is "down", the values greater than the cutoff will be filled with grey.</span></span>
 <span><span class="co">#&gt;       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.</span></span>
+<span><span class="co">#&gt;       - size_min: A numeric value specifying the minimum size of the dots. Default is 1.</span></span>
+<span><span class="co">#&gt;       - size_max: A numeric value specifying the maximum size of the dots. Default is 10.</span></span>
 <span><span class="co">#&gt;       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.</span></span>
 <span><span class="co">#&gt;       Default is "theme_this".</span></span>
 <span><span class="co">#&gt;       - theme_args: A list of arguments to pass to the theme function.</span></span>
@@ -2621,15 +2687,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(</span></span>
-<span><span class="co">#&gt;   data = cellphonedb_res,</span></span>
-<span><span class="co">#&gt;   plot_type = "network",</span></span>
-<span><span class="co">#&gt;   method = "aggregation",</span></span>
-<span><span class="co">#&gt;   legend.position = "none"</span></span>
-<span><span class="co">#&gt; )</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "network", method = "aggregation", legend.position = "none")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

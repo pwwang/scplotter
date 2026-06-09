@@ -117,6 +117,10 @@ chat$ask("Do a heatmap instead")
 
 ![](./reference/figures/scplotter-chat2.png)
 
+## Documentation
+
+Documentation can be found at: <https://pwwang.github.io/scplotter/>
+
 ## Credits
 
 `scplotter` is built upon the following fantastic packages:

@@ -23,11 +23,11 @@ provided by `tidyprompt`.
 ``` r
 # Set up LLM provider
 provider <- tidyprompt::llm_provider_openai(
-    parameters = list(model = "openai/gpt-5.4-nano", stream =
+    parameters = list(model = "deepseek-v4-flash", stream =
       getOption("tidyprompt.stream", TRUE)),
     verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://openrouter.ai/api/v1/chat/completions",
-    api_key = Sys.getenv("OPENROUTER_API_KEY")
+    url = "https://api.deepseek.com/chat/completions",
+    api_key = Sys.getenv("OPENAI_API_KEY")
 )
 
 chat <- SCPlotterChat$new(provider = provider)
@@ -214,7 +214,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+#> CCCPlot(data = cellphonedb_res)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -223,14 +223,14 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 # Previous conversation is memorized
 chat$ask("Do a heatmap instead")
 #> 
-#> Tool identified:  CellStatPlot 
+#> Tool identified:  CCCPlot 
 #> 
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CellStatPlot(object = cellphonedb_res, plot_type = "heatmap", group_by = names(cellphonedb_res)[1], ident = names(cellphonedb_res)[2])
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -238,57 +238,28 @@ chat$ask("Do a heatmap instead")
 ``` r
 chat$ask("Add a proper title to the plot")
 #> 
-#> Tool identified:  CellStatPlot 
+#> Tool identified:  CCCPlot 
 #> 
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> Warning in tidyprompt::send_prompt(wrapt_prompt, private$provider, verbose =
-#> verbose): Failed to reach a valid answer after 10 interactions
 #> Code ran:
-#> 
-#> NULL
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
+
+![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
 
 ``` r
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#>  [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                                                      
-#>  [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"dot\"\n)"                                                                                               
-#>  [3] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#>  [4] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\"\n)"                                                                               
-#>  [5] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#>  [6] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"ident\",\n  plot_type = \"heatmap\"\n)"                                                         
-#>  [7] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#>  [8] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  ident = \"Identity\",\n  plot_type = \"heatmap\"\n)"                                                      
-#>  [9] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#> [10] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = \"cluster\"\n)"                                                    
-#> [11] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#> [12] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1]\n)"                                      
-#> [13] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#> [14] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = names(cellphonedb_res)[1]\n)"                                         
-#> [15] "User: Do a heatmap instead"                                                                                                                                                                                                       
-#> [16] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  group_by = names(cellphonedb_res)[1],\n  ident = names(cellphonedb_res)[2]\n)"
-#> [17] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [18] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [19] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [20] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  ident = \"Identity\",\n  title = \"Cell statistics plot\"\n)"                 
-#> [21] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [22] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [23] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [24] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [25] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [26] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [27] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [28] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [29] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [30] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [31] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [32] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\"\n)"                                          
-#> [33] "User: Add a proper title to the plot"                                                                                                                                                                                             
-#> [34] "Assistant: tool - CellStatPlot; data - scplotter::cellphonedb_res; code - CellStatPlot(\n  object = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell statistics plot\",\n  ident = names(cellphonedb_res)[1]\n)"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                                
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                                      
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -306,7 +277,7 @@ chat <- SCPlotterChat$new(
     verbose = TRUE
 )
 chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.")
-#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
 #> Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.
 #> 
 #> Decision Process:
@@ -475,7 +446,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> --- Receiving response from LLM provider: ---
 #> CCCPlot
 #> Tool identified:  CCCPlot
-#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
 #> Objective: Identify the data object to be used.
 #> 
 #> Decision Process:
@@ -506,7 +477,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
 ```
 
     #> Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.
@@ -1039,43 +1010,89 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       The default is "bottom".
     #>       - column_annotation: A character string/vector of the column name(s) to use as the column annotation.
     #>       Or a list with the keys as the names of the annotation and the values as the column names.
-    #>       - column_annotation_side: A character string specifying the side of the column annotation.
-    #>       Could be a list with the keys as the names of the annotation and the values as the sides.
+    #>       - column_annotation_side: A character string or named list specifying which side each column
+    #>       annotation is placed on. Accepts "top" (default) or "bottom".
+    #>       
+    #>        String: All column annotations go to that side (e.g. "bottom").
+    #>        Named list: Per-annotation side control. Keys are annotation names or aliases
+    #>       (.col, .col.split, etc.). Values are "top" or "bottom".
+    #>       Use the special .default key to set the side for unspecified annotations
+    #>       (e.g. list(.default = "top", my_anno = "bottom")).
+    #>        Ordering within each side: Name annotations (columns_by) are always
+    #>       placed closest to the heatmap body; split annotations (columns_split_by) are
+    #>       placed farthest away; user-defined annotations sit in between.
+    #>       
+    #>       Note: Placing column annotations on "bottom" conflicts with
+    #>       legend.position = "bottom" — the legend may overlap the annotation names.
+    #>       Consider using a different legend position in that case.
     #>       - column_annotation_palette: A character string specifying the palette of the column annotation.
     #>       The default is "Paired".
     #>       Could be a list with the keys as the names of the annotation and the values as the palettes.
     #>       - column_annotation_palcolor: A character vector of colors to override the palette of the column annotation.
     #>       Could be a list with the keys as the names of the annotation and the values as the palcolors.
     #>       - column_annotation_type: A character string specifying the type of the column annotation.
-    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".
+    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",
+    #>       "label".
     #>       Could be a list with the keys as the names of the annotation and the values as the types.
     #>       If the type is "auto", the type will be determined by the type and number of the column data.
+    #>       For split or name annotations, use aliases (e.g. .col.split, .col) to set the type.
+    #>       
+    #>        "simple" — simple annotation via anno_simple() (for split/name annotations)
+    #>        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)
+    #>       
     #>       - column_annotation_params: A list of parameters passed to the annotation function.
     #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
     #>       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split
     #>       for columns_split_by. Setting a key to FALSE disables that annotation.
     #>       $<key>$show_legend controls the legend for that annotation.
-    #>       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.
-    #>       - column_annotation_agg: A function to aggregate the values in the column annotation.
+    #>       For "label" type annotations, use labels_gp to style the label text
+    #>       (e.g. labels_gp = grid::gpar(col = "white", fontsize = 12)).
+    #>       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points(), anno_lines() and anno_block() for the parameters of each annotation function.
+    #>       - column_annotation_agg: A function or named list of functions to aggregate values for
+    #>       each column annotation. If a single function, it applies to all annotations. If a named list,
+    #>       keys are annotation names. Defaults vary by annotation type: dplyr::first for
+    #>       "simple"/"points"/"lines", function(x) paste(unique(x), collapse = ", ")
+    #>       for "label", and no aggregation for others (e.g. "pie", "violin").
     #>       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.
     #>       Or a list with the keys as the names of the annotation and the values as the column names.
-    #>       - row_annotation_side: A character string specifying the side of the row annotation.
-    #>       Could be a list with the keys as the names of the annotation and the values as the sides.
+    #>       - row_annotation_side: A character string or named list specifying which side each row
+    #>       annotation is placed on. Accepts "left" (default) or "right".
+    #>       
+    #>        String: All row annotations go to that side (e.g. "right").
+    #>        Named list: Per-annotation side control. Keys are annotation names or aliases
+    #>       (.row, .rows.split, etc.). Values are "left" or "right".
+    #>       Use the special .default key to set the side for unspecified annotations
+    #>       (e.g. list(.default = "left", .row = "right")).
+    #>        Ordering within each side: Name annotations (rows_by) are always
+    #>       placed closest to the heatmap body; split annotations (rows_split_by) are
+    #>       placed farthest away; user-defined annotations sit in between.
+    #>       
     #>       - row_annotation_palette: A character string specifying the palette of the row annotation.
     #>       The default is "Paired".
     #>       Could be a list with the keys as the names of the annotation and the values as the palettes.
     #>       - row_annotation_palcolor: A character vector of colors to override the palette of the row annotation.
     #>       Could be a list with the keys as the names of the annotation and the values as the palcolors.
     #>       - row_annotation_type: A character string specifying the type of the row annotation.
-    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".
+    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",
+    #>       "label".
     #>       Could be a list with the keys as the names of the annotation and the values as the types.
     #>       If the type is "auto", the type will be determined by the type and number of the row data.
+    #>       For split or name annotations, use aliases (e.g. .rows.split, .row) to set the type.
+    #>       
+    #>        "simple" — Simple annotation via anno_simple(). Only valid for row/column name and
+    #>       split label annotation
+    #>        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)
+    #>       
     #>       - row_annotation_params: A list of parameters passed to the annotation function.
     #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
     #>       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.
     #>       Setting a key to FALSE disables that annotation. $<key>$show_legend controls the legend.
+    #>       For "label" type row (name) annotations, use label_rot to control text rotation
+    #>       (default -90 on the left side, 90 on the right side).
+    #>       For "label" type, use labels_gp to style the label text.
     #>       Same structure as column_annotation_params.
-    #>       - row_annotation_agg: A function to aggregate the values in the row annotation.
+    #>       - row_annotation_agg: A function or named list of functions to aggregate values for
+    #>       each row annotation. Same behavior as column_annotation_agg.
     #>       - flip: A logical value indicating whether to flip the heatmap.
     #>       The idea is that, you can simply set flip = TRUE to flip the heatmap.
     #>       You don't need to swap the arguments related to rows and columns, except those you specify via ...
@@ -1301,6 +1318,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       When the direction is "up", the values less than the cutoff will be filled with grey.
     #>       When the direction is "down", the values greater than the cutoff will be filled with grey.
     #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
+    #>       - size_min: A numeric value specifying the minimum size of the dots. Default is 1.
+    #>       - size_max: A numeric value specifying the maximum size of the dots. Default is 10.
     #>       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.
     #>       Default is "theme_this".
     #>       - theme_args: A list of arguments to pass to the theme function.
@@ -1424,11 +1443,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -1441,7 +1460,7 @@ chat <- SCPlotterChat$new(
     verbose = FALSE
 )
 chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data.", verbose = TRUE)
-#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
 #> Objective: Select the most appropriate tool to handle the user's request while preserving conversational context. If the user refines or changes how the previous result should be visualized (e.g., asks for a different plot type), continue with the last plotting tool used unless they explicitly name a different tool.
 #> 
 #> Decision Process:
@@ -1610,7 +1629,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> --- Receiving response from LLM provider: ---
 #> CCCPlot
 #> Tool identified:  CCCPlot
-#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
 #> Objective: Identify the data object to be used.
 #> 
 #> Decision Process:
@@ -1641,7 +1660,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
-#> --- Sending request to LLM provider (openai/gpt-5.4-nano): ---
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
 ```
 
     #> Objective: Generate the R code to run the specified tool using the specified data object based on the user's request and the provided tool information.
@@ -2174,43 +2193,89 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       The default is "bottom".
     #>       - column_annotation: A character string/vector of the column name(s) to use as the column annotation.
     #>       Or a list with the keys as the names of the annotation and the values as the column names.
-    #>       - column_annotation_side: A character string specifying the side of the column annotation.
-    #>       Could be a list with the keys as the names of the annotation and the values as the sides.
+    #>       - column_annotation_side: A character string or named list specifying which side each column
+    #>       annotation is placed on. Accepts "top" (default) or "bottom".
+    #>       
+    #>        String: All column annotations go to that side (e.g. "bottom").
+    #>        Named list: Per-annotation side control. Keys are annotation names or aliases
+    #>       (.col, .col.split, etc.). Values are "top" or "bottom".
+    #>       Use the special .default key to set the side for unspecified annotations
+    #>       (e.g. list(.default = "top", my_anno = "bottom")).
+    #>        Ordering within each side: Name annotations (columns_by) are always
+    #>       placed closest to the heatmap body; split annotations (columns_split_by) are
+    #>       placed farthest away; user-defined annotations sit in between.
+    #>       
+    #>       Note: Placing column annotations on "bottom" conflicts with
+    #>       legend.position = "bottom" — the legend may overlap the annotation names.
+    #>       Consider using a different legend position in that case.
     #>       - column_annotation_palette: A character string specifying the palette of the column annotation.
     #>       The default is "Paired".
     #>       Could be a list with the keys as the names of the annotation and the values as the palettes.
     #>       - column_annotation_palcolor: A character vector of colors to override the palette of the column annotation.
     #>       Could be a list with the keys as the names of the annotation and the values as the palcolors.
     #>       - column_annotation_type: A character string specifying the type of the column annotation.
-    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".
+    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",
+    #>       "label".
     #>       Could be a list with the keys as the names of the annotation and the values as the types.
     #>       If the type is "auto", the type will be determined by the type and number of the column data.
+    #>       For split or name annotations, use aliases (e.g. .col.split, .col) to set the type.
+    #>       
+    #>        "simple" — simple annotation via anno_simple() (for split/name annotations)
+    #>        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)
+    #>       
     #>       - column_annotation_params: A list of parameters passed to the annotation function.
     #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
     #>       For the name/split annotations, use aliases: .col/.cols/.column/.columns for columns_by, .col.split/.cols.split/.column.split/.columns.split
     #>       for columns_split_by. Setting a key to FALSE disables that annotation.
     #>       $<key>$show_legend controls the legend for that annotation.
-    #>       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points() and anno_lines() for the parameters of each annotation function.
-    #>       - column_annotation_agg: A function to aggregate the values in the column annotation.
+    #>       For "label" type annotations, use labels_gp to style the label text
+    #>       (e.g. labels_gp = grid::gpar(col = "white", fontsize = 12)).
+    #>       See anno_pie(), anno_ring(), anno_bar(), anno_violin(), anno_boxplot(), anno_density(), anno_simple(), anno_points(), anno_lines() and anno_block() for the parameters of each annotation function.
+    #>       - column_annotation_agg: A function or named list of functions to aggregate values for
+    #>       each column annotation. If a single function, it applies to all annotations. If a named list,
+    #>       keys are annotation names. Defaults vary by annotation type: dplyr::first for
+    #>       "simple"/"points"/"lines", function(x) paste(unique(x), collapse = ", ")
+    #>       for "label", and no aggregation for others (e.g. "pie", "violin").
     #>       - row_annotation: A character string/vector of the column name(s) to use as the row annotation.
     #>       Or a list with the keys as the names of the annotation and the values as the column names.
-    #>       - row_annotation_side: A character string specifying the side of the row annotation.
-    #>       Could be a list with the keys as the names of the annotation and the values as the sides.
+    #>       - row_annotation_side: A character string or named list specifying which side each row
+    #>       annotation is placed on. Accepts "left" (default) or "right".
+    #>       
+    #>        String: All row annotations go to that side (e.g. "right").
+    #>        Named list: Per-annotation side control. Keys are annotation names or aliases
+    #>       (.row, .rows.split, etc.). Values are "left" or "right".
+    #>       Use the special .default key to set the side for unspecified annotations
+    #>       (e.g. list(.default = "left", .row = "right")).
+    #>        Ordering within each side: Name annotations (rows_by) are always
+    #>       placed closest to the heatmap body; split annotations (rows_split_by) are
+    #>       placed farthest away; user-defined annotations sit in between.
+    #>       
     #>       - row_annotation_palette: A character string specifying the palette of the row annotation.
     #>       The default is "Paired".
     #>       Could be a list with the keys as the names of the annotation and the values as the palettes.
     #>       - row_annotation_palcolor: A character vector of colors to override the palette of the row annotation.
     #>       Could be a list with the keys as the names of the annotation and the values as the palcolors.
     #>       - row_annotation_type: A character string specifying the type of the row annotation.
-    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density".
+    #>       The default is "auto". Other options are "simple", "pie", "ring", "bar", "violin", "boxplot", "density",
+    #>       "label".
     #>       Could be a list with the keys as the names of the annotation and the values as the types.
     #>       If the type is "auto", the type will be determined by the type and number of the row data.
+    #>       For split or name annotations, use aliases (e.g. .rows.split, .row) to set the type.
+    #>       
+    #>        "simple" — Simple annotation via anno_simple(). Only valid for row/column name and
+    #>       split label annotation
+    #>        "label" — Text label annotation via anno_simple()/anno_block() (for split/name annotations)
+    #>       
     #>       - row_annotation_params: A list of parameters passed to the annotation function.
     #>       Could be a list with the keys as the names of the annotation and the values as the parameters.
     #>       For the name/split annotations, use aliases: .row/.rows for rows_by, .rows.split/.row.split for rows_split_by.
     #>       Setting a key to FALSE disables that annotation. $<key>$show_legend controls the legend.
+    #>       For "label" type row (name) annotations, use label_rot to control text rotation
+    #>       (default -90 on the left side, 90 on the right side).
+    #>       For "label" type, use labels_gp to style the label text.
     #>       Same structure as column_annotation_params.
-    #>       - row_annotation_agg: A function to aggregate the values in the row annotation.
+    #>       - row_annotation_agg: A function or named list of functions to aggregate values for
+    #>       each row annotation. Same behavior as column_annotation_agg.
     #>       - flip: A logical value indicating whether to flip the heatmap.
     #>       The idea is that, you can simply set flip = TRUE to flip the heatmap.
     #>       You don't need to swap the arguments related to rows and columns, except those you specify via ...
@@ -2436,6 +2501,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       When the direction is "up", the values less than the cutoff will be filled with grey.
     #>       When the direction is "down", the values greater than the cutoff will be filled with grey.
     #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
+    #>       - size_min: A numeric value specifying the minimum size of the dots. Default is 1.
+    #>       - size_max: A numeric value specifying the maximum size of the dots. Default is 10.
     #>       - theme: A character string or a theme class (i.e. ggplot2::theme_classic) specifying the theme to use.
     #>       Default is "theme_this".
     #>       - theme_args: A list of arguments to pass to the theme function.
@@ -2559,15 +2626,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(
-    #>   data = cellphonedb_res,
-    #>   plot_type = "network",
-    #>   method = "aggregation",
-    #>   legend.position = "none"
-    #> )
+    #> CCCPlot(data = cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res, plot_type = "network", method = "aggregation", legend.position = "none")
+    #> CCCPlot(data = cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

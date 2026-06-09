@@ -452,8 +452,8 @@ FeatureStatPlot(pancreas_sub,
   features = unique(markers$gene), ident = "SubCellType", cell_type = "bars",
   plot_type = "heatmap", rows_data = markers, rows_name = "gene", rows_split_by = "cluster",
   show_row_names = TRUE, show_column_names = TRUE, name = "Expression Level",
-  cluster_rows = FALSE, cluster_columns = FALSE, rows_split_palette = "Paired")
-#> Warning: [Heatmap] Unknown arguments to ComplexHeatmap::Heatmap(): rows_split_palette
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  row_annotation_palette = list(.row = "Paired"))
 
 
 # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
