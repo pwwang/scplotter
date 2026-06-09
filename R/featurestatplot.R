@@ -78,16 +78,27 @@
         FeatureDimPlot(
             data, dims = dims, features = unlisted_features, graph = graph, bg_cutoff = bg_cutoff,
             split_by = split_by, facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
-    } else if (plot_type == "heatmap") {
+    } else if (plot_type %in% c("heatmap", "dot")) {
         args <- rlang::dots_list(...)
         args$data <- data
         args$rows_by <- unlisted_features
         args$columns_by <- ident
         args$rows_name <- rows_name
         args$split_by <- split_by
-        args$values_fill <- args$values_fill %||% 0
         args$show_row_names <- args$show_row_names %||% TRUE
         args$show_column_names <- args$show_column_names %||% TRUE
+        if (plot_type == "heatmap") {
+            args$values_fill <- args$values_fill %||% 0
+        } else {  # dot
+            args$cell_type <- "dot"
+            args$name <- args$name %||% "Expression Level"
+            args$dot_size <- args$dot_size %||% function(x) sum(x > 0, na.rm = TRUE) / length(x)
+            args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
+            args$add_reticle <- args$add_reticle %||% TRUE
+            args$cluster_rows <- args$cluster_rows %||% FALSE
+            args$cluster_columns <- args$cluster_columns %||% FALSE
+            args$row_names_side <- args$row_names_side %||% "left"
+        }
         if (!is.null(names(features))) {
             # handle named features.
             # names will be used as rows_split_by
@@ -95,49 +106,9 @@
                 stop("[FeatureStatPlot] Cannot use both `rows_split_by` and named features.")
             }
             feature_groups <- lapply(names(features), function(x) rep(x, length(features[[x]])))
-            feature_groups <- do_call(c, feature_groups)
             fdata <- data.frame(
                 Feautures = unlisted_features,
-                FeatureGroups = feature_groups
-            )
-            args$rows_split_name <- args$rows_split_name %||% "Feature Groups"
-            names(fdata) <- c(rows_name, args$rows_split_name)
-            args$rows_split_by <- args$rows_split_name
-            if (!is.null(args$rows_data)) {
-                args$rows_data <- merge(fdata, args$rows_data, by = rows_name, all.x = TRUE)
-            } else {
-                args$rows_data <- fdata
-            }
-        }
-        do_call(Heatmap, args)
-    } else if (plot_type == "dot") {
-        args <- rlang::dots_list(...)
-        args$data <- data
-        args$rows_by <- unlisted_features
-        args$columns_by <- ident
-        args$rows_name <- rows_name
-        args$split_by <- split_by
-        args$cell_type <- "dot"
-        args$name <- args$name %||% "Expression Level"
-        args$dot_size <- args$dot_size %||% function(x) sum(x > 0, na.rm = TRUE) / length(x)
-        args$dot_size_name <- args$dot_size_name %||% "Percent Expressed"
-        # args$row_name_annotation <- args$row_name_annotation %||% TRUE
-        # args$column_name_annotation <- args$column_name_annotation %||% TRUE
-        args$show_row_names <- args$show_row_names %||% TRUE
-        args$show_column_names <- args$show_column_names %||% TRUE
-        args$add_reticle <- args$add_reticle %||% TRUE
-        args$cluster_rows <- args$cluster_rows %||% FALSE
-        args$cluster_columns <- args$cluster_columns %||% FALSE
-        args$row_names_side <- args$row_names_side %||% "left"
-        if (!is.null(names(features))) {
-            # handle named features.
-            # names will be used as rows_split_by
-            if (!is.null(args$rows_split_by)) {
-                stop("[FeatureStatPlot] Cannot use both `rows_split_by` and named features.")
-            }
-            fdata <- data.frame(
-                Feautures = unlisted_features,
-                FeatureGroups = unlist(sapply(names(features), function(x) rep(x, length(features[[x]]))))
+                FeatureGroups = do_call(c, feature_groups)
             )
             args$rows_split_name <- args$rows_split_name %||% "Feature Groups"
             names(fdata) <- c(rows_name, args$rows_split_name)
