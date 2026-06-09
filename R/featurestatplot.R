@@ -86,10 +86,11 @@
         args$rows_name <- rows_name
         args$split_by <- split_by
         args$show_row_names <- args$show_row_names %||% TRUE
-        args$show_column_names <- args$show_column_names %||% TRUE
         if (plot_type == "heatmap") {
+            args$show_column_names <- args$show_column_names %||% !identical(args$cell_type, "bars")
             args$values_fill <- args$values_fill %||% 0
         } else {  # dot
+            args$show_column_names <- args$show_column_names %||% TRUE
             args$cell_type <- "dot"
             args$name <- args$name %||% "Expression Level"
             args$dot_size <- args$dot_size %||% function(x) sum(x > 0, na.rm = TRUE) / length(x)
