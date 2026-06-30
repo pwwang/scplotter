@@ -2,22 +2,109 @@
 % Please edit documentation in R/clustreeplot.R
 \name{ClustreePlot}
 \alias{ClustreePlot}
-\title{Clustree plot}
+\title{Visualize cluster stability across clustering resolutions}
 \usage{
 ClustreePlot(object, ...)
 }
 \arguments{
-\item{object}{The data frame or Seurat object}
+\item{object}{A Seurat object or a data frame. If a Seurat object is provided,
+\code{object@meta.data} is extracted automatically and passed to
+\code{\link[plotthis:ClustreePlot]{plotthis::ClustreePlot()}}. If a data
+frame, it must contain columns with clustering assignments at different
+resolutions, identified by the \code{prefix} argument.}
 
-\item{...}{Other arguments passed to \code{\link[plotthis:ClustreePlot]{plotthis::ClustreePlot()}}}
+\item{...}{Additional arguments passed to
+\code{\link[plotthis:ClustreePlot]{plotthis::ClustreePlot()}}. Key arguments
+include:
+\describe{
+\item{\code{prefix}}{(Required) A character string identifying the columns
+that contain cluster assignments. All columns starting with this prefix
+are used. For standard Seurat output, this is \code{"RNA_snn_res."}.}
+\item{\code{flip}}{Logical. If \code{TRUE}, flips the tree orientation.
+Default: \code{FALSE}.}
+\item{\code{split_by}}{Column name(s) to split the data and generate
+separate clustree plots for each group. Default: \code{NULL}.}
+\item{\code{palette}}{Color palette for cluster nodes. Default:
+\code{"Paired"}.}
+\item{\code{edge_palette}}{Color palette for edges (transitions).
+Default: \code{"Spectral"}.}
+\item{\code{combine}}{Logical. If \code{TRUE} (default), combines multiple
+plots (when \code{split_by} is used) into a single patchwork object.}
+\item{\code{theme}}{Theme to apply. Default: \code{"theme_this"}.}
+}}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A ggplot object (or a \code{patchwork} object if \code{split_by} is
+used and \code{combine = TRUE}), or a list of ggplot objects if
+\code{combine = FALSE}. The plot shows clustering resolutions on the y-axis
+(higher resolution = more clusters at the top) and individual clusters as
+nodes connected by edges representing cell transitions.
 }
 \description{
-This function generates a clustree plot from a data frame or a Seurat object.
+A clustree plot visualizes how cells move between clusters when clustering is
+performed at different resolutions. Each resolution level is a column of nodes,
+and edges show the flow of cells between clusters at adjacent resolutions.
+This is an essential diagnostic for single-cell analysis, helping researchers
+choose an appropriate clustering resolution by revealing which clusters are
+stable (persistent across resolutions) and which are transient (appear only at
+specific resolutions).
+
+This function is a wrapper around \code{\link[plotthis:ClustreePlot]{plotthis::ClustreePlot()}}
+that automatically extracts the metadata from Seurat objects. For data frames,
+the data is passed directly to \pkg{plotthis}.
 }
+\note{
+\itemize{
+\item The \code{prefix} argument is required — without it, no columns will
+be identified and the plot will be empty.
+\item For Seurat objects, clustering results are typically stored in
+\code{@meta.data} with names like \code{RNA_snn_res.0.4}. The numeric
+suffix determines the ordering on the y-axis. Use the actual prefix from
+your Seurat object (e.g., \code{"SCT_snn_res."} for SCT-based clustering).
+\item When \code{split_by} generates many plots, use \code{nrow} and
+\code{ncol} to control the layout, or set \code{combine = FALSE} to
+receive a list for custom arrangement.
+\item For large datasets (>50,000 cells), consider subsampling to keep the
+plot readable. The edge rendering becomes dense as the number of cells
+increases.
+}
+}
+\section{Data requirements}{
+
+Clustering results must be stored in columns of the metadata (for Seurat
+objects) or the data frame. The columns are identified by a common prefix
+passed to the \code{prefix} argument. For example, Seurat's
+\code{FindClusters()} stores results in columns like \code{RNA_snn_res.0.4},
+\code{RNA_snn_res.0.6}, \code{RNA_snn_res.0.8}, etc. — the prefix
+\code{"RNA_snn_res."} captures all of these. The numeric suffix is used to
+order the resolution levels on the y-axis.
+}
+
+\section{Interpreting a clustree plot}{
+
+\itemize{
+\item \strong{Stable clusters} appear as nodes with predominantly single-color
+incoming edges (cells from one source cluster) and single-color outgoing
+edges (cells moving to one target cluster). These represent robust
+biological groupings.
+\item \strong{Transient clusters} show multi-color edges, indicating they
+arise from the splitting of multiple parent clusters or contribute to
+multiple child clusters — a sign of over-clustering.
+\item \strong{Node size} reflects the number of cells in the cluster at that
+resolution. \strong{Edge transparency} reflects the proportion of cells
+following that path.
+\item Choose a resolution where major clusters have stabilized (edges are
+predominantly single-color) before new clusters begin fragmenting.
+}
+}
+
 \examples{
+\donttest{
 data(ifnb_sub)
 ClustreePlot(ifnb_sub, prefix = "RNA_snn_res.")
+}
+}
+\seealso{
+\code{\link[plotthis:ClustreePlot]{plotthis::ClustreePlot()}},
+\code{\link{CellDimPlot}}, \code{\link{CellStatPlot}}
 }
