@@ -1,30 +1,183 @@
 #' Cell Dimension Reduction Plot
 #'
-#' @description This function creates a dimension reduction plot for a Seurat object
-#' a Giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
-#' It allows for various customizations such as grouping by metadata,
-#' adding edges between cell neighbors, highlighting specific cells, and more.
-#' This function is a wrapper around [plotthis::DimPlot()], which provides a
-#' flexible way to visualize cell clusters in reduced dimensions. This function
-#' extracts the necessary data from the Seurat or Giotto object and passes it to
-#' [plotthis::DimPlot()].
-#' @param object A seurat object, a giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
-#' @param reduction Name of the reduction to plot (for example, "umap").
-#' @param graph Specify the graph name to add edges between cell neighbors to the plot.
-#' @param velocity The name of velocity reduction to plot cell velocities.
-#' It is typically `"stochastic_<reduction>"`, `"deterministic_<reduction>"`, or `"dynamical_<reduction>"`.
-#' @param group_by A character vector of column name(s) to group the data. Default is NULL.
-#' @param ident Alias for `group_by`.
-#' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
-#' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
-#' @param ... Other arguments passed to [plotthis::DimPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' @description
+#' Visualizes single-cell data in reduced dimension space (e.g., UMAP, t-SNE,
+#' PCA). This is the primary function for exploring cell clustering, cell
+#' identity, and spatial relationships in transcriptomics datasets. It creates
+#' scatter plots where each point represents a cell, positioned by its
+#' coordinates in the reduced dimension space and colored by metadata variables
+#' such as cell type, sample condition, or cluster assignment.
+#'
+#' `CellDimPlot` serves as a unified interface across multiple single-cell data
+#' containers:
+#' \itemize{
+#'   \item **Seurat objects** — Extracts embeddings from `Reductions()` and
+#'         metadata from `@meta.data`. The default reduction is auto-detected
+#'         via `default_dimreduc()`.
+#'   \item **Giotto objects** — Extracts spatial dimension reductions and cell
+#'         metadata using `spat_unit` and `feat_type` to identify the correct
+#'         spatial unit and feature type.
+#'   \item **h5ad files** (.h5ad or opened `H5File`) — Reads from `obsm` for
+#'         embeddings and `obs` for metadata. Reduction names are automatically
+#'         prefixed with `"X_"` when needed (e.g., `"umap"` → `"X_umap"`).
+#' }
+#'
+#' Beyond basic cluster visualization, `CellDimPlot` supports a rich set of
+#' visual overlays and analytical enhancements:
+#' \itemize{
+#'   \item **Cluster highlighting** — Emphasize cells matching a logical
+#'         expression while dimming others (`highlight`).
+#'   \item **Group labels** — Add text labels at group centroids (`label`,
+#'         `label_insitu`).
+#'   \item **Group marks** — Draw boundary shapes around groups: ellipse,
+#'         rectangle, or circle (`add_mark`, `mark_type`).
+#'   \item **Density contours** — Overlay 2D density estimates (`add_density`).
+#'   \item **Neighbor graphs** — Draw edges between neighboring cells from
+#'         k-NN or shared-nearest-neighbor graphs (`graph`).
+#'   \item **Lineage trajectories** — Overlay pseudotime lineage curves
+#'         (`lineages`).
+#'   \item **Velocity arrows** — Overlay RNA velocity vectors on the embedding
+#'         (`velocity`). For dedicated velocity visualization with grid or
+#'         stream plots, see [CellVelocityPlot()].
+#'   \item **Statistical charts** — Embed small bar, ring, or line charts at
+#'         group positions showing composition of a second variable (`stat_by`,
+#'         `stat_plot_type`).
+#'   \item **Hexagonal binning** — Replace scatter points with binned hexagons
+#'         for large datasets (`hex`).
+#'   \item **3D visualization** — Plot three dimensions by specifying
+#'         `dims = 1:3`.
+#'   \item **Rasterization** — Render points as a raster image for performance
+#'         with large cell counts (`raster`).
+#' }
+#'
+#' @section Data extraction:
+#' The function extracts cell embeddings and metadata from the input object,
+#' combines them into a single data frame, and passes the result to
+#' \code{\link[plotthis:DimPlot]{plotthis::DimPlot()}} along with any additional
+#' arguments provided via `...`. The extraction logic varies by object type:
+#'
+#' **Seurat objects:** `Embeddings(object, reduction)` provides the coordinates;
+#' `object@meta.data` provides the metadata. When `group_by` is `NULL`,
+#' `Idents(object)` is used as the default grouping variable (column name
+#' `"Identity"`). The `graph` parameter references `object@graphs`.
+#'
+#' **Giotto objects:** `getDimReduction()` with `output = "matrix"` provides
+#' coordinates; `getCellMetadata()` with `output = "data.table"` provides
+#' metadata. Both `spat_unit` and `feat_type` are resolved to defaults if not
+#' specified. The `graph` parameter references nearest-neighbor networks
+#' retrieved via `getNearestNetwork()` and converted with \pkg{igraph}.
+#'
+#' **h5ad files:** `obsm[[reduction]]` provides the embedding matrix;
+#' `obs` provides metadata (decoded via `h5group_to_dataframe()` for
+#' categorical variables). The `graph` parameter references
+#' `obsp[["connectivities"]]`, converted via \pkg{igraph} to an adjacency
+#' matrix.
+#'
+#' @section Velocity overlay:
+#' When `velocity` is specified, velocity vectors are overlaid on the dimension
+#' reduction plot. The `velocity` parameter names a second reduction
+#' (e.g., `"stochastic_UMAP"`) whose first two dimensions encode the velocity
+#' arrows. This is a lightweight overlay — for dedicated velocity visualization
+#' with grid or stream plots, use [CellVelocityPlot()] which delegates to
+#' \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.
+#'
+#' @param object A Seurat object, a Giotto object, a path to an `.h5ad` file,
+#'   or an opened `H5File` from the \pkg{hdf5r} package.
+#' @param reduction Name of the dimension reduction to plot. Typical values are
+#'   `"umap"`, `"tsne"`, or `"pca"`. For Seurat objects, the default reduction
+#'   is auto-detected via `default_dimreduc()`. For h5ad files, the prefix
+#'   `"X_"` is added automatically when needed (i.e., `"umap"` is treated as
+#'   `"X_umap"` if `"umap"` alone is not found). For Giotto objects, this
+#'   parameter is required unless a default reduction has been set.
+#' @param graph Name of the neighbor graph used to draw edges between
+#'   neighboring cells on the plot. For Seurat objects, this is a graph name
+#'   in `Graphs(object)` (e.g., `"RNA_nn"`, `"RNA_snn"`). For Giotto objects,
+#'   this is a nearest-neighbor network name; set `graph = TRUE` to use the
+#'   first available network. For h5ad files, connectivities are read from
+#'   `obsp[["connectivities"]]`. Setting `graph` to `NULL` (the default)
+#'   suppresses edge drawing.
+#' @param velocity Name of a velocity reduction whose first two dimensions
+#'   encode RNA velocity vectors to overlay on the plot. Typical values are
+#'   `"stochastic_<reduction>"`, `"deterministic_<reduction>"`, or
+#'   `"dynamical_<reduction>"` (e.g., `"stochastic_UMAP"`). For dedicated
+#'   velocity visualization (grid or stream plots), use [CellVelocityPlot()]
+#'   instead. Default is `NULL` (no velocity overlay).
+#' @param group_by Character vector of metadata column name(s) used to color
+#'   the cells. Can be a single column (e.g., `"CellType"`) or multiple
+#'   columns for combined grouping. Default is `NULL`, which falls back to
+#'   the active identity for Seurat objects and is required for other object
+#'   types.
+#' @param ident Alias for `group_by`, provided for compatibility with Seurat's
+#'   naming convention. When both `group_by` and `ident` are specified, they
+#'   must be identical.
+#' @param spat_unit Spatial unit name for Giotto objects (e.g., `"cell"`).
+#'   Ignored for Seurat and h5ad inputs. If `NULL`, the default spatial unit
+#'   is auto-detected via `GiottoClass::set_default_spat_unit()`.
+#' @param feat_type Feature type name for Giotto objects (e.g., `"rna"`,
+#'   `"dna"`, `"protein"`). Ignored for Seurat and h5ad inputs. If `NULL`, the
+#'   default feature type is auto-detected via
+#'   `GiottoClass::set_default_feat_type()`.
+#' @param ... Additional arguments passed to
+#'   \code{\link[plotthis:DimPlot]{plotthis::DimPlot()}}. Key parameters
+#'   include:
+#'   \itemize{
+#'     \item **Appearance:** `pt_size`, `pt_alpha`, `palette`, `palcolor`,
+#'           `theme`, `theme_args`, `legend.position`, `legend.direction`
+#'     \item **Highlighting:** `highlight` — a logical expression as a string
+#'           (e.g., `'CellType == "Beta"'`) to emphasize matching cells
+#'     \item **Labels:** `label`, `label_insitu`, `label_repel`,
+#'           `label_fg`, `label_bg`, `label_size`, `label_segment_color`
+#'     \item **Group marks:** `add_mark`, `mark_type` (`"ellipse"`,
+#'           `"rect"`, `"circle"`), `mark_expand`, `mark_alpha`,
+#'           `mark_linetype`
+#'     \item **Density:** `add_density`, `density_filled`,
+#'           `density_filled_palette`
+#'     \item **Lineages:** `lineages`, `lineages_whiskers`, `lineages_span`
+#'     \item **Statistical charts:** `stat_by`, `stat_plot_type`
+#'           (`"ring"`, `"bar"`, `"line"`), `stat_type` (`"percent"`,
+#'           `"count"`), `stat_plot_label`, `stat_plot_size`, `stat_args`
+#'     \item **Hexagonal binning:** `hex`, `hex_bins`, `hex_count`
+#'     \item **Rendering:** `raster`, `raster_dpi`
+#'     \item **Dimensionality:** `dims` — which dimensions to plot
+#'           (default `1:2`; set to `1:3` for 3D)
+#'     \item **Layout:** `split_by`, `facet_by`, `combine`, `nrow`, `ncol`
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE`
+#'   is passed via `...`.
+#' @note
+#' **Default reduction for Seurat objects:** When `reduction = NULL`,
+#' `CellDimPlot` calls `default_dimreduc(object)` to determine the default
+#' reduction. For Seurat >= 5.4.0, this uses the official
+#' `DefaultDimReduc` getter; for older versions, it falls back to
+#' `object@misc$DefaultDimReduc`.
+#'
+#' **Giotto spatial units and feature types:** The `spat_unit` and `feat_type`
+#' parameters are required to locate the correct data within Giotto's
+#' hierarchical spatial data structure. When `NULL`, Giotto's own default
+#' resolution is used, which is typically sufficient for standard analyses.
+#'
+#' **Performance with large datasets:** For datasets with many cells (e.g.,
+#' over 50,000), consider using `raster = TRUE` to render points as a raster
+#' image, or `hex = TRUE` to use hexagonal binning. Both options significantly
+#' reduce rendering time and output file size.
+#'
+#' **Factor ordering:** The order of groups in the legend follows the factor
+#' levels of the `group_by` column. Set factor levels on your metadata column
+#' before plotting to control legend order.
+#'
+#' @seealso
+#' \itemize{
+#'   \item \code{\link[plotthis:DimPlot]{plotthis::DimPlot()}} — The
+#'         underlying plotting engine
+#'   \item [CellVelocityPlot()] — Dedicated RNA velocity visualization
+#'   \item [CellStatPlot()] — Statistical summaries and comparisons
+#' }
+#'
 #' @export
-#' @seealso [scplotter::CellStatPlot()] [scplotter::CellVelocityPlot()]
 #' @importFrom SeuratObject Embeddings Graphs Reductions Idents
 #' @importFrom plotthis DimPlot
 #' @details
-#' See
+#' See the following vignettes for examples with Giotto objects:
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html>
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_seqFISH.html>
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_SlideSeq.html>
@@ -33,12 +186,8 @@
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_VisiumHD.html>
 #' * <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
 #'
-#' for examples of using this function with a Giotto object.
-#'
-#' And see:
+#' And for examples with h5ad files:
 #' * <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>
-#'
-#' for examples of using this function with .h5ad files.
 #' @examples
 #' \donttest{
 #' set.seed(8525)
@@ -377,26 +526,156 @@ CellDimPlot.H5File <- function(
 
 #' Cell Velocity Plot
 #'
-#' @description This function creates a cell velocity plot for a Seurat object,
-#' a Giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
-#' It allows for various customizations such as grouping by metadata,
-#' adding edges between cell neighbors, highlighting specific cells, and more.
-#' This function is a wrapper around [plotthis::VelocityPlot()], which provides a
-#' flexible way to visualize cell velocities in reduced dimensions. This function
-#' extracts the cell embeddings and velocity embeddings from the Seurat or Giotto object
-#' and passes them to [plotthis::VelocityPlot()].
-#' @param object A seurat object, a giotto object, a path to an .h5ad file or an opened `H5File` by `hdf5r` package.
-#' @param reduction Name of the reduction to plot (for example, "umap").
-#' @param v_reduction Name of the velocity reduction to plot (for example, "stochastic_umap").
-#' It should be the same as the reduction used to calculate the velocity.
-#' @param spat_unit The spatial unit to use for the plot. Only applied to Giotto objects.
-#' @param feat_type feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.
-#' @param group_by A character vector of metadata column name(s) to group (color) the data. Default is NULL.
-#' @param ident Alias for `group_by`.
-#' @param ... Other arguments passed to [plotthis::VelocityPlot()].
-#' @return A ggplot object
+#' @description
+#' Visualizes RNA velocity on a reduced-dimension embedding. RNA velocity
+#' infers the future transcriptional state of individual cells by modeling the
+#' ratio of unspliced (nascent) to spliced (mature) mRNA transcripts. On a
+#' dimension reduction plot, velocity is displayed as arrows (or grid/stream
+#' fields) showing the predicted direction and magnitude of transcriptional
+#' change for each cell — effectively revealing the "flow" of cells through
+#' differentiation, development, or other state transitions.
+#'
+#' `CellVelocityPlot` serves as a unified interface across multiple single-cell
+#' data containers:
+#' \itemize{
+#'   \item **Seurat objects** — Extracts embeddings from both the main
+#'         reduction (`reduction`) and the velocity reduction
+#'         (`v_reduction`) via `Embeddings()`; metadata for grouping via
+#'         `@meta.data`.
+#'   \item **Giotto objects** — Extracts dimension reductions via
+#'         `getDimReduction()` using `spat_unit` and `feat_type` to identify
+#'         the correct spatial unit and feature type.
+#'   \item **h5ad files** (.h5ad or opened `H5File`) — Reads from `obsm` for
+#'         both the main and velocity embeddings; `obs` for metadata. Reduction
+#'         names are automatically prefixed with `"X_"` when needed.
+#' }
+#'
+#' @section RNA velocity background:
+#' RNA velocity requires two dimension reductions stored in the object:
+#' \enumerate{
+#'   \item **Main reduction** (`reduction`): A standard dimension reduction
+#'         (e.g., UMAP, PCA, t-SNE) computed on the cells' current expression
+#'         profiles. This defines the positions of cells in the plot.
+#'   \item **Velocity reduction** (`v_reduction`): A dimension reduction
+#'         computed on velocity vectors derived from spliced/unspliced RNA
+#'         ratios. The first two dimensions of this reduction encode the
+#'         direction and magnitude of predicted transcriptional change.
+#' }
+#' Velocity reductions typically follow the naming convention
+#' `"<model>_<reduction>"`, where `<model>` is one of:
+#' \itemize{
+#'   \item `"stochastic"` — Stochastic model of transcriptional dynamics
+#'   \item `"deterministic"` — Deterministic model assuming constant
+#'         transcription rates
+#'   \item `"dynamical"` — Dynamical model accounting for time-dependent
+#'         transcription rates
+#' }
+#' For example, `"stochastic_UMAP"` or `"dynamical_PCA"`.
+#'
+#' @section Relationship to CellDimPlot:
+#' While [CellDimPlot()] can overlay velocity arrows on a dimension reduction
+#' plot via its `velocity` parameter, `CellVelocityPlot` is the dedicated
+#' velocity visualization function. The key differences are:
+#' \itemize{
+#'   \item `CellVelocityPlot` delegates to
+#'         \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}},
+#'         which supports multiple plot types: `"arrow"` (default), `"grid"`,
+#'         and `"stream"`.
+#'   \item `CellVelocityPlot` requires both `reduction` and `v_reduction` as
+#'         explicit arguments (they have no defaults).
+#'   \item `CellVelocityPlot` does not support the full set of `DimPlot`
+#'         overlays (marks, density, lineages, etc.) — it focuses solely on
+#'         velocity visualization.
+#' }
+#'
+#' @section Velocity plot types:
+#' Passed via `...` to \pkg{plotthis}'s `VelocityPlot()`, the `plot_type`
+#' parameter controls how velocities are rendered:
+#' \itemize{
+#'   \item **`"arrow"`** (default) — An arrow is drawn from each cell's
+#'         current position to its predicted future position. Best for small
+#'         to medium datasets where individual cell trajectories are of
+#'         interest.
+#'   \item **`"grid"`** — The embedding space is divided into a grid, and
+#'         average velocity vectors are computed per grid cell. Reduces
+#'         visual clutter for large datasets and shows regional trends.
+#'   \item **`"stream"`** — Streamlines are computed from the velocity
+#'         field, showing continuous flow trajectories. Best for visualizing
+#'         differentiation paths and developmental trajectories.
+#' }
+#'
+#' @param object A Seurat object, a Giotto object, a path to an `.h5ad` file,
+#'   or an opened `H5File` from the \pkg{hdf5r} package.
+#' @param reduction Name of the main dimension reduction that defines cell
+#'   positions in the plot (e.g., `"umap"`, `"pca"`, `"tsne"`). This
+#'   reduction must already exist in the object. Unlike [CellDimPlot()],
+#'   this parameter is required — there is no default.
+#' @param v_reduction Name of the velocity reduction that encodes RNA velocity
+#'   vectors (e.g., `"stochastic_UMAP"`, `"dynamical_PCA"`). Only the first
+#'   two dimensions are used. This reduction must already exist in the object
+#'   and is typically generated by RNA velocity analysis tools such as
+#'   \pkg{velocyto.R} or \pkg{scVelo} (Python, exported to h5ad).
+#' @param spat_unit Spatial unit name for Giotto objects (e.g., `"cell"`).
+#'   Ignored for Seurat and h5ad inputs. If `NULL`, the default spatial unit
+#'   is auto-detected via `GiottoClass::set_default_spat_unit()`.
+#' @param feat_type Feature type name for Giotto objects (e.g., `"rna"`,
+#'   `"dna"`, `"protein"`). Ignored for Seurat and h5ad inputs. If `NULL`, the
+#'   default feature type is auto-detected via
+#'   `GiottoClass::set_default_feat_type()`.
+#' @param group_by Metadata column name used to color cells by group (e.g.,
+#'   `"CellType"`, `"Phase"`). Unlike [CellDimPlot()], this parameter is
+#'   optional — when `NULL`, all cells are plotted in a uniform color, which
+#'   can be useful for focusing on the velocity flow patterns without visual
+#'   distraction from cluster colors.
+#' @param ident Alias for `group_by`, provided for compatibility with Seurat's
+#'   naming convention. When both `group_by` and `ident` are specified, they
+#'   must be identical.
+#' @param ... Additional arguments passed to
+#'   \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}. Key
+#'   parameters include:
+#'   \itemize{
+#'     \item **Plot type:** `plot_type` — `"arrow"` (default), `"grid"`,
+#'           or `"stream"` (see the \emph{Velocity plot types} section)
+#'     \item **Appearance:** `pt_size`, `pt_alpha`, `arrow_length`,
+#'           `arrow_thickness`, `palette`, `palcolor`, `theme`, `theme_args`,
+#'           `legend.position`
+#'     \item **Grid parameters (for `plot_type = "grid"`):** `grid_n`,
+#'           `grid_color`, `grid_alpha`, `grid_lwd`
+#'     \item **Stream parameters (for `plot_type = "stream"`):**
+#'           `stream_n`, `stream_color`, `stream_alpha`, `stream_lwd`
+#'     \item **Layout:** `split_by`, `combine`, `nrow`, `ncol`
+#'   }
+#' @return A `ggplot` object.
+#' @note
+#' **Velocity computation prerequisites:** This function only *visualizes*
+#' pre-computed RNA velocity. Velocity must be calculated separately using
+#' tools such as \pkg{velocyto.R} (R) or \pkg{scVelo} (Python). The computed
+#' velocity reduction must already exist in the object before calling
+#' `CellVelocityPlot`.
+#'
+#' **Velocity overlay in CellDimPlot:** For a quick velocity overlay on
+#' a standard dimension reduction plot (with all `DimPlot` features like
+#' highlighting, density contours, and group marks), use
+#' `CellDimPlot(velocity = "stochastic_UMAP")` instead. `CellVelocityPlot`
+#' is best when you need grid or stream visualizations specifically.
+#'
+#' **Required parameters:** Both `reduction` and `v_reduction` are required
+#' and have no defaults — unlike `CellDimPlot()` where `reduction` can be
+#' auto-detected for Seurat objects. This is because velocity visualization
+#' intrinsically requires two distinct reductions, and auto-detection of the
+#' velocity reduction is not reliable across analysis pipelines.
+#'
+#' @seealso
+#' \itemize{
+#'   \item \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}} —
+#'         The underlying plotting engine supporting arrow, grid, and stream
+#'         plot types
+#'   \item [CellDimPlot()] — Standard dimension reduction plot; can overlay
+#'         velocity arrows via the `velocity` parameter
+#'   \item [CellStatPlot()] — Statistical summaries and comparisons
+#' }
+#'
 #' @export
-#' @seealso [scplotter::CellDimPlot()]
 #' @importFrom SeuratObject Embeddings Reductions
 #' @importFrom plotthis VelocityPlot
 #' @details See:
@@ -407,13 +686,20 @@ CellDimPlot.H5File <- function(
 #' \donttest{
 #' data(pancreas_sub)
 #'
+#' # Arrow plot (default) — each cell shows its predicted direction
 #' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA")
+#'
+#' # Grid plot — velocity vectors averaged over grid cells
 #' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
-#'  plot_type = "grid")
+#'   plot_type = "grid")
+#'
+#' # Stream plot — continuous flow trajectories
 #' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
-#'  plot_type = "stream")
+#'   plot_type = "stream")
+#'
+#' # With group coloring
 #' CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA",
-#'  group_by = "SubCellType")
+#'   group_by = "SubCellType")
 #' }
 CellVelocityPlot <- function(
     object, reduction, v_reduction, spat_unit = NULL, feat_type = NULL, group_by = NULL, ident = NULL, ...

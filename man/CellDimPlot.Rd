@@ -17,40 +17,132 @@ CellDimPlot(
 )
 }
 \arguments{
-\item{object}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
+\item{object}{A Seurat object, a Giotto object, a path to an \code{.h5ad} file,
+or an opened \code{H5File} from the \pkg{hdf5r} package.}
 
-\item{reduction}{Name of the reduction to plot (for example, "umap").}
+\item{reduction}{Name of the dimension reduction to plot. Typical values are
+\code{"umap"}, \code{"tsne"}, or \code{"pca"}. For Seurat objects, the default reduction
+is auto-detected via \code{default_dimreduc()}. For h5ad files, the prefix
+\code{"X_"} is added automatically when needed (i.e., \code{"umap"} is treated as
+\code{"X_umap"} if \code{"umap"} alone is not found). For Giotto objects, this
+parameter is required unless a default reduction has been set.}
 
-\item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
+\item{graph}{Name of the neighbor graph used to draw edges between
+neighboring cells on the plot. For Seurat objects, this is a graph name
+in \code{Graphs(object)} (e.g., \code{"RNA_nn"}, \code{"RNA_snn"}). For Giotto objects,
+this is a nearest-neighbor network name; set \code{graph = TRUE} to use the
+first available network. For h5ad files, connectivities are read from
+\code{obsp[["connectivities"]]}. Setting \code{graph} to \code{NULL} (the default)
+suppresses edge drawing.}
 
-\item{group_by}{A character vector of column name(s) to group the data. Default is NULL.}
+\item{group_by}{Character vector of metadata column name(s) used to color
+the cells. Can be a single column (e.g., \code{"CellType"}) or multiple
+columns for combined grouping. Default is \code{NULL}, which falls back to
+the active identity for Seurat objects and is required for other object
+types.}
 
-\item{ident}{Alias for \code{group_by}.}
+\item{ident}{Alias for \code{group_by}, provided for compatibility with Seurat's
+naming convention. When both \code{group_by} and \code{ident} are specified, they
+must be identical.}
 
-\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
+\item{spat_unit}{Spatial unit name for Giotto objects (e.g., \code{"cell"}).
+Ignored for Seurat and h5ad inputs. If \code{NULL}, the default spatial unit
+is auto-detected via \code{GiottoClass::set_default_spat_unit()}.}
 
-\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
+\item{feat_type}{Feature type name for Giotto objects (e.g., \code{"rna"},
+\code{"dna"}, \code{"protein"}). Ignored for Seurat and h5ad inputs. If \code{NULL}, the
+default feature type is auto-detected via
+\code{GiottoClass::set_default_feat_type()}.}
 
-\item{velocity}{The name of velocity reduction to plot cell velocities.
-It is typically \code{"stochastic_<reduction>"}, \code{"deterministic_<reduction>"}, or \code{"dynamical_<reduction>"}.}
+\item{velocity}{Name of a velocity reduction whose first two dimensions
+encode RNA velocity vectors to overlay on the plot. Typical values are
+\code{"stochastic_<reduction>"}, \code{"deterministic_<reduction>"}, or
+\code{"dynamical_<reduction>"} (e.g., \code{"stochastic_UMAP"}). For dedicated
+velocity visualization (grid or stream plots), use \code{\link[=CellVelocityPlot]{CellVelocityPlot()}}
+instead. Default is \code{NULL} (no velocity overlay).}
 
-\item{...}{Other arguments passed to \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.}
+\item{...}{Additional arguments passed to
+\code{\link[plotthis:DimPlot]{plotthis::DimPlot()}}. Key parameters
+include:
+\itemize{
+\item \strong{Appearance:} \code{pt_size}, \code{pt_alpha}, \code{palette}, \code{palcolor},
+\code{theme}, \code{theme_args}, \code{legend.position}, \code{legend.direction}
+\item \strong{Highlighting:} \code{highlight} — a logical expression as a string
+(e.g., \code{'CellType == "Beta"'}) to emphasize matching cells
+\item \strong{Labels:} \code{label}, \code{label_insitu}, \code{label_repel},
+\code{label_fg}, \code{label_bg}, \code{label_size}, \code{label_segment_color}
+\item \strong{Group marks:} \code{add_mark}, \code{mark_type} (\code{"ellipse"},
+\code{"rect"}, \code{"circle"}), \code{mark_expand}, \code{mark_alpha},
+\code{mark_linetype}
+\item \strong{Density:} \code{add_density}, \code{density_filled},
+\code{density_filled_palette}
+\item \strong{Lineages:} \code{lineages}, \code{lineages_whiskers}, \code{lineages_span}
+\item \strong{Statistical charts:} \code{stat_by}, \code{stat_plot_type}
+(\code{"ring"}, \code{"bar"}, \code{"line"}), \code{stat_type} (\code{"percent"},
+\code{"count"}), \code{stat_plot_label}, \code{stat_plot_size}, \code{stat_args}
+\item \strong{Hexagonal binning:} \code{hex}, \code{hex_bins}, \code{hex_count}
+\item \strong{Rendering:} \code{raster}, \code{raster_dpi}
+\item \strong{Dimensionality:} \code{dims} — which dimensions to plot
+(default \code{1:2}; set to \code{1:3} for 3D)
+\item \strong{Layout:} \code{split_by}, \code{facet_by}, \code{combine}, \code{nrow}, \code{ncol}
+}}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if \code{combine = FALSE}
+is passed via \code{...}.
 }
 \description{
-This function creates a dimension reduction plot for a Seurat object
-a Giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
-It allows for various customizations such as grouping by metadata,
-adding edges between cell neighbors, highlighting specific cells, and more.
-This function is a wrapper around \code{\link[plotthis:dimplot]{plotthis::DimPlot()}}, which provides a
-flexible way to visualize cell clusters in reduced dimensions. This function
-extracts the necessary data from the Seurat or Giotto object and passes it to
-\code{\link[plotthis:dimplot]{plotthis::DimPlot()}}.
+Visualizes single-cell data in reduced dimension space (e.g., UMAP, t-SNE,
+PCA). This is the primary function for exploring cell clustering, cell
+identity, and spatial relationships in transcriptomics datasets. It creates
+scatter plots where each point represents a cell, positioned by its
+coordinates in the reduced dimension space and colored by metadata variables
+such as cell type, sample condition, or cluster assignment.
+
+\code{CellDimPlot} serves as a unified interface across multiple single-cell data
+containers:
+\itemize{
+\item \strong{Seurat objects} — Extracts embeddings from \code{Reductions()} and
+metadata from \verb{@meta.data}. The default reduction is auto-detected
+via \code{default_dimreduc()}.
+\item \strong{Giotto objects} — Extracts spatial dimension reductions and cell
+metadata using \code{spat_unit} and \code{feat_type} to identify the correct
+spatial unit and feature type.
+\item \strong{h5ad files} (.h5ad or opened \code{H5File}) — Reads from \code{obsm} for
+embeddings and \code{obs} for metadata. Reduction names are automatically
+prefixed with \code{"X_"} when needed (e.g., \code{"umap"} → \code{"X_umap"}).
+}
+
+Beyond basic cluster visualization, \code{CellDimPlot} supports a rich set of
+visual overlays and analytical enhancements:
+\itemize{
+\item \strong{Cluster highlighting} — Emphasize cells matching a logical
+expression while dimming others (\code{highlight}).
+\item \strong{Group labels} — Add text labels at group centroids (\code{label},
+\code{label_insitu}).
+\item \strong{Group marks} — Draw boundary shapes around groups: ellipse,
+rectangle, or circle (\code{add_mark}, \code{mark_type}).
+\item \strong{Density contours} — Overlay 2D density estimates (\code{add_density}).
+\item \strong{Neighbor graphs} — Draw edges between neighboring cells from
+k-NN or shared-nearest-neighbor graphs (\code{graph}).
+\item \strong{Lineage trajectories} — Overlay pseudotime lineage curves
+(\code{lineages}).
+\item \strong{Velocity arrows} — Overlay RNA velocity vectors on the embedding
+(\code{velocity}). For dedicated velocity visualization with grid or
+stream plots, see \code{\link[=CellVelocityPlot]{CellVelocityPlot()}}.
+\item \strong{Statistical charts} — Embed small bar, ring, or line charts at
+group positions showing composition of a second variable (\code{stat_by},
+\code{stat_plot_type}).
+\item \strong{Hexagonal binning} — Replace scatter points with binned hexagons
+for large datasets (\code{hex}).
+\item \strong{3D visualization} — Plot three dimensions by specifying
+\code{dims = 1:3}.
+\item \strong{Rasterization} — Render points as a raster image for performance
+with large cell counts (\code{raster}).
+}
 }
 \details{
-See
+See the following vignettes for examples with Giotto objects:
 \itemize{
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html}
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_seqFISH.html}
@@ -61,15 +153,67 @@ See
 \item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
 }
 
-for examples of using this function with a Giotto object.
-
-And see:
+And for examples with h5ad files:
 \itemize{
 \item \url{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}
 }
-
-for examples of using this function with .h5ad files.
 }
+\note{
+\strong{Default reduction for Seurat objects:} When \code{reduction = NULL},
+\code{CellDimPlot} calls \code{default_dimreduc(object)} to determine the default
+reduction. For Seurat >= 5.4.0, this uses the official
+\code{DefaultDimReduc} getter; for older versions, it falls back to
+\code{object@misc$DefaultDimReduc}.
+
+\strong{Giotto spatial units and feature types:} The \code{spat_unit} and \code{feat_type}
+parameters are required to locate the correct data within Giotto's
+hierarchical spatial data structure. When \code{NULL}, Giotto's own default
+resolution is used, which is typically sufficient for standard analyses.
+
+\strong{Performance with large datasets:} For datasets with many cells (e.g.,
+over 50,000), consider using \code{raster = TRUE} to render points as a raster
+image, or \code{hex = TRUE} to use hexagonal binning. Both options significantly
+reduce rendering time and output file size.
+
+\strong{Factor ordering:} The order of groups in the legend follows the factor
+levels of the \code{group_by} column. Set factor levels on your metadata column
+before plotting to control legend order.
+}
+\section{Data extraction}{
+
+The function extracts cell embeddings and metadata from the input object,
+combines them into a single data frame, and passes the result to
+\code{\link[plotthis:DimPlot]{plotthis::DimPlot()}} along with any additional
+arguments provided via \code{...}. The extraction logic varies by object type:
+
+\strong{Seurat objects:} \code{Embeddings(object, reduction)} provides the coordinates;
+\code{object@meta.data} provides the metadata. When \code{group_by} is \code{NULL},
+\code{Idents(object)} is used as the default grouping variable (column name
+\code{"Identity"}). The \code{graph} parameter references \code{object@graphs}.
+
+\strong{Giotto objects:} \code{getDimReduction()} with \code{output = "matrix"} provides
+coordinates; \code{getCellMetadata()} with \code{output = "data.table"} provides
+metadata. Both \code{spat_unit} and \code{feat_type} are resolved to defaults if not
+specified. The \code{graph} parameter references nearest-neighbor networks
+retrieved via \code{getNearestNetwork()} and converted with \pkg{igraph}.
+
+\strong{h5ad files:} \code{obsm[[reduction]]} provides the embedding matrix;
+\code{obs} provides metadata (decoded via \code{h5group_to_dataframe()} for
+categorical variables). The \code{graph} parameter references
+\code{obsp[["connectivities"]]}, converted via \pkg{igraph} to an adjacency
+matrix.
+}
+
+\section{Velocity overlay}{
+
+When \code{velocity} is specified, velocity vectors are overlaid on the dimension
+reduction plot. The \code{velocity} parameter names a second reduction
+(e.g., \code{"stochastic_UMAP"}) whose first two dimensions encode the velocity
+arrows. This is a lightweight overlay — for dedicated velocity visualization
+with grid or stream plots, use \code{\link[=CellVelocityPlot]{CellVelocityPlot()}} which delegates to
+\code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.
+}
+
 \examples{
 \donttest{
 set.seed(8525)
@@ -195,5 +339,10 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 }
 }
 \seealso{
-\code{\link[=CellStatPlot]{CellStatPlot()}} \code{\link[=CellVelocityPlot]{CellVelocityPlot()}}
+\itemize{
+\item \code{\link[plotthis:DimPlot]{plotthis::DimPlot()}} — The
+underlying plotting engine
+\item \code{\link[=CellVelocityPlot]{CellVelocityPlot()}} — Dedicated RNA velocity visualization
+\item \code{\link[=CellStatPlot]{CellStatPlot()}} — Statistical summaries and comparisons
+}
 }
