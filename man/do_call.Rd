@@ -4,16 +4,21 @@
 \alias{do_call}
 \title{Call a function with a list of arguments}
 \usage{
-do_call(fn, args, quote = FALSE, envir = parent.frame())
+do_call(what, args, quote = FALSE, envir = parent.frame())
 }
 \arguments{
-\item{fn}{A function to call}
+\item{what}{either a function or a non-empty character string naming the
+    function to be called.}
 
-\item{args}{A list of arguments to pass to the function}
+\item{args}{a \emph{list} of arguments to the function call.  The
+    \code{names} attribute of \code{args} gives the argument names.}
 
-\item{quote}{Whether to quote the arguments}
+\item{quote}{a logical value indicating whether to quote the
+    arguments.}
 
-\item{envir}{The environment to evaluate the function in}
+\item{envir}{an environment within which to evaluate the call.  This
+    will be most useful if \code{what} is a character string and
+    the arguments are symbols or quoted expressions.}
 }
 \value{
 The result of the function call
