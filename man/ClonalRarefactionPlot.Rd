@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonaldivplot.R
 \name{ClonalRarefactionPlot}
 \alias{ClonalRarefactionPlot}
-\title{ClonalRarefactionPlot}
+\title{Clonal Rarefaction Plot}
 \usage{
 ClonalRarefactionPlot(
   data,
@@ -25,54 +25,118 @@ ClonalRarefactionPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable}
+\item{clone_call}{How to define a clone. One of \code{"gene"}, \code{"nt"},
+\code{"aa"} (default), \code{"strict"}, or a custom variable name in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{group_by}{A character vector of column names to group the samples. Default is "Sample".}
+\item{group_by}{Metadata column(s) used to define the curves (each unique
+group produces one rarefaction curve). Multiple columns are concatenated
+using \code{group_by_sep}. Default is \code{"Sample"}.}
 
-\item{group_by_sep}{The separator for the group_by column. Default is "_".}
+\item{group_by_sep}{Separator used when concatenating multiple \code{group_by}
+columns. Default is \code{"_"}.}
 
-\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
 
-\item{n_boots}{The number of bootstrap samples. Default is 20.}
+\item{n_boots}{Number of bootstrap iterations for estimating confidence
+intervals. Higher values produce smoother confidence bands but increase
+computation time. Default is \code{20}.}
 
-\item{q}{The hill number. Default is 0.
+\item{q}{The diversity order (Hill number). \code{0} for species richness,
+\code{1} for Shannon entropy, \code{2} for Simpson index. Default is \code{0}. See
+the \emph{Hill numbers} section for details.}
+
+\item{facet_by}{Not supported for \code{ClonalRarefactionPlot}. Use
+\code{split_by} or \code{group_by} instead. Must be \code{NULL}.}
+
+\item{split_by}{Metadata column used to split the data into separate
+rarefaction plots. When specified, an independent rarefaction is
+performed for each split group, and all plots are combined. Default
+is \code{NULL}.}
+
+\item{split_by_sep}{Separator used when concatenating multiple
+\code{split_by} columns. Default is \code{"_"}.}
+
+\item{palette}{Color palette for distinguishing curves from different
+groups. Default is \code{"Paired"}.}
+
+\item{combine}{Logical; if \code{TRUE} (default), multiple plots (from
+\code{split_by}) are combined into a single layout.}
+
+\item{nrow}{Number of rows in the combined plot layout. Default is
+\code{NULL} (auto-determined).}
+
+\item{ncol}{Number of columns in the combined plot layout. Default is
+\code{NULL} (auto-determined).}
+
+\item{byrow}{Logical; if \code{TRUE} (default), the combined layout is filled
+row by row.}
+
+\item{...}{Additional arguments passed to
+\code{\link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot()}}.
+Key parameters include:
 \itemize{
-\item 0 - Species richness
-\item 1 - Shannon entropy
-\item 2 - Simpson index#'
+\item \code{type} — Plot type: \code{1} (line only), \code{2} (line with
+confidence band), or \code{3} (confidence band only).
+\item \code{title} — Plot title.
+\item \code{xlab}, \code{ylab} — Axis labels.
 }}
-
-\item{facet_by}{A character vector of column names to facet the plots. Default is NULL.}
-
-\item{split_by}{A character vector of column names to split the plots. Default is NULL.}
-
-\item{split_by_sep}{The separator for the split_by column. Default is "_".}
-
-\item{palette}{The color palette to use. Default is "Paired".}
-
-\item{combine}{Whether to combine the plots into a single plot. Default is TRUE.}
-
-\item{nrow}{The number of rows in the combined plot. Default is NULL.}
-
-\item{ncol}{The number of columns in the combined plot. Default is NULL.}
-
-\item{byrow}{Whether to fill the combined plot by row. Default is TRUE.}
-
-\item{...}{Other arguments passed to \code{\link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot()}}.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE}.
 }
 \description{
-Plot the rarefaction curves
+Visualizes clonal rarefaction curves — estimates of clone richness as a
+function of sampling depth. Rarefaction addresses a fundamental challenge
+in immune repertoire analysis: the number of clones observed depends on
+how many cells are sequenced. By repeatedly subsampling (bootstrapping)
+the data at varying depths, rarefaction curves reveal whether the
+repertoire has been sampled to saturation or whether additional
+sequencing would uncover many more clones.
+
+\code{ClonalRarefactionPlot} extracts clone count data from the repertoire,
+optionally groups it by metadata columns, and generates rarefaction
+curves via \code{\link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot()}}.
+When \code{split_by} is specified, separate plots are generated for each split
+group and combined into a multi-panel layout.
 }
+\note{
+\strong{Bootstrap iterations:} The \code{n_boots} parameter controls the number of
+resampling iterations. Higher values give more stable estimates but
+increase computation time linearly. For exploratory analysis, \code{n_boots = 20} is typically sufficient; for publication-quality figures, consider
+using \code{n_boots = 100} or more.
+
+\strong{facet_by not supported:} Unlike many other \pkg{scplotter} functions,
+\code{ClonalRarefactionPlot} does not support \code{facet_by}. Use \code{split_by} for
+separate plots or \code{group_by} to show multiple curves on the same axes.
+}
+\section{Hill numbers (the q parameter)}{
+
+The \code{q} parameter selects the diversity order (Hill number) used for
+rarefaction:
+\itemize{
+\item \strong{\code{q = 0}} — Species richness (clone count). Counts the number
+of distinct clonotypes regardless of their size. Most sensitive
+to rare clones.
+\item \strong{\code{q = 1}} — Shannon entropy (exponential). Weighs clones
+proportionally to their abundance. Balances rare and dominant
+clones.
+\item \strong{\code{q = 2}} — Simpson index (inverse). Weighs dominant clones
+more heavily. Least sensitive to rare clones.
+}
+Higher values of \code{q} increasingly emphasize abundant clones over rare
+ones.
+}
+
 \examples{
 \donttest{
 set.seed(8525)

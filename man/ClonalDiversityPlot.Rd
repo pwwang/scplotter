@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonaldivplot.R
 \name{ClonalDiversityPlot}
 \alias{ClonalDiversityPlot}
-\title{ClonalDiversityPlot}
+\title{Clonal Diversity Plot}
 \usage{
 ClonalDiversityPlot(
   data,
@@ -23,58 +23,130 @@ ClonalDiversityPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
+\item{clone_call}{How to define a clone. One of \code{"gene"} (default),
+\code{"nt"}, \code{"aa"}, \code{"strict"}, or a custom variable name in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{method}{The method to calculate the diversity. Options are "shannon" (default),
-"inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "gini.coeff", "d50" and "dXX".
-See \link[scRepertoire:clonalDiversity]{scRepertoire::clonalDiversity} for details.
-The last 3 methods are supported by \code{scplotter} only:
+\item{method}{The diversity metric to compute. One of \code{"shannon"}
+(default), \code{"inv.simpson"}, \code{"norm.entropy"}, \code{"gini.simpson"},
+\code{"chao1"}, \code{"ACE"}, \code{"gini.coeff"}, \code{"d50"}, or \code{"dXX"}. See the
+\emph{Diversity metrics} section for details on each metric.}
+
+\item{d}{The percentage threshold for the \code{"dXX"} method. For example,
+\code{d = 90} computes the number of clones accounting for 90\% of the
+repertoire. Default is \code{50}.}
+
+\item{plot_type}{The visualization type. One of \code{"bar"} (default),
+\code{"box"}, or \code{"violin"}. For \code{"box"} and \code{"violin"}, \code{group_by} is
+required to provide the x-axis grouping.}
+
+\item{position}{Bar position adjustment for \code{"bar"} plot type. One of
+\code{"dodge"} (default), \code{"stack"}, or \code{"fill"}.}
+
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
+
+\item{group_by}{Metadata column used to group (color) the data. Default
+is \code{NULL}. Required for \code{"box"} and \code{"violin"} plot types.}
+
+\item{facet_by}{Metadata column used to facet the plot into separate
+panels. Default is \code{NULL}.}
+
+\item{split_by}{Metadata column used to split the data into separate
+plots. Default is \code{NULL}.}
+
+\item{xlab}{X-axis label. Default is \code{NULL}, which uses the \code{group_by}
+column name or \code{"Sample"}.}
+
+\item{ylab}{Y-axis label. Default is \code{NULL}, which auto-generates the
+full metric name (e.g., \code{"Shannon Index"}, \code{"Gini Coefficient"}).}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+function:
 \itemize{
-\item "gini.coeff" - The Gini Coefficient. A measure of inequality in the distribution of clones.
-0 indicates perfect equality, 1 indicates perfect inequality.
-\item "d50" - The number of clones that make up \verb{50\%} of the total number of clones.
-\item "dXX" - The number of clones that make up \verb{XX\%} of the total number of clones.
-}}
-
-\item{d}{The percentage for the "dXX" method. Default is 50.}
-
-\item{plot_type}{The type of plot. Options are "bar", "box" and "violin".}
-
-\item{position}{The position adjustment for the bars. Default is "dodge".}
-
-\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
-
-\item{group_by}{A character vector of column names to group the samples. Default is NULL.}
-
-\item{facet_by}{A character vector of column names to facet the plots. Default is NULL.}
-
-\item{split_by}{A character vector of column names to split the plots. Default is NULL.}
-
-\item{xlab}{The x-axis label. Default is NULL.}
-
-\item{ylab}{The y-axis label. Default is NULL.}
-
-\item{...}{Other arguments passed to the specific plot function.
-\itemize{
-\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For "box", \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For "violin", \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item \code{"bar"} — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+(\code{palette}, \code{alpha}, \code{fill_by}, ...)
+\item \code{"box"} — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+(\code{comparisons}, \code{alpha}, \code{palette}, ...)
+\item \code{"violin"} — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+(\code{add_box}, \code{comparisons}, \code{palette}, ...)
 }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE} is passed via \code{...}.
 }
 \description{
-Plot the clonal diversities of the samples/groups.
+Visualizes clonal diversity metrics across samples or metadata groups.
+Clonal diversity quantifies the richness and evenness of the immune
+repertoire — how many distinct clonotypes are present and how evenly
+cells are distributed among them. High diversity indicates a broad,
+well-distributed repertoire; low diversity may indicate clonal expansion
+(oligoclonality) in response to antigen stimulation or disease.
+
+\code{ClonalDiversityPlot} computes diversity scores using a custom
+implementation that wraps several \pkg{scRepertoire} methods and adds
+three \pkg{scplotter}-specific metrics (Gini coefficient, D50, DXX).
+Results are visualized as bar, box, or violin plots.
 }
+\note{
+\strong{Bootstrap support:} The underlying \code{ClonalDiversity()} function
+supports bootstrap resampling (\code{n_boots}). This is not exposed in
+\code{ClonalDiversityPlot} directly but is used internally.
+
+\strong{group_by required for box/violin:} The \code{group_by} parameter is
+required when \code{plot_type} is \code{"box"} or \code{"violin"}. These types show
+per-sample distributions grouped by the \code{group_by} variable.
+}
+\section{Diversity metrics}{
+
+The \code{method} parameter selects the diversity metric:
+
+\strong{Richness and evenness metrics:}
+\itemize{
+\item \code{"shannon"} (default) — Shannon entropy index. Higher values
+indicate greater diversity. Sensitive to both richness and
+evenness.
+\item \code{"inv.simpson"} — Inverse Simpson index. The effective number
+of equally abundant clones. Less sensitive to rare clones than
+Shannon.
+\item \code{"norm.entropy"} — Normalized entropy (Pielou's evenness).
+Shannon entropy divided by the log of richness; ranges from 0
+to 1.
+\item \code{"gini.simpson"} — Gini-Simpson index. The probability that
+two randomly selected cells belong to different clones.
+}
+
+\strong{Richness estimators (account for unobserved clones):}
+\itemize{
+\item \code{"chao1"} — Chao1 richness estimator. Estimates the total
+number of clones including those not yet observed, based on
+the number of singletons and doubletons.
+\item \code{"ACE"} — Abundance-based Coverage Estimator. Estimates
+richness with a correction for sample coverage.
+}
+
+\strong{\pkg{scplotter}-specific metrics:}
+\itemize{
+\item \code{"gini.coeff"} — Gini coefficient. Measures inequality in
+clone size distribution. \code{0} indicates perfect equality (all
+clones the same size); \code{1} indicates perfect inequality (one
+clone dominates).
+\item \code{"d50"} — The number of top clones that together account for
+50\% of the total repertoire.
+\item \code{"dXX"} — The number of top clones that together account for
+\code{XX}\% of the total repertoire. Use the \code{d} parameter to set
+the percentage.
+}
+}
+
 \examples{
 set.seed(8525)
 data(contig_list, package = "scRepertoire")

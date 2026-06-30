@@ -77,39 +77,114 @@ ClonalDiversity <- function(
     mat
 }
 
-#' ClonalDiversityPlot
+#' Clonal Diversity Plot
 #'
-#' Plot the clonal diversities of the samples/groups.
+#' @description
+#' Visualizes clonal diversity metrics across samples or metadata groups.
+#' Clonal diversity quantifies the richness and evenness of the immune
+#' repertoire — how many distinct clonotypes are present and how evenly
+#' cells are distributed among them. High diversity indicates a broad,
+#' well-distributed repertoire; low diversity may indicate clonal expansion
+#' (oligoclonality) in response to antigen stimulation or disease.
 #'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param method The method to calculate the diversity. Options are "shannon" (default),
-#'  "inv.simpson", "norm.entropy", "gini.simpson", "chao1", "ACE", "gini.coeff", "d50" and "dXX".
-#'  See [scRepertoire::clonalDiversity] for details.
-#'  The last 3 methods are supported by `scplotter` only:
-#'  * "gini.coeff" - The Gini Coefficient. A measure of inequality in the distribution of clones.
-#'    0 indicates perfect equality, 1 indicates perfect inequality.
-#'  * "d50" - The number of clones that make up `50%` of the total number of clones.
-#'  * "dXX" - The number of clones that make up `XX%` of the total number of clones.
-#' @param d The percentage for the "dXX" method. Default is 50.
-#' @param plot_type The type of plot. Options are "bar", "box" and "violin".
-#' @param position The position adjustment for the bars. Default is "dodge".
-#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
-#' @param group_by A character vector of column names to group the samples. Default is NULL.
-#' @param facet_by A character vector of column names to facet the plots. Default is NULL.
-#' @param split_by A character vector of column names to split the plots. Default is NULL.
-#' @param xlab The x-axis label. Default is NULL.
-#' @param ylab The y-axis label. Default is NULL.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot()].
-#'  * For "box", [plotthis::BoxPlot()].
-#'  * For "violin", [plotthis::ViolinPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' `ClonalDiversityPlot` computes diversity scores using a custom
+#' implementation that wraps several \pkg{scRepertoire} methods and adds
+#' three \pkg{scplotter}-specific metrics (Gini coefficient, D50, DXX).
+#' Results are visualized as bar, box, or violin plots.
+#'
+#' @section Diversity metrics:
+#' The `method` parameter selects the diversity metric:
+#'
+#' **Richness and evenness metrics:**
+#' \itemize{
+#'   \item `"shannon"` (default) — Shannon entropy index. Higher values
+#'         indicate greater diversity. Sensitive to both richness and
+#'         evenness.
+#'   \item `"inv.simpson"` — Inverse Simpson index. The effective number
+#'         of equally abundant clones. Less sensitive to rare clones than
+#'         Shannon.
+#'   \item `"norm.entropy"` — Normalized entropy (Pielou's evenness).
+#'         Shannon entropy divided by the log of richness; ranges from 0
+#'         to 1.
+#'   \item `"gini.simpson"` — Gini-Simpson index. The probability that
+#'         two randomly selected cells belong to different clones.
+#' }
+#'
+#' **Richness estimators (account for unobserved clones):**
+#' \itemize{
+#'   \item `"chao1"` — Chao1 richness estimator. Estimates the total
+#'         number of clones including those not yet observed, based on
+#'         the number of singletons and doubletons.
+#'   \item `"ACE"` — Abundance-based Coverage Estimator. Estimates
+#'         richness with a correction for sample coverage.
+#' }
+#'
+#' **\pkg{scplotter}-specific metrics:**
+#' \itemize{
+#'   \item `"gini.coeff"` — Gini coefficient. Measures inequality in
+#'         clone size distribution. `0` indicates perfect equality (all
+#'         clones the same size); `1` indicates perfect inequality (one
+#'         clone dominates).
+#'   \item `"d50"` — The number of top clones that together account for
+#'         50% of the total repertoire.
+#'   \item `"dXX"` — The number of top clones that together account for
+#'         `XX`% of the total repertoire. Use the `d` parameter to set
+#'         the percentage.
+#' }
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of `"gene"` (default),
+#'   `"nt"`, `"aa"`, `"strict"`, or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param method The diversity metric to compute. One of `"shannon"`
+#'   (default), `"inv.simpson"`, `"norm.entropy"`, `"gini.simpson"`,
+#'   `"chao1"`, `"ACE"`, `"gini.coeff"`, `"d50"`, or `"dXX"`. See the
+#'   \emph{Diversity metrics} section for details on each metric.
+#' @param d The percentage threshold for the `"dXX"` method. For example,
+#'   `d = 90` computes the number of clones accounting for 90% of the
+#'   repertoire. Default is `50`.
+#' @param plot_type The visualization type. One of `"bar"` (default),
+#'   `"box"`, or `"violin"`. For `"box"` and `"violin"`, `group_by` is
+#'   required to provide the x-axis grouping.
+#' @param position Bar position adjustment for `"bar"` plot type. One of
+#'   `"dodge"` (default), `"stack"`, or `"fill"`.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param group_by Metadata column used to group (color) the data. Default
+#'   is `NULL`. Required for `"box"` and `"violin"` plot types.
+#' @param facet_by Metadata column used to facet the plot into separate
+#'   panels. Default is `NULL`.
+#' @param split_by Metadata column used to split the data into separate
+#'   plots. Default is `NULL`.
+#' @param xlab X-axis label. Default is `NULL`, which uses the `group_by`
+#'   column name or `"Sample"`.
+#' @param ylab Y-axis label. Default is `NULL`, which auto-generates the
+#'   full metric name (e.g., `"Shannon Index"`, `"Gini Coefficient"`).
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'   function:
+#'   \itemize{
+#'     \item `"bar"` — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+#'           (`palette`, `alpha`, `fill_by`, ...)
+#'     \item `"box"` — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+#'           (`comparisons`, `alpha`, `palette`, ...)
+#'     \item `"violin"` — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+#'           (`add_box`, `comparisons`, `palette`, ...)
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE` is passed via `...`.
+#' @note
+#' **Bootstrap support:** The underlying `ClonalDiversity()` function
+#' supports bootstrap resampling (`n_boots`). This is not exposed in
+#' `ClonalDiversityPlot` directly but is used internally.
+#'
+#' **group_by required for box/violin:** The `group_by` parameter is
+#' required when `plot_type` is `"box"` or `"violin"`. These types show
+#' per-sample distributions grouped by the `group_by` variable.
+#'
 #' @export
 #' @importFrom tidyr separate
 #' @importFrom scRepertoire clonalDiversity
@@ -197,36 +272,102 @@ ClonalDiversityPlot <- function(
     }
 }
 
-#' ClonalRarefactionPlot
+#' Clonal Rarefaction Plot
 #'
-#' Plot the rarefaction curves
+#' @description
+#' Visualizes clonal rarefaction curves — estimates of clone richness as a
+#' function of sampling depth. Rarefaction addresses a fundamental challenge
+#' in immune repertoire analysis: the number of clones observed depends on
+#' how many cells are sequenced. By repeatedly subsampling (bootstrapping)
+#' the data at varying depths, rarefaction curves reveal whether the
+#' repertoire has been sampled to saturation or whether additional
+#' sequencing would uncover many more clones.
 #'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param group_by A character vector of column names to group the samples. Default is "Sample".
-#' @param group_by_sep The separator for the group_by column. Default is "_".
-#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
-#' @param n_boots The number of bootstrap samples. Default is 20.
-#' @param q The hill number. Default is 0.
-#'  * 0 - Species richness
-#'  * 1 - Shannon entropy
-#'  * 2 - Simpson index#'
-#' @param facet_by A character vector of column names to facet the plots. Default is NULL.
-#' @param split_by A character vector of column names to split the plots. Default is NULL.
-#' @param split_by_sep The separator for the split_by column. Default is "_".
-#' @param palette The color palette to use. Default is "Paired".
-#' @param combine Whether to combine the plots into a single plot. Default is TRUE.
-#' @param nrow The number of rows in the combined plot. Default is NULL.
-#' @param ncol The number of columns in the combined plot. Default is NULL.
-#' @param byrow Whether to fill the combined plot by row. Default is TRUE.
-#' @param ... Other arguments passed to [plotthis::RarefactionPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
-#' @importFrom plotthis RarefactionPlot
+#' `ClonalRarefactionPlot` extracts clone count data from the repertoire,
+#' optionally groups it by metadata columns, and generates rarefaction
+#' curves via \code{\link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot()}}.
+#' When `split_by` is specified, separate plots are generated for each split
+#' group and combined into a multi-panel layout.
+#'
+#' @section Hill numbers (the q parameter):
+#' The `q` parameter selects the diversity order (Hill number) used for
+#' rarefaction:
+#' \itemize{
+#'   \item **`q = 0`** — Species richness (clone count). Counts the number
+#'         of distinct clonotypes regardless of their size. Most sensitive
+#'         to rare clones.
+#'   \item **`q = 1`** — Shannon entropy (exponential). Weighs clones
+#'         proportionally to their abundance. Balances rare and dominant
+#'         clones.
+#'   \item **`q = 2`** — Simpson index (inverse). Weighs dominant clones
+#'         more heavily. Least sensitive to rare clones.
+#' }
+#' Higher values of `q` increasingly emphasize abundant clones over rare
+#' ones.
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of `"gene"`, `"nt"`,
+#'   `"aa"` (default), `"strict"`, or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param group_by Metadata column(s) used to define the curves (each unique
+#'   group produces one rarefaction curve). Multiple columns are concatenated
+#'   using `group_by_sep`. Default is `"Sample"`.
+#' @param group_by_sep Separator used when concatenating multiple `group_by`
+#'   columns. Default is `"_"`.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param n_boots Number of bootstrap iterations for estimating confidence
+#'   intervals. Higher values produce smoother confidence bands but increase
+#'   computation time. Default is `20`.
+#' @param q The diversity order (Hill number). `0` for species richness,
+#'   `1` for Shannon entropy, `2` for Simpson index. Default is `0`. See
+#'   the \emph{Hill numbers} section for details.
+#' @param facet_by Not supported for `ClonalRarefactionPlot`. Use
+#'   `split_by` or `group_by` instead. Must be `NULL`.
+#' @param split_by Metadata column used to split the data into separate
+#'   rarefaction plots. When specified, an independent rarefaction is
+#'   performed for each split group, and all plots are combined. Default
+#'   is `NULL`.
+#' @param split_by_sep Separator used when concatenating multiple
+#'   `split_by` columns. Default is `"_"`.
+#' @param palette Color palette for distinguishing curves from different
+#'   groups. Default is `"Paired"`.
+#' @param combine Logical; if `TRUE` (default), multiple plots (from
+#'   `split_by`) are combined into a single layout.
+#' @param nrow Number of rows in the combined plot layout. Default is
+#'   `NULL` (auto-determined).
+#' @param ncol Number of columns in the combined plot layout. Default is
+#'   `NULL` (auto-determined).
+#' @param byrow Logical; if `TRUE` (default), the combined layout is filled
+#'   row by row.
+#' @param ... Additional arguments passed to
+#'   \code{\link[plotthis:RarefactionPlot]{plotthis::RarefactionPlot()}}.
+#'   Key parameters include:
+#'   \itemize{
+#'     \item `type` — Plot type: `1` (line only), `2` (line with
+#'           confidence band), or `3` (confidence band only).
+#'     \item `title` — Plot title.
+#'     \item `xlab`, `ylab` — Axis labels.
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE`.
+#' @note
+#' **Bootstrap iterations:** The `n_boots` parameter controls the number of
+#' resampling iterations. Higher values give more stable estimates but
+#' increase computation time linearly. For exploratory analysis, `n_boots =
+#' 20` is typically sufficient; for publication-quality figures, consider
+#' using `n_boots = 100` or more.
+#'
+#' **facet_by not supported:** Unlike many other \pkg{scplotter} functions,
+#' `ClonalRarefactionPlot` does not support `facet_by`. Use `split_by` for
+#' separate plots or `group_by` to show multiple curves on the same axes.
+#'
 #' @export
+#' @importFrom plotthis RarefactionPlot
 #' @examples
 #' \donttest{
 #' set.seed(8525)
