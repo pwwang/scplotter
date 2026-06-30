@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalcompositionplot.R
 \name{ClonalResidencyPlot}
 \alias{ClonalResidencyPlot}
-\title{ClonalResidencyPlot}
+\title{Clonal Residency Plot}
 \usage{
 ClonalResidencyPlot(
   data,
@@ -27,76 +27,136 @@ ClonalResidencyPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
+\item{clone_call}{How to define a clone. One of \code{"gene"}, \code{"nt"},
+\code{"aa"} (default), \code{"strict"}, or a custom variable name in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{plot_type}{The type of plot to use. Default is "scatter".
-Possible values are "scatter", "venn", and "upset".}
+\item{plot_type}{The visualization type. One of \code{"scatter"} (default),
+\code{"venn"}, or \code{"upset"}.}
 
-\item{group_by}{The column name in the meta data to group the cells. Default: "Sample"}
+\item{group_by}{Metadata column used to define the groups being compared.
+Default is \code{"Sample"}. Multiple columns are concatenated using
+\code{group_by_sep}.}
 
-\item{group_by_sep}{The separator to use when combining multiple group_by columns. Default: "_"}
+\item{group_by_sep}{Separator used when concatenating multiple \code{group_by}
+columns. Default is \code{"_"}.}
 
-\item{groups}{The groups to compare. Default is NULL.
-If NULL, all the groups in \code{group_by} will be compared.
-Note that for "scatter" plot, only two groups can be compared. So when there are more than two groups,
-the combination of the pairs will be used.
-For "scatter" plot, the groups can be specified as the comparisons separated by ":", e.g. "L:B", "Y:X".
-If a vector, the groups will be included in the order of the vector.
-If a named vector/list, the names will be used for the group labels in the plot, and the values will be used to match the groups in the data.
-For example, \code{c(B = "P17B", L = "P17L")} will include groups "P17B" and "P17L" in the plot, but label them as "B" and "L", respectively.
-For "scatter" plot, the values should be in the format of "group1:group2", e.g. \code{c("L:B" = "group1:group2")}.
-The group comes first in the comparison will be on the y-axis, and the group comes second will be on the x-axis.}
+\item{groups}{The groups to compare. See the \emph{The groups parameter}
+section for detailed usage. Default is \code{NULL} (all groups).}
 
-\item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
+\item{facet_by}{Not supported for \code{ClonalResidencyPlot}. Must be \code{NULL}.}
 
-\item{split_by}{The column name in the meta data to split the plots. Default: NULL}
+\item{split_by}{Metadata column used to split the data into separate
+plots. Default is \code{NULL}.}
 
-\item{split_by_sep}{The separator used to concatenate the split_by when multiple columns are used.}
+\item{split_by_sep}{Separator used when concatenating multiple \code{split_by}
+columns. Default is \code{"_"}.}
 
-\item{scatter_cor}{The correlation method to use for the scatter plot. Default is "pearson".}
+\item{scatter_cor}{Correlation method for scatter plots. One of
+\code{"pearson"} (default), \code{"spearman"}, or \code{"kendall"}. Correlation is
+computed on log-transformed clone sizes of dual (shared) clones.}
 
-\item{scatter_size_by}{The size of the points in the scatter plot. Default is "max".
-Possible values are "max" and "total".
+\item{scatter_size_by}{How point sizes are determined in scatter plots.
 \itemize{
-\item "max" - The max size of the clone in the two groups.
-\item "total" - The total size of the clone in the two groups.
+\item \code{"max"} (default) — Size reflects the larger clone size
+between the two groups.
+\item \code{"total"} — Size reflects the sum of clone sizes across both
+groups.
 }}
 
-\item{with_class}{Whether include the clonal class in the plot. Default is TRUE.
-Only applicable for "venn" and "upset" plot.}
+\item{with_class}{Logical; if \code{TRUE} (default), clonal class information
+(singlet vs. expanded) is included in Venn and UpSet plot labels. Only
+applicable for \code{"venn"} and \code{"upset"} plot types.}
 
-\item{order}{The order of the x-axis items or groups. Default is an empty list.
-It should be a list of values. The names are the column names, and the values are the order.}
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
 
-\item{combine}{Whether to combine the plots into a single plot. Default is TRUE.}
+\item{combine}{Logical; if \code{TRUE} (default), multiple plots are combined
+into a single layout using \code{\link[plotthis:combine_plots]{plotthis::combine_plots()}}.}
 
-\item{nrow}{The number of rows in the combined plot. Default is NULL.}
+\item{nrow}{Number of rows in the combined plot layout. Default is \code{NULL}
+(auto-determined).}
 
-\item{ncol}{The number of columns in the combined plot. Default is NULL.}
+\item{ncol}{Number of columns in the combined plot layout. Default is
+\code{NULL} (auto-determined).}
 
-\item{byrow}{Whether to fill the combined plot by row. Default is TRUE.}
+\item{byrow}{Logical; if \code{TRUE} (default), the combined layout is filled
+row by row.}
 
-\item{...}{Other arguments passed to the specific plot function.
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+function:
 \itemize{
-\item For \code{scatter} plot, see \code{\link[plotthis:ScatterPlot]{plotthis::ScatterPlot()}}.
-\item For \code{venn} plot, see \code{\link[plotthis:VennDiagram]{plotthis::VennDiagram()}}.
-\item For \code{upset} plot, see \code{\link[plotthis:UpsetPlot]{plotthis::UpsetPlot()}}.
+\item \code{"scatter"} — \code{\link[plotthis:ScatterPlot]{plotthis::ScatterPlot()}}
+(\code{palette}, \code{palcolor}, \code{title}, ...)
+\item \code{"venn"} — \code{\link[plotthis:VennDiagram]{plotthis::VennDiagram()}}
+(\code{palette}, \code{alpha}, ...)
+\item \code{"upset"} — \code{\link[plotthis:UpsetPlot]{plotthis::UpsetPlot()}}
+(\code{palette}, ...)
 }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE}.
 }
 \description{
-Plot the residency of the clones in different samples.
+Visualizes the sharing (residency) of T-cell or B-cell clones across
+different samples or metadata groups. Clonal residency analysis reveals
+how clonotypes are distributed — whether a clone is private to one
+condition or shared across multiple conditions — which is critical for
+understanding immune responses, tracking antigen-specific clones, and
+identifying public vs. private repertoires.
+
+\code{ClonalResidencyPlot} supports three visualization modes:
+\itemize{
+\item \strong{Scatter plot} — Compares clone sizes between two groups on
+log-transformed axes. Points are colored by clonal category:
+singletons (unique to one group), expanded clones, and dual
+clones (shared between groups). Correlation statistics are
+displayed in the subtitle.
+\item \strong{Venn diagram} — Shows the overlap of clone sets between up
+to 4 groups. When \code{with_class = TRUE}, labels include singlet
+counts.
+\item \strong{UpSet plot} — Shows intersection sizes for any number of
+groups. When \code{with_class = TRUE}, clone classes (singlet,
+expanded) are displayed as separate intersections.
 }
+}
+\note{
+\strong{Scatter plot group limits:} Each scatter plot compares exactly two
+groups. When more than two groups exist and \code{groups} is not specified
+with \code{":"} notation, all pairwise combinations are generated
+automatically.
+
+\strong{Venn diagram group limits:} Venn diagrams support at most 4 groups.
+For more groups, use \code{plot_type = "upset"} instead.
+}
+\section{The groups parameter}{
+
+The \code{groups} parameter controls which groups are compared and how they
+are displayed:
+\itemize{
+\item \strong{\code{NULL} (default):} All levels of the \code{group_by} column are
+used. For scatter plots, all pairwise combinations are plotted.
+\item \strong{Character vector:} Specifies a subset of groups to include.
+For scatter plots, the specified pairs are plotted individually;
+use \code{":"} notation for explicit pairings (e.g., \code{c("L:B", "Y:X")}
+compares L vs B and Y vs X).
+\item \strong{Named vector/list:} The names are used as display labels and
+the values match groups in the data. For example,
+\code{c(B = "P17B", L = "P17L")} labels groups as "B" and "L".
+For scatter plots, use \code{c("L:B" = "group1:group2")} where the
+first group in the pair is on the y-axis and the second is on
+the x-axis.
+}
+}
+
 \examples{
 \donttest{
 set.seed(8525)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalcompositionplot.R
 \name{ClonalVolumePlot}
 \alias{ClonalVolumePlot}
-\title{ClonalVolumePlot}
+\title{Clonal Volume Plot}
 \usage{
 ClonalVolumePlot(
   data,
@@ -20,48 +20,77 @@ ClonalVolumePlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
-
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
-
-\item{scale}{Whether to use clone proportion or clone size for the plot.}
-
-\item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "bar", "box", and "violin".
-When "box" or "violin" is used, the data will be broken down by the Sample and plotted
-for each group.}
-
-\item{x}{The column name in the meta data to use as the x-axis. Default: "Sample"}
-
-\item{group_by}{The column name in the meta data to group the cells. Default: NULL}
-
-\item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
-
-\item{split_by}{The column name in the meta data to split the plots. Default: NULL}
-
-\item{order}{The order of the x-axis items or groups. Default is an empty list.
-It should be a list of values. The names are the column names, and the values are the order.}
-
-\item{ylab}{The y-axis label.}
-
-\item{...}{Other arguments passed to the specific plot function.
+\item{clone_call}{How to define a clone. One of:
 \itemize{
-\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item \code{"gene"} — V(D)JC gene combination
+\item \code{"nt"} — CDR3 nucleotide sequence
+\item \code{"aa"} — CDR3 amino acid sequence (default)
+\item \code{"strict"} — V(D)JC gene + CDR3 nucleotide
+}
+Or a custom variable name in the data.}
+
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
+
+\item{scale}{Logical; if \code{TRUE}, values are scaled to clone proportion
+(fraction of unique clones) instead of absolute clone counts. Default
+is \code{FALSE}.}
+
+\item{plot_type}{The visualization type. One of \code{"bar"} (default),
+\code{"box"}, or \code{"violin"}. For \code{"box"} and \code{"violin"}, the data is broken
+down by Sample and grouped by \code{group_by} to show per-sample
+distributions.}
+
+\item{x}{The metadata column used as the x-axis. Default is \code{"Sample"}.}
+
+\item{group_by}{Metadata column used to group (color) the data. Default
+is \code{NULL}.}
+
+\item{facet_by}{Metadata column used to facet the plot into separate
+panels. Default is \code{NULL}.}
+
+\item{split_by}{Metadata column used to split the data into separate
+plots. Default is \code{NULL}.}
+
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL} (use existing factor levels or alphabetical order).}
+
+\item{ylab}{Y-axis label. Default is \code{NULL}, which auto-generates
+\code{"Number of Unique Clones"} or \code{"Fraction of Unique Clones"} depending
+on \code{scale}.}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+function:
+\itemize{
+\item \code{"bar"} — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+(\code{position}, \code{palette}, \code{fill_by}, ...)
+\item \code{"box"} — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+(\code{comparisons}, \code{alpha}, \code{palette}, ...)
+\item \code{"violin"} — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+(\code{add_box}, \code{comparisons}, \code{palette}, ...)
 }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE} is passed via \code{...}.
 }
 \description{
-ClonalVolumePlot
+Visualizes the number (or fraction) of unique T-cell or B-cell clones across
+samples and metadata groups. Clonal volume — the count of distinct clonotypes
+detected in a sample — is a fundamental measure of immune repertoire diversity.
+Higher clonal volume indicates a more diverse repertoire, while lower volume
+may reflect clonal expansion in response to antigen stimulation.
+
+\code{ClonalVolumePlot} computes clonal counts via
+\code{\link[scRepertoire:clonalQuant]{scRepertoire::clonalQuant()}} and
+visualizes them as bar, box, or violin plots. It accepts both
+\pkg{scRepertoire} combined TCR/BCR data and Seurat objects with clonal
+information integrated via \code{scRepertoire::combineExpression()}.
 }
 \examples{
 \donttest{

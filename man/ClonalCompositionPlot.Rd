@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalcompositionplot.R
 \name{ClonalCompositionPlot}
 \alias{ClonalCompositionPlot}
-\title{ClonalCompositionPlot}
+\title{Clonal Composition Plot}
 \usage{
 ClonalCompositionPlot(
   data,
@@ -22,70 +22,125 @@ ClonalCompositionPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
+\item{clone_call}{How to define a clone. One of \code{"gene"}, \code{"nt"},
+\code{"aa"} (default), \code{"strict"}, or a custom variable name in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{method}{The method of plot to use. Default is "homeostasis".
-Possible values are "homeostasis", "homeo", "rel", "top", and "rare".
+\item{method}{The clonal categorization method. One of:
 \itemize{
-\item "homeostasis" - Plot the homeostasis/relative abundance of the clones. The \code{clone_split} will
-be the fraction of the clones in each sample.
-\item "homeo" - Same as "homeostasis".
-\item "rel" - Same as "homeostasis".
-\item "top" - Plot the top clones. The \code{clone_split} will be indexes to cut the clones.
-\item "rare" - Plot the rare clones. The \code{clone_split} will be the clone sizes.
+\item \code{"homeostasis"} (default), \code{"homeo"}, \code{"rel"} — Frequency-based
+binning using \code{clone_split} as abundance thresholds.
+\item \code{"top"} — Rank-based binning using \code{clone_split} as rank
+cutoffs.
+\item \code{"rare"} — Size-based binning using \code{clone_split} as clone
+size thresholds.
 }}
 
-\item{clone_split}{The split for the clones. Default is NULL.
+\item{clone_split}{Threshold values defining the clonal categories.
+Default is \code{NULL}, which picks sensible defaults per method:
 \itemize{
-\item For "homeostasis", "homeo", "rel" - Default is \code{list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)}.
-\item For "top" - Default is \code{c(10, 100, 1000, 10000, 30000, 100000)}.
-\item For "rare" - Default is \code{c(1, 3, 10, 30, 100)}.
+\item For \code{"homeostasis"}/\code{"homeo"}/\code{"rel"} — a named list of
+frequency thresholds:
+\code{list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)}
+\item For \code{"top"} — rank cutoffs:
+\code{c(10, 100, 1000, 10000, 30000, 100000)}
+\item For \code{"rare"} — clone size thresholds:
+\code{c(1, 3, 10, 30, 100)}
 }}
 
-\item{scale}{Whether to scale the values on the y-axis. Default is TRUE.
+\item{scale}{How to normalize the values. One of:
 \itemize{
-\item TRUE: The values of each group (on the x-axis) will be scaled to 1.
-\item FALSE: No scaling.
-\item "sample"/"Sample": The values in each sample will be scaled to 1.
+\item \code{TRUE} (default) — Values within each x-axis group sum to 1
+(group-wise proportion).
+\item \code{FALSE} — Raw values (clone counts) are used.
+\item \code{"sample"} or \code{"Sample"} — Values within each sample sum to
+1 (sample-wise proportion).
 }}
 
-\item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
+\item{facet_by}{Metadata column used to facet the plot into separate
+panels. Default is \code{NULL}.}
 
-\item{group_by}{The column name in the meta data to group the cells. Default: NULL}
+\item{group_by}{Metadata column used to group (color) the data. Default
+is \code{NULL}. Required for \code{"box"} and \code{"violin"} plot types.}
 
-\item{split_by}{The column name in the meta data to split the plots. Default: NULL}
+\item{split_by}{Metadata column used to split the data into separate
+plots. Default is \code{NULL}.}
 
-\item{xlab}{The x-axis label. Default is NULL.}
+\item{xlab}{X-axis label. Default is \code{NULL}, which uses the \code{group_by}
+column name or \code{"Sample"}.}
 
-\item{ylab}{The y-axis label. Default is NULL.}
+\item{ylab}{Y-axis label. Default is \code{NULL}, which auto-generates
+\code{"Abundance"} or \code{"Relative Abundance"} depending on \code{scale}.}
 
-\item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "bar", "ring", "box", and "violin".}
-
-\item{order}{The order of the x-axis items or groups. Default is an empty list.
-It should be a list of values. The names are the column names, and the values are the order.}
-
-\item{...}{Other arguments passed to the specific plot function.
+\item{plot_type}{The visualization type. One of:
 \itemize{
-\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For \code{ring} plot, see \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}.
-\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item \code{"bar"} (default) — Stacked bar chart of clonal categories
+across groups. Best for comparing composition across
+categories.
+\item \code{"ring"} — Ring (donut) chart alternative to stacked bars.
+\item \code{"box"} — Box plot showing the distribution of each clonal
+category's abundance across samples. Requires \code{group_by}.
+\item \code{"violin"} — Violin plot alternative to box plot. Requires
+\code{group_by}.
+}}
+
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+function:
+\itemize{
+\item \code{"bar"} — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+(\code{palette}, \code{position}, \code{alpha}, ...)
+\item \code{"ring"} — \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}
+(\code{palette}, \code{alpha}, ...)
+\item \code{"box"} — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+(\code{comparisons}, \code{add_bg}, \code{palette}, ...)
+\item \code{"violin"} — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+(\code{add_box}, \code{add_bg}, \code{comparisons}, \code{palette}, ...)
 }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE} is passed via \code{...}.
 }
 \description{
-Plot the composition of the clones in different samples/groups.
+Visualizes the composition of the immune repertoire by categorizing clones
+into abundance groups (Rare, Small, Medium, Large, Hyperexpanded) and
+plotting their relative proportions across samples or metadata groups.
+This reveals the overall structure of the repertoire — whether it is
+dominated by a few large clones (clonal expansion) or composed of many
+small clones (high diversity).
+
+\code{ClonalCompositionPlot} supports three analysis methods:
+\itemize{
+\item \strong{Homeostasis} (\code{"homeostasis"}, \code{"homeo"}, \code{"rel"}) —
+Clones are binned by their frequency (fraction of the total
+repertoire) into categories such as Rare, Small, Medium, Large,
+and Hyperexpanded. Uses
+\code{\link[scRepertoire:clonalHomeostasis]{scRepertoire::clonalHomeostasis()}}.
+\item \strong{Top clones} (\code{"top"}) — Clones are ranked and binned by
+their rank index (e.g., top 10, top 100, etc.). Uses
+\code{\link[scRepertoire:clonalProportion]{scRepertoire::clonalProportion()}}.
+\item \strong{Rare clones} (\code{"rare"}) — Clones are binned by their
+absolute size (clone count). Uses clone size thresholds directly.
+}
+}
+\note{
+\strong{group_by for box/violin:} The \code{group_by} parameter is required when
+\code{plot_type} is \code{"box"} or \code{"violin"}. These plot types show per-sample
+distributions, with \code{group_by} determining the coloring.
+
+\strong{Bar/ring aggregation:} When \code{group_by} is specified for bar or ring
+plots, data is aggregated across samples within each group (Sample
+values are summed) before plotting, to show group-level composition.
 }
 \examples{
 \donttest{

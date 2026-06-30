@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalcompositionplot.R
 \name{ClonalOverlapPlot}
 \alias{ClonalOverlapPlot}
-\title{ClonalOverlapPlot}
+\title{Clonal Overlap Plot}
 \usage{
 ClonalOverlapPlot(
   data,
@@ -25,59 +25,102 @@ ClonalOverlapPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
+\item{clone_call}{How to define a clone. One of \code{"gene"}, \code{"nt"},
+\code{"aa"} (default), \code{"strict"}, or a custom variable name in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{group_by}{The column name in the meta data to group the cells. Default: "Sample"}
+\item{group_by}{Metadata column(s) used to define the groups being
+compared. Default is \code{"Sample"}. Multiple columns are concatenated
+using \code{group_by_sep} to form compound group labels.}
 
-\item{group_by_sep}{The separator used to concatenate the group_by when multiple columns are used.}
+\item{group_by_sep}{Separator used when concatenating multiple \code{group_by}
+columns. Default is \code{"_"}.}
 
-\item{full}{Whether to plot the full heatmap, or just a triangle. Default is TRUE.}
+\item{full}{Logical; if \code{TRUE} (default), the full symmetric heatmap is
+displayed. If \code{FALSE}, only the upper triangle is shown (lower triangle
+values are mirrored from the upper triangle).}
 
-\item{split_by}{The column name in the meta data to split the plots. Default: NULL}
+\item{split_by}{Metadata column used to split the data into separate
+heatmaps. When specified, overlaps are only calculated within each
+split group (not across splits). Default is \code{NULL}.}
 
-\item{order}{The order of the groups. Default is an empty list.
-It should be a list of values. The names are the column names, and the values are the order.}
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
 
-\item{method}{The method to calculate the overlap. Default is "raw".
+\item{method}{The overlap or similarity metric. One of:
 \itemize{
-\item "overlap" - overlap coefficient
-\item "morisita" - Morisita’s overlap index
-\item "jaccard" - Jaccard index
-\item "cosine" - cosine similarity
-\item "raw" - exact number of overlapping clones
-See also \link[scRepertoire:clonalOverlap]{scRepertoire::clonalOverlap}.
+\item \code{"raw"} (default) — Absolute number of overlapping clones
+between two groups.
+\item \code{"overlap"} — Overlap coefficient: size of intersection
+divided by the size of the smaller set.
+\item \code{"morisita"} — Morisita’s overlap index, accounting for
+clone size (abundance) in addition to presence/absence.
+\item \code{"jaccard"} — Jaccard similarity index: size of intersection
+divided by size of union.
+\item \code{"cosine"} — Cosine similarity between clone abundance
+vectors.
 }}
 
-\item{palette}{The color palette to use. Default is "Blues".}
+\item{palette}{Color palette for the heatmap. Default is \code{"Blues"}.}
 
-\item{label_accuracy}{The accuracy of the labels. Default is NULL.
-If NULL, it will be 1 for "raw" and 0.01 for other methods.}
+\item{label_accuracy}{Numeric; the number of decimal places shown in
+cell labels. Default is \code{NULL}, which uses \code{1} for \code{"raw"} and
+\code{0.01} for other methods.}
 
-\item{label_cutoff}{The cutoff for the labels to show. Default is 1e-3.}
+\item{label_cutoff}{Numeric; values below this threshold are not labeled
+in the heatmap cells. Default is \code{1e-3}. Set to \code{0} to show all
+labels.}
 
-\item{cluster_rows}{Whether to cluster the rows. Default is FALSE.}
+\item{cluster_rows}{Logical; if \code{TRUE}, rows are hierarchically
+clustered. Default is \code{FALSE}.}
 
-\item{cluster_columns}{Whether to cluster the columns. Default is FALSE.}
+\item{cluster_columns}{Logical; if \code{TRUE}, columns are hierarchically
+clustered. Default is \code{FALSE}. Clustering distance is computed as
+\code{1 - rescaled_overlap_value}.}
 
-\item{show_row_names}{Whether to show the row names. Default is TRUE.}
+\item{show_row_names}{Logical; if \code{TRUE} (default), row names are
+displayed.}
 
-\item{show_column_names}{Whether to show the column names. Default is TRUE.}
+\item{show_column_names}{Logical; if \code{TRUE} (default), column names are
+displayed.}
 
-\item{...}{Other arguments passed to the specific plot function \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.}
+\item{...}{Additional arguments passed to
+\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} (e.g., \code{name},
+\code{cell_type}, \code{width}, \code{height}).}
 }
 \value{
-A ComplexHeatmap object or a list if \code{combine} is FALSE
+A \code{ComplexHeatmap} object, or a list if \code{combine = FALSE} is
+passed via \code{...}.
 }
 \description{
-Plot the overlap of the clones in different samples/groups.
+Visualizes the overlap (sharing) of T-cell or B-cell clonotypes between
+samples or metadata groups as a heatmap. Each cell in the heatmap
+quantifies the degree of clonal sharing between two groups, using one of
+several similarity or overlap metrics. This is a key analysis for
+identifying public clones shared across individuals, tracking
+antigen-specific clones across time points or tissues, and comparing
+repertoire similarity between conditions.
+
+\code{ClonalOverlapPlot} computes pairwise overlap via
+\code{\link[scRepertoire:clonalOverlap]{scRepertoire::clonalOverlap()}}
+and visualizes the resulting matrix as a labeled heatmap using
+\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+}
+\note{
+\strong{Clustering:} When \code{cluster_rows} or \code{cluster_columns} is \code{TRUE}, the
+clustering distance is \code{1 - rescaled(values)} for the upper triangle,
+ensuring that groups with high overlap are placed close together.
+
+\strong{Split behavior:} When \code{split_by} is specified, overlap is calculated
+independently within each split group. Groups from different splits are
+never compared against each other.
 }
 \examples{
 \donttest{

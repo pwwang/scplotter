@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalcompositionplot.R
 \name{ClonalAbundancePlot}
 \alias{ClonalAbundancePlot}
-\title{ClonalAbundancePlot}
+\title{Clonal Abundance Plot}
 \usage{
 ClonalAbundancePlot(
   data,
@@ -26,59 +26,98 @@ ClonalAbundancePlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
+\item{clone_call}{How to define a clone. One of \code{"gene"}, \code{"nt"},
+\code{"aa"} (default), \code{"strict"}, or a custom variable name in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{xtrans}{The transformation to apply to the x-axis. Default is "log10".}
+\item{xtrans}{Transformation applied to the x-axis. Default is \code{"log10"},
+which spreads low-abundance clones for better visibility. Use
+\code{"identity"} for linear scale.}
 
-\item{ytrans}{The transformation to apply to the y-axis. Default is "identity".}
+\item{ytrans}{Transformation applied to the y-axis. Default is
+\code{"identity"}. Use \code{"log10"} to better visualize distributions spanning
+multiple orders of magnitude.}
 
-\item{plot_type}{The type of plot to use. Default is "trend".
-Possible values are "trend", "histogram" and "density".}
-
-\item{binwidth}{The binwidth for the histogram plot. Default is 0.1.}
-
-\item{trend_skip_zero}{Whether to skip the zero values in the trend line. Default is TRUE.}
-
-\item{bw}{The smoothing bandwidth to be used for density plots. Default is 0.5.}
-
-\item{group_by}{The column name in the meta data to group the cells. Default: "Sample"}
-
-\item{group_by_sep}{The separator to use when combining the group_by columns. Default: "_"}
-
-\item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
-
-\item{split_by}{The column name in the meta data to split the plots. Default: NULL}
-
-\item{order}{The order of the x-axis items or groups. Default is an empty list.
-It should be a list of values. The names are the column names, and the values are the order.}
-
-\item{xlab}{The x-axis label. Default is "Abundance".}
-
-\item{ylab}{The y-axis label. Default is "Number of Clones" for trend and histogram, and
-"Density of Clones" for density.}
-
-\item{theme_args}{The theme arguments to be passed to the plot function.}
-
-\item{...}{Other arguments passed to the specific plot function.
+\item{plot_type}{The visualization type. One of:
 \itemize{
-\item For \code{trend} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::Histogram()}}.
-\item For \code{histogram} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::Histogram()}}.
-\item For \code{density} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::DensityPlot()}}.
+\item \code{"trend"} (default) — Smoothed trend line showing the number
+of clones at each abundance level. The x-axis is transformed
+by \code{xtrans} (default log10), and a LOESS trend is fitted.
+\item \code{"histogram"} — Binned histogram of clonal abundances.
+Optionally overlay a trend line with \code{add_trend = TRUE}.
+\item \code{"density"} — Kernel density estimate of the abundance
+distribution.
+}}
+
+\item{binwidth}{The histogram bin width (in log10-transformed abundance
+units). Default is \code{0.1}. Only used for \code{"trend"} and \code{"histogram"}
+plot types.}
+
+\item{trend_skip_zero}{Logical; if \code{TRUE} (default), zero-abundance bins
+are excluded from the trend line fit. Improves fit quality when many
+abundance bins have zero clones.}
+
+\item{bw}{Smoothing bandwidth for density plots. Higher values produce
+smoother curves. Default is \code{0.5}.}
+
+\item{group_by}{Metadata column used to group (color) the data. Default
+is \code{"Sample"}.}
+
+\item{group_by_sep}{Separator used when concatenating multiple \code{group_by}
+columns. Default is \code{"_"}.}
+
+\item{facet_by}{Metadata column used to facet the plot into separate
+panels. Default is \code{NULL}.}
+
+\item{split_by}{Metadata column used to split the data into separate
+plots. Default is \code{NULL}.}
+
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
+
+\item{xlab}{X-axis label. Default is \code{"Abundance"}.}
+
+\item{ylab}{Y-axis label. Default is \code{NULL}, which auto-generates
+\code{"Number of Clones"} (trend/histogram) or \code{"Density of Clones"}
+(density).}
+
+\item{theme_args}{A list of theme elements passed to the underlying
+\pkg{plotthis} function. Default is an empty list.}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+function:
+\itemize{
+\item \code{"trend"} — \code{\link[plotthis:Histogram]{plotthis::Histogram()}}
+(with \code{use_trend = TRUE}; \code{palette}, \code{alpha}, ...)
+\item \code{"histogram"} — \code{\link[plotthis:Histogram]{plotthis::Histogram()}}
+(\code{add_trend}, \code{palette}, \code{alpha}, ...)
+\item \code{"density"} — \code{\link[plotthis:DensityPlot]{plotthis::DensityPlot()}}
+(\code{palette}, \code{alpha}, ...)
 }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE} is passed via \code{...}.
 }
 \description{
-Plot the count or density of the clones at different abundance levels.
+Visualizes the distribution of clonal abundances — how many clones are
+present at each abundance level (frequency) in the repertoire. Clonal
+abundance distributions typically follow a power-law pattern: a small
+number of highly expanded clones and a large number of rare clones.
+This function helps characterize repertoire structure by showing whether
+the immune response is dominated by a few large clones (clonal expansion)
+or evenly distributed across many clones (high diversity).
+
+\code{ClonalAbundancePlot} computes clonal abundance data via
+\code{\link[scRepertoire:clonalAbundance]{scRepertoire::clonalAbundance()}}
+and visualizes it as trend lines, histograms, or density curves.
 }
 \examples{
 \donttest{

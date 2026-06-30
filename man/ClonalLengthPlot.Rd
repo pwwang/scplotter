@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalcompositionplot.R
 \name{ClonalLengthPlot}
 \alias{ClonalLengthPlot}
-\title{ClonalLengthPlot}
+\title{Clonal CDR3 Length Plot}
 \usage{
 ClonalLengthPlot(
   data,
@@ -21,47 +21,83 @@ ClonalLengthPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.}
 
-\item{clone_call}{How to call the clone - only "nt" or "aa" is supported.}
+\item{clone_call}{How to define a clone. Only \code{"nt"} (CDR3 nucleotide
+length) or \code{"aa"} (CDR3 amino acid length, default) are supported.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRB", "TRD", "TRG", "IGH", or "IGL" to specify a specific chain.}
+\item{chain}{Which chain(s) to use: \code{"both"} (default), \code{"TRA"}, \code{"TRB"},
+\code{"TRD"}, \code{"TRG"}, \code{"IGH"}, or \code{"IGL"}.}
 
-\item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "box", "violin" and "density".}
-
-\item{x_nbreaks}{The number of breaks for the x-axis. Default is 10.}
-
-\item{group_by}{The column name in the meta data to group the cells. Default: "Sample"}
-
-\item{order}{The order of the groups. Default is an empty list.
-It should be a list of values. The names are the column names, and the values are the order.}
-
-\item{xlab}{The x-axis label.}
-
-\item{ylab}{The y-axis label.}
-
-\item{position}{The position of the bars for bar plot on the x-axis. Default is "dodge".}
-
-\item{facet_by}{The column name in the meta data to facet the plots. Default: NULL}
-
-\item{split_by}{The column name in the meta data to split the plots. Default: NULL}
-
-\item{...}{Other arguments passed to the specific plot function.
+\item{plot_type}{The visualization type. One of \code{"bar"} (default),
+\code{"box"}, \code{"violin"}, or \code{"density"}.
 \itemize{
-\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
-\item For \code{density} plot, see \code{\link[plotthis:densityhistoplot]{plotthis::DensityPlot()}}.
+\item \code{"bar"} — Bar chart of clone counts at each CDR3 length.
+Empty length bins (zero clones) are padded with zeros to
+maintain a continuous x-axis.
+\item \code{"box"} — Box plot of per-group length distributions.
+\item \code{"violin"} — Violin plot of per-group length distributions.
+\item \code{"density"} — Kernel density estimate of the length
+distribution, using raw (unaggregated) data.
+}}
+
+\item{x_nbreaks}{Number of x-axis breaks for the bar plot. Default is
+\code{10}. Breaks are computed as quantiles of the length range and rounded
+to the nearest 10.}
+
+\item{group_by}{Metadata column used to group (color) the data. Default
+is \code{"Sample"}.}
+
+\item{order}{A named list controlling the order of factor levels. List
+names are column names; list values are the desired order. Default is
+\code{NULL}.}
+
+\item{xlab}{X-axis label. Default is \code{"Length"}.}
+
+\item{ylab}{Y-axis label. Default is \code{NULL}, which auto-generates
+\code{"Number of CDR3 (AA)"} or \code{"Number of CDR3 (NT)"} based on
+\code{clone_call}.}
+
+\item{position}{Bar position for the bar plot. One of \code{"dodge"}
+(default), \code{"stack"}, or \code{"fill"}.}
+
+\item{facet_by}{Metadata column used to facet the plot into separate
+panels. Default is \code{NULL}.}
+
+\item{split_by}{Metadata column used to split the data into separate
+plots. Default is \code{NULL}.}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+function:
+\itemize{
+\item \code{"bar"} — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+(\code{palette}, \code{alpha}, \code{position_dodge_preserve}, ...)
+\item \code{"box"} — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+(\code{comparisons}, \code{alpha}, \code{palette}, ...)
+\item \code{"violin"} — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+(\code{add_box}, \code{comparisons}, \code{palette}, ...)
+\item \code{"density"} — \code{\link[plotthis:DensityPlot]{plotthis::DensityPlot()}}
+(\code{palette}, \code{alpha}, \code{bw}, ...)
 }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE} is passed via \code{...}.
 }
 \description{
-Plot the length distribution of the CDR3 sequences
+Visualizes the distribution of CDR3 sequence lengths across the immune
+repertoire. CDR3 length is a key feature of T-cell and B-cell receptor
+diversity — different clones have different CDR3 lengths, and shifts in
+length distribution can indicate clonal selection, antigen-specific
+expansion, or repertoire bias.
+
+\code{ClonalLengthPlot} computes CDR3 length data via
+\code{\link[scRepertoire:clonalLength]{scRepertoire::clonalLength()}} and
+visualizes the distribution as bar, box, violin, or density plots. Length
+is measured in amino acids (when \code{clone_call = "aa"}) or nucleotides
+(when \code{clone_call = "nt"}).
 }
 \examples{
 \donttest{

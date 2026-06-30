@@ -1,29 +1,63 @@
-#' ClonalVolumePlot
+#' Clonal Volume Plot
 #'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param scale Whether to use clone proportion or clone size for the plot.
-#' @param plot_type The type of plot to use. Default is "bar".
-#'  Possible values are "bar", "box", and "violin".
-#'  When "box" or "violin" is used, the data will be broken down by the Sample and plotted
-#'  for each group.
-#' @param x The column name in the meta data to use as the x-axis. Default: "Sample"
-#' @param ylab The y-axis label.
-#' @param group_by The column name in the meta data to group the cells. Default: NULL
-#' @param facet_by The column name in the meta data to facet the plots. Default: NULL
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param order The order of the x-axis items or groups. Default is an empty list.
-#'  It should be a list of values. The names are the column names, and the values are the order.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For `bar` plot, see [plotthis::BarPlot()].
-#'  * For `box` plot, see [plotthis::BoxPlot()].
-#'  * For `violin` plot, see [plotthis::ViolinPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' @description
+#' Visualizes the number (or fraction) of unique T-cell or B-cell clones across
+#' samples and metadata groups. Clonal volume — the count of distinct clonotypes
+#' detected in a sample — is a fundamental measure of immune repertoire diversity.
+#' Higher clonal volume indicates a more diverse repertoire, while lower volume
+#' may reflect clonal expansion in response to antigen stimulation.
+#'
+#' `ClonalVolumePlot` computes clonal counts via
+#' \code{\link[scRepertoire:clonalQuant]{scRepertoire::clonalQuant()}} and
+#' visualizes them as bar, box, or violin plots. It accepts both
+#' \pkg{scRepertoire} combined TCR/BCR data and Seurat objects with clonal
+#' information integrated via \code{scRepertoire::combineExpression()}.
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of:
+#'   \itemize{
+#'     \item `"gene"` — V(D)JC gene combination
+#'     \item `"nt"` — CDR3 nucleotide sequence
+#'     \item `"aa"` — CDR3 amino acid sequence (default)
+#'     \item `"strict"` — V(D)JC gene + CDR3 nucleotide
+#'   }
+#'   Or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param scale Logical; if `TRUE`, values are scaled to clone proportion
+#'   (fraction of unique clones) instead of absolute clone counts. Default
+#'   is `FALSE`.
+#' @param plot_type The visualization type. One of `"bar"` (default),
+#'   `"box"`, or `"violin"`. For `"box"` and `"violin"`, the data is broken
+#'   down by Sample and grouped by `group_by` to show per-sample
+#'   distributions.
+#' @param x The metadata column used as the x-axis. Default is `"Sample"`.
+#' @param ylab Y-axis label. Default is `NULL`, which auto-generates
+#'   `"Number of Unique Clones"` or `"Fraction of Unique Clones"` depending
+#'   on `scale`.
+#' @param group_by Metadata column used to group (color) the data. Default
+#'   is `NULL`.
+#' @param facet_by Metadata column used to facet the plot into separate
+#'   panels. Default is `NULL`.
+#' @param split_by Metadata column used to split the data into separate
+#'   plots. Default is `NULL`.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL` (use existing factor levels or alphabetical order).
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'   function:
+#'   \itemize{
+#'     \item `"bar"` — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+#'           (`position`, `palette`, `fill_by`, ...)
+#'     \item `"box"` — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+#'           (`comparisons`, `alpha`, `palette`, ...)
+#'     \item `"violin"` — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+#'           (`add_box`, `comparisons`, `palette`, ...)
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE` is passed via `...`.
 #' @importFrom tidyr separate
 #' @importFrom plotthis BarPlot BoxPlot ViolinPlot
 #' @importFrom scRepertoire clonalQuant
@@ -117,39 +151,81 @@ ClonalVolumePlot <- function(
 }
 
 
-#' ClonalAbundancePlot
+#' Clonal Abundance Plot
 #'
-#' @description Plot the count or density of the clones at different abundance levels.
+#' @description
+#' Visualizes the distribution of clonal abundances — how many clones are
+#' present at each abundance level (frequency) in the repertoire. Clonal
+#' abundance distributions typically follow a power-law pattern: a small
+#' number of highly expanded clones and a large number of rare clones.
+#' This function helps characterize repertoire structure by showing whether
+#' the immune response is dominated by a few large clones (clonal expansion)
+#' or evenly distributed across many clones (high diversity).
 #'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param plot_type The type of plot to use. Default is "trend".
-#'  Possible values are "trend", "histogram" and "density".
-#' @param trend_skip_zero Whether to skip the zero values in the trend line. Default is TRUE.
-#' @param binwidth The binwidth for the histogram plot. Default is 0.1.
-#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
-#' @param group_by_sep The separator to use when combining the group_by columns. Default: "_"
-#' @param facet_by The column name in the meta data to facet the plots. Default: NULL
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param order The order of the x-axis items or groups. Default is an empty list.
-#'  It should be a list of values. The names are the column names, and the values are the order.
-#' @param bw The smoothing bandwidth to be used for density plots. Default is 0.5.
-#' @param xlab The x-axis label. Default is "Abundance".
-#' @param ylab The y-axis label. Default is "Number of Clones" for trend and histogram, and
-#'  "Density of Clones" for density.
-#' @param xtrans The transformation to apply to the x-axis. Default is "log10".
-#' @param ytrans The transformation to apply to the y-axis. Default is "identity".
-#' @param theme_args The theme arguments to be passed to the plot function.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For `trend` plot, see [plotthis::Histogram()].
-#'  * For `histogram` plot, see [plotthis::Histogram()].
-#'  * For `density` plot, see [plotthis::DensityPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' `ClonalAbundancePlot` computes clonal abundance data via
+#' \code{\link[scRepertoire:clonalAbundance]{scRepertoire::clonalAbundance()}}
+#' and visualizes it as trend lines, histograms, or density curves.
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of `"gene"`, `"nt"`,
+#'   `"aa"` (default), `"strict"`, or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param plot_type The visualization type. One of:
+#'   \itemize{
+#'     \item `"trend"` (default) — Smoothed trend line showing the number
+#'           of clones at each abundance level. The x-axis is transformed
+#'           by `xtrans` (default log10), and a LOESS trend is fitted.
+#'     \item `"histogram"` — Binned histogram of clonal abundances.
+#'           Optionally overlay a trend line with `add_trend = TRUE`.
+#'     \item `"density"` — Kernel density estimate of the abundance
+#'           distribution.
+#'   }
+#' @param trend_skip_zero Logical; if `TRUE` (default), zero-abundance bins
+#'   are excluded from the trend line fit. Improves fit quality when many
+#'   abundance bins have zero clones.
+#' @param binwidth The histogram bin width (in log10-transformed abundance
+#'   units). Default is `0.1`. Only used for `"trend"` and `"histogram"`
+#'   plot types.
+#' @param group_by Metadata column used to group (color) the data. Default
+#'   is `"Sample"`.
+#' @param group_by_sep Separator used when concatenating multiple `group_by`
+#'   columns. Default is `"_"`.
+#' @param facet_by Metadata column used to facet the plot into separate
+#'   panels. Default is `NULL`.
+#' @param split_by Metadata column used to split the data into separate
+#'   plots. Default is `NULL`.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param bw Smoothing bandwidth for density plots. Higher values produce
+#'   smoother curves. Default is `0.5`.
+#' @param xlab X-axis label. Default is `"Abundance"`.
+#' @param ylab Y-axis label. Default is `NULL`, which auto-generates
+#'   `"Number of Clones"` (trend/histogram) or `"Density of Clones"`
+#'   (density).
+#' @param xtrans Transformation applied to the x-axis. Default is `"log10"`,
+#'   which spreads low-abundance clones for better visibility. Use
+#'   `"identity"` for linear scale.
+#' @param ytrans Transformation applied to the y-axis. Default is
+#'   `"identity"`. Use `"log10"` to better visualize distributions spanning
+#'   multiple orders of magnitude.
+#' @param theme_args A list of theme elements passed to the underlying
+#'   \pkg{plotthis} function. Default is an empty list.
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'   function:
+#'   \itemize{
+#'     \item `"trend"` — \code{\link[plotthis:Histogram]{plotthis::Histogram()}}
+#'           (with `use_trend = TRUE`; `palette`, `alpha`, ...)
+#'     \item `"histogram"` — \code{\link[plotthis:Histogram]{plotthis::Histogram()}}
+#'           (`add_trend`, `palette`, `alpha`, ...)
+#'     \item `"density"` — \code{\link[plotthis:DensityPlot]{plotthis::DensityPlot()}}
+#'           (`palette`, `alpha`, ...)
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE` is passed via `...`.
 #' @importFrom tidyr full_seq complete
 #' @importFrom dplyr group_modify
 #' @importFrom plotthis Histogram DensityPlot
@@ -232,31 +308,71 @@ ClonalAbundancePlot <- function(
     }
 }
 
-#' ClonalLengthPlot
+#' Clonal CDR3 Length Plot
 #'
-#' @description Plot the length distribution of the CDR3 sequences
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - only "nt" or "aa" is supported.
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRB", "TRD", "TRG", "IGH", or "IGL" to specify a specific chain.
-#' @param plot_type The type of plot to use. Default is "bar".
-#'  Possible values are "box", "violin" and "density".
-#' @param x_nbreaks The number of breaks for the x-axis. Default is 10.
-#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
-#' @param facet_by The column name in the meta data to facet the plots. Default: NULL
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param order The order of the groups. Default is an empty list.
-#'  It should be a list of values. The names are the column names, and the values are the order.
-#' @param xlab The x-axis label.
-#' @param ylab The y-axis label.
-#' @param position The position of the bars for bar plot on the x-axis. Default is "dodge".
-#' @param ... Other arguments passed to the specific plot function.
-#' * For `bar` plot, see [plotthis::BarPlot()].
-#' * For `box` plot, see [plotthis::BoxPlot()].
-#' * For `violin` plot, see [plotthis::ViolinPlot()].
-#' * For `density` plot, see [plotthis::DensityPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' @description
+#' Visualizes the distribution of CDR3 sequence lengths across the immune
+#' repertoire. CDR3 length is a key feature of T-cell and B-cell receptor
+#' diversity — different clones have different CDR3 lengths, and shifts in
+#' length distribution can indicate clonal selection, antigen-specific
+#' expansion, or repertoire bias.
+#'
+#' `ClonalLengthPlot` computes CDR3 length data via
+#' \code{\link[scRepertoire:clonalLength]{scRepertoire::clonalLength()}} and
+#' visualizes the distribution as bar, box, violin, or density plots. Length
+#' is measured in amino acids (when `clone_call = "aa"`) or nucleotides
+#' (when `clone_call = "nt"`).
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. Only `"nt"` (CDR3 nucleotide
+#'   length) or `"aa"` (CDR3 amino acid length, default) are supported.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param plot_type The visualization type. One of `"bar"` (default),
+#'   `"box"`, `"violin"`, or `"density"`.
+#'   \itemize{
+#'     \item `"bar"` — Bar chart of clone counts at each CDR3 length.
+#'           Empty length bins (zero clones) are padded with zeros to
+#'           maintain a continuous x-axis.
+#'     \item `"box"` — Box plot of per-group length distributions.
+#'     \item `"violin"` — Violin plot of per-group length distributions.
+#'     \item `"density"` — Kernel density estimate of the length
+#'           distribution, using raw (unaggregated) data.
+#'   }
+#' @param x_nbreaks Number of x-axis breaks for the bar plot. Default is
+#'   `10`. Breaks are computed as quantiles of the length range and rounded
+#'   to the nearest 10.
+#' @param group_by Metadata column used to group (color) the data. Default
+#'   is `"Sample"`.
+#' @param facet_by Metadata column used to facet the plot into separate
+#'   panels. Default is `NULL`.
+#' @param split_by Metadata column used to split the data into separate
+#'   plots. Default is `NULL`.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param xlab X-axis label. Default is `"Length"`.
+#' @param ylab Y-axis label. Default is `NULL`, which auto-generates
+#'   `"Number of CDR3 (AA)"` or `"Number of CDR3 (NT)"` based on
+#'   `clone_call`.
+#' @param position Bar position for the bar plot. One of `"dodge"`
+#'   (default), `"stack"`, or `"fill"`.
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'   function:
+#'   \itemize{
+#'     \item `"bar"` — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+#'           (`palette`, `alpha`, `position_dodge_preserve`, ...)
+#'     \item `"box"` — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+#'           (`comparisons`, `alpha`, `palette`, ...)
+#'     \item `"violin"` — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+#'           (`add_box`, `comparisons`, `palette`, ...)
+#'     \item `"density"` — \code{\link[plotthis:DensityPlot]{plotthis::DensityPlot()}}
+#'           (`palette`, `alpha`, `bw`, ...)
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE` is passed via `...`.
 #' @importFrom stats quantile
 #' @importFrom rlang syms
 #' @importFrom dplyr summarise n n_distinct
@@ -605,51 +721,115 @@ DummyClonalScatterPlot <- function(df, group_by, scatter_cor, size_by, ...) {
             labels = c("0", "0.001", "0.01", "0.1"))
 }
 
-#' ClonalResidencyPlot
+#' Clonal Residency Plot
 #'
-#' @description Plot the residency of the clones in different samples.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param plot_type The type of plot to use. Default is "scatter".
-#'  Possible values are "scatter", "venn", and "upset".
-#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
-#' @param group_by_sep The separator to use when combining multiple group_by columns. Default: "_"
-#' @param groups The groups to compare. Default is NULL.
-#'  If NULL, all the groups in `group_by` will be compared.
-#'  Note that for "scatter" plot, only two groups can be compared. So when there are more than two groups,
-#'  the combination of the pairs will be used.
-#'  For "scatter" plot, the groups can be specified as the comparisons separated by ":", e.g. "L:B", "Y:X".
-#'  If a vector, the groups will be included in the order of the vector.
-#'  If a named vector/list, the names will be used for the group labels in the plot, and the values will be used to match the groups in the data.
-#'  For example, `c(B = "P17B", L = "P17L")` will include groups "P17B" and "P17L" in the plot, but label them as "B" and "L", respectively.
-#'  For "scatter" plot, the values should be in the format of "group1:group2", e.g. `c("L:B" = "group1:group2")`.
-#'  The group comes first in the comparison will be on the y-axis, and the group comes second will be on the x-axis.
-#' @param facet_by The column name in the meta data to facet the plots. Default: NULL
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param split_by_sep The separator used to concatenate the split_by when multiple columns are used.
-#' @param scatter_cor The correlation method to use for the scatter plot. Default is "pearson".
-#' @param scatter_size_by The size of the points in the scatter plot. Default is "max".
-#'  Possible values are "max" and "total".
-#'  * "max" - The max size of the clone in the two groups.
-#'  * "total" - The total size of the clone in the two groups.
-#' @param with_class Whether include the clonal class in the plot. Default is TRUE.
-#' Only applicable for "venn" and "upset" plot.
-#' @param order The order of the x-axis items or groups. Default is an empty list.
-#'  It should be a list of values. The names are the column names, and the values are the order.
-#' @param combine Whether to combine the plots into a single plot. Default is TRUE.
-#' @param nrow The number of rows in the combined plot. Default is NULL.
-#' @param ncol The number of columns in the combined plot. Default is NULL.
-#' @param byrow Whether to fill the combined plot by row. Default is TRUE.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For `scatter` plot, see [plotthis::ScatterPlot()].
-#'  * For `venn` plot, see [plotthis::VennDiagram()].
-#'  * For `upset` plot, see [plotthis::UpsetPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' @description
+#' Visualizes the sharing (residency) of T-cell or B-cell clones across
+#' different samples or metadata groups. Clonal residency analysis reveals
+#' how clonotypes are distributed — whether a clone is private to one
+#' condition or shared across multiple conditions — which is critical for
+#' understanding immune responses, tracking antigen-specific clones, and
+#' identifying public vs. private repertoires.
+#'
+#' `ClonalResidencyPlot` supports three visualization modes:
+#' \itemize{
+#'   \item **Scatter plot** — Compares clone sizes between two groups on
+#'         log-transformed axes. Points are colored by clonal category:
+#'         singletons (unique to one group), expanded clones, and dual
+#'         clones (shared between groups). Correlation statistics are
+#'         displayed in the subtitle.
+#'   \item **Venn diagram** — Shows the overlap of clone sets between up
+#'         to 4 groups. When `with_class = TRUE`, labels include singlet
+#'         counts.
+#'   \item **UpSet plot** — Shows intersection sizes for any number of
+#'         groups. When `with_class = TRUE`, clone classes (singlet,
+#'         expanded) are displayed as separate intersections.
+#' }
+#'
+#' @section The groups parameter:
+#' The `groups` parameter controls which groups are compared and how they
+#' are displayed:
+#' \itemize{
+#'   \item **`NULL` (default):** All levels of the `group_by` column are
+#'         used. For scatter plots, all pairwise combinations are plotted.
+#'   \item **Character vector:** Specifies a subset of groups to include.
+#'         For scatter plots, the specified pairs are plotted individually;
+#'         use `":"` notation for explicit pairings (e.g., `c("L:B", "Y:X")`
+#'         compares L vs B and Y vs X).
+#'   \item **Named vector/list:** The names are used as display labels and
+#'         the values match groups in the data. For example,
+#'         `c(B = "P17B", L = "P17L")` labels groups as "B" and "L".
+#'         For scatter plots, use `c("L:B" = "group1:group2")` where the
+#'         first group in the pair is on the y-axis and the second is on
+#'         the x-axis.
+#' }
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of `"gene"`, `"nt"`,
+#'   `"aa"` (default), `"strict"`, or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param plot_type The visualization type. One of `"scatter"` (default),
+#'   `"venn"`, or `"upset"`.
+#' @param group_by Metadata column used to define the groups being compared.
+#'   Default is `"Sample"`. Multiple columns are concatenated using
+#'   `group_by_sep`.
+#' @param group_by_sep Separator used when concatenating multiple `group_by`
+#'   columns. Default is `"_"`.
+#' @param groups The groups to compare. See the \emph{The groups parameter}
+#'   section for detailed usage. Default is `NULL` (all groups).
+#' @param facet_by Not supported for `ClonalResidencyPlot`. Must be `NULL`.
+#' @param split_by Metadata column used to split the data into separate
+#'   plots. Default is `NULL`.
+#' @param split_by_sep Separator used when concatenating multiple `split_by`
+#'   columns. Default is `"_"`.
+#' @param scatter_cor Correlation method for scatter plots. One of
+#'   `"pearson"` (default), `"spearman"`, or `"kendall"`. Correlation is
+#'   computed on log-transformed clone sizes of dual (shared) clones.
+#' @param scatter_size_by How point sizes are determined in scatter plots.
+#'   \itemize{
+#'     \item `"max"` (default) — Size reflects the larger clone size
+#'           between the two groups.
+#'     \item `"total"` — Size reflects the sum of clone sizes across both
+#'           groups.
+#'   }
+#' @param with_class Logical; if `TRUE` (default), clonal class information
+#'   (singlet vs. expanded) is included in Venn and UpSet plot labels. Only
+#'   applicable for `"venn"` and `"upset"` plot types.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param combine Logical; if `TRUE` (default), multiple plots are combined
+#'   into a single layout using \code{\link[plotthis:combine_plots]{plotthis::combine_plots()}}.
+#' @param nrow Number of rows in the combined plot layout. Default is `NULL`
+#'   (auto-determined).
+#' @param ncol Number of columns in the combined plot layout. Default is
+#'   `NULL` (auto-determined).
+#' @param byrow Logical; if `TRUE` (default), the combined layout is filled
+#'   row by row.
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'   function:
+#'   \itemize{
+#'     \item `"scatter"` — \code{\link[plotthis:ScatterPlot]{plotthis::ScatterPlot()}}
+#'           (`palette`, `palcolor`, `title`, ...)
+#'     \item `"venn"` — \code{\link[plotthis:VennDiagram]{plotthis::VennDiagram()}}
+#'           (`palette`, `alpha`, ...)
+#'     \item `"upset"` — \code{\link[plotthis:UpsetPlot]{plotthis::UpsetPlot()}}
+#'           (`palette`, ...)
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE`.
+#' @note
+#' **Scatter plot group limits:** Each scatter plot compares exactly two
+#' groups. When more than two groups exist and `groups` is not specified
+#' with `":"` notation, all pairwise combinations are generated
+#' automatically.
+#'
+#' **Venn diagram group limits:** Venn diagrams support at most 4 groups.
+#' For more groups, use `plot_type = "upset"` instead.
+#'
 #' @export
 #' @importFrom utils combn
 #' @importFrom dplyr distinct rename_with select across starts_with ends_with %>% filter
@@ -916,47 +1096,112 @@ ClonalResidencyPlot <- function(
     }
 }
 
-#' ClonalCompositionPlot
+#' Clonal Composition Plot
 #'
-#' @description Plot the composition of the clones in different samples/groups.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param method The method of plot to use. Default is "homeostasis".
-#'  Possible values are "homeostasis", "homeo", "rel", "top", and "rare".
-#'  * "homeostasis" - Plot the homeostasis/relative abundance of the clones. The `clone_split` will
-#'    be the fraction of the clones in each sample.
-#'  * "homeo" - Same as "homeostasis".
-#'  * "rel" - Same as "homeostasis".
-#'  * "top" - Plot the top clones. The `clone_split` will be indexes to cut the clones.
-#'  * "rare" - Plot the rare clones. The `clone_split` will be the clone sizes.
-#' @param clone_split The split for the clones. Default is NULL.
-#'  * For "homeostasis", "homeo", "rel" - Default is `list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)`.
-#'  * For "top" - Default is `c(10, 100, 1000, 10000, 30000, 100000)`.
-#'  * For "rare" - Default is `c(1, 3, 10, 30, 100)`.
-#' @param scale Whether to scale the values on the y-axis. Default is TRUE.
-#'  * TRUE: The values of each group (on the x-axis) will be scaled to 1.
-#'  * FALSE: No scaling.
-#'  * "sample"/"Sample": The values in each sample will be scaled to 1.
-#' @param facet_by The column name in the meta data to facet the plots. Default: NULL
-#' @param group_by The column name in the meta data to group the cells. Default: NULL
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param xlab The x-axis label. Default is NULL.
-#' @param ylab The y-axis label. Default is NULL.
-#' @param plot_type The type of plot to use. Default is "bar".
-#'  Possible values are "bar", "ring", "box", and "violin".
-#' @param order The order of the x-axis items or groups. Default is an empty list.
-#'  It should be a list of values. The names are the column names, and the values are the order.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For `bar` plot, see [plotthis::BarPlot()].
-#'  * For `ring` plot, see [plotthis::RingPlot()].
-#'  * For `box` plot, see [plotthis::BoxPlot()].
-#'  * For `violin` plot, see [plotthis::ViolinPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' @description
+#' Visualizes the composition of the immune repertoire by categorizing clones
+#' into abundance groups (Rare, Small, Medium, Large, Hyperexpanded) and
+#' plotting their relative proportions across samples or metadata groups.
+#' This reveals the overall structure of the repertoire — whether it is
+#' dominated by a few large clones (clonal expansion) or composed of many
+#' small clones (high diversity).
+#'
+#' `ClonalCompositionPlot` supports three analysis methods:
+#' \itemize{
+#'   \item **Homeostasis** (`"homeostasis"`, `"homeo"`, `"rel"`) —
+#'         Clones are binned by their frequency (fraction of the total
+#'         repertoire) into categories such as Rare, Small, Medium, Large,
+#'         and Hyperexpanded. Uses
+#'         \code{\link[scRepertoire:clonalHomeostasis]{scRepertoire::clonalHomeostasis()}}.
+#'   \item **Top clones** (`"top"`) — Clones are ranked and binned by
+#'         their rank index (e.g., top 10, top 100, etc.). Uses
+#'         \code{\link[scRepertoire:clonalProportion]{scRepertoire::clonalProportion()}}.
+#'   \item **Rare clones** (`"rare"`) — Clones are binned by their
+#'         absolute size (clone count). Uses clone size thresholds directly.
+#' }
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of `"gene"`, `"nt"`,
+#'   `"aa"` (default), `"strict"`, or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param method The clonal categorization method. One of:
+#'   \itemize{
+#'     \item `"homeostasis"` (default), `"homeo"`, `"rel"` — Frequency-based
+#'           binning using `clone_split` as abundance thresholds.
+#'     \item `"top"` — Rank-based binning using `clone_split` as rank
+#'           cutoffs.
+#'     \item `"rare"` — Size-based binning using `clone_split` as clone
+#'           size thresholds.
+#'   }
+#' @param clone_split Threshold values defining the clonal categories.
+#'   Default is `NULL`, which picks sensible defaults per method:
+#'   \itemize{
+#'     \item For `"homeostasis"`/`"homeo"`/`"rel"` — a named list of
+#'           frequency thresholds:
+#'           `list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)`
+#'     \item For `"top"` — rank cutoffs:
+#'           `c(10, 100, 1000, 10000, 30000, 100000)`
+#'     \item For `"rare"` — clone size thresholds:
+#'           `c(1, 3, 10, 30, 100)`
+#'   }
+#' @param scale How to normalize the values. One of:
+#'   \itemize{
+#'     \item `TRUE` (default) — Values within each x-axis group sum to 1
+#'           (group-wise proportion).
+#'     \item `FALSE` — Raw values (clone counts) are used.
+#'     \item `"sample"` or `"Sample"` — Values within each sample sum to
+#'           1 (sample-wise proportion).
+#'   }
+#' @param facet_by Metadata column used to facet the plot into separate
+#'   panels. Default is `NULL`.
+#' @param group_by Metadata column used to group (color) the data. Default
+#'   is `NULL`. Required for `"box"` and `"violin"` plot types.
+#' @param split_by Metadata column used to split the data into separate
+#'   plots. Default is `NULL`.
+#' @param xlab X-axis label. Default is `NULL`, which uses the `group_by`
+#'   column name or `"Sample"`.
+#' @param ylab Y-axis label. Default is `NULL`, which auto-generates
+#'   `"Abundance"` or `"Relative Abundance"` depending on `scale`.
+#' @param plot_type The visualization type. One of:
+#'   \itemize{
+#'     \item `"bar"` (default) — Stacked bar chart of clonal categories
+#'           across groups. Best for comparing composition across
+#'           categories.
+#'     \item `"ring"` — Ring (donut) chart alternative to stacked bars.
+#'     \item `"box"` — Box plot showing the distribution of each clonal
+#'           category's abundance across samples. Requires `group_by`.
+#'     \item `"violin"` — Violin plot alternative to box plot. Requires
+#'           `group_by`.
+#'   }
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'   function:
+#'   \itemize{
+#'     \item `"bar"` — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+#'           (`palette`, `position`, `alpha`, ...)
+#'     \item `"ring"` — \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}
+#'           (`palette`, `alpha`, ...)
+#'     \item `"box"` — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+#'           (`comparisons`, `add_bg`, `palette`, ...)
+#'     \item `"violin"` — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+#'           (`add_box`, `add_bg`, `comparisons`, `palette`, ...)
+#'   }
+#' @return A `ggplot` object, or a list of `ggplot` objects if
+#'   `combine = FALSE` is passed via `...`.
+#' @note
+#' **group_by for box/violin:** The `group_by` parameter is required when
+#' `plot_type` is `"box"` or `"violin"`. These plot types show per-sample
+#' distributions, with `group_by` determining the coloring.
+#'
+#' **Bar/ring aggregation:** When `group_by` is specified for bar or ring
+#' plots, data is aggregated across samples within each group (Sample
+#' values are summed) before plotting, to show group-level composition.
+#'
 #' @importFrom dplyr %>% mutate summarise ungroup n
 #' @importFrom tidyr pivot_longer separate
 #' @importFrom plotthis BarPlot RingPlot BoxPlot ViolinPlot
@@ -1125,39 +1370,86 @@ ClonalCompositionPlot <- function(
     }
 }
 
-#' ClonalOverlapPlot
+#' Clonal Overlap Plot
 #'
-#' @description Plot the overlap of the clones in different samples/groups.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
-#' @param group_by_sep The separator used to concatenate the group_by when multiple columns are used.
-#' @param full Whether to plot the full heatmap, or just a triangle. Default is TRUE.
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param order The order of the groups. Default is an empty list.
-#'  It should be a list of values. The names are the column names, and the values are the order.
-#' @param method The method to calculate the overlap. Default is "raw".
-#'  * "overlap" - overlap coefficient
-#'  * "morisita" - Morisita’s overlap index
-#'  * "jaccard" - Jaccard index
-#'  * "cosine" - cosine similarity
-#'  * "raw" - exact number of overlapping clones
-#'  See also [scRepertoire::clonalOverlap].
-#' @param palette The color palette to use. Default is "Blues".
-#' @param label_accuracy The accuracy of the labels. Default is NULL.
-#'  If NULL, it will be 1 for "raw" and 0.01 for other methods.
-#' @param label_cutoff The cutoff for the labels to show. Default is 1e-3.
-#' @param cluster_rows Whether to cluster the rows. Default is FALSE.
-#' @param cluster_columns Whether to cluster the columns. Default is FALSE.
-#' @param show_row_names Whether to show the row names. Default is TRUE.
-#' @param show_column_names Whether to show the column names. Default is TRUE.
-#' @param ... Other arguments passed to the specific plot function [plotthis::Heatmap()].
-#' @return A ComplexHeatmap object or a list if `combine` is FALSE
+#' @description
+#' Visualizes the overlap (sharing) of T-cell or B-cell clonotypes between
+#' samples or metadata groups as a heatmap. Each cell in the heatmap
+#' quantifies the degree of clonal sharing between two groups, using one of
+#' several similarity or overlap metrics. This is a key analysis for
+#' identifying public clones shared across individuals, tracking
+#' antigen-specific clones across time points or tissues, and comparing
+#' repertoire similarity between conditions.
+#'
+#' `ClonalOverlapPlot` computes pairwise overlap via
+#' \code{\link[scRepertoire:clonalOverlap]{scRepertoire::clonalOverlap()}}
+#' and visualizes the resulting matrix as a labeled heatmap using
+#' \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#' @param clone_call How to define a clone. One of `"gene"`, `"nt"`,
+#'   `"aa"` (default), `"strict"`, or a custom variable name in the data.
+#' @param chain Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`,
+#'   `"TRD"`, `"TRG"`, `"IGH"`, or `"IGL"`.
+#' @param group_by Metadata column(s) used to define the groups being
+#'   compared. Default is `"Sample"`. Multiple columns are concatenated
+#'   using `group_by_sep` to form compound group labels.
+#' @param group_by_sep Separator used when concatenating multiple `group_by`
+#'   columns. Default is `"_"`.
+#' @param full Logical; if `TRUE` (default), the full symmetric heatmap is
+#'   displayed. If `FALSE`, only the upper triangle is shown (lower triangle
+#'   values are mirrored from the upper triangle).
+#' @param split_by Metadata column used to split the data into separate
+#'   heatmaps. When specified, overlaps are only calculated within each
+#'   split group (not across splits). Default is `NULL`.
+#' @param order A named list controlling the order of factor levels. List
+#'   names are column names; list values are the desired order. Default is
+#'   `NULL`.
+#' @param method The overlap or similarity metric. One of:
+#'   \itemize{
+#'     \item `"raw"` (default) — Absolute number of overlapping clones
+#'           between two groups.
+#'     \item `"overlap"` — Overlap coefficient: size of intersection
+#'           divided by the size of the smaller set.
+#'     \item `"morisita"` — Morisita’s overlap index, accounting for
+#'           clone size (abundance) in addition to presence/absence.
+#'     \item `"jaccard"` — Jaccard similarity index: size of intersection
+#'           divided by size of union.
+#'     \item `"cosine"` — Cosine similarity between clone abundance
+#'           vectors.
+#'   }
+#' @param palette Color palette for the heatmap. Default is `"Blues"`.
+#' @param label_accuracy Numeric; the number of decimal places shown in
+#'   cell labels. Default is `NULL`, which uses `1` for `"raw"` and
+#'   `0.01` for other methods.
+#' @param label_cutoff Numeric; values below this threshold are not labeled
+#'   in the heatmap cells. Default is `1e-3`. Set to `0` to show all
+#'   labels.
+#' @param cluster_rows Logical; if `TRUE`, rows are hierarchically
+#'   clustered. Default is `FALSE`.
+#' @param cluster_columns Logical; if `TRUE`, columns are hierarchically
+#'   clustered. Default is `FALSE`. Clustering distance is computed as
+#'   `1 - rescaled_overlap_value`.
+#' @param show_row_names Logical; if `TRUE` (default), row names are
+#'   displayed.
+#' @param show_column_names Logical; if `TRUE` (default), column names are
+#'   displayed.
+#' @param ... Additional arguments passed to
+#'   \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} (e.g., `name`,
+#'   `cell_type`, `width`, `height`).
+#' @return A `ComplexHeatmap` object, or a list if `combine = FALSE` is
+#'   passed via `...`.
+#' @note
+#' **Clustering:** When `cluster_rows` or `cluster_columns` is `TRUE`, the
+#' clustering distance is `1 - rescaled(values)` for the upper triangle,
+#' ensuring that groups with high overlap are placed close together.
+#'
+#' **Split behavior:** When `split_by` is specified, overlap is calculated
+#' independently within each split group. Groups from different splits are
+#' never compared against each other.
+#'
 #' @importFrom stats as.dist
 #' @importFrom rlang syms
 #' @importFrom dplyr %>% filter
