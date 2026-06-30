@@ -1,77 +1,243 @@
 
-#' ClonalStatPlot
+#' Visualize clone abundance, frequency, and dynamics across groups
 #'
-#' @description Visualize the statistics of the clones.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#' [scRepertoire::combineExpression].
-#' @param clones The specific clones to track. This argument must be provided.
-#' If multiple character values are provided, they will be treated as clone IDs.
-#' If a single character value is provided with parentheses, it will be evaluated as an expression to select the clones.
-#' The clones will be selected per facetting/splitting group. For example, if you have
-#' `top(3)` will select the top 3 clones in each facetting/splitting group.
-#' You can change this behavior by passing the `group_by` argument explicitly.
-#' For example `top(3, group_by = "Sample")` will select the top 3 clones in each sample.
-#' For expression, see also [`clone_selectors`](clone_selectors.html).
-#' This can also be a named list of expressions, which need to be quoted. Then basic unit for visualization will be the
-#' the clone groups defined by the names of the list, instead of single clones.
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param values_by The variable to use for the values of the clones.
-#' Default is "count", which represents the number of cells in each clone.
-#' "fraction" can also be used to represent the fraction of cells in each clone out of the total cells in the group.
-#' "n" can be used to represent the number of cells in each clone, same as "count".
-#' @param relabel Whether to relabel the clones. Default is FALSE.
-#' The clone ids, especially using CDR3 sequences, can be long and hard to read.
-#' If TRUE, the clones will be relabeled as "clone1", "clone2", etc. (ordered by the descending clone sizes)
-#' Only works for visualizations for single clones.
-#' @param plot_type The type of plot to use. Default is "bar".
-#' Possible values are:
-#' * "bar" - bar plot showing the total size of the selected clones in each group.
-#' * "box" - box plot showing the distribution of the clone sizes in each group.
-#' * "violin" - violin plot showing the distribution of the clone sizes in each group.
-#' * "heatmap" - heatmap showing the clone sizes in each group.
-#' * "pies" - heatmap with pie charts showing the clone sizes and subgroup compositions in each group. Requires `subgroup_by` to be provided.
-#' * "sankey" - sankey plot showing the dynamics of the clones between groups. The clone groups will be defined by the `clones` argument. The flows will be colored by the clone groups.
-#' * "alluvial" - same as "sankey".
-#' * "trend" - line plot showing the trend of the clone sizes in each group. The clone groups will be defined by the `clones` argument. The lines will be colored by the clone groups.
-#' * "col" - column plot showing the size of the clones in each group.
-#' Note that for "col", the plot will be faceted by the groups, so "facet_by" is not supported. Please use "split_by" instead if you want to split the plot by another variable.
-#' @param group_by The column name in the meta data to group the cells. Default: "Sample"
-#' @param groups The groups to include in the plot. Default is NULL.
-#' If NULL, all the groups in `group_by` will be included.
-#' If a vector, the groups will be included in the order of the vector.
-#' If a named vector/list, the names will be used for the group labels in the plot, and the values will be used to match the groups in the data.
-#' For example, `c(B = "P17B", L = "P17L")` will include groups "P17B" and "P17L" in the plot, but label them as "B" and "L", respectively.
-#' @param order A list specifying the order of the levels for the `group_by` variable. Default is NULL, which will use the order in the data.
-#' For `group_by`, this has lower priority than `groups`.
-#' @param subgroup_by The column name in the meta data to subgroup the nodes (group nodes on each `x`). Default: NULL.
-#' This argument is only supported for "sankey"/"alluvial" plot.
-#' If NULL, the nodes will be grouped/colored by the clones
-#' @param subgroups The subgroups to include in the plot. Default is NULL.
-#' If NULL, all the subgroups in `subgroup_by` will be included.
-#' If a vector, the subgroups will be included in the order of the vector for all `groups`.
-#' If a list, the subgroups will be used for each `groups`, with `groups` as the names.
-#' @param within_subgroup Whether to select the clones within each subgroup.
-#' @param subgroups The subgroups to include in the plot. Default is NULL.
-#' @param facet_by The column name in the meta data to facet the plots. Default: NULL.
-#'  This argument is not supported and will raise an error if provided.
-#' @param split_by The column name in the meta data to split the plots. Default: NULL
-#' @param y The y-axis variable to use for the plot. Default is NULL.
-#' * For `bar` plot, Either "TotalSize" or "Count" can be used, representing the total size (# cells) of the selected clones or the number of selected clones, respectively.
-#' @param xlab The x-axis label. Default is NULL.
-#' @param ylab The y-axis label. Default is NULL.
-#' @param ... Other arguments passed to the specific plot function.
-#' * For `bar` plot, see [plotthis::BarPlot()].
-#' * For `trend` plot, see [plotthis::TrendPlot()].
-#' * For `sankey` plot, see [plotthis::SankeyPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' @description
+#' ClonalStatPlot provides a unified interface for visualizing the abundance, frequency,
+#' and dynamics of T cell and B cell clones across experimental groups. It is the most
+#' versatile clone visualization function in scplotter, offering multiple plot types
+#' for different analytical purposes.
+#'
+#' The function operates on the output of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#' \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#' \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}. Clones are
+#' identified by their CDR3 amino acid sequence, nucleotide sequence, V(D)J gene usage,
+#' or a combination thereof (via \code{clone_call}). The function then computes clone-level
+#' statistics (size, fraction, or count of clones) within each group and renders them
+#' using one of ten supported plot types.
+#'
+#' A defining feature of ClonalStatPlot is its flexible clone selection system. Clones
+#' can be specified directly by their IDs, or selected programmatically using expression
+#' selectors such as \code{top()}, \code{sel()}, \code{shared()}, \code{uniq()}, and
+#' comparison operators (\code{gt()}, \code{lt()}, \code{eq()}, etc.). These selectors
+#' evaluate within the context of each faceting/splitting group, enabling per-group
+#' selection of the most expanded clones, clones shared between conditions, or clones
+#' meeting custom abundance thresholds. See the \strong{Clone selection} section below
+#' and \code{\link{clone_selectors}} for full details.
+#'
+#' Clones can also be aggregated into named groups (by passing a named list to
+#' \code{clones}), where each group is defined by its own selection expression. In
+#' this mode, the visualization unit becomes the clone group rather than individual
+#' clones, enabling comparisons such as "hyper-expanded clones in condition A" vs.
+#' "hyper-expanded clones in condition B."
+#'
+#' @section Clone selection:
+#'
+#' The \code{clones} argument accepts three forms:
+#' \describe{
+#'   \item{Character vector of clone IDs}{Directly specifies which clones to track.
+#'     Clone IDs are matched against the column identified by \code{clone_call}
+#'     (e.g., CDR3 amino acid sequences when \code{clone_call = "aa"}).}
+#'   \item{Selection expression (single string with parentheses)}{A string containing
+#'     a clone selector function call, e.g. \code{"top(10)"}, \code{"shared(P17B, P17L, group_by = 'Sample')"},
+#'     or \code{"sel(P17L > 10 & P17B > 0, group_by = 'Sample')"}. The expression is
+#'     parsed and evaluated within the data context. Available selectors include:
+#'     \itemize{
+#'       \item \code{top(n, ...)} — select the \code{n} largest clones (by total count)
+#'       \item \code{sel(expr, ...)} — select clones matching a logical expression
+#'       \item \code{shared(g1, g2, ...)} — select clones present in all specified groups
+#'       \item \code{uniq(g1, g2, ...)} — select clones unique to group 1
+#'       \item \code{gt(g1, g2)}, \code{lt(g1, g2)}, \code{eq(g1, g2)}, etc. — comparison-based selection
+#'     }
+#'     All selectors accept \code{group_by}, \code{top}, \code{order}, \code{within},
+#'     and \code{output_within} arguments. See \code{\link{clone_selectors}} for
+#'     complete documentation.
+#'   }
+#'   \item{Named list of expressions}{Defines clone groups. Each element is a selection
+#'     expression (as above), and the element name becomes the group label. For example:
+#'     \code{list(ExpandedInA = "sel(A > 20, group_by = 'Sample')", ExpandedInB = "sel(B > 20, group_by = 'Sample')")}.
+#'     In this mode, the visualization aggregates clones within each group rather than
+#'     showing individual clones.}
+#' }
+#'
+#' By default, clone selection operates within each faceting/splitting group (i.e.,
+#' \code{top(3)} selects the top 3 clones per facet). Pass \code{group_by} explicitly
+#' within the selector expression to change this behavior.
+#'
+#' @section Plot types:
+#'
+#' ClonalStatPlot supports ten plot types, each suited to different analytical questions:
+#'
+#' \describe{
+#'   \item{\code{"bar"} (default)}{Stacked or grouped bar plot showing the total
+#'     abundance (size or fraction) of each selected clone across groups. Best for
+#'     comparing the composition of the top clones between conditions. Requires at
+#'     least 1 group.}
+#'   \item{\code{"box"}}{Box plot showing the distribution of individual clone sizes
+#'     within each group. Useful for assessing whether clone size distributions differ
+#'     between conditions. Optionally colored by \code{subgroup_by}.}
+#'   \item{\code{"violin"}}{Violin plot alternative to box plot, showing the full
+#'     density distribution of clone sizes. Supports \code{subgroup_by} for split
+#'     violins.}
+#'   \item{\code{"heatmap"}}{Heatmap where rows are clones (or clone groups) and
+#'     columns are groups from \code{group_by}. Cell color encodes clone abundance.
+#'     When \code{subgroup_by} is provided, rows are split by group and colored by
+#'     subgroup. \code{facet_by} is not supported; use \code{split_by} instead.}
+#'   \item{\code{"pies"}}{Heatmap variant where each cell contains a pie chart showing
+#'     the composition of the clone (or clone group) across \code{subgroup_by} levels.
+#'     The pie size reflects total abundance. \code{subgroup_by} is required.
+#'     \code{within_subgroup} defaults to \code{FALSE} for this plot type.}
+#'   \item{\code{"chord"} / \code{"circos"}}{Chord diagram showing clone flow between
+#'     exactly 2 groups. Clones are represented as arcs, with ribbons indicating shared
+#'     clones. For more than 2 groups, use \code{"sankey"} instead.}
+#'   \item{\code{"sankey"} / \code{"alluvial"}}{Sankey (alluvial) diagram showing
+#'     clone dynamics across groups. Flows are colored by clone groups (when using
+#'     clone groups) or by individual clones. Best for tracking clone expansion,
+#'     contraction, or sharing across multiple time points or conditions.}
+#'   \item{\code{"trend"}}{Line plot showing the abundance trajectory of each clone
+#'     (or clone group) across groups. Lines are colored by clone identity. Best for
+#'     longitudinal data or dose-response experiments where group order is meaningful.}
+#'   \item{\code{"col"}}{Column plot where each clone gets its own column, faceted
+#'     by \code{group_by}. Unlike \code{"bar"}, this places clones on the x-axis.
+#'     \code{facet_by} is not supported; use \code{split_by} instead. Clones are
+#'     auto-relabeled by default.}
+#' }
+#'
+#' @section Value types:
+#'
+#' The \code{values_by} parameter controls what is plotted on the y-axis:
+#' \describe{
+#'   \item{\code{"count"}}{The sum of cell counts for each clone within the group
+#'     (i.e., clone size). This is the default.}
+#'   \item{\code{"fraction"}}{The fraction of cells belonging to each clone, calculated
+#'     as the clone's cell count divided by the total cells in the group. Suitable
+#'     when group sizes differ and proportions are more meaningful than absolute counts.}
+#'   \item{\code{"n"}}{The number of distinct clones (not cells) meeting the selection
+#'     criteria. Shorthand for \code{"count"} and produces the same result.}
+#' }
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#'   A list of data frames where each element represents a sample, with columns for
+#'   clone identifiers (CTaa, CTnt, CTgene, etc.) and cell-level metadata.
+#' @param clones Which clones to track and visualize. Default: \code{"top(10)"}.
+#'   Accepts three forms: (1) a character vector of clone IDs, (2) a single selection
+#'   expression string (e.g. \code{"top(10)"}, \code{"sel(P17B > 5, group_by = 'Sample')"}),
+#'   or (3) a named list of selection expressions to define clone groups (e.g.
+#'   \code{list(Expanded = "sel(A > 20, group_by = 'Sample')")}). See the
+#'   \strong{Clone selection} section for details. When a single unnamed expression
+#'   is used, individual clones are visualized. When a named list is used, clone
+#'   groups become the visualization unit.
+#' @param clone_call How to identify a clone. One of \code{"gene"} (VDJC gene segment),
+#'   \code{"nt"} (CDR3 nucleotide sequence), \code{"aa"} (CDR3 amino acid sequence,
+#'   default), \code{"strict"} (VDJC gene + CDR3 nucleotide), or a custom column name
+#'   present in the data.
+#' @param chain Which TCR/BCR chain(s) to include. One of \code{"both"} (default,
+#'   both chains combined), \code{"TRA"}, \code{"TRB"}, \code{"TRG"}, \code{"TRD"},
+#'   \code{"IGH"}, \code{"IGL"}, or \code{"IGK"}. When \code{"both"}, dual-chain
+#'   data (e.g., TRA and TRB) is combined.
+#' @param values_by The metric to plot on the y-axis. One of \code{"count"} (default,
+#'   number of cells per clone), \code{"fraction"} (proportion of cells per clone
+#'   within each group), or \code{"n"} (equivalent to \code{"count"}). See the
+#'   \strong{Value types} section.
+#' @param relabel Whether to relabel clone IDs as "clone1", "clone2", etc., ordered
+#'   by descending clone size. Default: \code{TRUE} for \code{"col"}, \code{"chord"},
+#'   and \code{"circos"} plot types; \code{FALSE} otherwise. Useful when clone IDs
+#'   are long CDR3 sequences. Only applies when visualizing individual clones
+#'   (not clone groups).
+#' @param plot_type The type of plot to generate. One of \code{"bar"} (default),
+#'   \code{"box"}, \code{"violin"}, \code{"heatmap"}, \code{"pies"}, \code{"chord"}
+#'   (or \code{"circos"}), \code{"sankey"} (or \code{"alluvial"}), \code{"trend"},
+#'   or \code{"col"}. See the \strong{Plot types} section for guidance.
+#' @param group_by The column name in the metadata to use for grouping cells
+#'   (x-axis categories). Default: \code{"Sample"}. Only a single \code{group_by}
+#'   column is supported.
+#' @param groups The specific groups (levels of \code{group_by}) to include.
+#'   Default: \code{NULL} (all groups included). If a named vector, names are used
+#'   as display labels (e.g. \code{c(B = "P17B", L = "P17L")} renames "P17B" to "B").
+#'   For \code{"chord"}/\code{"circos"}, exactly 2 groups are required. For
+#'   \code{"box"}, \code{"violin"}, \code{"heatmap"}, \code{"pies"}, \code{"sankey"},
+#'   and \code{"trend"}, at least 2 groups are required.
+#' @param subgroup_by The column name in the metadata for subgrouping. Interpretation
+#'   varies by plot type: for \code{"box"}/\code{"violin"}, it controls fill grouping;
+#'   for \code{"heatmap"} with \code{"pies"}, it defines the pie chart composition;
+#'   for \code{"heatmap"} without \code{"pies"}, it colors row labels. Not supported
+#'   for \code{"bar"}, \code{"trend"}, or \code{"col"}. Default: \code{NULL}.
+#' @param subgroups The specific subgroups (levels of \code{subgroup_by}) to include.
+#'   Default: \code{NULL} (all subgroups included). If a vector, the same subgroups
+#'   are applied to all groups. If a named list, different subgroups can be specified
+#'   per group (names match \code{group_by} levels).
+#' @param within_subgroup Whether clone selection (\code{clones}) should be performed
+#'   within each subgroup separately. Default: \code{TRUE} for most plot types,
+#'   \code{FALSE} for \code{"pies"}. When \code{TRUE}, clone selectors like
+#'   \code{top(10)} select the top 10 clones within each subgroup rather than
+#'   across all subgroups combined.
+#' @param order A list specifying the order of levels for \code{group_by}. Default:
+#'   \code{NULL} (uses the order present in the data). Lower priority than \code{groups}.
+#' @param facet_by A column name to facet the plot into separate panels. Default:
+#'   \code{NULL}. Not supported for \code{"col"}, \code{"heatmap"}, or \code{"pies"}
+#'   plot types (use \code{split_by} instead).
+#' @param split_by A column name to split the plot into separate subplots (via
+#'   \pkg{patchwork}). Default: \code{NULL}. Unlike \code{facet_by}, splitting
+#'   creates independent plots that can have different scales.
+#' @param y The y-axis variable. Default: \code{NULL} (auto-determined from
+#'   \code{values_by}). For \code{"bar"} plots, can be \code{"TotalSize"}
+#'   (total cells in selected clones) or \code{"Count"} (number of selected clones).
+#' @param xlab Custom x-axis label. Default: \code{NULL} (auto-generated).
+#' @param ylab Custom y-axis label. Default: \code{NULL} (auto-generated based on
+#'   \code{values_by}: "Clone Size", "Relative Abundance", or "Number of Clones").
+#' @param ... Additional arguments passed to the underlying plot function from
+#'   \pkg{plotthis}. For example:
+#'   \itemize{
+#'     \item For \code{"bar"}: see \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}} (e.g. \code{position}, \code{palette})
+#'     \item For \code{"box"}: see \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}} (e.g. \code{add_box}, \code{comparison})
+#'     \item For \code{"violin"}: see \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}} (e.g. \code{add_box}, \code{comparison})
+#'     \item For \code{"heatmap"} and \code{"pies"}: see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} (e.g. \code{palette}, \code{show_row_names})
+#'     \item For \code{"sankey"}: see \code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}} (e.g. \code{flow}, \code{node_palette})
+#'     \item For \code{"trend"}: see \code{\link[plotthis:TrendPlot]{plotthis::TrendPlot()}} (e.g. \code{line_type}, \code{palette})
+#'     \item For \code{"chord"}: see \code{\link[plotthis:ChordPlot]{plotthis::ChordPlot()}}
+#'     \item For \code{"col"}: see \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}} (used internally with faceting)
+#'   }
+#'   Additional arguments for \code{"col"} plot include \code{fill_by}, \code{fill_name},
+#'   \code{facet_scale}, \code{facet_ncol}, \code{x_text_angle}, \code{aspect.ratio},
+#'   \code{legend.position}, and \code{theme_args}.
+#' @return A \code{ggplot} object (or a \code{patchwork} object if \code{split_by}
+#'   is used) invisibly.
 #' @importFrom rlang parse_expr as_label enexpr
 #' @importFrom dplyr %>% summarise arrange desc mutate ungroup across slice_head n filter
 #' @importFrom tidyr pivot_wider
 #' @importFrom plotthis SankeyPlot TrendPlot
+#' @note
+#' \itemize{
+#'   \item ClonalStatPlot requires at least 2 groups for \code{"box"}, \code{"violin"},
+#'     \code{"heatmap"}, \code{"pies"}, \code{"sankey"}, and \code{"trend"} plot types.
+#'     Only \code{"bar"} and \code{"col"} work with a single group.
+#'   \item \code{"chord"}/\code{"circos"} plots are limited to exactly 2 groups.
+#'     For more groups, use \code{"sankey"} instead.
+#'   \item \code{facet_by} is not supported for \code{"col"}, \code{"heatmap"}, and
+#'     \code{"pies"} plot types because these plots use internal faceting. Use
+#'     \code{split_by} as an alternative for creating separate subplots.
+#'   \item \code{subgroup_by} is not supported for \code{"bar"}, \code{"trend"}, and
+#'     \code{"col"} plot types.
+#'   \item When using clone groups (a named list for \code{clones}), the
+#'     \code{relabel} argument has no effect since group names are used directly.
+#'   \item Clone selection expressions are evaluated after the data is filtered to
+#'     the specified \code{groups}. If you reference group names in your expression
+#'     (e.g., \code{"sel(P17B > 10)"}), ensure those groups are included in
+#'     \code{groups} if they differ from the display groups.
+#'   \item For \code{"pies"} plots, \code{within_subgroup} defaults to \code{FALSE},
+#'     meaning clone selection occurs across all subgroups combined. Set to
+#'     \code{TRUE} to select clones within each subgroup independently.
+#' }
+#' @seealso
+#' \itemize{
+#'   \item \code{\link{clone_selectors}} for the full clone selection expression system
+#'   \item \code{\link{ClonalCompositionPlot}} for visualizing clonal space composition (homeostasis)
+#'   \item \code{\link{ClonalDiversityPlot}} for clonal diversity metrics
+#'   \item \code{\link{ClonalGeneUsagePlot}} for V(D)J gene segment usage
+#'   \item \code{\link{ClonalPositionalPlot}} for CDR3 positional analysis
+#'   \item \code{\link{ClonalKmerPlot}} for CDR3 k-mer motif analysis
+#' }
 #' @export
 #' @examples
 #' \donttest{
