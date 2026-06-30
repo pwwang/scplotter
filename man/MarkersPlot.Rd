@@ -2,7 +2,7 @@
 % Please edit documentation in R/markersplot.R
 \name{MarkersPlot}
 \alias{MarkersPlot}
-\title{Visualize Markers}
+\title{Visualize differential expression markers}
 \usage{
 MarkersPlot(
   markers,
@@ -24,104 +24,290 @@ MarkersPlot(
 )
 }
 \arguments{
-\item{markers}{A data frame of markers, typically identified by \code{\link[Seurat:FindMarkers]{Seurat::FindMarkers()}} or \code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers()}}.}
+\item{markers}{A data frame of differential expression results, typically
+the output of \code{\link[Seurat:FindMarkers]{Seurat::FindMarkers()}} or
+\code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers()}}. Must
+contain columns \code{"gene"} (or gene symbols as rownames),
+\code{"p_val"}, and \code{"avg_log2FC"}. For percentage-based plots
+(\code{volcano_pct}, \code{jitter_pct}, \code{heatmap_pct},
+\code{dot_pct}), columns \code{"pct.1"} and \code{"pct.2"} are also
+required.}
 
-\item{object}{A Seurat object. Required for some plot types, see \code{plot_type}.}
+\item{object}{A Seurat object. Required for expression-based plot types:
+\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
+\code{"ridge"}, and \code{"dot"}. Not used for DE summary plot types.
+Default: \code{NULL}.}
 
-\item{plot_type}{Type of plot to generate. Options include:
+\item{plot_type}{The type of plot to generate. One of \code{"volcano"},
+\code{"volcano_log2fc"}, \code{"volcano_pct"}, \code{"jitter"},
+\code{"jitter_log2fc"}, \code{"jitter_pct"}, \code{"heatmap_log2fc"},
+\code{"heatmap_pct"}, \code{"dot_log2fc"}, \code{"dot_pct"},
+\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
+\code{"ridge"}, or \code{"dot"}. See Description for details on each type.}
+
+\item{subset_by}{A column name in \code{markers} indicating the grouping
+from which each marker was identified (e.g., the \code{cluster} column
+from \code{FindAllMarkers()}). Supports the
+\code{"marker_column:metadata_column"} syntax for linking to Seurat
+object metadata (see \strong{Metadata column mapping} section). For
+jitter and DE heatmap/dot plot types, \code{subset_by} is required and
+defines the x-axis or column groups. For expression plot types,
+\code{subset_by} controls faceting or splitting. Default: \code{NULL}.}
+
+\item{subset_as_facet}{Logical. If \code{TRUE}, facet the plot by
+\code{subset_by} groups instead of splitting into separate plots. Most
+useful for expression plot types. For volcano plots, controls whether
+faceting or split_by dispatch is used. Default: \code{FALSE}.}
+
+\item{comparison_by}{A column name in \code{markers} indicating the
+comparison (e.g., \code{"g1:g2"} for a pairwise comparison, or a single
+group name for one-vs-rest). Required for expression-based plot types
+(\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
+\code{"ridge"}, \code{"dot"}). Supports the
+\code{"marker_column:metadata_column"} syntax (see \strong{Metadata
+column mapping} section). If the comparison values contain a colon
+(e.g., \code{"G2M:G1"}), the two groups on either side of the colon
+are used to subset the object. If only a single group is present, a
+one-vs-other comparison is assumed. Default: \code{NULL}.}
+
+\item{p_adjust}{Logical. If \code{TRUE} (default), use adjusted p-value
+(\code{p_val_adj} column) for significance calculations and y-axis
+transformations. If \code{FALSE}, use raw p-value (\code{p_val} column).}
+
+\item{cutoff}{Numeric. The p-value (or adjusted p-value, depending on
+\code{p_adjust}) threshold for labeling significance. For volcano plots,
+sets \code{y_cutoff}. For heatmap-based DE plots
+(\code{heatmap_log2fc}, \code{heatmap_pct}), controls which cells
+receive significance marks. Default: \code{NULL} (no cutoff; defaults
+to \code{0.05} for volcano plots).}
+
+\item{show_labels}{Logical. For \code{heatmap_log2fc} and
+\code{heatmap_pct} plot types only. If \code{TRUE}, display numeric
+values in heatmap cells. When combined with \code{cutoff}, both values
+and significance marks are shown. Default: \code{FALSE}.}
+
+\item{sig_mark}{Character. The symbol or compound mark used to annotate
+statistically significant cells in \code{heatmap_log2fc} and
+\code{heatmap_pct} plots. Must be a valid ComplexHeatmap mark: single
+characters (\code{"-"}, \code{"|"}, \code{"+"}, \code{"/"},
+\code{"\\\\"}, \code{"x"}, \code{"o"}) or compound marks
+(\code{"[*]"}, \code{"<*>"}, \code{"(*)"}, \code{"{*}"}). Note that
+\code{"*"} conflicts with \code{show_labels = TRUE} because both use
+the label layer — use a compound mark instead. Default: \code{"*"}.}
+
+\item{order_by}{A string expression to order markers by (evaluated with
+\code{\link[dplyr:arrange]{dplyr::arrange()}}). Can reference columns
+in \code{markers} as well as columns from the object metadata (when
+\code{object} is provided and \code{subset_by} enables merging). Only
+the first value of merged metadata columns is used. Example:
+\code{"desc(avg_log2FC)"}. The ordering affects which markers are
+selected when \code{select} is numeric. Default: \code{NULL}.}
+
+\item{select}{How to select markers for labeling or display. See
+\strong{Marker selection and filtering} section for full details.
 \itemize{
-\item \code{volcano}/\code{volcano_log2fc}: Volcano plot with log2 fold change on x-axis and -log10(p-value) on y-axis.
-If \code{p_adjust} is TRUE, -log10(adjusted p-value) is used instead.
-\item \code{volcano_pct}: Volcano plot with difference in percentage of cells expressing the gene between two groups on x-axis and -log10(p-value) on y-axis.
-If \code{p_adjust} is TRUE, -log10(adjusted p-value) is used instead.
-\item \code{jitter}/\code{jitter_log2fc}: Jitter plot of log2 fold change for each gene.
-The x-axis is the groups defined by \code{subset_by}, and the y-axis is log2 fold change.
-The size of the dots represents -log10(p-value) or -log10(adjusted p-value) if \code{p_adjust} is TRUE.
-\item \code{jitter_pct}: Jitter plot of difference in percentage of cells expressing the gene between two groups for each gene.
-The x-axis is the groups defined by \code{subset_by}, and the y-axis is the difference in percentage of cells expressing the gene between two groups.
-The size of the dots represents -log10(p-value) or -log10(adjusted p-value) if \code{p_adjust} is TRUE.
-\item \code{heatmap_log2fc}: Heatmap of log2 fold change for each gene across groups defined by \code{subset_by}. By specifying \code{cutoff},
-The heatmap cells will be labeled with "*" for p-value < cutoff, if \code{p_adjust} is TRUE, adjusted p-value < cutoff.
-\item \code{heatmap_pct}: Heatmap of difference in percentage of cells expressing the gene between two groups for each gene across groups defined by \code{subset_by}.
-By specifying \code{cutoff}, The heatmap cells will be labeled with "*" for p-value < cutoff, if \code{p_adjust} is TRUE, adjusted p-value < cutoff.
-\item \code{dot_log2fc}: Dot plot of log2 fold change for each gene across groups defined by \code{subset_by}.
-The size of the dots represents -log10(p-value) or -log10(adjusted p-value) if \code{p_adjust} is TRUE.
-\item \code{dot_pct}: Dot plot of difference in percentage of cells expressing the gene between two groups for each gene across groups defined by \code{subset_by}.
-The size of the dots represents -log10(p-value) or -log10(adjusted p-value) if \code{p_adjust} is TRUE.
-\item \code{heatmap}: Heatmap of expression values for each gene across groups defined by \code{subset_by}. Requires \code{object}.
-\item \code{violin}: Violin plot of expression values for each gene across groups defined by \code{subset_by}. Requires \code{object}.
-\item \code{box}: Box plot of expression values for each gene across groups defined by \code{subset_by}. Requires \code{object}.
-\item \code{bar}: Bar plot of average expression values for each gene across groups defined by \code{subset_by}. Requires \code{object}.
-\item \code{ridge}: Ridge plot of expression values for each gene across groups defined by \code{subset_by}. Requires \code{object}.
-\item \code{dot}: Dot plot of expression values for each gene across groups defined by \code{subset_by}. Requires \code{object}.
+\item Numeric: Top N markers per \code{subset_by} group (default:
+\code{5} for volcano/jitter types, \code{10} for others).
+\item Character expression: Filter condition for
+\code{\link[dplyr:filter]{dplyr::filter()}}.
+\item Character vector: Multiple filter expressions; those containing
+the \code{subset_by} column name filter the overall data, others
+filter within remaining data.
 }}
 
-\item{subset_by}{A column in markers indicating where the markers are identified from, e.g., cluster or condition.
-If object is provided, you can provide the corresponding metadata column in \code{subset_by} to merge the markers with the object's metadata, using \code{:} as separator. For example, if the markers are identified from different clusters (identified by \code{FindAllMarkers}), and the object's ident column is "RNA_snn_res.0.8", you can set \code{subset_by = "cluster:RNA_snn_res.0.8"}.
-Note that for other columns to be merged, only the first value of each group defined by \code{subset_by} will be used.
-For some plots, this is used to split the markers into multiple plots, e.g., one plot for each cluster.
-See \code{plot_type} for details.}
-
-\item{subset_as_facet}{Logical, whether to facet the plots by \code{subset_by} if applicable.}
-
-\item{comparison_by}{The metadata column in markers indicating the comparion.
-When visualizing the expression values, this column should also be in the object's metadata.
-The values of this column should either a single value, indicating the comparison is between this group and all other cells (in the subset),
-Similar as \code{subset_by}, you can provide the corresponding object metadata column by using \code{:} as separator.
-If \code{NULL}, all markers are treated as from one comparison.}
-
-\item{p_adjust}{Logical, whether to use adjusted p-value for plots that involve p-values.
-Default is TRUE.}
-
-\item{cutoff}{Numeric, p-value or adjusted p-value cutoff to label significance in heatmap plots.
-Default is NULL, no cutoff.}
-
-\item{show_labels}{Logical, whether to show the values in heatmap cells. Default is FALSE.
-Only works for \code{heatmap_log2fc} and \code{heatmap_pct}. If \code{cutoff} is provided, the significant cells will be labeled with \code{sig_mark}, otherwise all cells will be labeled with their values.}
-
-\item{sig_mark}{Character, the symbol to use for significant markers in heatmap plots. Default is "\emph{".
-See \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} for more details.
-Note that "}" will not work if \code{show_labels} is TRUE, since they are both using \code{label} in \code{Heatmap}. Try
-other marks instead, e.g., \code{-}, \code{|}, \code{+}, \code{/}, \verb{\\\\}, \code{x}, \code{o}, or compound marks like \verb{[*]}, \verb{<*>}, \verb{(*)}, \verb{\{*\}}.
-Only works for \code{heatmap_log2fc} and \code{heatmap_pct}. If \code{cutoff} is provided, the significant cells will be labeled with \code{sig_mark}, otherwise all cells will be labeled with their values.}
-
-\item{order_by}{A string of expression to order the markers within each group defined by \code{subset_by}.
-In addition to the columns in \code{markers}, you can also use the columns from the object's metadata if \code{object} is provided.
-The object's metadata will be merged with \code{markers} by \code{subset_by}. Be carefull that only the first value of other columns will be used.}
-
-\item{select}{Number of top markers (ordered by \code{order_by}) to select for each group defined by \code{subset_by} or a string of expression to filter markers.
-It will be evaluated by \code{\link[dplyr:filter]{dplyr::filter()}}.
-For \code{volcano}, \code{volcano_log2fc}, \code{volcano_pct}, \code{jitter}, \code{jitter_log2fc}, and \code{jitter_pct} plots, the selected markers will be labeled in the plot.
-FOr  other plot types, only the selected markers will be plotted.
-Default is 5 for \code{volcano}, \code{volcano_log2fc}, \code{volcano_pct}, \code{jitter}, \code{jitter_log2fc}, \code{jitter_pct}, and 10 for other plot types.
-Note that if this is a numeric value, it will select the top N markers for each group defined by \code{subset_by}. If this is a string of expression, it will be evaluated by \code{\link[dplyr:filter]{dplyr::filter()}} to select markers.
-If this is an (character) expression, it will be used to only filter the markers.
-For example, if you want to plot the markers that are significant in cluster 0,
-you can set \code{select = "p_val_adj < 0.05 & cluster == '0'"} for the markers identified in cluster 0,
-but in the plot, other clusters will also be included if they have markers that satisfy the condition.
-If you want to filter the data by \code{subset_by}, you should use a multiple value expression
-like \code{select = c("p_val_adj < 0.05", "cluster == '0'")}, where \code{subset_by = "cluster"}.
-This also works: \code{select = c(5, "cluster \%in\% c('0', '1')")}, which will select top 5 markers in cluster 0 and 1,
-and keeps only cluster 0 and 1 in the plot.}
-
-\item{...}{Additional arguments passed to specific plotting functions.
-See Details.}
+\item{...}{Additional arguments passed to the underlying plotting
+function, depending on \code{plot_type}:
+\describe{
+\item{For \code{volcano}, \code{volcano_log2fc}, \code{volcano_pct}}{
+Passed to \code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}}.
+Common arguments: \code{x_cutoff}, \code{x_cutoff_name},
+\code{label_by}, \code{color_by}, \code{nlabel}, \code{flip_negative}.
+}
+\item{For \code{jitter}, \code{jitter_log2fc}, \code{jitter_pct}}{
+Passed to \code{\link[plotthis:JitterPlot]{plotthis::JitterPlot()}}.
+Common arguments: \code{add_hline}, \code{shape}, \code{size_by},
+\code{nlabel}.
+}
+\item{For \code{heatmap_log2fc}, \code{heatmap_pct}, \code{dot_log2fc},
+\code{dot_pct}}{
+Passed to \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
+Common arguments: \code{show_row_names}, \code{show_column_names},
+\code{values_fill}, \code{palette}, \code{cluster_rows},
+\code{cluster_columns}, \code{add_reticle}.
+}
+\item{For \code{heatmap}, \code{violin}, \code{box}, \code{bar},
+\code{ridge}, \code{dot}}{
+Passed to \code{\link{FeatureStatPlot}}. Common arguments:
+\code{name}, \code{palette}, \code{ncol}, \code{nrow},
+\code{stack}, \code{columns_split_by}.
+}
+}}
 }
 \value{
-A ggplot object or a list of ggplot objects if not merged.
+A ggplot object (from \code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}}
+or \code{\link[plotthis:JitterPlot]{plotthis::JitterPlot()}}), a
+Heatmap object (from \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}),
+or a ggplot/patchwork object (from \code{\link{FeatureStatPlot}}). When
+\code{split_by} or faceting generates multiple plots and
+\code{combine = TRUE} (default), a combined patchwork object is
+returned; when \code{combine = FALSE}, a list of individual plots is
+returned.
 }
 \description{
-Plot markers, typically identified by \code{\link[Seurat:FindMarkers]{Seurat::FindMarkers()}} or \code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers()}}.
-}
-\details{
-Additional arguments passed to specific plotting functions:
+Visualize differential expression (DE) results — typically the output of
+\code{\link[Seurat:FindMarkers]{Seurat::FindMarkers()}} or
+\code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers()}} — across a
+variety of plot types. \code{MarkersPlot()} bridges the gap between DE
+testing and visualization by providing a unified interface for both
+\strong{summary-level DE visualizations} (volcano, jitter, heatmap, and dot
+plots of fold changes and significance) and \strong{expression-level
+visualizations} (violin, box, bar, ridge, heatmap, and dot plots of actual
+expression values from a Seurat object).
+
+The function handles two broad categories of plots:
 \itemize{
-\item For \code{heatmap_log2fc}, \code{heatmap_pct}, \code{dot_log2fc}, and \code{dot_pct}, the arguments will be passed to \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
-\item For \code{violin}, "box", "bar", "ridge" and "dot", the arguments will be passed to \code{\link[=FeatureStatPlot]{FeatureStatPlot()}}
-\item For \code{volcano}, \code{volcano_log2fc}, \code{volcano_pct}, the arguments will be passed to \code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}}
-\item For \code{jitter}, \code{jitter_log2fc}, \code{jitter_pct}, the arguments will be passed to \code{\link[plotthis:jitterplot]{plotthis::JitterPlot()}}
+\item \strong{DE summary plots} (no \code{object} required): visualize the
+DE statistics themselves — log2 fold change, percentage difference,
+p-values, and adjusted p-values — across groups or comparisons.
+\itemize{
+\item \code{"volcano"} / \code{"volcano_log2fc"} — Volcano plot with
+log2 fold change on the x-axis and \eqn{-log_{10}(p)} on the y-axis.
+Genes passing the \code{cutoff} are highlighted and top genes are
+labeled. Ideal for overview of effect size vs. significance.
+\item \code{"volcano_pct"} — Volcano plot with percentage-point
+difference (\code{pct.1 - pct.2}) on the x-axis. Useful when the
+biological question is about detection rate rather than expression
+magnitude.
+\item \code{"jitter"} / \code{"jitter_log2fc"} — Jitter plot of log2
+fold changes across groups (defined by \code{subset_by}). Dot size
+encodes \eqn{-log_{10}(p)}. Reveals distribution of effect sizes
+per cluster or condition.
+\item \code{"jitter_pct"} — Jitter plot of percentage-point
+differences across groups.
+\item \code{"heatmap_log2fc"} — Heatmap of log2 fold changes (genes
+× groups). Cells can be marked for significance via \code{cutoff}
+and \code{sig_mark}.
+\item \code{"heatmap_pct"} — Heatmap of percentage-point differences
+(genes × groups). Same significance-marking support.
+\item \code{"dot_log2fc"} — Dot plot of log2 fold changes (genes ×
+groups). Dot size encodes \eqn{-log_{10}(p)}.
+\item \code{"dot_pct"} — Dot plot of percentage-point differences
+(genes × groups). Dot size encodes \eqn{-log_{10}(p)}.
+}
+\item \strong{Expression plots} (\code{object} required): visualize the
+actual expression values of the selected marker genes in the context of
+the original Seurat object. These are useful for validating DE results
+by inspecting the underlying expression distributions.
+\itemize{
+\item \code{"heatmap"} — Expression heatmap of selected marker genes.
+\item \code{"violin"} — Violin plots of expression per gene.
+\item \code{"box"} — Box plots of expression per gene.
+\item \code{"bar"} — Bar plots of mean expression per gene.
+\item \code{"ridge"} — Ridge plots of expression distribution per gene.
+\item \code{"dot"} — Dot plot of expression (fraction expressing ×
+mean expression) per gene.
 }
 }
+}
+\note{
+\itemize{
+\item \code{subset_by} is required for jitter plots
+(\code{"jitter"}, \code{"jitter_log2fc"}, \code{"jitter_pct"}) and
+DE heatmap/dot plots (\code{"heatmap_log2fc"}, \code{"heatmap_pct"},
+\code{"dot_log2fc"}, \code{"dot_pct"}). Without it, there is no
+grouping axis.
+\item \code{comparison_by} is required for expression-based plot types
+(\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
+\code{"ridge"}, \code{"dot"}) — it tells the function which
+comparison groups to extract from the object.
+\item When \code{object} is provided and \code{subset_by} maps to a
+metadata column, the markers data frame is left-joined with the object
+metadata. Only the first row per group is kept for non-key columns,
+which is sufficient for most annotation purposes but can cause issues
+if per-cell metadata is needed.
+\item For expression-based heatmap and dot plots, when
+\code{subset_by_2} is available (i.e., the metadata column is mapped),
+genes are automatically grouped by \code{subset_by} via
+\code{columns_split_by}, and \code{group_by} is set to \code{NULL}.
+\item The function calculates \eqn{-log_{10}(p)} (or
+\eqn{-log_{10}(p_{adj})}) internally and stores it in a temporary
+\code{neg_log10_p} column. This column is available for use in
+\code{order_by}.
+\item When the comparison involves only a single group (one-vs-rest),
+cells not in the comparison group are labeled \code{"Other"} in the
+object metadata.
+}
+}
+\section{Metadata column mapping}{
+
+Both \code{subset_by} and \code{comparison_by} support a special
+\code{"marker_column:metadata_column"} syntax for linking columns in the
+markers data frame to columns in the Seurat object's metadata.
+\itemize{
+\item The part before the colon refers to a column in \code{markers}.
+\item The part after the colon refers to a column in
+\code{object@meta.data}.
+\item If only one name is provided (no colon), it is used for both the
+markers column and the metadata column (if a matching metadata column
+exists).
+\item Example: \code{subset_by = "cluster:RNA_snn_res.0.8"} maps the
+\code{cluster} column in the DE results to the
+\code{RNA_snn_res.0.8} column in the Seurat metadata.
+}
+When the markers data frame and object metadata are merged via
+\code{subset_by}, only the first value of each non-key column within each
+group is retained — this is by design to avoid duplication.
+}
+
+\section{Marker selection and filtering}{
+
+The \code{select} argument supports three modes:
+\itemize{
+\item \strong{Numeric} — Select the top \code{N} markers (ordered by
+\code{order_by}) within each group defined by \code{subset_by}. For
+volcano and jitter plots, all markers are plotted but only the top
+\code{N} per group are labeled. For other plot types, only the selected
+markers are shown.
+\item \strong{Single expression} — A filter expression string evaluated by
+\code{\link[dplyr:filter]{dplyr::filter()}}. For example,
+\code{"p_val_adj < 0.05 & avg_log2FC > 1"}. All markers matching the
+condition are retained across all groups.
+\item \strong{Multiple expressions} (character vector) — Each element is
+evaluated independently. Expressions that mention the \code{subset_by}
+column filter the overall data (removing groups); other expressions
+filter within the remaining data. For example,
+\code{select = c("cluster \%in\% c('0', '1')", "p_val_adj < 0.05")}
+first restricts to clusters 0 and 1, then keeps only significant
+markers. A numeric string like \code{"5"} among the expressions is
+treated as a top-N selection.
+}
+
+Default \code{select}: \code{5} for volcano and jitter plot types,
+\code{10} for all other plot types.
+}
+
+\section{Significance marking in heatmaps}{
+
+For \code{heatmap_log2fc} and \code{heatmap_pct}, the \code{cutoff} and
+\code{sig_mark} arguments control how statistically significant cells are
+annotated in the heatmap:
+\itemize{
+\item When \code{cutoff} is set and \code{show_labels = FALSE}, cells
+with p-value (or adjusted p-value) below the cutoff are marked with
+\code{sig_mark} using ComplexHeatmap's mark system. Valid \code{sig_mark}
+values include \code{"-"}, \code{"|"}, \code{"+"}, \code{"/"},
+\code{"\\\\"}, \code{"x"}, \code{"o"}, and compound marks like
+\code{"[*]"}, \code{"<*>"}, \code{"(*)"}, \code{"{*}"}.
+\item When \code{cutoff} is set and \code{show_labels = TRUE}, both
+numeric values and significance marks are displayed
+(\code{cell_type = "label+mark"}). Note that \code{sig_mark = "*"}
+does not work with \code{show_labels = TRUE} — use compound marks
+instead.
+\item When \code{cutoff = NULL} and \code{show_labels = TRUE}, all cells
+are labeled with their numeric values.
+}
+}
+
 \examples{
 \donttest{
 data(pancreas_sub)
@@ -185,4 +371,12 @@ MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
    comparison_by = "Phase", subset_by = "cluster:seurat_clusters",
    ncol = 2)
 }
+}
+\seealso{
+\code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}},
+\code{\link[plotthis:JitterPlot]{plotthis::JitterPlot()}},
+\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
+\code{\link{FeatureStatPlot}},
+\code{\link[Seurat:FindMarkers]{Seurat::FindMarkers()}},
+\code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers()}}
 }
