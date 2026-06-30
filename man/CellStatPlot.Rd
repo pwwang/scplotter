@@ -27,103 +27,169 @@ CellStatPlot(
 )
 }
 \arguments{
-\item{object}{A Seurat object, a Giotto object, a path to h5ad file or an opened \code{H5File} (from \code{hdf5r} package) object a data frame (for internal use) containing cell metadata.}
+\item{object}{A Seurat object, a Giotto object, a path to an \code{.h5ad}
+file, an opened \code{H5File} from the \pkg{hdf5r} package, or a data
+frame (internal method) containing cell metadata.}
 
-\item{ident}{The column with the cell identities. i.e. clusters. Default: NULL
-If NULL, the active identity of the Seurat object and the name "Identity" will be used.
-For 'pies', this will be used as the \code{pie_group_by}.
-For 'heatmap' plot, this will be used as the rows_by of the heatmap.}
+\item{ident}{The metadata column containing cell identities (clusters,
+cell types). If \code{NULL} for a Seurat object, the active identity is
+used and stored under the column name \code{"Identity"}. Required for
+Giotto and h5ad objects. This column forms the primary categorical
+axis of the plot — typically the x-axis, pie slices, or heatmap rows.}
 
-\item{group_by}{The column name in the meta data to group the cells. Default: NULL
-This should work as the columns of the plot_type: heatmap.
-For violin/box plot, at most 2 \code{group_by} columns are allowed and they will not be concatenated.
-The first one is used to break down the values in groups, and the second one works as the \code{group_by}
-argument in \link[plotthis:boxviolinplot]{plotthis::ViolinPlot}/\link[plotthis:boxviolinplot]{plotthis::BoxPlot}.}
-
-\item{group_by_sep}{The separator to use when combining multiple columns in \code{group_by}. Default: "_"
-For 'sankey'/'heatmap' plot, multiple columns will not be combined, and each of them will be used as a node.}
-
-\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
-
-\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
-
-\item{split_by}{The column name in the meta data to split the cells. Default: NULL
-Each split will be plotted in a separate plot.}
-
-\item{split_by_sep}{The separator to use when combining multiple columns in \code{split_by}. Default: "_"}
-
-\item{facet_by}{The column name in the meta data to facet the plots. Default: NULL
-Not available for 'circos', 'sankey', and 'heatmap' plots.}
-
-\item{rows_by}{The column names in the data used as the rows of 'heatmap' or 'pies' (heatmap with cell_type = 'pie').
-Default: NULL. Only available for 'heatmap'/'pies' plot.}
-
-\item{columns_split_by}{The column name in the meta data to split the columns of the 'pies'/'heatmap' plot. Default: NULL}
-
-\item{frac}{The way of calculating the fraction. Default is "none".
-Possible values are "group", "ident", "cluster", "all", "none".
-Note that the fractions are calculated in each split and facet group if \code{split_by} and \code{facet_by} are specified.
+\item{group_by}{The metadata column(s) used for secondary grouping
+(conditions, samples, stimulation status). Default is \code{NULL}.
+Behavior varies by plot type:
 \itemize{
-\item group: calculate the fraction in each group.
-The total fraction of the cells of idents in each group will be 1.
-When \code{group-by} is not specified, it will be the same as \code{all}.
-\item ident: calculate the fraction in each ident.
-The total fraction of the cells of groups in each ident will be 1.
-Only works when \code{group-by} is specified.
-\item cluster: alias of \code{ident}.
-\item all: calculate the fraction against all cells.
-\item none: do not calculate the fraction, use the number of cells instead.
+\item For most plots, multiple columns are concatenated into a
+single grouping variable (separated by \code{group_by_sep}).
+\item For \code{"sankey"} and \code{"heatmap"} plots, multiple columns are
+NOT concatenated — each column forms a separate node or
+column grouping.
+\item For \code{"violin"} and \code{"box"} plots, at most 2 columns are
+allowed: the first determines the x-axis breakdown, the second
+is passed as \code{group_by} to the underlying plot function.
 }}
 
-\item{name}{The name of the 'pies'/'heatmap' plot, shown as the name of the main legend. Default is NULL.}
+\item{group_by_sep}{Separator used when concatenating multiple
+\code{group_by} columns into a single variable. Default is \code{"_"}. Ignored
+for \code{"sankey"} and \code{"heatmap"} plots where columns are not combined.}
 
-\item{agg}{The expression (in character string) passed to \code{summarise()} to calculate the values for each group. Default is "n()", which means counting the number of cells in each group.
-For example, you can use "sum(hasTCR) / n()" to calculate the fraction of cells with TCR in each group if you have a logical column \code{hasTCR} in your metadata.
-Note that this will be ignored for \code{CircosPlot} and \code{pies} plot, which will always use the count of cells as the value to plot.}
+\item{spat_unit}{Spatial unit name for Giotto objects (e.g., \code{"cell"}).
+Ignored for non-Giotto inputs. If \code{NULL}, auto-detected via
+\code{GiottoClass::set_default_spat_unit()}.}
 
-\item{plot_type}{The type of plot to use. Default is "bar".
-Possible values are "bar", "circos", "pie", "pies", "ring"/"donut", "trend", "area", "heatmap", "sankey"/"alluvial", "radar" and "spider".
-'pie' vs 'pies': 'pie' plot will plot a single pie chart for each group, while 'pies' plot will plot multiple pie charts for each group and split.
-'pies' basically is a heatmap with 'cell_type = "pie"'.}
+\item{feat_type}{Feature type name for Giotto objects (e.g., \code{"rna"},
+\code{"dna"}, \code{"protein"}). Ignored for non-Giotto inputs. If \code{NULL},
+auto-detected via \code{GiottoClass::set_default_feat_type()}.}
 
-\item{swap}{Whether to swap the cluster and group, that is,
-using group as the x-axis and cluster to fill the plot.
-For circos plot, when transposed, the arrows will be drawn from the idents (by \code{ident}) to the
-the groups (by \code{group_by}).
-Only works when \code{group_by} is specified.
-For 'pies' plot, this will swap the group_by and ident.
-For 'heatmap' plot, this will swap the group_by and columns_split_by.
-Note that this is different from \code{flip}. \code{flip} is used to transpose the plot. But \code{swap} is used to swap the x and group_by during plotting.}
+\item{split_by}{Metadata column(s) used to split the data into separate
+plots. Each unique value (or combination) produces an independent
+plot. Multiple columns are concatenated using \code{split_by_sep}. Default
+is \code{NULL} (no splitting).}
 
-\item{ylab}{The y-axis label. Default is NULL.}
+\item{split_by_sep}{Separator used when concatenating multiple
+\code{split_by} columns. Default is \code{"_"}.}
 
-\item{...}{Other arguments passed to the specific plot function.
+\item{facet_by}{Metadata column(s) used to facet the plots (separate
+panels within the same output). Not available for \code{"circos"},
+\code{"sankey"}, and \code{"heatmap"} plot types. Default is \code{NULL}.}
+
+\item{rows_by}{Metadata column(s) used as the rows for \code{"heatmap"} or
+\code{"pies"} plots. For \code{"pies"}, this defines what each pie chart
+represents (e.g., clones). For \code{"heatmap"}, this overrides the default
+row grouping (which would otherwise be \code{ident}). When multiple columns
+are provided, they must be logical or numeric. Default is \code{NULL}.}
+
+\item{columns_split_by}{Metadata column used to split the columns of
+\code{"heatmap"} or \code{"pies"} plots. This adds an additional level of column
+faceting beyond what \code{group_by} provides. Default is \code{NULL}.}
+
+\item{frac}{The fraction normalization mode. One of \code{"none"} (default),
+\code{"group"}, \code{"ident"}, \code{"cluster"} (alias for \code{"ident"}), or \code{"all"}.
+Fractions are calculated within each \code{split_by} and \code{facet_by} subset.
+See the \emph{Fraction calculation} section for detailed semantics.}
+
+\item{name}{Display name for the main legend / value scale in
+\code{"heatmap"} and \code{"pies"} plots. Default is \code{NULL}, which auto-generates
+a name based on the fraction mode.}
+
+\item{agg}{An expression string passed to \code{dplyr::summarise()} to
+compute the value for each ident-by-group intersection. Default is
+\code{"n()"} (count of cells). For example,
+\code{"sum(hasTCR) / n()"} computes the fraction of TCR-positive cells.
+Ignored for \code{"circos"} and \code{"pies"} plot types. See the
+\emph{Custom aggregation} section for more examples.}
+
+\item{plot_type}{The visualization type. One of:
+\code{"bar"} (default), \code{"circos"}, \code{"pie"}, \code{"pies"}, \code{"ring"}/\code{"donut"},
+\code{"trend"}, \code{"area"}, \code{"sankey"}/\code{"alluvial"}, \code{"heatmap"},
+\code{"radar"}, \code{"spider"}, \code{"violin"}, or \code{"box"}.
+See the \emph{Plot types} section for guidance on choosing a type.
+Note: \code{"donut"} is an alias for \code{"ring"}; \code{"alluvial"} is an alias
+for \code{"sankey"}.}
+
+\item{swap}{Whether to exchange the roles of \code{ident} and \code{group_by}.
+Default is \code{FALSE}. Behavior by plot type:
 \itemize{
-\item For \code{bar} plot, see \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For \code{circos} plot, see \code{\link[plotthis:chordplot]{plotthis::CircosPlot()}}.
-\item For \code{pie} chart, see \code{\link[plotthis:PieChart]{plotthis::PieChart()}}.
-\item For \code{pies} plot, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-\item For \code{heatmap} plot, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-\item For \code{ring}/\code{donut} plot, see \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}.
-\item For \code{trend} plot, see \code{\link[plotthis:TrendPlot]{plotthis::TrendPlot()}}.
-\item For \code{area} plot, see \code{\link[plotthis:AreaPlot]{plotthis::AreaPlot()}}.
-\item For \code{sankey}/\code{alluvial} plot, see \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}.
-\item For \code{radar} plot, see \code{\link[plotthis:radarplot]{plotthis::RadarPlot()}}.
-\item For \code{spider} plot, see \code{\link[plotthis:radarplot]{plotthis::SpiderPlot()}}.
-\item For \code{violin} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
-\item For \code{box} plot, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-}}
+\item \strong{\code{"bar"}, \code{"trend"}, \code{"area"}, \code{"ring"}, \code{"radar"},
+\code{"spider"}:} Puts \code{group_by} on the x-axis and uses \code{ident}
+for fill/color.
+\item \strong{\code{"circos"}:} Reverses the direction of edges (from ident
+to group_by instead of group_by to ident).
+\item \strong{\code{"pies"}:} Swaps \code{group_by} and \code{ident} for the column
+grouping and pie grouping respectively.
+\item \strong{\code{"heatmap"}:} Swaps \code{group_by} and \code{columns_split_by}
+(requires \code{columns_split_by} to be set).
+\item \strong{\code{"violin"}, \code{"box"}:} Swaps the x-axis and \code{group_by}
+assignments from the two \code{group_by} columns.
+}
+Only works when \code{group_by} is specified. Note that \code{swap} is different
+from \code{flip} (which transposes coordinates).}
+
+\item{ylab}{Y-axis label. Default is \code{NULL}, which auto-generates a
+label based on the fraction mode (e.g., \code{"Number of cells"} or
+\code{"Fraction of cells"}).}
+
+\item{...}{Additional arguments passed to the underlying
+\pkg{plotthis} plotting function. The target function depends on
+\code{plot_type}:
+\itemize{
+\item \code{"bar"} — \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+(\code{position}, \code{palette}, \code{alpha}, \code{x_text_angle}, ...)
+\item \code{"circos"} — \code{\link[plotthis:CircosPlot]{plotthis::CircosPlot()}}
+(\code{labels_rot}, \code{links_alpha}, ...)
+\item \code{"pie"} — \code{\link[plotthis:PieChart]{plotthis::PieChart()}}
+\item \code{"ring"} / \code{"donut"} — \code{\link[plotthis:RingPlot]{plotthis::RingPlot()}}
+(\code{palette}, \code{alpha}, ...)
+\item \code{"trend"} — \code{\link[plotthis:TrendPlot]{plotthis::TrendPlot()}}
+(\code{palette}, \code{point_size}, \code{line_width}, ...)
+\item \code{"area"} — \code{\link[plotthis:AreaPlot]{plotthis::AreaPlot()}}
+(\code{palette}, \code{alpha}, ...)
+\item \code{"sankey"} / \code{"alluvial"} — \code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}}
+(\code{links_alpha}, \code{links_fill_by}, ...)
+\item \code{"heatmap"} — \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+(\code{palette}, \code{cluster_rows}, \code{cluster_columns}, \code{show_row_names},
+\code{show_column_names}, \code{cell_type}, ...)
+\item \code{"pies"} — \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+(with \code{cell_type = "pie"}; \code{pie_size}, \code{pie_values},
+\code{row_names_side}, \code{column_names_side}, ...)
+\item \code{"radar"} — \code{\link[plotthis:RadarPlot]{plotthis::RadarPlot()}}
+\item \code{"spider"} — \code{\link[plotthis:SpiderPlot]{plotthis::SpiderPlot()}}
+\item \code{"violin"} — \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+(\code{add_box}, \code{comparisons}, \code{aspect.ratio}, ...)
+\item \code{"box"} — \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+(\code{comparisons}, \code{aspect.ratio}, ...)
+}
+Common layout parameters (\code{split_by}, \code{facet_by}, \code{combine}, \code{nrow},
+\code{ncol}) are handled by \code{CellStatPlot} directly.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object, or a list of \code{ggplot} objects if
+\code{combine = FALSE} is passed via \code{...}.
 }
 \description{
-This function creates a plot to visualize the statistics of cells in a Seurat object, a Giotto object,
-a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
-It can create various types of plots, including bar plots, circos plots, pie charts, pies (heatmap with cell_type = 'pie'), ring/donut plots, trend plots
-area plots, sankey/alluvial plots, heatmaps, radar plots, spider plots, violin plots, and box plots.
-The function allows for grouping, splitting, and faceting the data based on metadata columns.
-It also supports calculating fractions of cells based on specified groupings.#'
+Visualizes cell-level statistics — counts, fractions, and composition —
+across cell identities and metadata groupings. This is the primary function
+for exploring the distribution of cell types, clusters, and categorical
+metadata in single-cell transcriptomics datasets. It answers questions such
+as: "What proportion of each cell type is in each condition?", "How do
+cluster abundances change across samples?", and "What is the clonal
+composition within each cell type?"
+
+\code{CellStatPlot} serves as a unified interface across 15+ visualization
+types, all driven by a common data aggregation and fraction-calculation
+pipeline. It supports four single-cell data containers:
+\itemize{
+\item \strong{Seurat objects} — Extracts \verb{@meta.data}; uses \code{Idents()} as
+the default identity when \code{ident = NULL}.
+\item \strong{Giotto objects} — Extracts cell metadata via
+\code{getCellMetadata()} using \code{spat_unit} and \code{feat_type}.
+\item \strong{h5ad files} (.h5ad or opened \code{H5File}) — Reads from \code{obs}
+via \code{h5group_to_dataframe()}.
+\item \strong{Data frames} — Internal method; all other methods ultimately
+delegate here after metadata extraction.
+}
 }
 \details{
 See:
@@ -140,6 +206,140 @@ And see:
 
 for examples of using this function with .h5ad files.
 }
+\note{
+\strong{Default y-axis label:} When \code{ylab = NULL}, the label is
+auto-generated as \code{"Number of cells"} (when \code{frac = "none"}) or
+\code{"Fraction of cells"} (otherwise). Override with \code{ylab} for custom
+labels.
+
+\strong{Heatmap/pies metadata columns:} When multiple \code{rows_by} columns are
+specified for \code{"heatmap"} or \code{"pies"} plots, each column must be logical
+or numeric. The function filters cells where the column is \code{TRUE} or
+greater than zero.
+
+\strong{Facet restrictions:} \code{facet_by} is not supported for \code{"circos"},
+\code{"sankey"}, and \code{"heatmap"} plot types. For heatmaps, use
+\code{split_by} to create separate plots.
+
+\strong{Factor ordering:} The order of categories in plots follows the factor
+levels of the metadata columns. Set factor levels before plotting to
+control the display order of cell types and groups.
+
+\strong{Giotto spatial units and feature types:} The \code{spat_unit} and
+\code{feat_type} parameters are required to locate the correct metadata
+within Giotto's hierarchical spatial data structure. When \code{NULL},
+Giotto's own default resolution is used.
+}
+\section{Plot types}{
+
+The \code{plot_type} parameter selects the visualization. Plot types fall into
+several conceptual categories:
+
+\strong{Composition within groups} (requires \code{group_by}):
+\itemize{
+\item \code{"bar"} — Grouped or stacked bar chart. The default and most
+common choice. Shows count or fraction per ident, colored by
+group.
+\item \code{"trend"} — Line chart connecting points across idents. Best
+for showing trends across ordered categories (e.g., pseudotime
+bins, dose levels).
+\item \code{"area"} — Stacked area chart. Similar to trend but emphasizes
+the cumulative composition.
+\item \code{"ring"} / \code{"donut"} — Ring (donut) chart. A radial alternative
+to stacked bars. \code{frac} is forced to \code{"group"}.
+\item \code{"radar"} — Radar chart showing each ident as an axis. Compact
+for comparing group profiles across multiple idents.
+\item \code{"spider"} — Spider chart with filled polygons. Similar to radar
+but emphasizes the area covered by each group.
+}
+
+\strong{Flow between categories} (requires \code{group_by}):
+\itemize{
+\item \code{"circos"} — Circos plot showing directed edges from one
+category to another (e.g., cluster to condition).
+\item \code{"sankey"} / \code{"alluvial"} — Sankey (alluvial) diagram for
+multi-step categorical flows. Supports multiple \code{group_by}
+columns to show cascading relationships.
+}
+
+\strong{Single-group composition} (no \code{group_by}):
+\itemize{
+\item \code{"pie"} — Pie chart of cell counts per ident. Use for a quick
+overview of cluster proportions.
+}
+
+\strong{Matrix views} (requires \code{group_by}):
+\itemize{
+\item \code{"heatmap"} — Heatmap of counts or fractions with idents as
+rows and \code{group_by} categories as columns. Supports row
+splitting via \code{rows_split_by} and column splitting via
+\code{columns_split_by}.
+\item \code{"pies"} — Heatmap where each cell is a pie chart showing
+sub-composition (e.g., clone distribution within each
+cluster-by-condition intersection). Requires \code{rows_by}.
+}
+
+\strong{Distribution within idents} (requires \code{group_by}):
+\itemize{
+\item \code{"violin"} — Violin plot showing the distribution of values per
+ident, grouped or split by metadata.
+\item \code{"box"} — Box plot with the same structure as violin.
+}
+}
+
+\section{Fraction calculation}{
+
+The \code{frac} parameter controls how cell counts are normalized:
+\itemize{
+\item \code{"none"} — Raw cell counts (default). The y-axis shows the
+absolute number of cells.
+\item \code{"group"} — Fraction within each group. The total across all
+idents within each group sums to 1. Answers: "Of the cells in
+condition X, what fraction are each cell type?"
+\item \code{"ident"} — Fraction within each ident. The total across all
+groups within each ident sums to 1. Answers: "Of the Beta cells,
+what fraction are in each condition?" Requires \code{group_by}.
+\item \code{"cluster"} — Alias for \code{"ident"}.
+\item \code{"all"} — Fraction of all cells in the data (or split/facet
+subset). Answers: "What fraction of all cells are Beta cells in
+condition X?"
+}
+Fractions are calculated independently within each \code{split_by} and/or
+\code{facet_by} subset.
+}
+
+\section{Custom aggregation}{
+
+By default, \code{CellStatPlot} counts the number of cells in each
+ident-by-group intersection (\code{agg = "n()"}). The \code{agg} parameter accepts
+any expression that can be passed to \code{dplyr::summarise()}, enabling
+custom metrics. Examples:
+\itemize{
+\item \code{"sum(hasTCR) / n()"} — Fraction of cells with a TCR in each
+group
+\item \code{"mean(expression_score)"} — Mean of a numeric metadata column
+\item \code{"sum(clone_size > 1)"} — Number of expanded clones
+}
+Note: \code{agg} is ignored for \code{"circos"} and \code{"pies"} plot types, which
+always count cells.
+}
+
+\section{The ident/group_by duality}{
+
+\code{CellStatPlot} is built around two categorical axes:
+\itemize{
+\item \strong{\code{ident}} — The primary cell identity (clusters, cell types).
+This typically forms the x-axis, pie slices, or heatmap rows.
+\item \strong{\code{group_by}} — A secondary grouping (conditions, samples,
+time points). This typically forms the fill colors, bar stacks,
+or heatmap columns.
+}
+The \code{swap} parameter exchanges these two roles: when \code{swap = TRUE}, the
+\code{group_by} variable is used as the x-axis and \code{ident} provides the fill
+colors. The exact behavior varies by plot type — see the \code{swap}
+parameter documentation for details.
+}
+
 \examples{
 \donttest{
 # library(patchwork)
@@ -238,5 +438,16 @@ CellStatPlot(ifnb_sub, agg = "sum(group == 'g1') / n()",
    plot_type = "bar", ylab = "Fraction of g1 cells")
 CellStatPlot(ifnb_sub, group_by = "stim", agg = "sum(group == 'g1') / n()",
    plot_type = "bar", ylab = "Fraction of g1 cells")
+}
+}
+\seealso{
+\itemize{
+\item \code{\link[=CellDimPlot]{CellDimPlot()}} — Dimension reduction visualization of
+cell clusters
+\item \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} — Feature expression statistics
+\item \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}},
+\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
+\code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}} —
+Underlying \pkg{plotthis} functions for individual plot types
 }
 }
