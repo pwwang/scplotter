@@ -2,7 +2,7 @@
 % Please edit documentation in R/cccplot.R
 \name{CCCPlot}
 \alias{CCCPlot}
-\title{Cell-Cell Communication Plot}
+\title{Visualize Cell-Cell Communication (CCC) Interactions}
 \usage{
 CCCPlot(
   data,
@@ -29,167 +29,315 @@ CCCPlot(
 )
 }
 \arguments{
-\item{data}{A data frame with the cell-cell communication data.
-A typical data frame should have the following columns:
+\item{data}{A data frame containing cell-cell communication inference
+results. Must include the columns \code{source}, \code{target}, \code{ligand}, and
+\code{receptor} (as character or factor). Typically also includes one or more
+numeric columns for interaction magnitude and specificity. See the
+\strong{Data format} section above for details.}
+
+\item{plot_type}{The type of visualization. Default is \code{"dot"}.
+Possible values:
 \itemize{
-\item \code{source} The source cell type.
-\item \code{target} The target cell type.
-\item \code{ligand} The ligand gene.
-\item \code{receptor} The receptor gene.
-\item \code{ligand_means} The mean expression of the ligand gene per cell type.
-\item \code{receptor_means} The mean expression of the receptor gene per cell type.
-\item \code{ligand_props} The proportion of cells that express the entity.
-\item \code{receptor_props} The proportion of cells that express the entity.
-\item \verb{<magnitude>} The magnitude of the communication.
-\item \verb{<specificity>} The specificity of the communication.
-Depends on the \code{plot_type}, some columns are optional. But the \code{source}, \code{target},
-\code{ligand}, \code{receptor} and \verb{<magnitude>} are required.
+\item \code{"network"}: Source and target cell types as nodes, interactions as
+edges. Edge thickness encodes magnitude. Accepts \code{link_curvature} and
+\code{link_alpha} styling. When \code{method = "interaction"}, nodes are ligands
+and receptors instead, colored by source-target pair.
+\item \code{"chord"}, \code{"circos"} (aliases): Chord diagram linking source and target
+cell types. Only available with \code{method = "aggregation"}.
+\item \code{"heatmap"}: Source cell types on rows, target cell types on columns,
+magnitude encoded as fill color. When \code{method = "interaction"}, rows are
+individual LR pairs and columns are split by source.
+\item \code{"sankey"}, \code{"alluvial"} (aliases): Flow diagram from source to target
+cell types. Only available with \code{method = "aggregation"}.
+\item \code{"dot"}: Source vs target grid with dot size encoding magnitude and
+(optionally) dot color encoding specificity. Available in both methods.
+\item \code{"box"}: Box plots of interaction strengths. Each panel is a source cell
+type, x-axis is target cell type. Only available with
+\code{method = "interaction"}.
+\item \code{"violin"}: Violin plots of interaction strengths. Layout is the same as
+\code{"box"}. Only available with \code{method = "interaction"}.
+\item \code{"ridge"}: Ridge (joy) plots of interaction strengths. Rows are target
+cell types, faceted by source. Only available with
+\code{method = "interaction"}.
+\item \code{"linkedheatmap"}: Side-by-side heatmaps showing ligand expression
+(left, by source cell types) and receptor expression (right, by target
+cell types) with LR pair links between them. Requires \code{ligand_expr} and
+\code{receptor_expr} columns. Does not use the \code{method} parameter.
 }}
 
-\item{plot_type}{The type of plot to use. Default is "dot".
-Possible values are "network", "chord", "circos", "heatmap", "sankey", "alluvial", "dot",
-"box", "violin" and "ridge".
-For "box", "violin" and "ridge", the \code{method} should be "interaction".
+\item{method}{How to represent the data. Default is \code{"aggregation"}.
 \itemize{
-\item network: A network plot with the source and target cells as the nodes and the communication as the edges.
-\item chord: A chord plot with the source and target cells as the nodes and the communication as the chords.
-\item circos: Alias of "chord".
-\item heatmap: A heatmap plot with the source and target cells as the rows and columns.
-\item sankey: A sankey plot with the source and target cells as the nodes and the communication as the flows.
-\item alluvial: Alias of "sankey".
-\item dot: A dot plot with the source and target cells as the nodes and the communication as the dots.
-\item box: Box plots for source cell types. Each x is a target cell type and the values will be
-the interaction strengths of the ligand-receptor pairs.
-\item violin: Violin plots for source cell types. Each x is a target cell type and the values will be
-the interaction strengths of the ligand-receptor pairs.
-\item ridge: Ridge plots for source cell types. Each row is a target cell type and the values will be
-the interaction strengths of the ligand-receptor pairs.
-\item linkedheatmap: A heatmap-links-heatmap plot to show the expression of the ligands and receptors
-in the source and target cell types. The links are the ligand-receptor pairs.
-\code{ligand_means} and \code{receptor_means} are required for this plot type.
+\item \code{"aggregation"}: Aggregate all LR pairs for each source-target cell type
+combination. Plots show cell-type-level communication.
+\item \code{"interaction"}: Plot individual LR pairs. Plots show LR-pair-level
+detail. A \code{magnitude} column is required.
 }}
 
-\item{method}{The method to determine the plot entities.
+\item{magnitude}{The name of the column to use as the communication
+magnitude (e.g., \code{"lrscore"}, \code{"sca_weight"}). When not specified
+(default), the second-to-last column of \code{data} is used. The chosen column
+must be numeric. For LIANA outputs, common magnitude columns include
+\code{"lrscore"}, \code{"sca_weight"}, or \code{"cellphonedb_pvalue"} (after
+transformation). See
+\url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot}
+for available LIANA methods.}
+
+\item{specificity}{The name of the column to use as the communication
+specificity (e.g., a p-value such as \code{"pvalue"} or
+\code{"cellphonedb_pvalue"}). When not specified (default), the last column of
+\code{data} is used. The chosen column must be numeric. Set to \code{NULL} if your
+method does not produce a specificity score.}
+
+\item{ligand_expr}{The name of the column containing the mean (or otherwise
+summarized) expression of the ligand. Default is \code{"ligand_means"}. Only
+used when \code{plot_type = "linkedheatmap"}.}
+
+\item{receptor_expr}{The name of the column containing the mean (or
+otherwise summarized) expression of the receptor. Default is
+\code{"receptor_means"}. Only used when \code{plot_type = "linkedheatmap"}.}
+
+\item{magnitude_agg}{A function used to aggregate the magnitude values
+across multiple LR pairs within each source-target group. Applied only in
+\code{method = "aggregation"}. Default is \code{\link[=length]{length()}}, which counts the number
+of LR interactions. Common alternatives: \code{\link[=mean]{mean()}}, \code{\link[=sum]{sum()}}, \code{\link[=median]{median()}}.}
+
+\item{magnitude_name}{A label for the aggregated magnitude that appears in
+plot legends and axis titles. Default is \code{"No. of interactions"}. Adjust
+this to match \code{magnitude_agg} (e.g., use \code{"Mean score"} when
+\code{magnitude_agg = mean}).}
+
+\item{meta_specificity}{The meta-analysis method used to combine multiple
+specificity p-values within each source-target group into a single
+group-level p-value. Applied only in \code{method = "aggregation"} when a
+\code{specificity} column is available. Default is \code{"sumlog"} (Fisher's method).
+Must be one of the methods provided by the \pkg{metap} package:
 \itemize{
-\item aggregation: Aggregate the ligand-receptor pairs interactions for each source-target pair.
-Only the source / target pairs will be plotted.
-\item interaction: Plot the ligand-receptor pairs interactions directly.
-The ligand-receptor pairs will also be plotted.
+\item \code{"invchisq"}: Inverse chi-squared method
+\item \code{"invt"}: Inverse t method
+\item \code{"logitp"}: Logit method
+\item \code{"meanp"}: Mean p method
+\item \code{"meanz"}: Mean z method
+\item \code{"sumlog"}: Sum of logs (Fisher's) method (default)
+\item \code{"sump"}: Sum of p (Edgington's) method
+\item \code{"two2one"}: Convert two-sided p-values to one-sided
+\item \code{"votep"}: Vote counting method
+\item \code{"wilkinsonp"}: Wilkinson's method
 }}
 
-\item{magnitude}{The column name in the data to use as the magnitude of the communication.
-By default, the second last column will be used.
-See \code{li.mt.show_methods()} for the available methods in \code{LIANA}.
-or \url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot}}
+\item{split_by}{An optional character vector of column names used to
+produce separate sub-plots (one per unique combination of values). When
+\code{NULL} (default), a single plot is produced. For example, split by
+a condition column to compare communication patterns across experimental
+groups side-by-side.}
 
-\item{specificity}{The column name in the data to use as the specificity of the communication.
-By default, the last column will be used.
-If the method doesn't have a specificity, set it to NULL.}
+\item{x_text_angle}{The angle (in degrees) for the x-axis tick labels.
+Used when \code{plot_type} is \code{"dot"} (both methods), \code{"box"}, or \code{"violin"}.
+Default is \code{90} (vertical labels).}
 
-\item{ligand_expr}{The column name in the data to use as the ligand expression.
-By default, the column \code{ligand_means} will be used.}
+\item{link_curvature}{The curvature of the edges in the network plot.
+\code{0} gives straight lines; positive values curve edges outward. Default is
+\code{0.2}. Only used when \code{plot_type = "network"}.}
 
-\item{receptor_expr}{The column name in the data to use as the receptor expression.
-By default, the column \code{receptor_means} will be used.}
+\item{link_alpha}{The transparency (alpha) of the edges in the network
+plot. Values range from \code{0} (fully transparent) to \code{1} (fully opaque).
+Default is \code{0.6}. Only used when \code{plot_type = "network"}.}
 
-\item{magnitude_agg}{A function to aggregate the magnitude of the communication.
-Default is \code{length}.}
+\item{facet_by}{Deprecated. Not supported — must be \code{NULL} (the default).
+Use \code{split_by} to produce separate plots instead.}
 
-\item{magnitude_name}{The name of the magnitude in the plot.
-Default is "No. of interactions".}
+\item{show_row_names}{Whether to display row names in heatmap plots.
+Default is \code{TRUE}. Used when \code{plot_type} is \code{"heatmap"} or
+\code{"linkedheatmap"}.}
 
-\item{meta_specificity}{The method to calculate the specificity when there are multiple
-ligand-receptor pairs interactions. Default is "sumlog".
-It should be one of the methods in the \code{metap} package.
-Current available methods are:
+\item{show_column_names}{Whether to display column names in heatmap plots.
+Default is \code{TRUE}. Used when \code{plot_type} is \code{"heatmap"} or
+\code{"linkedheatmap"}.}
+
+\item{values_fill}{The fill value for missing (NA) cells in the heatmap
+matrix (e.g., when a source-target pair has no LR interactions). Default
+is \code{0}. Used when \code{plot_type} is \code{"heatmap"} or \code{"linkedheatmap"}.}
+
+\item{right_row_dend_side}{The side on which to place the row dendrogram
+in the right-hand heatmap of the linked heatmap plot. Must be \code{"left"} or
+\code{"right"}. Default is \code{"right"}. Only used when
+\code{plot_type = "linkedheatmap"}.}
+
+\item{...}{Additional arguments forwarded to the underlying \pkg{plotthis}
+plotting function. The target function depends on \code{plot_type}:
 \itemize{
-\item \code{invchisq}: Combine p values using the inverse chi squared method
-\item \code{invt}: Combine p values using the inverse t method
-\item \code{logitp}: Combine p values using the logit method
-\item \code{meanp}: Combine p values by the mean p method
-\item \code{meanz}: Combine p values using the mean z method
-\item \code{sumlog}: Combine p-values by the sum of logs (Fisher's) method
-\item \code{sump}: Combine p-values using the sum of p (Edgington's) method
-\item \code{two2one}: Convert two-sided p-values to one-sided
-\item \code{votep}: Combine p-values by the vote counting method
-\item \code{wilkinsonp}: Combine p-values using Wilkinson's method
-}}
+\item \code{"network"} → \code{\link[plotthis:Network]{plotthis::Network()}}
+\item \code{"chord"} / \code{"circos"} → \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}
+\item \code{"heatmap"} → \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+\item \code{"sankey"} / \code{"alluvial"} → \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}
+\item \code{"dot"} → \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}
+\item \code{"box"} → \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}
+\item \code{"violin"} → \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}
+\item \code{"ridge"} → \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}
+\item \code{"linkedheatmap"} → \code{\link[plotthis:LinkedHeatmap]{plotthis::LinkedHeatmap()}}
+}
 
-\item{split_by}{A character vector of column names to split the plots. Default is NULL.}
-
-\item{x_text_angle}{The angle of the x-axis text. Default is 90.
-Only used when \code{plot_type} is "dot".}
-
-\item{link_curvature}{The curvature of the links. Default is 0.2.
-Only used when \code{plot_type} is "network".}
-
-\item{link_alpha}{The transparency of the links. Default is 0.6.
-Only used when \code{plot_type} is "network".}
-
-\item{facet_by}{A character vector of column names to facet the plots. Default is NULL.
-It should always be NULL.}
-
-\item{show_row_names}{Whether to show the row names in the heatmap. Default is TRUE.
-Only used when \code{plot_type} is "heatmap" or "linkedheatmap".}
-
-\item{show_column_names}{Whether to show the column names in the heatmap. Default is TRUE.
-Only used when \code{plot_type} is "heatmap" or "linkedheatmap".}
-
-\item{values_fill}{The value to fill the missing values in the heatmap. Default is 0.
-Only used when \code{plot_type} is "heatmap" or "linkedheatmap".}
-
-\item{right_row_dend_side}{The side of the right row dendrogram in the linked heatmap.
-Default is "right". It should be one of "left" or "right".
-Only used when \code{plot_type} is "linkedheatmap".}
-
-\item{...}{Other arguments passed to the specific plot function.
-\itemize{
-\item For \code{Network}, see \code{\link[plotthis:Network]{plotthis::Network()}}.
-\item For \code{ChordPlot}, see \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}.
-\item For \code{Heatmap}, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-\item For \code{SankeyPlot}, see \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}.
-\item For \code{DotPlot}, see \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}.
-\item For \code{BoxPlot}, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For \code{ViolinPlot}, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
-\item For \code{RidgePlot}, see \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}.
-\item For \code{LinkedHeatmap}, see \code{\link[plotthis:LinkedHeatmap]{plotthis::LinkedHeatmap()}}.
-}}
+Common arguments include \code{palette}, \code{theme}, \code{theme_args},
+\code{legend.position}, \code{title}, \code{subtitle}, \code{width}, \code{height}, and \code{combine}
+(set \code{combine = FALSE} to get a list of individual plots instead of a
+combined plot). See the documentation of each function for full details.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A combined ggplot object (by default) representing the cell-cell
+communication visualization. If \code{combine = FALSE} is passed via \code{...}, or
+if \code{split_by} produces multiple sub-plots and \code{combine = FALSE}, a list of
+individual ggplot objects is returned instead. Each plot can be further
+customized with standard ggplot2 functions.
 }
 \description{
-Plot the cell-cell communication.
-See also:
-\itemize{
-\item The review: \url{https://www.sciencedirect.com/science/article/pii/S2452310021000081}
-\item The LIANA package: \url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot}
-\item The CCPlotR package: \url{https://github.com/Sarah145/CCPlotR}
+Cell-cell communication (CCC) is the process by which cells send and receive
+molecular signals — typically through ligand-receptor (LR) interactions — to
+coordinate tissue function. CCC analysis infers these interactions from
+single-cell transcriptomics data by identifying which ligand-receptor pairs
+are expressed between which cell types, often scoring each interaction by
+its magnitude (e.g., expression level, interaction score) and specificity
+(e.g., a p-value quantifying how cell-type-specific the interaction is).
+
+\code{CCCPlot} provides a unified interface to visualize CCC inference results
+(from tools like CellPhoneDB, LIANA, CellChat, NicheNet, etc.) across many
+plot types. It supports two fundamental modes:
+
+\strong{Aggregation mode} (\code{method = "aggregation"}, the default): Ligand-receptor
+pairs are aggregated per source-target cell type pair. This shows \emph{which
+cell types communicate} and how strongly. Supported plot types: \code{"network"},
+\code{"chord"}/\code{"circos"}, \code{"heatmap"}, \code{"sankey"}/\code{"alluvial"}, \code{"dot"}.
+
+\strong{Interaction mode} (\code{method = "interaction"}): Individual ligand-receptor
+pairs are plotted. This shows \emph{which specific LR pairs} mediate the
+communication. Supported plot types: \code{"dot"}, \code{"network"}, \code{"heatmap"},
+\code{"box"}, \code{"violin"}, \code{"ridge"}.
+
+The \code{"linkedheatmap"} plot type is a special case: it does not use the
+\code{method} parameter. It displays a side-by-side heatmap where the left side
+shows ligand expression across source cell types and the right side shows
+receptor expression across target cell types, with links between them
+representing the LR pairs. This plot type requires \code{ligand_means} and
+\code{receptor_means} columns.
+
+Under the hood, \code{CCCPlot} preprocesses the data (aggregating or
+reformatting as needed) and delegates rendering to the corresponding
+\pkg{plotthis} package function. All styling and layout arguments accepted by
+those functions can be passed through \code{...}.
 }
+\note{
+\strong{Data sources}: \code{CCCPlot} is designed to work with the output of popular
+CCC inference tools. The LIANA Python package
+(\url{https://liana-py.readthedocs.io/}) provides a unified interface to
+run multiple CCC methods and produces data frames in the format expected
+here. CellPhoneDB output (e.g., via \href{https://liana-py.readthedocs.io/en/latest/notebooks/methods.html#CellPhoneDB}{liana's CellPhoneDB wrapper})
+works directly. The built-in dataset \code{cellphonedb_res} is an example of
+this format.
+
+\strong{Performance}: For large datasets with many LR pairs, \code{method = "aggregation"} is faster and produces cleaner visualizations for overview
+purposes, while \code{method = "interaction"} provides detail at the cost of
+visual complexity when there are many source-target pairs.
+
+\strong{Row/column ordering}: To control the order of cell types in heatmaps,
+dot plots, chord diagrams, etc., ensure the \code{source} and \code{target} columns
+are factors with the desired level order before calling \code{CCCPlot}.
 }
+\section{Data format}{
+
+The input \code{data} frame is expected to have one row per ligand-receptor pair
+per source-target cell type combination. This is the standard "tidy" output
+format produced by LIANA and similar to the output of CellPhoneDB. Columns
+\code{source}, \code{target}, \code{ligand}, and \code{receptor} are always required. At least
+one magnitude column (a numeric score for the interaction) is also required.
+
+When both a magnitude and a specificity column are present, the function
+can encode both dimensions in the visualization (e.g., dot size for
+magnitude and dot color for specificity in \code{"dot"} plots).
+}
+
+\section{Method details}{
+
+With \code{method = "aggregation"}, the function groups data by source-target
+pairs (and optionally \code{split_by}). The magnitude values for all LR pairs
+within each group are combined using \code{magnitude_agg} (default: \code{length},
+i.e., count of LR pairs). If a \code{specificity} column is provided, individual
+specificity p-values are combined into a single group-level p-value using
+the meta-analysis method specified by \code{meta_specificity} (from the
+\pkg{metap} package). This mode answers: "Which cell types communicate, and
+how strong / specific is that communication?"
+
+With \code{method = "interaction"}, each LR pair is plotted individually. For
+\code{"dot"} plots, specificity values are \code{-log10}-transformed and source cell
+types are used for faceting (one facet per source). For \code{"box"}, \code{"violin"},
+and \code{"ridge"} plots, the source cell type is used for faceting and the
+target cell type defines the x-axis or grouping.
+}
+
 \examples{
 \donttest{
+# Load example CellPhoneDB results
 set.seed(8525)
 data(cellphonedb_res)
+
+# --- Aggregation mode: overview of which cell types communicate ---
+
+# Network: nodes = cell types, edges = communication, thickness = strength
 CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
   theme = "theme_blank", theme_args = list(add_coord = FALSE))
+
+# Chord diagram: same data, circular layout
 CCCPlot(cellphonedb_res, plot_type = "chord")
+
+# Heatmap: source (rows) × target (columns), fill = number of LR pairs
 CCCPlot(cellphonedb_res, plot_type = "heatmap")
+
+# Dot plot: dot size = magnitude, color = specificity
+# Use mean interaction score instead of count
 CCCPlot(cellphonedb_res, plot_type = "dot",
   magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
+
+# Sankey (alluvial) flow diagram
 CCCPlot(cellphonedb_res, plot_type = "sankey")
+
+# Linked heatmap: ligand expression (left) ↔ receptor expression (right)
 CCCPlot(cellphonedb_res, plot_type = "linkedheatmap")
 
+# --- Interaction mode: detail on individual LR pairs ---
+# Subset to fewer cell types for readability
 cellphonedb_res_sub <- cellphonedb_res[
   cellphonedb_res$source \%in\% c("Dendritic", "CD14+ Monocyte"),]
+
+# Dot plot: each LR pair as a row, faceted by source, color = specificity
 CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")
+
+# Network: ligands and receptors as nodes, colored by source→target
 CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",
   node_size_by = 1)
+
+# Heatmap: rows = LR pairs, columns = target cell types
 CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction",
   palette = "Reds")
+
+# Box plot: distribution of interaction strengths per source→target
 CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
+
+# Violin plot with overlaid box plots
 CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
   add_box = TRUE)
+
+# Ridge plot: density of interaction strengths per target, per source
 CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
+}
+}
+\seealso{
+\itemize{
+\item \code{\link[plotthis:Network]{plotthis::Network()}}, \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}, \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
+\code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}, \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}, \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}},
+\code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}, \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}},
+\code{\link[plotthis:LinkedHeatmap]{plotthis::LinkedHeatmap()}} — the underlying plotting functions.
+\item The LIANA framework for CCC inference:
+\url{https://liana-py.readthedocs.io/}
+\item Review of CCC inference methods:
+\url{https://www.sciencedirect.com/science/article/pii/S2452310021000081}
+\item CCPlotR package for alternative CCC visualization:
+\url{https://github.com/Sarah145/CCPlotR}
 }
 }
