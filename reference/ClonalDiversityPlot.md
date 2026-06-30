@@ -1,6 +1,16 @@
-# ClonalDiversityPlot
+# Clonal Diversity Plot
 
-Plot the clonal diversities of the samples/groups.
+Visualizes clonal diversity metrics across samples or metadata groups.
+Clonal diversity quantifies the richness and evenness of the immune
+repertoire — how many distinct clonotypes are present and how evenly
+cells are distributed among them. High diversity indicates a broad,
+well-distributed repertoire; low diversity may indicate clonal expansion
+(oligoclonality) in response to antigen stimulation or disease.
+
+`ClonalDiversityPlot` computes diversity scores using a custom
+implementation that wraps several scRepertoire methods and adds three
+scplotter-specific metrics (Gini coefficient, D50, DXX). Results are
+visualized as bar, box, or violin plots.
 
 ## Usage
 
@@ -29,96 +39,145 @@ ClonalDiversityPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
+  How to define a clone. One of `"gene"` (default), `"nt"`, `"aa"`,
+  `"strict"`, or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - method:
 
-  The method to calculate the diversity. Options are "shannon"
-  (default), "inv.simpson", "norm.entropy", "gini.simpson", "chao1",
-  "ACE", "gini.coeff", "d50" and "dXX". See
-  [scRepertoire::clonalDiversity](https://www.borch.dev/uploads/scRepertoire/reference/clonalDiversity.html)
-  for details. The last 3 methods are supported by `scplotter` only:
-
-  - "gini.coeff" - The Gini Coefficient. A measure of inequality in the
-    distribution of clones. 0 indicates perfect equality, 1 indicates
-    perfect inequality.
-
-  - "d50" - The number of clones that make up `50%` of the total number
-    of clones.
-
-  - "dXX" - The number of clones that make up `XX%` of the total number
-    of clones.
+  The diversity metric to compute. One of `"shannon"` (default),
+  `"inv.simpson"`, `"norm.entropy"`, `"gini.simpson"`, `"chao1"`,
+  `"ACE"`, `"gini.coeff"`, `"d50"`, or `"dXX"`. See the *Diversity
+  metrics* section for details on each metric.
 
 - d:
 
-  The percentage for the "dXX" method. Default is 50.
+  The percentage threshold for the `"dXX"` method. For example, `d = 90`
+  computes the number of clones accounting for 90% of the repertoire.
+  Default is `50`.
 
 - plot_type:
 
-  The type of plot. Options are "bar", "box" and "violin".
+  The visualization type. One of `"bar"` (default), `"box"`, or
+  `"violin"`. For `"box"` and `"violin"`, `group_by` is required to
+  provide the x-axis grouping.
 
 - position:
 
-  The position adjustment for the bars. Default is "dodge".
+  Bar position adjustment for `"bar"` plot type. One of `"dodge"`
+  (default), `"stack"`, or `"fill"`.
 
 - order:
 
-  A list specifying the order of the levels for each grouping variable.
-  Default is NULL, which will use the order in the data.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - group_by:
 
-  A character vector of column names to group the samples. Default is
-  NULL.
+  Metadata column used to group (color) the data. Default is `NULL`.
+  Required for `"box"` and `"violin"` plot types.
 
 - facet_by:
 
-  A character vector of column names to facet the plots. Default is
-  NULL.
+  Metadata column used to facet the plot into separate panels. Default
+  is `NULL`.
 
 - split_by:
 
-  A character vector of column names to split the plots. Default is
-  NULL.
+  Metadata column used to split the data into separate plots. Default is
+  `NULL`.
 
 - xlab:
 
-  The x-axis label. Default is NULL.
+  X-axis label. Default is `NULL`, which uses the `group_by` column name
+  or `"Sample"`.
 
 - ylab:
 
-  The y-axis label. Default is NULL.
+  Y-axis label. Default is `NULL`, which auto-generates the full metric
+  name (e.g., `"Shannon Index"`, `"Gini Coefficient"`).
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis function:
 
-  - For "bar",
-    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html).
+  - `"bar"` —
+    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html)
+    (`palette`, `alpha`, `fill_by`, ...)
 
-  - For "box",
-    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"box"` —
+    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`comparisons`, `alpha`, `palette`, ...)
 
-  - For "violin",
-    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"violin"` —
+    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`add_box`, `comparisons`, `palette`, ...)
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE` is
+passed via `...`.
+
+## Note
+
+**Bootstrap support:** The underlying
+[`ClonalDiversity()`](https://pwwang.github.io/scplotter/reference/ClonalDiversity.md)
+function supports bootstrap resampling (`n_boots`). This is not exposed
+in `ClonalDiversityPlot` directly but is used internally.
+
+**group_by required for box/violin:** The `group_by` parameter is
+required when `plot_type` is `"box"` or `"violin"`. These types show
+per-sample distributions grouped by the `group_by` variable.
+
+## Diversity metrics
+
+The `method` parameter selects the diversity metric:
+
+**Richness and evenness metrics:**
+
+- `"shannon"` (default) — Shannon entropy index. Higher values indicate
+  greater diversity. Sensitive to both richness and evenness.
+
+- `"inv.simpson"` — Inverse Simpson index. The effective number of
+  equally abundant clones. Less sensitive to rare clones than Shannon.
+
+- `"norm.entropy"` — Normalized entropy (Pielou's evenness). Shannon
+  entropy divided by the log of richness; ranges from 0 to 1.
+
+- `"gini.simpson"` — Gini-Simpson index. The probability that two
+  randomly selected cells belong to different clones.
+
+**Richness estimators (account for unobserved clones):**
+
+- `"chao1"` — Chao1 richness estimator. Estimates the total number of
+  clones including those not yet observed, based on the number of
+  singletons and doubletons.
+
+- `"ACE"` — Abundance-based Coverage Estimator. Estimates richness with
+  a correction for sample coverage.
+
+**scplotter-specific metrics:**
+
+- `"gini.coeff"` — Gini coefficient. Measures inequality in clone size
+  distribution. `0` indicates perfect equality (all clones the same
+  size); `1` indicates perfect inequality (one clone dominates).
+
+- `"d50"` — The number of top clones that together account for 50% of
+  the total repertoire.
+
+- `"dXX"` — The number of top clones that together account for `XX`% of
+  the total repertoire. Use the `d` parameter to set the percentage.
 
 ## Examples
 

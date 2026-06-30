@@ -1,6 +1,16 @@
-# ClonalAbundancePlot
+# Clonal Abundance Plot
 
-Plot the count or density of the clones at different abundance levels.
+Visualizes the distribution of clonal abundances — how many clones are
+present at each abundance level (frequency) in the repertoire. Clonal
+abundance distributions typically follow a power-law pattern: a small
+number of highly expanded clones and a large number of rare clones. This
+function helps characterize repertoire structure by showing whether the
+immune response is dominated by a few large clones (clonal expansion) or
+evenly distributed across many clones (high diversity).
+
+`ClonalAbundancePlot` computes clonal abundance data via
+[`scRepertoire::clonalAbundance()`](https://www.borch.dev/uploads/scRepertoire/reference/clonalAbundance.html)
+and visualizes it as trend lines, histograms, or density curves.
 
 ## Usage
 
@@ -32,99 +42,122 @@ ClonalAbundancePlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
+  How to define a clone. One of `"gene"`, `"nt"`, `"aa"` (default),
+  `"strict"`, or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - xtrans:
 
-  The transformation to apply to the x-axis. Default is "log10".
+  Transformation applied to the x-axis. Default is `"log10"`, which
+  spreads low-abundance clones for better visibility. Use `"identity"`
+  for linear scale.
 
 - ytrans:
 
-  The transformation to apply to the y-axis. Default is "identity".
+  Transformation applied to the y-axis. Default is `"identity"`. Use
+  `"log10"` to better visualize distributions spanning multiple orders
+  of magnitude.
 
 - plot_type:
 
-  The type of plot to use. Default is "trend". Possible values are
-  "trend", "histogram" and "density".
+  The visualization type. One of:
+
+  - `"trend"` (default) — Smoothed trend line showing the number of
+    clones at each abundance level. The x-axis is transformed by
+    `xtrans` (default log10), and a LOESS trend is fitted.
+
+  - `"histogram"` — Binned histogram of clonal abundances. Optionally
+    overlay a trend line with `add_trend = TRUE`.
+
+  - `"density"` — Kernel density estimate of the abundance distribution.
 
 - binwidth:
 
-  The binwidth for the histogram plot. Default is 0.1.
+  The histogram bin width (in log10-transformed abundance units).
+  Default is `0.1`. Only used for `"trend"` and `"histogram"` plot
+  types.
 
 - trend_skip_zero:
 
-  Whether to skip the zero values in the trend line. Default is TRUE.
+  Logical; if `TRUE` (default), zero-abundance bins are excluded from
+  the trend line fit. Improves fit quality when many abundance bins have
+  zero clones.
 
 - bw:
 
-  The smoothing bandwidth to be used for density plots. Default is 0.5.
+  Smoothing bandwidth for density plots. Higher values produce smoother
+  curves. Default is `0.5`.
 
 - group_by:
 
-  The column name in the meta data to group the cells. Default: "Sample"
+  Metadata column used to group (color) the data. Default is `"Sample"`.
 
 - group_by_sep:
 
-  The separator to use when combining the group_by columns. Default:
-  "\_"
+  Separator used when concatenating multiple `group_by` columns. Default
+  is `"_"`.
 
 - facet_by:
 
-  The column name in the meta data to facet the plots. Default: NULL
+  Metadata column used to facet the plot into separate panels. Default
+  is `NULL`.
 
 - split_by:
 
-  The column name in the meta data to split the plots. Default: NULL
+  Metadata column used to split the data into separate plots. Default is
+  `NULL`.
 
 - order:
 
-  The order of the x-axis items or groups. Default is an empty list. It
-  should be a list of values. The names are the column names, and the
-  values are the order.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - xlab:
 
-  The x-axis label. Default is "Abundance".
+  X-axis label. Default is `"Abundance"`.
 
 - ylab:
 
-  The y-axis label. Default is "Number of Clones" for trend and
-  histogram, and "Density of Clones" for density.
+  Y-axis label. Default is `NULL`, which auto-generates
+  `"Number of Clones"` (trend/histogram) or `"Density of Clones"`
+  (density).
 
 - theme_args:
 
-  The theme arguments to be passed to the plot function.
+  A list of theme elements passed to the underlying plotthis function.
+  Default is an empty list.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis function:
 
-  - For `trend` plot, see
-    [`plotthis::Histogram()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html).
+  - `"trend"` —
+    [`plotthis::Histogram()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html)
+    (with `use_trend = TRUE`; `palette`, `alpha`, ...)
 
-  - For `histogram` plot, see
-    [`plotthis::Histogram()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html).
+  - `"histogram"` —
+    [`plotthis::Histogram()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html)
+    (`add_trend`, `palette`, `alpha`, ...)
 
-  - For `density` plot, see
-    [`plotthis::DensityPlot()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html).
+  - `"density"` —
+    [`plotthis::DensityPlot()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html)
+    (`palette`, `alpha`, ...)
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE` is
+passed via `...`.
 
 ## Examples
 

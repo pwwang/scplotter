@@ -1,6 +1,26 @@
-# ClonalResidencyPlot
+# Clonal Residency Plot
 
-Plot the residency of the clones in different samples.
+Visualizes the sharing (residency) of T-cell or B-cell clones across
+different samples or metadata groups. Clonal residency analysis reveals
+how clonotypes are distributed — whether a clone is private to one
+condition or shared across multiple conditions — which is critical for
+understanding immune responses, tracking antigen-specific clones, and
+identifying public vs. private repertoires.
+
+`ClonalResidencyPlot` supports three visualization modes:
+
+- **Scatter plot** — Compares clone sizes between two groups on
+  log-transformed axes. Points are colored by clonal category:
+  singletons (unique to one group), expanded clones, and dual clones
+  (shared between groups). Correlation statistics are displayed in the
+  subtitle.
+
+- **Venn diagram** — Shows the overlap of clone sets between up to 4
+  groups. When `with_class = TRUE`, labels include singlet counts.
+
+- **UpSet plot** — Shows intersection sizes for any number of groups.
+  When `with_class = TRUE`, clone classes (singlet, expanded) are
+  displayed as separate intersections.
 
 ## Usage
 
@@ -33,123 +53,150 @@ ClonalResidencyPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
+  How to define a clone. One of `"gene"`, `"nt"`, `"aa"` (default),
+  `"strict"`, or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - plot_type:
 
-  The type of plot to use. Default is "scatter". Possible values are
-  "scatter", "venn", and "upset".
+  The visualization type. One of `"scatter"` (default), `"venn"`, or
+  `"upset"`.
 
 - group_by:
 
-  The column name in the meta data to group the cells. Default: "Sample"
+  Metadata column used to define the groups being compared. Default is
+  `"Sample"`. Multiple columns are concatenated using `group_by_sep`.
 
 - group_by_sep:
 
-  The separator to use when combining multiple group_by columns.
-  Default: "\_"
+  Separator used when concatenating multiple `group_by` columns. Default
+  is `"_"`.
 
 - groups:
 
-  The groups to compare. Default is NULL. If NULL, all the groups in
-  `group_by` will be compared. Note that for "scatter" plot, only two
-  groups can be compared. So when there are more than two groups, the
-  combination of the pairs will be used. For "scatter" plot, the groups
-  can be specified as the comparisons separated by ":", e.g. "L:B",
-  "Y:X". If a vector, the groups will be included in the order of the
-  vector. If a named vector/list, the names will be used for the group
-  labels in the plot, and the values will be used to match the groups in
-  the data. For example, `c(B = "P17B", L = "P17L")` will include groups
-  "P17B" and "P17L" in the plot, but label them as "B" and "L",
-  respectively. For "scatter" plot, the values should be in the format
-  of "group1:group2", e.g. `c("L:B" = "group1:group2")`. The group comes
-  first in the comparison will be on the y-axis, and the group comes
-  second will be on the x-axis.
+  The groups to compare. See the *The groups parameter* section for
+  detailed usage. Default is `NULL` (all groups).
 
 - facet_by:
 
-  The column name in the meta data to facet the plots. Default: NULL
+  Not supported for `ClonalResidencyPlot`. Must be `NULL`.
 
 - split_by:
 
-  The column name in the meta data to split the plots. Default: NULL
+  Metadata column used to split the data into separate plots. Default is
+  `NULL`.
 
 - split_by_sep:
 
-  The separator used to concatenate the split_by when multiple columns
-  are used.
+  Separator used when concatenating multiple `split_by` columns. Default
+  is `"_"`.
 
 - scatter_cor:
 
-  The correlation method to use for the scatter plot. Default is
-  "pearson".
+  Correlation method for scatter plots. One of `"pearson"` (default),
+  `"spearman"`, or `"kendall"`. Correlation is computed on
+  log-transformed clone sizes of dual (shared) clones.
 
 - scatter_size_by:
 
-  The size of the points in the scatter plot. Default is "max". Possible
-  values are "max" and "total".
+  How point sizes are determined in scatter plots.
 
-  - "max" - The max size of the clone in the two groups.
+  - `"max"` (default) — Size reflects the larger clone size between the
+    two groups.
 
-  - "total" - The total size of the clone in the two groups.
+  - `"total"` — Size reflects the sum of clone sizes across both groups.
 
 - with_class:
 
-  Whether include the clonal class in the plot. Default is TRUE. Only
-  applicable for "venn" and "upset" plot.
+  Logical; if `TRUE` (default), clonal class information (singlet vs.
+  expanded) is included in Venn and UpSet plot labels. Only applicable
+  for `"venn"` and `"upset"` plot types.
 
 - order:
 
-  The order of the x-axis items or groups. Default is an empty list. It
-  should be a list of values. The names are the column names, and the
-  values are the order.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - combine:
 
-  Whether to combine the plots into a single plot. Default is TRUE.
+  Logical; if `TRUE` (default), multiple plots are combined into a
+  single layout using
+  [`plotthis::combine_plots()`](https://pwwang.github.io/plotthis/reference/combine_plots.html).
 
 - nrow:
 
-  The number of rows in the combined plot. Default is NULL.
+  Number of rows in the combined plot layout. Default is `NULL`
+  (auto-determined).
 
 - ncol:
 
-  The number of columns in the combined plot. Default is NULL.
+  Number of columns in the combined plot layout. Default is `NULL`
+  (auto-determined).
 
 - byrow:
 
-  Whether to fill the combined plot by row. Default is TRUE.
+  Logical; if `TRUE` (default), the combined layout is filled row by
+  row.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis function:
 
-  - For `scatter` plot, see
-    [`plotthis::ScatterPlot()`](https://pwwang.github.io/plotthis/reference/ScatterPlot.html).
+  - `"scatter"` —
+    [`plotthis::ScatterPlot()`](https://pwwang.github.io/plotthis/reference/ScatterPlot.html)
+    (`palette`, `palcolor`, `title`, ...)
 
-  - For `venn` plot, see
-    [`plotthis::VennDiagram()`](https://pwwang.github.io/plotthis/reference/VennDiagram.html).
+  - `"venn"` —
+    [`plotthis::VennDiagram()`](https://pwwang.github.io/plotthis/reference/VennDiagram.html)
+    (`palette`, `alpha`, ...)
 
-  - For `upset` plot, see
-    [`plotthis::UpsetPlot()`](https://pwwang.github.io/plotthis/reference/UpsetPlot.html).
+  - `"upset"` —
+    [`plotthis::UpsetPlot()`](https://pwwang.github.io/plotthis/reference/UpsetPlot.html)
+    (`palette`, ...)
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE`.
+
+## Note
+
+**Scatter plot group limits:** Each scatter plot compares exactly two
+groups. When more than two groups exist and `groups` is not specified
+with `":"` notation, all pairwise combinations are generated
+automatically.
+
+**Venn diagram group limits:** Venn diagrams support at most 4 groups.
+For more groups, use `plot_type = "upset"` instead.
+
+## The groups parameter
+
+The `groups` parameter controls which groups are compared and how they
+are displayed:
+
+- **`NULL` (default):** All levels of the `group_by` column are used.
+  For scatter plots, all pairwise combinations are plotted.
+
+- **Character vector:** Specifies a subset of groups to include. For
+  scatter plots, the specified pairs are plotted individually; use `":"`
+  notation for explicit pairings (e.g., `c("L:B", "Y:X")` compares L vs
+  B and Y vs X).
+
+- **Named vector/list:** The names are used as display labels and the
+  values match groups in the data. For example,
+  `c(B = "P17B", L = "P17L")` labels groups as "B" and "L". For scatter
+  plots, use `c("L:B" = "group1:group2")` where the first group in the
+  pair is on the y-axis and the second is on the x-axis.
 
 ## Examples
 

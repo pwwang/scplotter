@@ -34,26 +34,35 @@ Process points layer with molecules for Seurat spatial plots
 
 - object:
 
-  A Seurat object or a Giotto object.
+  A Seurat object (with spatial data loaded via SeuratObject) or a
+  Giotto object (created with Giotto). The spatial technology is
+  auto-detected from the object's image class.
 
 - fov:
 
-  The name of the field of view (FOV) to plot, only works for Seurat
-  objects.
+  The name of the field of view (FOV) to plot. For Seurat FOV-based
+  objects (Xenium, CosMx, etc.), defaults to
+  [`SeuratObject::DefaultFOV()`](https://satijalab.github.io/seurat-object/reference/DefaultFOV.html).
+  Not applicable to Visium or Slide-seq objects.
 
 - boundaries:
 
-  The name of the boundaries to plot, only works for Seurat objects.
+  The name of the segmentation boundaries within the FOV to use for cell
+  outlines. For Seurat FOV-based objects, defaults to
+  [`SeuratObject::DefaultBoundary()`](https://satijalab.github.io/seurat-object/reference/Boundaries.html).
+  Not applicable to Visium or Slide-seq objects.
 
 - x:
 
-  Internal use only, the name of the x coordinate column in the data.
-  Used to adopt different data types.
+  Internal use. The name of the x-coordinate column in the spatial data.
+  Auto-detected based on the spatial technology (`"imagerow"` for Visium
+  V1, varies for other types).
 
 - y:
 
-  Internal use only, the name of the y coordinate column in the data.
-  Used to adopt different data types.
+  Internal use. The name of the y-coordinate column in the spatial data.
+  Auto-detected based on the spatial technology (`"imagecol"` for Visium
+  V1, varies for other types).
 
 - swap_xy:
 
@@ -64,82 +73,101 @@ Process points layer with molecules for Seurat spatial plots
 
 - image:
 
-  The name of the image to plot. Possible values are:
+  Controls the image/background layer. Possible values:
 
-  - NULL: For Seurat objects with Visium data, the first image will be
-    used. For Giotto objects and Seurat objects with other spatial data,
-    no image will be plotted.
+  - `NULL` — Default behavior: for Visium, the first image is used; for
+    Giotto and FOV objects, no image is plotted.
 
-  - image name(s): the name of the image(s) to plot.
+  - A character string naming an image in the object — that specific
+    image is plotted.
 
-  - color name: a color to use as a background for the plot.
+  - A color name (e.g., `"white"`, `"lightgray"`) — fills the background
+    with a solid color rectangle.
 
-  - TRUE: For Seurat objects with Visium data, the first image will be
-    used. For Seurat objects with other spatial data, an error will be
-    raised. For Giotto objects with FOV, all (non-overlapping) images
-    will be plotted; otherwise first image will be used.
+  - `TRUE` — For Visium: uses the first image. For Giotto FOV: plots all
+    non-overlapping images. For Seurat FOV: raises an error (no single
+    default image).
 
-  - FALSE: disable image plotting.
+  - `FALSE` — Disables the image layer entirely.
 
 - crop:
 
-  Whether to crop the plot to the extent of the available data. Similar
-  to `crop` argument in
+  Logical. Whether to crop the plot to the extent of the tissue/spots.
+  When `TRUE` (default), the plot is automatically zoomed to the data
+  extent with optional `padding`. Analogous to the `crop` argument in
   [`Seurat::SpatialDimPlot()`](https://satijalab.org/seurat/reference/SpatialPlot.html).
-  Defaults to TRUE.
 
 - scale_factor:
 
-  Internal use only. The scale factor to use for the image, which will
-  be extracted from the object.
+  Internal use. The image scale factor extracted from the object, used
+  to map between pixel and tissue coordinate spaces. Automatically
+  determined from the object's image data.
 
 - group_by:
 
-  The name of the metadata column to group the points by. Should be a
-  character or factor column. A special value "molecules" can be used to
-  plot molecules in the FOV.
+  A metadata column name used to color the points. Must be a character
+  or factor column in the object's metadata. For
+  [`SpatDimPlot()`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.md),
+  if `NULL` and the object has FOV data with features, defaults to
+  `"molecules"`; otherwise defaults to `"Identity"` (the active cluster
+  identities). For
+  [`SpatFeaturePlot()`](https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.md),
+  `group_by` is ignored — use
+  [`SpatDimPlot`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.md)
+  for categorical grouping. The special value `"molecules"` enables
+  molecule-level visualization in FOV-based data.
 
 - shape:
 
-  The shape of the points, alias of `points_shape`. See
+  Numeric. The point shape (ggplot2 shape aesthetic). Default: `16`
+  (filled circle). See
   <https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html>
-  for more details.
+  for the full shape palette.
 
 - features:
 
-  A character vector of feature names to plot. If provided, the points
-  will be colored by the features. For
-  [`SpatDimPlot()`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.md),
-  this will be used to plot the molecules in the FOV. For
+  A character vector of feature names to visualize. For
   [`SpatFeaturePlot()`](https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.md),
-  the plots will be faceted by the features.
+  each feature is plotted as a separate facet (or combined theme when a
+  single feature is given), with expression values coloring the points.
+  For
+  [`SpatDimPlot()`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.md),
+  features are treated as molecule names to plot at single-molecule
+  resolution (FOV data only). Can include gene names, metadata column
+  names, or dimension reduction components.
 
 - layer:
 
-  The layer to use for the feature expression data. Applicable for both
-  Seurat and Giotto objects. Defaults to "data" for Seurat objects, and
-  "normalized" for Giotto objects. For Giotto objects, it can also be
-  "scaled", "raw", "counts", or "custom". For Seurat objects, it can be
-  "data", "scale.data", or "counts".
+  The assay layer from which to extract feature expression values. For
+  Seurat objects, one of `"data"` (default), `"scale.data"`, or
+  `"counts"`. For Giotto objects, one of `"normalized"` (default),
+  `"scaled"`, `"raw"`, `"counts"`, or `"custom"`.
 
 - legend.position:
 
-  The position of the legend. Defaults to "right".
+  Character. Legend position. One of `"right"` (default), `"left"`,
+  `"top"`, `"bottom"`, or `"none"`.
 
 - legend.direction:
 
-  The direction of the legend. Defaults to "vertical".
+  Character. Legend direction. One of `"vertical"` (default) or
+  `"horizontal"`.
 
 - flip_y:
 
-  Internal use mostly, unless you want to flip the y-axis of the plot.
+  Logical. Whether to flip the y-axis. This is primarily for internal
+  coordinate system alignment — Visium/Slide-seq objects default to
+  `TRUE`, FOV-based objects to `FALSE`. In most cases you do not need to
+  set this manually.
 
 - ext:
 
-  The extent of the plot. If NULL, the extent will be calculated from
-  the data. If a numeric vector of length 4, it should be in the format
-  c(xmin, xmax, ymin, ymax). It can also be an object created by
-  [`terra::ext()`](https://rspatial.github.io/terra/reference/ext.html).
+  The spatial extent (bounding box) of the plot. If `NULL`, the extent
+  is calculated automatically from the data or, when `crop = TRUE`, from
+  the tissue coordinates. Can be a numeric vector in the format
+  `c(xmin, xmax, ymin, ymax)` or a
+  [`terra::SpatExtent`](https://rspatial.github.io/terra/reference/ext.html)
+  object.
 
 ## Value
 

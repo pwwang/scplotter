@@ -1,6 +1,19 @@
-# ClonalRarefactionPlot
+# Clonal Rarefaction Plot
 
-Plot the rarefaction curves
+Visualizes clonal rarefaction curves — estimates of clone richness as a
+function of sampling depth. Rarefaction addresses a fundamental
+challenge in immune repertoire analysis: the number of clones observed
+depends on how many cells are sequenced. By repeatedly subsampling
+(bootstrapping) the data at varying depths, rarefaction curves reveal
+whether the repertoire has been sampled to saturation or whether
+additional sequencing would uncover many more clones.
+
+`ClonalRarefactionPlot` extracts clone count data from the repertoire,
+optionally groups it by metadata columns, and generates rarefaction
+curves via
+[`plotthis::RarefactionPlot()`](https://pwwang.github.io/plotthis/reference/RarefactionPlot.html).
+When `split_by` is specified, separate plots are generated for each
+split group and combined into a multi-panel layout.
 
 ## Usage
 
@@ -31,92 +44,136 @@ ClonalRarefactionPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable
+  How to define a clone. One of `"gene"`, `"nt"`, `"aa"` (default),
+  `"strict"`, or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - group_by:
 
-  A character vector of column names to group the samples. Default is
-  "Sample".
+  Metadata column(s) used to define the curves (each unique group
+  produces one rarefaction curve). Multiple columns are concatenated
+  using `group_by_sep`. Default is `"Sample"`.
 
 - group_by_sep:
 
-  The separator for the group_by column. Default is "\_".
+  Separator used when concatenating multiple `group_by` columns. Default
+  is `"_"`.
 
 - order:
 
-  A list specifying the order of the levels for each grouping variable.
-  Default is NULL, which will use the order in the data.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - n_boots:
 
-  The number of bootstrap samples. Default is 20.
+  Number of bootstrap iterations for estimating confidence intervals.
+  Higher values produce smoother confidence bands but increase
+  computation time. Default is `20`.
 
 - q:
 
-  The hill number. Default is 0.
-
-  - 0 - Species richness
-
-  - 1 - Shannon entropy
-
-  - 2 - Simpson index#'
+  The diversity order (Hill number). `0` for species richness, `1` for
+  Shannon entropy, `2` for Simpson index. Default is `0`. See the *Hill
+  numbers* section for details.
 
 - facet_by:
 
-  A character vector of column names to facet the plots. Default is
-  NULL.
+  Not supported for `ClonalRarefactionPlot`. Use `split_by` or
+  `group_by` instead. Must be `NULL`.
 
 - split_by:
 
-  A character vector of column names to split the plots. Default is
-  NULL.
+  Metadata column used to split the data into separate rarefaction
+  plots. When specified, an independent rarefaction is performed for
+  each split group, and all plots are combined. Default is `NULL`.
 
 - split_by_sep:
 
-  The separator for the split_by column. Default is "\_".
+  Separator used when concatenating multiple `split_by` columns. Default
+  is `"_"`.
 
 - palette:
 
-  The color palette to use. Default is "Paired".
+  Color palette for distinguishing curves from different groups. Default
+  is `"Paired"`.
 
 - combine:
 
-  Whether to combine the plots into a single plot. Default is TRUE.
+  Logical; if `TRUE` (default), multiple plots (from `split_by`) are
+  combined into a single layout.
 
 - nrow:
 
-  The number of rows in the combined plot. Default is NULL.
+  Number of rows in the combined plot layout. Default is `NULL`
+  (auto-determined).
 
 - ncol:
 
-  The number of columns in the combined plot. Default is NULL.
+  Number of columns in the combined plot layout. Default is `NULL`
+  (auto-determined).
 
 - byrow:
 
-  Whether to fill the combined plot by row. Default is TRUE.
+  Logical; if `TRUE` (default), the combined layout is filled row by
+  row.
 
 - ...:
 
-  Other arguments passed to
+  Additional arguments passed to
   [`plotthis::RarefactionPlot()`](https://pwwang.github.io/plotthis/reference/RarefactionPlot.html).
+  Key parameters include:
+
+  - `type` — Plot type: `1` (line only), `2` (line with confidence
+    band), or `3` (confidence band only).
+
+  - `title` — Plot title.
+
+  - `xlab`, `ylab` — Axis labels.
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE`.
+
+## Note
+
+**Bootstrap iterations:** The `n_boots` parameter controls the number of
+resampling iterations. Higher values give more stable estimates but
+increase computation time linearly. For exploratory analysis,
+`n_boots = 20` is typically sufficient; for publication-quality figures,
+consider using `n_boots = 100` or more.
+
+**facet_by not supported:** Unlike many other scplotter functions,
+`ClonalRarefactionPlot` does not support `facet_by`. Use `split_by` for
+separate plots or `group_by` to show multiple curves on the same axes.
+
+## Hill numbers (the q parameter)
+
+The `q` parameter selects the diversity order (Hill number) used for
+rarefaction:
+
+- **`q = 0`** — Species richness (clone count). Counts the number of
+  distinct clonotypes regardless of their size. Most sensitive to rare
+  clones.
+
+- **`q = 1`** — Shannon entropy (exponential). Weighs clones
+  proportionally to their abundance. Balances rare and dominant clones.
+
+- **`q = 2`** — Simpson index (inverse). Weighs dominant clones more
+  heavily. Least sensitive to rare clones.
+
+Higher values of `q` increasingly emphasize abundant clones over rare
+ones.
 
 ## Examples
 

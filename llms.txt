@@ -151,60 +151,61 @@ Functions for plotting single cell RNA-seq data
 - [`CellVelocityPlot()`](https://pwwang.github.io/scplotter/reference/CellVelocityPlot.md)
   : Cell Velocity Plot
 - [`FeatureStatPlot()`](https://pwwang.github.io/scplotter/reference/FeatureStatPlot.md)
-  : Feature statistic plot
+  : Visualize feature expression and statistics across cell groups
 - [`ClustreePlot()`](https://pwwang.github.io/scplotter/reference/ClustreePlot.md)
-  : Clustree plot
+  : Visualize cluster stability across clustering resolutions
 - [`EnrichmentPlot()`](https://pwwang.github.io/scplotter/reference/EnrichmentPlot.md)
-  : Enrichment Plot
+  : Visualize gene set enrichment and over-representation analysis
+  results
 - [`CCCPlot()`](https://pwwang.github.io/scplotter/reference/CCCPlot.md)
-  : Cell-Cell Communication Plot
+  : Visualize Cell-Cell Communication (CCC) Interactions
 - [`MarkersPlot()`](https://pwwang.github.io/scplotter/reference/MarkersPlot.md)
-  : Visualize Markers
+  : Visualize differential expression markers
 
 ## scTCR-seq/scBCR-seq
 
 Functions for plotting single cell TCR-seq/BCR-seq data
 
 - [`ClonalVolumePlot()`](https://pwwang.github.io/scplotter/reference/ClonalVolumePlot.md)
-  : ClonalVolumePlot
+  : Clonal Volume Plot
 - [`ClonalAbundancePlot()`](https://pwwang.github.io/scplotter/reference/ClonalAbundancePlot.md)
-  : ClonalAbundancePlot
+  : Clonal Abundance Plot
 - [`ClonalLengthPlot()`](https://pwwang.github.io/scplotter/reference/ClonalLengthPlot.md)
-  : ClonalLengthPlot
+  : Clonal CDR3 Length Plot
 - [`ClonalResidencyPlot()`](https://pwwang.github.io/scplotter/reference/ClonalResidencyPlot.md)
-  : ClonalResidencyPlot
+  : Clonal Residency Plot
 - [`ClonalCompositionPlot()`](https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.md)
-  : ClonalCompositionPlot
+  : Clonal Composition Plot
 - [`ClonalOverlapPlot()`](https://pwwang.github.io/scplotter/reference/ClonalOverlapPlot.md)
-  : ClonalOverlapPlot
+  : Clonal Overlap Plot
 - [`ClonalStatPlot()`](https://pwwang.github.io/scplotter/reference/ClonalStatPlot.md)
-  : ClonalStatPlot
+  : Visualize clone abundance, frequency, and dynamics across groups
 - [`ClonalDiversityPlot()`](https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.md)
-  : ClonalDiversityPlot
+  : Clonal Diversity Plot
 - [`ClonalGeneUsagePlot()`](https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.md)
-  : ClonalGeneUsagePlot
+  : Visualize TCR/BCR gene segment usage
 - [`ClonalPositionalPlot()`](https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.md)
-  : ClonalPositionalPlot
+  : Visualize positional properties of CDR3 sequences
 - [`ClonalKmerPlot()`](https://pwwang.github.io/scplotter/reference/ClonalKmerPlot.md)
-  : ClonalKmerPlot
+  : Visualize CDR3 k-mer (motif) frequency
 - [`ClonalRarefactionPlot()`](https://pwwang.github.io/scplotter/reference/ClonalRarefactionPlot.md)
-  : ClonalRarefactionPlot
+  : Clonal Rarefaction Plot
 
 ## Spatial data visualization
 
 Functions for plotting spatial data
 
 - [`SpatDimPlot()`](https://pwwang.github.io/scplotter/reference/SpatDimPlot.md)
-  : Plot categories for spatial data
+  : Visualize categorical groups on spatial coordinates
 - [`SpatFeaturePlot()`](https://pwwang.github.io/scplotter/reference/SpatFeaturePlot.md)
-  : Plot features for spatial data
+  : Visualize feature expression on spatial coordinates
 
 ## Visualizing using LLMs
 
 Functions/Classes for visualizing using LLMs
 
 - [`SCPlotterChat`](https://pwwang.github.io/scplotter/reference/SCPlotterChat.md)
-  : SCPlotterChat Class
+  : LLM-Powered Chat Interface for Single-Cell Visualization
 
 ## data
 
@@ -233,7 +234,7 @@ Functions for selecting clones
   [`ne()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
   [`and()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
   [`or()`](https://pwwang.github.io/scplotter/reference/clone_selectors.md)
-  : Helper functions to select clones based on various criteria
+  : Programmatic clone selection for TCR/BCR repertoire analysis
 
 ## Re-exports
 

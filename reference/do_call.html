@@ -65,27 +65,32 @@ big objects in the list.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">do_call</span><span class="op">(</span><span class="va">fn</span>, <span class="va">args</span>, quote <span class="op">=</span> <span class="cn">FALSE</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">do_call</span><span class="op">(</span><span class="va">what</span>, <span class="va">args</span>, quote <span class="op">=</span> <span class="cn">FALSE</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-fn">fn<a class="anchor" aria-label="anchor" href="#arg-fn"></a></dt>
-<dd><p>A function to call</p></dd>
+<dl><dt id="arg-what">what<a class="anchor" aria-label="anchor" href="#arg-what"></a></dt>
+<dd><p>either a function or a non-empty character string naming the
+    function to be called.</p></dd>
 
 
 <dt id="arg-args">args<a class="anchor" aria-label="anchor" href="#arg-args"></a></dt>
-<dd><p>A list of arguments to pass to the function</p></dd>
+<dd><p>a <em>list</em> of arguments to the function call.  The
+    <code>names</code> attribute of <code>args</code> gives the argument names.</p></dd>
 
 
 <dt id="arg-quote">quote<a class="anchor" aria-label="anchor" href="#arg-quote"></a></dt>
-<dd><p>Whether to quote the arguments</p></dd>
+<dd><p>a logical value indicating whether to quote the
+    arguments.</p></dd>
 
 
 <dt id="arg-envir">envir<a class="anchor" aria-label="anchor" href="#arg-envir"></a></dt>
-<dd><p>The environment to evaluate the function in</p></dd>
+<dd><p>an environment within which to evaluate the call.  This
+    will be most useful if <code>what</code> is a character string and
+    the arguments are symbols or quoted expressions.</p></dd>
 
 </dl></div>
     <div class="section level2">

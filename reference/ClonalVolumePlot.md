@@ -1,6 +1,18 @@
-# ClonalVolumePlot
+# Clonal Volume Plot
 
-ClonalVolumePlot
+Visualizes the number (or fraction) of unique T-cell or B-cell clones
+across samples and metadata groups. Clonal volume — the count of
+distinct clonotypes detected in a sample — is a fundamental measure of
+immune repertoire diversity. Higher clonal volume indicates a more
+diverse repertoire, while lower volume may reflect clonal expansion in
+response to antigen stimulation.
+
+`ClonalVolumePlot` computes clonal counts via
+[`scRepertoire::clonalQuant()`](https://www.borch.dev/uploads/scRepertoire/reference/clonalQuant.html)
+and visualizes them as bar, box, or violin plots. It accepts both
+scRepertoire combined TCR/BCR data and Seurat objects with clonal
+information integrated via
+[`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 ## Usage
 
@@ -26,75 +38,91 @@ ClonalVolumePlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
+  How to define a clone. One of:
+
+  - `"gene"` — V(D)JC gene combination
+
+  - `"nt"` — CDR3 nucleotide sequence
+
+  - `"aa"` — CDR3 amino acid sequence (default)
+
+  - `"strict"` — V(D)JC gene + CDR3 nucleotide
+
+  Or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - scale:
 
-  Whether to use clone proportion or clone size for the plot.
+  Logical; if `TRUE`, values are scaled to clone proportion (fraction of
+  unique clones) instead of absolute clone counts. Default is `FALSE`.
 
 - plot_type:
 
-  The type of plot to use. Default is "bar". Possible values are "bar",
-  "box", and "violin". When "box" or "violin" is used, the data will be
-  broken down by the Sample and plotted for each group.
+  The visualization type. One of `"bar"` (default), `"box"`, or
+  `"violin"`. For `"box"` and `"violin"`, the data is broken down by
+  Sample and grouped by `group_by` to show per-sample distributions.
 
 - x:
 
-  The column name in the meta data to use as the x-axis. Default:
-  "Sample"
+  The metadata column used as the x-axis. Default is `"Sample"`.
 
 - group_by:
 
-  The column name in the meta data to group the cells. Default: NULL
+  Metadata column used to group (color) the data. Default is `NULL`.
 
 - facet_by:
 
-  The column name in the meta data to facet the plots. Default: NULL
+  Metadata column used to facet the plot into separate panels. Default
+  is `NULL`.
 
 - split_by:
 
-  The column name in the meta data to split the plots. Default: NULL
+  Metadata column used to split the data into separate plots. Default is
+  `NULL`.
 
 - order:
 
-  The order of the x-axis items or groups. Default is an empty list. It
-  should be a list of values. The names are the column names, and the
-  values are the order.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`
+  (use existing factor levels or alphabetical order).
 
 - ylab:
 
-  The y-axis label.
+  Y-axis label. Default is `NULL`, which auto-generates
+  `"Number of Unique Clones"` or `"Fraction of Unique Clones"` depending
+  on `scale`.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis function:
 
-  - For `bar` plot, see
-    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html).
+  - `"bar"` —
+    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html)
+    (`position`, `palette`, `fill_by`, ...)
 
-  - For `box` plot, see
-    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"box"` —
+    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`comparisons`, `alpha`, `palette`, ...)
 
-  - For `violin` plot, see
-    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"violin"` —
+    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`add_box`, `comparisons`, `palette`, ...)
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE` is
+passed via `...`.
 
 ## Examples
 

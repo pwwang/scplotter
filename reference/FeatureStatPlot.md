@@ -1,13 +1,49 @@
-# Feature statistic plot
+# Visualize feature expression and statistics across cell groups
 
-This function creates various types of feature statistic plots for a
-Seurat object, a Giotto object, a path to an .h5ad file or an opened
-`H5File` by `hdf5r` package. It allows for plotting features such as
-gene expression, scores, or other metadata across different groups or
-conditions. The function supports multiple plot types including violin,
-box, bar, ridge, dimension reduction, correlation, heatmap, and dot
-plots. It can also handle multiple features and supports faceting,
-splitting, and grouping by metadata columns.
+A central question in single-cell analysis is how features — genes, gene
+signatures, module scores, or other molecular measurements — vary across
+cell types, conditions, or experimental groups. `FeatureStatPlot`
+answers this question by providing eight complementary visualization
+types, each suited to a different analytical perspective:
+
+- **violin** — Violin plot showing the full distribution of feature
+  values per identity group. Best for comparing expression distributions
+  and detecting bimodality or outliers.
+
+- **box** — Box plot summarizing feature values with quartiles and
+  outliers. A compact alternative to the violin plot.
+
+- **bar** — Bar chart of aggregated feature values (default: mean) per
+  group. Useful for summary-level comparisons with error bars.
+
+- **ridge** — Ridge (joy) plot showing density curves per group.
+  Effective when comparing many groups or when distribution shape
+  matters.
+
+- **dim** — Dimensionality reduction plot (UMAP, t-SNE, PCA) with cells
+  colored by feature expression. Reveals spatial patterns of gene
+  expression in the reduced space.
+
+- **cor** — Correlation plot between two features (scatter with fitted
+  line and annotations) or among multiple features (pairs plot). Reveals
+  co-expression relationships.
+
+- **heatmap** — Heatmap of feature expression across identity groups.
+  Supports rich annotations (row/column metadata, bar charts, pie
+  charts, violin plots) and flexible clustering. The go-to choice for
+  visualizing many features across many groups.
+
+- **dot** — Dot plot (a shortcut for heatmap with `cell_type = "dot"`)
+  where dot size reflects the fraction of expressing cells and dot color
+  reflects mean expression. A compact, publication-ready format for
+  marker gene visualization.
+
+The function is an S3 generic with methods for Seurat objects, Giotto
+objects, AnnData (.h5ad) file paths, and `H5File` objects (via hdf5r).
+Each method extracts the relevant expression matrix and metadata, then
+delegates to the internal
+[`.feature_stat_plot()`](https://pwwang.github.io/scplotter/reference/dot-feature_stat_plot.md)
+which dispatches to the appropriate plotthis plotting function.
 
 ## Usage
 
@@ -43,165 +79,329 @@ FeatureStatPlot(
 
 - object:
 
-  A seurat object, a giotto object, a path to an .h5ad file or an opened
-  `H5File` by `hdf5r` package.
+  An object containing single-cell expression data. Supported types: a
+  Seurat object, a Giotto object, a character path to an `.h5ad` file,
+  or an opened `H5File` object from the hdf5r package.
 
 - features:
 
-  A character vector of feature names
+  A character vector or a named list of character vectors specifying the
+  features to plot. Features can be gene names, gene signature scores,
+  or any column present in the expression matrix or metadata. Named
+  lists (e.g., `list(Beta = c("Ins1", "Ins2"))`) enable automatic row
+  grouping in heatmap and dot plots.
 
 - plot_type:
 
-  Type of the plot. It can be "violin", "box", "bar", "ridge", "dim",
-  "cor", "heatmap" or "dot"
+  Character. The type of plot to generate. One of: `"violin"`, `"box"`,
+  `"bar"`, `"ridge"`, `"dim"`, `"cor"`, `"heatmap"`, or `"dot"`. See the
+  Description section for guidance on choosing a plot type. Default:
+  `"violin"`.
 
 - spat_unit:
 
-  The spatial unit to use for the plot. Only applied to Giotto objects.
+  Character. The spatial unit to extract data from. Only applicable to
+  Giotto objects. Default: `NULL` (auto-detected by Giotto).
 
 - feat_type:
 
-  feature type of the features (e.g. "rna", "dna", "protein"), only
-  applied to Giotto objects.
+  Character. The feature type to extract (e.g., `"rna"`, `"dna"`,
+  `"protein"`). Only applicable to Giotto objects. Default: `NULL`
+  (auto-detected by Giotto).
 
 - downsample:
 
-  A numeric the number of cells in each identity group to downsample to
-  for violin, box, or ridge plots. If n \> 1, it is treated as the
-  number of cells to downsample to. If 0 \< n \<= 1, it is treated as
-  the fraction of cells to downsample to.
+  Numeric. Number or fraction of cells to downsample to per identity
+  group. Used for `"violin"`, `"box"`, and `"ridge"` plot types to
+  reduce overplotting in large datasets:
+
+  - If `downsample > 1`: Exact number of cells per group.
+
+  - If `0 < downsample <= 1`: Fraction of cells per group.
+
+  Downsampling is performed within each identity group (via
+  `dplyr::slice_sample(by = ident)`). Default: `NULL` (no downsampling).
 
 - pos_only:
 
-  Whether to only include cells with positive feature values.
+  Character. Whether to restrict to cells with positive feature values:
 
-  - "no": Do not filter cells based on feature values. (default)
+  - `"no"` — Include all cells (default).
 
-  - "any": Include cells with positive values for any of the features.
+  - `"any"` — Include cells where at least one feature is \> 0.
 
-  - "all": Include cells with positive values for all of the features.
-    If you have named features (i.e. a named list), `pos_only` will be
-    applied to all flattened features.
+  - `"all"` — Include only cells where all features are \> 0.
+
+  For named feature lists, filtering is applied to all flattened
+  features.
 
 - reduction:
 
-  Name of the reduction to plot (for example, "umap"), only used when
-  `plot_type` is "dim" or you can to use the reduction as feature.
+  Character. Name of the dimensionality reduction to use (e.g.,
+  `"umap"`, `"tsne"`, `"pca"`). Required when `plot_type = "dim"`;
+  optional for other types where the reduction coordinates can be used
+  as feature values. For Seurat objects, defaults to the default
+  reduction if available. Default: `NULL`.
 
 - graph:
 
-  Specify the graph name to add edges between cell neighbors to the
-  plot, only used when `plot_type` is "dim".
+  Character or `TRUE`. A graph (nearest-neighbor network) name to
+  overlay edges between connected cells on the dim plot. For Seurat
+  objects, the name should exist in `object@graphs`. For Giotto objects,
+  the name should exist in the nearest network list. If `TRUE`, the
+  first available graph is used. Only used when `plot_type = "dim"`.
+  Default: `NULL` (no edges).
 
 - bg_cutoff:
 
-  Background cutoff for the dim plot, only used when `plot_type` is
-  "dim".
+  Numeric. Expression cutoff for the background in dim plots. Cells with
+  expression below this value are shown in the background color
+  (typically gray). Set to `-Inf` to color all cells. Only used when
+  `plot_type = "dim"`. Default: `0`.
 
 - dims:
 
-  Dimensions to plot, only used when `plot_type` is "dim".
+  Integer vector of length 2. The dimensions (columns) of the reduction
+  to plot on the x and y axes. Only used when `plot_type = "dim"`.
+  Default: `1:2`.
 
 - rows_name:
 
-  The name of the rows in the heatmap, only used when `plot_type` is
-  "heatmap".
+  Character. The column name used to identify feature rows in the
+  heatmap and as the key when merging `rows_data`. Only used when
+  `plot_type = "heatmap"` or `"dot"`. Default: `"Features"`.
 
 - ident:
 
-  The column name in the meta data to identify the cells.
+  Character. The metadata column name identifying cell groups (e.g.,
+  `"CellType"`, `"SubCellType"`, `"seurat_clusters"`). Used as the
+  x-axis for violin, box, bar, and ridge plots; as the heatmap columns
+  for heatmap and dot plots; and as the grouping variable for
+  correlation plots. For Seurat objects, defaults to the active identity
+  (`"Identity"`). Required for non-dim plots on Giotto and H5File
+  objects. Default: `NULL`.
 
 - assay:
 
-  The assay to use for the feature data.
+  Character. The assay name to extract feature data from (e.g., `"RNA"`,
+  `"SCT"`, `"integrated"`). For Seurat objects, passed to
+  [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
+  For H5File objects, determines whether to read from `X` (when
+  `assay = "RNA"`) or `layers/<assay>`. Not applicable to Giotto
+  objects. Default: `NULL`.
 
 - layer:
 
-  The layer to use for the feature data.
+  Character. The layer name within the assay to extract data from (e.g.,
+  `"data"`, `"counts"`, `"scale.data"`). For Seurat objects, passed to
+  [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
+  For Giotto objects, passed to
+  [`GiottoClass::getExpression()`](https://giotto-suite.github.io/GiottoClass/reference/getExpression.html).
+  Default: `NULL`.
 
 - agg:
 
-  The aggregation function to use for the bar plot.
+  Function. The aggregation function applied when `plot_type = "bar"`.
+  Common choices: `mean` (default), `median`, `sum`. Applied within each
+  group defined by `ident`, `group_by`, and `split_by`.
 
 - group_by:
 
-  The column name in the meta data to group the cells.
+  Character. A metadata column name to further subdivide cells within
+  each identity group (e.g., coloring by treatment within cell type).
+  Works with `"violin"`, `"box"`, `"bar"`, and `"ridge"` plot types.
+  Default: `NULL`.
 
 - split_by:
 
-  Column name in the meta data to split the cells to different plots. If
-  TRUE, the cells are split by the features.
+  Character vector or `TRUE`. Metadata column name(s) to split the data
+  into separate plots (one per unique value). If `TRUE`, splits by the
+  features themselves, creating one plot per feature. Multiple columns
+  are concatenated. Default: `NULL`.
 
 - facet_by:
 
-  Column name in the meta data to facet the plots. Should be always
-  NULL.
+  Character vector. Metadata column name(s) to facet the data within a
+  plot. Note: for `"violin"`, `"box"`, `"bar"`, and `"ridge"` plot
+  types, `facet_by` should always be `NULL` because the plot is already
+  faceted by features. Works normally with `"dim"`, `"heatmap"`,
+  `"dot"`, and `"cor"` plot types. Default: `NULL`.
 
 - xlab:
 
-  The x-axis label.
+  Character. Custom x-axis label. Default: `NULL` (auto-generated based
+  on plot type).
 
 - ylab:
 
-  The y-axis label.
+  Character. Custom y-axis label. Default: `NULL` (auto-generated based
+  on plot type).
 
 - x_text_angle:
 
-  The angle of the x-axis text. Only used when `plot_type` is "violin",
-  "bar", or "box".
+  Numeric. Angle (in degrees) for x-axis text labels. Used for
+  `"violin"`, `"box"`, and `"bar"` plot types. Default: `NULL` (defaults
+  to `45`).
 
 - ...:
 
-  Other arguments passed to the plot functions.
+  Additional arguments passed to the underlying plotthis plotting
+  function, determined by `plot_type`:
 
-  - For `plot_type` "violin", the arguments are passed to
-    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  `"violin"`
 
-  - For `plot_type` "box", the arguments are passed to
-    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  :   [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
 
-  - For `plot_type` "bar", the arguments are passed to
-    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html).
+  `"box"`
 
-  - For `plot_type` "ridge", the arguments are passed to
-    [`plotthis::RidgePlot()`](https://pwwang.github.io/plotthis/reference/RidgePlot.html).
+  :   [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
 
-  - For `plot_type` "dim", the arguments are passed to
-    [`plotthis::FeatureDimPlot()`](https://pwwang.github.io/plotthis/reference/dimplot.html).
+  `"bar"`
 
-  - For `plot_type` "heatmap", the arguments are passed to
-    [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html).
+  :   [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html)
 
-  - For `plot_type` "cor" with 2 features, the arguments are passed to
-    [`plotthis::CorPlot()`](https://pwwang.github.io/plotthis/reference/CorPlot.html).
+  `"ridge"`
 
-  - For `plot_type` "cor" with more than 2 features, the arguments are
-    passed to
-    [`plotthis::CorPairsPlot()`](https://pwwang.github.io/plotthis/reference/CorPairsPlot.html).
+  :   [`plotthis::RidgePlot()`](https://pwwang.github.io/plotthis/reference/RidgePlot.html)
 
-  - For `plot_type` "dot", the arguments are passed to
-    [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
-    with `cell_type` set to "dot".
+  `"dim"`
+
+  :   [`plotthis::FeatureDimPlot()`](https://pwwang.github.io/plotthis/reference/dimplot.html)
+
+  `"heatmap"`
+
+  :   [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
+
+  `"dot"`
+
+  :   [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
+      with `cell_type = "dot"`
+
+  `"cor"`
+
+  :   [`plotthis::CorPlot()`](https://pwwang.github.io/plotthis/reference/CorPlot.html)
+      (2 features) or
+      [`plotthis::CorPairsPlot()`](https://pwwang.github.io/plotthis/reference/CorPairsPlot.html)
+      (3+ features)
+
+  Common arguments include `palette`, `flip`, `add_bg`, `add_point`,
+  `add_box`, `stack`, `comparisons`, `theme`, `legend.position`, and
+  many more — see the documentation of the specific plotthis function
+  for details.
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A ggplot object (or a `patchwork` object when `split_by` generates
+multiple plots and `combine = TRUE`), or a list of ggplot objects if
+`combine = FALSE`. The specific return type depends on the underlying
+plotthis function dispatched by `plot_type`.
 
 ## Details
 
-See:
+See the vignettes for examples with non-Seurat objects:
 
-- <https://pwwang.github.io/scplotter/articles/Giotto_Visium.html>
+- [Giotto
+  Visium](https://pwwang.github.io/scplotter/articles/Giotto_Visium.html)
 
-- <https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html>
+- [Giotto
+  Xenium](https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html)
 
-for examples of using this function with Giotto objects.
+- [Working with AnnData .h5ad
+  files](https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html)
 
-And see:
+## Note
 
-- <https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html>
+- For `"violin"`, `"box"`, `"bar"`, and `"ridge"` plot types, the data
+  is automatically pivoted from wide to long format and features are
+  faceted. Do not use `facet_by` with these types — use `split_by`
+  instead.
 
-for examples of using this function with .h5ad files.
+- For `"heatmap"` and `"dot"` plot types, named feature lists are
+  automatically converted to a `rows_data` data frame with
+  `rows_split_by` set. You can also provide your own `rows_data` for
+  richer annotations (e.g., TF status, CSPA membership).
+
+- The `dot` plot type is a convenience shortcut for
+  `plot_type = "heatmap"` with `cell_type = "dot"`. It pre-configures
+  sensible defaults: dot size = fraction of expressing cells, dot color
+  = mean expression, reticle added, no clustering.
+
+- For `"dim"` plots with `graph`, edges are drawn between connected
+  cells. This helps reveal whether feature expression follows the
+  neighborhood structure (e.g., continuous gradients vs scattered
+  expression).
+
+- When `ident` is not specified for Seurat objects, the active identity
+  (`Idents(object)`) is used automatically.
+
+- Giotto objects require `spat_unit` and `feat_type` to locate the
+  correct expression matrix and metadata.
+
+## Input objects
+
+`FeatureStatPlot` supports four input types, each handled by its own S3
+method:
+
+- **Seurat** (`FeatureStatPlot.Seurat`) — Uses
+  [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html)
+  to extract expression data and `@meta.data` for cell metadata.
+  Reductions are accessed via
+  [`SeuratObject::Embeddings()`](https://satijalab.github.io/seurat-object/reference/Embeddings.html).
+
+- **Giotto** (`FeatureStatPlot.giotto`) — Uses
+  [`GiottoClass::getExpression()`](https://giotto-suite.github.io/GiottoClass/reference/getExpression.html)
+  and
+  [`GiottoClass::getCellMetadata()`](https://giotto-suite.github.io/GiottoClass/reference/getCellMetadata.html).
+  Requires `spat_unit` and `feat_type` parameters.
+
+- **.h5ad path** (`FeatureStatPlot.character`) — Opens the file via
+  hdf5r, then delegates to `FeatureStatPlot.H5File`. Currently only
+  `.h5ad` (AnnData) files are supported.
+
+- **H5File** (`FeatureStatPlot.H5File`) — Reads expression from `X` (or
+  `layers/<assay>`), cell metadata from `obs`, and reductions from
+  `obsm`.
+
+## Feature specification
+
+Features can be provided as:
+
+- **A character vector** — e.g., `c("Sox9", "Neurog3", "Ins1")`. All
+  features are treated equally.
+
+- **A named list** — e.g.,
+  `list(Ductal = c("Sox9", "Anxa2"), Endocrine = c("Ins1", "Gcg"))`. The
+  names are used as row group annotations in heatmap and dot plots (via
+  `rows_split_by`), automatically creating a `rows_data` data frame that
+  maps each feature to its group. This is especially useful for
+  organizing marker genes by cell type.
+
+When `pos_only` is `"any"` or `"all"`, cells are filtered based on
+whether they have positive values for the specified features. For named
+feature lists, the filter applies to the flattened set of all features.
+
+## Faceting and splitting behavior
+
+For most plot types (`"violin"`, `"box"`, `"bar"`, `"ridge"`), features
+are automatically faceted — each feature appears in its own panel. The
+`facet_by` parameter is therefore restricted for these types. Use
+`split_by` (or `split_by = TRUE` to split by feature) for creating
+separate plots per category. For `"dim"`, `"heatmap"`, `"dot"`, and
+`"cor"` plots, features are incorporated into a single visualization and
+`split_by`/`facet_by` behave normally.
+
+## See also
+
+[`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html),
+[`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html),
+[`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html),
+[`plotthis::RidgePlot()`](https://pwwang.github.io/plotthis/reference/RidgePlot.html),
+[`plotthis::FeatureDimPlot()`](https://pwwang.github.io/plotthis/reference/dimplot.html),
+[`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html),
+[`plotthis::CorPlot()`](https://pwwang.github.io/plotthis/reference/CorPlot.html),
+[`plotthis::CorPairsPlot()`](https://pwwang.github.io/plotthis/reference/CorPairsPlot.html),
+[`CellDimPlot`](https://pwwang.github.io/scplotter/reference/CellDimPlot.md),
+[`CellStatPlot`](https://pwwang.github.io/scplotter/reference/CellStatPlot.md)
 
 ## Examples
 

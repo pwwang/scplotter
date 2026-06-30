@@ -1,6 +1,16 @@
-# ClonalLengthPlot
+# Clonal CDR3 Length Plot
 
-Plot the length distribution of the CDR3 sequences
+Visualizes the distribution of CDR3 sequence lengths across the immune
+repertoire. CDR3 length is a key feature of T-cell and B-cell receptor
+diversity — different clones have different CDR3 lengths, and shifts in
+length distribution can indicate clonal selection, antigen-specific
+expansion, or repertoire bias.
+
+`ClonalLengthPlot` computes CDR3 length data via
+[`scRepertoire::clonalLength()`](https://www.borch.dev/uploads/scRepertoire/reference/clonalLength.html)
+and visualizes the distribution as bar, box, violin, or density plots.
+Length is measured in amino acids (when `clone_call = "aa"`) or
+nucleotides (when `clone_call = "nt"`).
 
 ## Usage
 
@@ -27,80 +37,101 @@ ClonalLengthPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - only "nt" or "aa" is supported.
+  How to define a clone. Only `"nt"` (CDR3 nucleotide length) or `"aa"`
+  (CDR3 amino acid length, default) are supported.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRB", "TRD", "TRG", "IGH", or "IGL" to specify a specific
-  chain.
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - plot_type:
 
-  The type of plot to use. Default is "bar". Possible values are "box",
-  "violin" and "density".
+  The visualization type. One of `"bar"` (default), `"box"`, `"violin"`,
+  or `"density"`.
+
+  - `"bar"` — Bar chart of clone counts at each CDR3 length. Empty
+    length bins (zero clones) are padded with zeros to maintain a
+    continuous x-axis.
+
+  - `"box"` — Box plot of per-group length distributions.
+
+  - `"violin"` — Violin plot of per-group length distributions.
+
+  - `"density"` — Kernel density estimate of the length distribution,
+    using raw (unaggregated) data.
 
 - x_nbreaks:
 
-  The number of breaks for the x-axis. Default is 10.
+  Number of x-axis breaks for the bar plot. Default is `10`. Breaks are
+  computed as quantiles of the length range and rounded to the nearest
+  10.
 
 - group_by:
 
-  The column name in the meta data to group the cells. Default: "Sample"
+  Metadata column used to group (color) the data. Default is `"Sample"`.
 
 - order:
 
-  The order of the groups. Default is an empty list. It should be a list
-  of values. The names are the column names, and the values are the
-  order.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - xlab:
 
-  The x-axis label.
+  X-axis label. Default is `"Length"`.
 
 - ylab:
 
-  The y-axis label.
+  Y-axis label. Default is `NULL`, which auto-generates
+  `"Number of CDR3 (AA)"` or `"Number of CDR3 (NT)"` based on
+  `clone_call`.
 
 - position:
 
-  The position of the bars for bar plot on the x-axis. Default is
-  "dodge".
+  Bar position for the bar plot. One of `"dodge"` (default), `"stack"`,
+  or `"fill"`.
 
 - facet_by:
 
-  The column name in the meta data to facet the plots. Default: NULL
+  Metadata column used to facet the plot into separate panels. Default
+  is `NULL`.
 
 - split_by:
 
-  The column name in the meta data to split the plots. Default: NULL
+  Metadata column used to split the data into separate plots. Default is
+  `NULL`.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis function:
 
-  - For `bar` plot, see
-    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html).
+  - `"bar"` —
+    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html)
+    (`palette`, `alpha`, `position_dodge_preserve`, ...)
 
-  - For `box` plot, see
-    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"box"` —
+    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`comparisons`, `alpha`, `palette`, ...)
 
-  - For `violin` plot, see
-    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"violin"` —
+    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`add_box`, `comparisons`, `palette`, ...)
 
-  - For `density` plot, see
-    [`plotthis::DensityPlot()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html).
+  - `"density"` —
+    [`plotthis::DensityPlot()`](https://pwwang.github.io/plotthis/reference/densityhistoplot.html)
+    (`palette`, `alpha`, `bw`, ...)
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE` is
+passed via `...`.
 
 ## Examples
 

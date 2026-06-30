@@ -1,14 +1,40 @@
-# Cell-Cell Communication Plot
+# Visualize Cell-Cell Communication (CCC) Interactions
 
-Plot the cell-cell communication. See also:
+Cell-cell communication (CCC) is the process by which cells send and
+receive molecular signals — typically through ligand-receptor (LR)
+interactions — to coordinate tissue function. CCC analysis infers these
+interactions from single-cell transcriptomics data by identifying which
+ligand-receptor pairs are expressed between which cell types, often
+scoring each interaction by its magnitude (e.g., expression level,
+interaction score) and specificity (e.g., a p-value quantifying how
+cell-type-specific the interaction is).
 
-- The review:
-  <https://www.sciencedirect.com/science/article/pii/S2452310021000081>
+`CCCPlot` provides a unified interface to visualize CCC inference
+results (from tools like CellPhoneDB, LIANA, CellChat, NicheNet, etc.)
+across many plot types. It supports two fundamental modes:
 
-- The LIANA package:
-  <https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot>
+**Aggregation mode** (`method = "aggregation"`, the default):
+Ligand-receptor pairs are aggregated per source-target cell type pair.
+This shows *which cell types communicate* and how strongly. Supported
+plot types: `"network"`, `"chord"`/`"circos"`, `"heatmap"`,
+`"sankey"`/`"alluvial"`, `"dot"`.
 
-- The CCPlotR package: <https://github.com/Sarah145/CCPlotR>
+**Interaction mode** (`method = "interaction"`): Individual
+ligand-receptor pairs are plotted. This shows *which specific LR pairs*
+mediate the communication. Supported plot types: `"dot"`, `"network"`,
+`"heatmap"`, `"box"`, `"violin"`, `"ridge"`.
+
+The `"linkedheatmap"` plot type is a special case: it does not use the
+`method` parameter. It displays a side-by-side heatmap where the left
+side shows ligand expression across source cell types and the right side
+shows receptor expression across target cell types, with links between
+them representing the LR pairs. This plot type requires `ligand_means`
+and `receptor_means` columns.
+
+Under the hood, `CCCPlot` preprocesses the data (aggregating or
+reformatting as needed) and delegates rendering to the corresponding
+plotthis package function. All styling and layout arguments accepted by
+those functions can be passed through `...`.
 
 ## Usage
 
@@ -16,10 +42,12 @@ Plot the cell-cell communication. See also:
 CCCPlot(
   data,
   plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial",
-    "box", "violin", "ridge"),
+    "box", "violin", "ridge", "linkedheatmap"),
   method = c("aggregation", "interaction"),
   magnitude = waiver(),
   specificity = waiver(),
+  ligand_expr = "ligand_means",
+  receptor_expr = "receptor_means",
   magnitude_agg = length,
   magnitude_name = "No. of interactions",
   meta_specificity = "sumlog",
@@ -30,6 +58,8 @@ CCCPlot(
   facet_by = NULL,
   show_row_names = TRUE,
   show_column_names = TRUE,
+  values_fill = 0,
+  right_row_dend_side = "right",
   ...
 )
 ```
@@ -38,225 +68,380 @@ CCCPlot(
 
 - data:
 
-  A data frame with the cell-cell communication data. A typical data
-  frame should have the following columns:
-
-  - `source` The source cell type.
-
-  - `target` The target cell type.
-
-  - `ligand` The ligand gene.
-
-  - `receptor` The receptor gene.
-
-  - `ligand_means` The mean expression of the ligand gene per cell type.
-
-  - `receptor_means` The mean expression of the receptor gene per cell
-    type.
-
-  - `ligand_props` The proportion of cells that express the entity.
-
-  - `receptor_props` The proportion of cells that express the entity.
-
-  - `<magnitude>` The magnitude of the communication.
-
-  - `<specificity>` The specificity of the communication. Depends on the
-    `plot_type`, some columns are optional. But the `source`, `target`,
-    `ligand`, `receptor` and `<magnitude>` are required.
+  A data frame containing cell-cell communication inference results.
+  Must include the columns `source`, `target`, `ligand`, and `receptor`
+  (as character or factor). Typically also includes one or more numeric
+  columns for interaction magnitude and specificity. See the **Data
+  format** section above for details.
 
 - plot_type:
 
-  The type of plot to use. Default is "dot". Possible values are
-  "network", "chord", "circos", "heatmap", "sankey", "alluvial", "dot",
-  "box", "violin" and "ridge". For "box", "violin" and "ridge", the
-  `method` should be "interaction".
+  The type of visualization. Default is `"dot"`. Possible values:
 
-  - network: A network plot with the source and target cells as the
-    nodes and the communication as the edges.
+  - `"network"`: Source and target cell types as nodes, interactions as
+    edges. Edge thickness encodes magnitude. Accepts `link_curvature`
+    and `link_alpha` styling. When `method = "interaction"`, nodes are
+    ligands and receptors instead, colored by source-target pair.
 
-  - chord: A chord plot with the source and target cells as the nodes
-    and the communication as the chords.
+  - `"chord"`, `"circos"` (aliases): Chord diagram linking source and
+    target cell types. Only available with `method = "aggregation"`.
 
-  - circos: Alias of "chord".
+  - `"heatmap"`: Source cell types on rows, target cell types on
+    columns, magnitude encoded as fill color. When
+    `method = "interaction"`, rows are individual LR pairs and columns
+    are split by source.
 
-  - heatmap: A heatmap plot with the source and target cells as the rows
-    and columns.
+  - `"sankey"`, `"alluvial"` (aliases): Flow diagram from source to
+    target cell types. Only available with `method = "aggregation"`.
 
-  - sankey: A sankey plot with the source and target cells as the nodes
-    and the communication as the flows.
+  - `"dot"`: Source vs target grid with dot size encoding magnitude and
+    (optionally) dot color encoding specificity. Available in both
+    methods.
 
-  - alluvial: Alias of "sankey".
+  - `"box"`: Box plots of interaction strengths. Each panel is a source
+    cell type, x-axis is target cell type. Only available with
+    `method = "interaction"`.
 
-  - dot: A dot plot with the source and target cells as the nodes and
-    the communication as the dots.
+  - `"violin"`: Violin plots of interaction strengths. Layout is the
+    same as `"box"`. Only available with `method = "interaction"`.
 
-  - box: Box plots for source cell types. Each x is a target cell type
-    and the values will be the interaction strengths of the
-    ligand-receptor pairs.
+  - `"ridge"`: Ridge (joy) plots of interaction strengths. Rows are
+    target cell types, faceted by source. Only available with
+    `method = "interaction"`.
 
-  - violin: Violin plots for source cell types. Each x is a target cell
-    type and the values will be the interaction strengths of the
-    ligand-receptor pairs.
-
-  - ridge: Ridge plots for source cell types. Each row is a target cell
-    type and the values will be the interaction strengths of the
-    ligand-receptor pairs.
+  - `"linkedheatmap"`: Side-by-side heatmaps showing ligand expression
+    (left, by source cell types) and receptor expression (right, by
+    target cell types) with LR pair links between them. Requires
+    `ligand_expr` and `receptor_expr` columns. Does not use the `method`
+    parameter.
 
 - method:
 
-  The method to determine the plot entities.
+  How to represent the data. Default is `"aggregation"`.
 
-  - aggregation: Aggregate the ligand-receptor pairs interactions for
-    each source-target pair. Only the source / target pairs will be
-    plotted.
+  - `"aggregation"`: Aggregate all LR pairs for each source-target cell
+    type combination. Plots show cell-type-level communication.
 
-  - interaction: Plot the ligand-receptor pairs interactions directly.
-    The ligand-receptor pairs will also be plotted.
+  - `"interaction"`: Plot individual LR pairs. Plots show LR-pair-level
+    detail. A `magnitude` column is required.
 
 - magnitude:
 
-  The column name in the data to use as the magnitude of the
-  communication. By default, the second last column will be used. See
-  `li.mt.show_methods()` for the available methods in `LIANA`. or
+  The name of the column to use as the communication magnitude (e.g.,
+  `"lrscore"`, `"sca_weight"`). When not specified (default), the
+  second-to-last column of `data` is used. The chosen column must be
+  numeric. For LIANA outputs, common magnitude columns include
+  `"lrscore"`, `"sca_weight"`, or `"cellphonedb_pvalue"` (after
+  transformation). See
   <https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Tileplot>
+  for available LIANA methods.
 
 - specificity:
 
-  The column name in the data to use as the specificity of the
-  communication. By default, the last column will be used. If the method
-  doesn't have a specificity, set it to NULL.
+  The name of the column to use as the communication specificity (e.g.,
+  a p-value such as `"pvalue"` or `"cellphonedb_pvalue"`). When not
+  specified (default), the last column of `data` is used. The chosen
+  column must be numeric. Set to `NULL` if your method does not produce
+  a specificity score.
+
+- ligand_expr:
+
+  The name of the column containing the mean (or otherwise summarized)
+  expression of the ligand. Default is `"ligand_means"`. Only used when
+  `plot_type = "linkedheatmap"`.
+
+- receptor_expr:
+
+  The name of the column containing the mean (or otherwise summarized)
+  expression of the receptor. Default is `"receptor_means"`. Only used
+  when `plot_type = "linkedheatmap"`.
 
 - magnitude_agg:
 
-  A function to aggregate the magnitude of the communication. Default is
-  `length`.
+  A function used to aggregate the magnitude values across multiple LR
+  pairs within each source-target group. Applied only in
+  `method = "aggregation"`. Default is
+  [`length()`](https://rdrr.io/r/base/length.html), which counts the
+  number of LR interactions. Common alternatives:
+  [`mean()`](https://rdrr.io/r/base/mean.html),
+  [`sum()`](https://rdrr.io/r/base/sum.html),
+  [`median()`](https://rdrr.io/r/stats/median.html).
 
 - magnitude_name:
 
-  The name of the magnitude in the plot. Default is "No. of
-  interactions".
+  A label for the aggregated magnitude that appears in plot legends and
+  axis titles. Default is `"No. of interactions"`. Adjust this to match
+  `magnitude_agg` (e.g., use `"Mean score"` when
+  `magnitude_agg = mean`).
 
 - meta_specificity:
 
-  The method to calculate the specificity when there are multiple
-  ligand-receptor pairs interactions. Default is "sumlog". It should be
-  one of the methods in the `metap` package. Current available methods
-  are:
+  The meta-analysis method used to combine multiple specificity p-values
+  within each source-target group into a single group-level p-value.
+  Applied only in `method = "aggregation"` when a `specificity` column
+  is available. Default is `"sumlog"` (Fisher's method). Must be one of
+  the methods provided by the metap package:
 
-  - `invchisq`: Combine p values using the inverse chi squared method
+  - `"invchisq"`: Inverse chi-squared method
 
-  - `invt`: Combine p values using the inverse t method
+  - `"invt"`: Inverse t method
 
-  - `logitp`: Combine p values using the logit method
+  - `"logitp"`: Logit method
 
-  - `meanp`: Combine p values by the mean p method
+  - `"meanp"`: Mean p method
 
-  - `meanz`: Combine p values using the mean z method
+  - `"meanz"`: Mean z method
 
-  - `sumlog`: Combine p-values by the sum of logs (Fisher's) method
+  - `"sumlog"`: Sum of logs (Fisher's) method (default)
 
-  - `sump`: Combine p-values using the sum of p (Edgington's) method
+  - `"sump"`: Sum of p (Edgington's) method
 
-  - `two2one`: Convert two-sided p-values to one-sided
+  - `"two2one"`: Convert two-sided p-values to one-sided
 
-  - `votep`: Combine p-values by the vote counting method
+  - `"votep"`: Vote counting method
 
-  - `wilkinsonp`: Combine p-values using Wilkinson's method
+  - `"wilkinsonp"`: Wilkinson's method
 
 - split_by:
 
-  A character vector of column names to split the plots. Default is
-  NULL.
+  An optional character vector of column names used to produce separate
+  sub-plots (one per unique combination of values). When `NULL`
+  (default), a single plot is produced. For example, split by a
+  condition column to compare communication patterns across experimental
+  groups side-by-side.
 
 - x_text_angle:
 
-  The angle of the x-axis text. Default is 90. Only used when
-  `plot_type` is "dot".
+  The angle (in degrees) for the x-axis tick labels. Used when
+  `plot_type` is `"dot"` (both methods), `"box"`, or `"violin"`. Default
+  is `90` (vertical labels).
 
 - link_curvature:
 
-  The curvature of the links. Default is 0.2. Only used when `plot_type`
-  is "network".
+  The curvature of the edges in the network plot. `0` gives straight
+  lines; positive values curve edges outward. Default is `0.2`. Only
+  used when `plot_type = "network"`.
 
 - link_alpha:
 
-  The transparency of the links. Default is 0.6. Only used when
-  `plot_type` is "network".
+  The transparency (alpha) of the edges in the network plot. Values
+  range from `0` (fully transparent) to `1` (fully opaque). Default is
+  `0.6`. Only used when `plot_type = "network"`.
 
 - facet_by:
 
-  A character vector of column names to facet the plots. Default is
-  NULL. It should always be NULL.
+  Deprecated. Not supported — must be `NULL` (the default). Use
+  `split_by` to produce separate plots instead.
 
 - show_row_names:
 
-  Whether to show the row names in the heatmap. Default is TRUE. Only
-  used when `plot_type` is "heatmap".
+  Whether to display row names in heatmap plots. Default is `TRUE`. Used
+  when `plot_type` is `"heatmap"` or `"linkedheatmap"`.
 
 - show_column_names:
 
-  Whether to show the column names in the heatmap. Default is TRUE. Only
-  used when `plot_type` is "heatmap".
+  Whether to display column names in heatmap plots. Default is `TRUE`.
+  Used when `plot_type` is `"heatmap"` or `"linkedheatmap"`.
+
+- values_fill:
+
+  The fill value for missing (NA) cells in the heatmap matrix (e.g.,
+  when a source-target pair has no LR interactions). Default is `0`.
+  Used when `plot_type` is `"heatmap"` or `"linkedheatmap"`.
+
+- right_row_dend_side:
+
+  The side on which to place the row dendrogram in the right-hand
+  heatmap of the linked heatmap plot. Must be `"left"` or `"right"`.
+  Default is `"right"`. Only used when `plot_type = "linkedheatmap"`.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments forwarded to the underlying plotthis plotting
+  function. The target function depends on `plot_type`:
 
-  - For `Network`, see
-    [`plotthis::Network()`](https://pwwang.github.io/plotthis/reference/Network.html).
+  - `"network"` →
+    [`plotthis::Network()`](https://pwwang.github.io/plotthis/reference/Network.html)
 
-  - For `ChordPlot`, see
-    [`plotthis::ChordPlot()`](https://pwwang.github.io/plotthis/reference/chordplot.html).
+  - `"chord"` / `"circos"` →
+    [`plotthis::ChordPlot()`](https://pwwang.github.io/plotthis/reference/chordplot.html)
 
-  - For `Heatmap`, see
-    [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html).
+  - `"heatmap"` →
+    [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
 
-  - For `SankeyPlot`, see
-    [`plotthis::SankeyPlot()`](https://pwwang.github.io/plotthis/reference/sankeyplot.html).
+  - `"sankey"` / `"alluvial"` →
+    [`plotthis::SankeyPlot()`](https://pwwang.github.io/plotthis/reference/sankeyplot.html)
 
-  - For `DotPlot`, see
-    [`plotthis::DotPlot()`](https://pwwang.github.io/plotthis/reference/dotplot.html).
+  - `"dot"` →
+    [`plotthis::DotPlot()`](https://pwwang.github.io/plotthis/reference/dotplot.html)
+
+  - `"box"` →
+    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+
+  - `"violin"` →
+    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+
+  - `"ridge"` →
+    [`plotthis::RidgePlot()`](https://pwwang.github.io/plotthis/reference/RidgePlot.html)
+
+  - `"linkedheatmap"` →
+    [`plotthis::LinkedHeatmap()`](https://pwwang.github.io/plotthis/reference/LinkedHeatmap.html)
+
+  Common arguments include `palette`, `theme`, `theme_args`,
+  `legend.position`, `title`, `subtitle`, `width`, `height`, and
+  `combine` (set `combine = FALSE` to get a list of individual plots
+  instead of a combined plot). See the documentation of each function
+  for full details.
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A combined ggplot object (by default) representing the cell-cell
+communication visualization. If `combine = FALSE` is passed via `...`,
+or if `split_by` produces multiple sub-plots and `combine = FALSE`, a
+list of individual ggplot objects is returned instead. Each plot can be
+further customized with standard ggplot2 functions.
+
+## Note
+
+**Data sources**: `CCCPlot` is designed to work with the output of
+popular CCC inference tools. The LIANA Python package
+(<https://liana-py.readthedocs.io/>) provides a unified interface to run
+multiple CCC methods and produces data frames in the format expected
+here. CellPhoneDB output (e.g., via [liana's CellPhoneDB
+wrapper](https://liana-py.readthedocs.io/en/latest/notebooks/methods.html#CellPhoneDB))
+works directly. The built-in dataset `cellphonedb_res` is an example of
+this format.
+
+**Performance**: For large datasets with many LR pairs,
+`method = "aggregation"` is faster and produces cleaner visualizations
+for overview purposes, while `method = "interaction"` provides detail at
+the cost of visual complexity when there are many source-target pairs.
+
+**Row/column ordering**: To control the order of cell types in heatmaps,
+dot plots, chord diagrams, etc., ensure the `source` and `target`
+columns are factors with the desired level order before calling
+`CCCPlot`.
+
+## Data format
+
+The input `data` frame is expected to have one row per ligand-receptor
+pair per source-target cell type combination. This is the standard
+"tidy" output format produced by LIANA and similar to the output of
+CellPhoneDB. Columns `source`, `target`, `ligand`, and `receptor` are
+always required. At least one magnitude column (a numeric score for the
+interaction) is also required.
+
+When both a magnitude and a specificity column are present, the function
+can encode both dimensions in the visualization (e.g., dot size for
+magnitude and dot color for specificity in `"dot"` plots).
+
+## Method details
+
+With `method = "aggregation"`, the function groups data by source-target
+pairs (and optionally `split_by`). The magnitude values for all LR pairs
+within each group are combined using `magnitude_agg` (default: `length`,
+i.e., count of LR pairs). If a `specificity` column is provided,
+individual specificity p-values are combined into a single group-level
+p-value using the meta-analysis method specified by `meta_specificity`
+(from the metap package). This mode answers: "Which cell types
+communicate, and how strong / specific is that communication?"
+
+With `method = "interaction"`, each LR pair is plotted individually. For
+`"dot"` plots, specificity values are `-log10`-transformed and source
+cell types are used for faceting (one facet per source). For `"box"`,
+`"violin"`, and `"ridge"` plots, the source cell type is used for
+faceting and the target cell type defines the x-axis or grouping.
+
+## See also
+
+- [`plotthis::Network()`](https://pwwang.github.io/plotthis/reference/Network.html),
+  [`plotthis::ChordPlot()`](https://pwwang.github.io/plotthis/reference/chordplot.html),
+  [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html),
+  [`plotthis::SankeyPlot()`](https://pwwang.github.io/plotthis/reference/sankeyplot.html),
+  [`plotthis::DotPlot()`](https://pwwang.github.io/plotthis/reference/dotplot.html),
+  [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html),
+  [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html),
+  [`plotthis::RidgePlot()`](https://pwwang.github.io/plotthis/reference/RidgePlot.html),
+  [`plotthis::LinkedHeatmap()`](https://pwwang.github.io/plotthis/reference/LinkedHeatmap.html)
+  — the underlying plotting functions.
+
+- The LIANA framework for CCC inference:
+  <https://liana-py.readthedocs.io/>
+
+- Review of CCC inference methods:
+  <https://www.sciencedirect.com/science/article/pii/S2452310021000081>
+
+- CCPlotR package for alternative CCC visualization:
+  <https://github.com/Sarah145/CCPlotR>
 
 ## Examples
 
 ``` r
 # \donttest{
+# Load example CellPhoneDB results
 set.seed(8525)
 data(cellphonedb_res)
+
+# --- Aggregation mode: overview of which cell types communicate ---
+
+# Network: nodes = cell types, edges = communication, thickness = strength
 CCCPlot(data = cellphonedb_res, plot_type = "network", legend.position = "none",
   theme = "theme_blank", theme_args = list(add_coord = FALSE))
 
+
+# Chord diagram: same data, circular layout
 CCCPlot(cellphonedb_res, plot_type = "chord")
 
+
+# Heatmap: source (rows) × target (columns), fill = number of LR pairs
 CCCPlot(cellphonedb_res, plot_type = "heatmap")
 
+
+# Dot plot: dot size = magnitude, color = specificity
+# Use mean interaction score instead of count
 CCCPlot(cellphonedb_res, plot_type = "dot",
   magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
 
+
+# Sankey (alluvial) flow diagram
 CCCPlot(cellphonedb_res, plot_type = "sankey")
 #> Missing alluvia for some stratum combinations.
 
 
+# Linked heatmap: ligand expression (left) ↔ receptor expression (right)
+CCCPlot(cellphonedb_res, plot_type = "linkedheatmap")
+
+
+# --- Interaction mode: detail on individual LR pairs ---
+# Subset to fewer cell types for readability
 cellphonedb_res_sub <- cellphonedb_res[
   cellphonedb_res$source %in% c("Dendritic", "CD14+ Monocyte"),]
+
+# Dot plot: each LR pair as a row, faceted by source, color = specificity
 CCCPlot(cellphonedb_res_sub, plot_type = "dot", method = "interaction")
 #> Multiple columns are provided in 'y'. They will be concatenated into one column.
 
+
+# Network: ligands and receptors as nodes, colored by source→target
 CCCPlot(cellphonedb_res_sub, plot_type = "network", method = "interaction",
   node_size_by = 1)
 
+
+# Heatmap: rows = LR pairs, columns = target cell types
 CCCPlot(cellphonedb_res_sub, plot_type = "heatmap", method = "interaction",
   palette = "Reds")
 
+
+# Box plot: distribution of interaction strengths per source→target
 CCCPlot(cellphonedb_res_sub, plot_type = "box", method = "interaction")
 
+
+# Violin plot with overlaid box plots
 CCCPlot(cellphonedb_res_sub, plot_type = "violin", method = "interaction",
   add_box = TRUE)
 
+
+# Ridge plot: density of interaction strengths per target, per source
 CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
 #> Picking joint bandwidth of 0.311
 #> Picking joint bandwidth of 0.285

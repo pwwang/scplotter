@@ -6,26 +6,30 @@ there are big objects in the list.
 ## Usage
 
 ``` r
-do_call(fn, args, quote = FALSE, envir = parent.frame())
+do_call(what, args, quote = FALSE, envir = parent.frame())
 ```
 
 ## Arguments
 
-- fn:
+- what:
 
-  A function to call
+  either a function or a non-empty character string naming the function
+  to be called.
 
 - args:
 
-  A list of arguments to pass to the function
+  a *list* of arguments to the function call. The `names` attribute of
+  `args` gives the argument names.
 
 - quote:
 
-  Whether to quote the arguments
+  a logical value indicating whether to quote the arguments.
 
 - envir:
 
-  The environment to evaluate the function in
+  an environment within which to evaluate the call. This will be most
+  useful if `what` is a character string and the arguments are symbols
+  or quoted expressions.
 
 ## Value
 

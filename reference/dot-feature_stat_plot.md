@@ -1,6 +1,16 @@
-# Feature statistic plot when given a composed data frame
+# Internal dispatcher for FeatureStatPlot — plot from a composed data frame
 
-Feature statistic plot when given a composed data frame
+This is the internal workhorse of `FeatureStatPlot`. After the S3
+methods (`FeatureStatPlot.Seurat`, `FeatureStatPlot.giotto`, etc.)
+extract expression data and metadata into a unified data frame, this
+function handles the common logic: pivoting wide feature columns to long
+format, optionally downsampling cells within identity groups, and
+dispatching to the appropriate plotthis plotting function based on
+`plot_type`.
+
+Named feature lists are handled by converting the names to a `rows_data`
+data frame with `rows_split_by`, enabling automatic row grouping in
+heatmap and dot plots.
 
 ## Usage
 
@@ -33,89 +43,145 @@ Feature statistic plot when given a composed data frame
 
 - data:
 
-  A data frame containing the feature data and metadata.
+  A data frame containing the feature expression columns, metadata
+  columns (cell identities, groupings), and optionally dimension
+  reduction coordinates.
 
 - features:
 
-  A character vector of feature names
+  A character vector or a named list of character vectors specifying the
+  features to plot. Features can be gene names, gene signature scores,
+  or any column present in the expression matrix or metadata. Named
+  lists (e.g., `list(Beta = c("Ins1", "Ins2"))`) enable automatic row
+  grouping in heatmap and dot plots.
 
 - plot_type:
 
-  Type of the plot. It can be "violin", "box", "bar", "ridge", "dim",
-  "cor", "heatmap" or "dot"
+  Character. The type of plot to generate. One of: `"violin"`, `"box"`,
+  `"bar"`, `"ridge"`, `"dim"`, `"cor"`, `"heatmap"`, or `"dot"`. See the
+  Description section for guidance on choosing a plot type. Default:
+  `"violin"`.
+
+- should_shrink:
+
+  Logical. If `TRUE`, the data frame is subset to only the columns
+  needed for the plot (features, ident, group_by, split_by, and
+  optionally dims). This prevents unnecessary data from being passed
+  through the plotting pipeline.
+
+- should_pivot:
+
+  Logical. If `TRUE`, the wide-format feature columns are pivoted to
+  long format with `.features` and `.value` columns, and features are
+  used for faceting.
 
 - downsample:
 
-  A numeric the number of cells in each identity group to downsample to
-  for violin, box, or ridge plots. If n \> 1, it is treated as the
-  number of cells to downsample to. If 0 \< n \<= 1, it is treated as
-  the fraction of cells to downsample to.
+  Numeric. Number or fraction of cells to downsample to per identity
+  group. Used for `"violin"`, `"box"`, and `"ridge"` plot types to
+  reduce overplotting in large datasets:
+
+  - If `downsample > 1`: Exact number of cells per group.
+
+  - If `0 < downsample <= 1`: Fraction of cells per group.
+
+  Downsampling is performed within each identity group (via
+  `dplyr::slice_sample(by = ident)`). Default: `NULL` (no downsampling).
 
 - graph:
 
-  Specify the graph name to add edges between cell neighbors to the
-  plot, only used when `plot_type` is "dim".
+  Character or `TRUE`. A graph (nearest-neighbor network) name to
+  overlay edges between connected cells on the dim plot. For Seurat
+  objects, the name should exist in `object@graphs`. For Giotto objects,
+  the name should exist in the nearest network list. If `TRUE`, the
+  first available graph is used. Only used when `plot_type = "dim"`.
+  Default: `NULL` (no edges).
 
 - bg_cutoff:
 
-  Background cutoff for the dim plot, only used when `plot_type` is
-  "dim".
+  Numeric. Expression cutoff for the background in dim plots. Cells with
+  expression below this value are shown in the background color
+  (typically gray). Set to `-Inf` to color all cells. Only used when
+  `plot_type = "dim"`. Default: `0`.
 
 - dims:
 
-  Dimensions to plot, only used when `plot_type` is "dim".
+  Integer vector of length 2. The dimensions (columns) of the reduction
+  to plot on the x and y axes. Only used when `plot_type = "dim"`.
+  Default: `1:2`.
 
 - rows_name:
 
-  The name of the rows in the heatmap, only used when `plot_type` is
-  "heatmap".
+  Character. The column name used to identify feature rows in the
+  heatmap and as the key when merging `rows_data`. Only used when
+  `plot_type = "heatmap"` or `"dot"`. Default: `"Features"`.
 
 - ident:
 
-  The column name in the meta data to identify the cells.
+  Character. The metadata column name identifying cell groups (e.g.,
+  `"CellType"`, `"SubCellType"`, `"seurat_clusters"`). Used as the
+  x-axis for violin, box, bar, and ridge plots; as the heatmap columns
+  for heatmap and dot plots; and as the grouping variable for
+  correlation plots. For Seurat objects, defaults to the active identity
+  (`"Identity"`). Required for non-dim plots on Giotto and H5File
+  objects. Default: `NULL`.
 
 - agg:
 
-  The aggregation function to use for the bar plot.
+  Function. The aggregation function applied when `plot_type = "bar"`.
+  Common choices: `mean` (default), `median`, `sum`. Applied within each
+  group defined by `ident`, `group_by`, and `split_by`.
 
 - group_by:
 
-  The column name in the meta data to group the cells.
+  Character. A metadata column name to further subdivide cells within
+  each identity group (e.g., coloring by treatment within cell type).
+  Works with `"violin"`, `"box"`, `"bar"`, and `"ridge"` plot types.
+  Default: `NULL`.
 
 - pos_only:
 
-  Whether to only include cells with positive feature values.
+  Character. Whether to restrict to cells with positive feature values:
 
-  - "no": Do not filter cells based on feature values. (default)
+  - `"no"` — Include all cells (default).
 
-  - "any": Include cells with positive values for any of the features.
+  - `"any"` — Include cells where at least one feature is \> 0.
 
-  - "all": Include cells with positive values for all of the features.
-    If you have named features (i.e. a named list), `pos_only` will be
-    applied to all flattened features.
+  - `"all"` — Include only cells where all features are \> 0.
+
+  For named feature lists, filtering is applied to all flattened
+  features.
 
 - split_by:
 
-  Column name in the meta data to split the cells to different plots. If
-  TRUE, the cells are split by the features.
+  Character vector or `TRUE`. Metadata column name(s) to split the data
+  into separate plots (one per unique value). If `TRUE`, splits by the
+  features themselves, creating one plot per feature. Multiple columns
+  are concatenated. Default: `NULL`.
 
 - facet_by:
 
-  Column name in the meta data to facet the plots. Should be always
-  NULL.
+  Character vector. Metadata column name(s) to facet the data within a
+  plot. Note: for `"violin"`, `"box"`, `"bar"`, and `"ridge"` plot
+  types, `facet_by` should always be `NULL` because the plot is already
+  faceted by features. Works normally with `"dim"`, `"heatmap"`,
+  `"dot"`, and `"cor"` plot types. Default: `NULL`.
 
 - xlab:
 
-  The x-axis label.
+  Character. Custom x-axis label. Default: `NULL` (auto-generated based
+  on plot type).
 
 - ylab:
 
-  The y-axis label.
+  Character. Custom y-axis label. Default: `NULL` (auto-generated based
+  on plot type).
 
 - x_text_angle:
 
-  The angle of the x-axis text. Only used when `plot_type` is "violin",
-  "bar", or "box".
+  Numeric. Angle (in degrees) for x-axis text labels. Used for
+  `"violin"`, `"box"`, and `"bar"` plot types. Default: `NULL` (defaults
+  to `45`).
 
 - ...:
 
@@ -124,33 +190,50 @@ Feature statistic plot when given a composed data frame
 
   `object`
 
-  :   A seurat object, a giotto object, a path to an .h5ad file or an
-      opened `H5File` by `hdf5r` package.
+  :   An object containing single-cell expression data. Supported types:
+      a Seurat object, a Giotto object, a character path to an `.h5ad`
+      file, or an opened `H5File` object from the hdf5r package.
 
   `spat_unit`
 
-  :   The spatial unit to use for the plot. Only applied to Giotto
-      objects.
+  :   Character. The spatial unit to extract data from. Only applicable
+      to Giotto objects. Default: `NULL` (auto-detected by Giotto).
 
   `feat_type`
 
-  :   feature type of the features (e.g. "rna", "dna", "protein"), only
-      applied to Giotto objects.
+  :   Character. The feature type to extract (e.g., `"rna"`, `"dna"`,
+      `"protein"`). Only applicable to Giotto objects. Default: `NULL`
+      (auto-detected by Giotto).
 
   `reduction`
 
-  :   Name of the reduction to plot (for example, "umap"), only used
-      when `plot_type` is "dim" or you can to use the reduction as
-      feature.
+  :   Character. Name of the dimensionality reduction to use (e.g.,
+      `"umap"`, `"tsne"`, `"pca"`). Required when `plot_type = "dim"`;
+      optional for other types where the reduction coordinates can be
+      used as feature values. For Seurat objects, defaults to the
+      default reduction if available. Default: `NULL`.
 
   `assay`
 
-  :   The assay to use for the feature data.
+  :   Character. The assay name to extract feature data from (e.g.,
+      `"RNA"`, `"SCT"`, `"integrated"`). For Seurat objects, passed to
+      [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
+      For H5File objects, determines whether to read from `X` (when
+      `assay = "RNA"`) or `layers/<assay>`. Not applicable to Giotto
+      objects. Default: `NULL`.
 
   `layer`
 
-  :   The layer to use for the feature data.
+  :   Character. The layer name within the assay to extract data from
+      (e.g., `"data"`, `"counts"`, `"scale.data"`). For Seurat objects,
+      passed to
+      [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
+      For Giotto objects, passed to
+      [`GiottoClass::getExpression()`](https://giotto-suite.github.io/GiottoClass/reference/getExpression.html).
+      Default: `NULL`.
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A ggplot object (or a `patchwork` object when `split_by` generates
+multiple plots and `combine = TRUE`), or a list of ggplot objects if
+`combine = FALSE`.

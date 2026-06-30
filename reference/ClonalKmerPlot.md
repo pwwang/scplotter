@@ -1,6 +1,11 @@
-# ClonalKmerPlot
+# Visualize CDR3 k-mer (motif) frequency
 
-Explore the k-mer frequency of CDR3 sequences.
+Short amino acid motifs within CDR3 sequences — termed *k-mers* — can
+reveal shared binding specificities, common structural elements, and
+repertoire-level sequence features that are not apparent from
+full-length sequence analysis alone. Specific k-mers may be enriched in
+responses to particular antigens, represent public TCR/BCR motifs shared
+across individuals, or reflect convergent recombination events.
 
 ## Usage
 
@@ -29,90 +34,206 @@ ClonalKmerPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  Must contain columns with CDR3 sequences (amino acid or nucleotide).
 
 - chain:
 
-  The chain to be analyzed. Default is "TRB".
+  Character; the TCR or BCR chain to analyze. Default is `"TRB"`. Common
+  values include `"TRA"`, `"TRB"`, `"TRG"`, `"TRD"`, `"IGH"`, `"IGL"`,
+  and `"IGK"`.
 
 - clone_call:
 
-  The column name of the clone call. Default is "aa".
+  Character; the column name specifying which CDR3 sequence to use for
+  k-mer extraction. Default is `"aa"` (amino acid). Use `"nt"` for
+  nucleotide sequences or `"strict"` for strict clonotype calls.
 
 - k:
 
-  The length of the k-mer. Default is 3.
+  Integer; the length of k-mers (motifs) to extract. Default is `3`. See
+  the **K-mer length selection** section for guidance on choosing an
+  appropriate value.
 
 - top:
 
-  The number of top k-mers to display. Default is 25.
+  Integer; the number of most frequent k-mers to display. Default is
+  `25`. K-mers are ranked by total frequency across all groups. Increase
+  for heatmap visualizations; decrease for focused bar charts.
 
 - group_by:
 
-  The variable to group the data by. Default is "Sample".
+  Character vector; the column(s) in `data` to group samples by. Default
+  is `"Sample"`.
 
 - group_by_sep:
 
-  The separator to use when combining groupings. Default is "\_".
+  Character; the separator used when concatenating multiple `group_by`
+  columns into a single identifier. Default is `"_"`.
 
 - facet_by:
 
-  A character vector of column names to facet the plots. Default is
-  NULL.
+  A character vector of column names to facet the plots by. Default is
+  `NULL`. For bar plots, `facet_by` is set internally to `group_by` and
+  must not be specified manually (doing so will raise an error). For
+  line plots, it can be used for additional faceting.
 
 - split_by:
 
-  A character vector of column names to split the plots. Default is
-  NULL.
+  Character vector; column(s) in `data` to split the plot by, producing
+  separate sub-plots for each unique combination. Default is `NULL`.
 
 - order:
 
-  A list specifying the order of the levels for each grouping variable.
-  Default is NULL, which will use the order in the data.
+  A named list specifying the order of factor levels for grouping
+  variables. For example, `list(Type = c("L", "B"))`. Default is `NULL`,
+  which uses the order present in the data.
 
 - plot_type:
 
-  The type of plot to generate. Default is "bar".
-
-  - "bar": Bar plot.
-
-  - "line": Line plot.
-
-  - "heatmap": Heatmap.
+  Character; the type of visualization. One of `"bar"` (default),
+  `"line"`, or `"heatmap"`. See the **Plot types** section for guidance.
 
 - theme_args:
 
-  A list of arguments to be passed to the
-  [ggplot2::theme](https://ggplot2.tidyverse.org/reference/theme.html)
-  function.
+  A named list of arguments passed to
+  [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
+  for customizing the plot appearance. For bar and line plots,
+  `panel.grid.major.y` defaults to `element_blank()`.
 
 - aspect.ratio:
 
-  The aspect ratio of the plot. Default is NULL.
+  Numeric; the aspect ratio (height / width) of plot panels. Default is
+  `NULL`, which uses `4 / length(motifs)` for bar plots and
+  `8 / length(motifs)` for line plots, automatically scaling with the
+  number of k-mers.
 
 - facet_ncol:
 
-  The number of columns in the facet grid. Default is NULL.
+  Integer; the number of columns in the facet grid. Default is `NULL`,
+  which uses `1` for bar plots.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis visualization
+  function, depending on `plot_type`:
 
-  - For "bar",
-    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html).
+  - For `"bar"`:
+    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html)
 
-  - For "line",
-    [`plotthis::LinePlot()`](https://pwwang.github.io/plotthis/reference/LinePlot.html).
+  - For `"line"`:
+    [`plotthis::LinePlot()`](https://pwwang.github.io/plotthis/reference/LinePlot.html)
 
-  - For "heatmap",
-    [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html).
+  - For `"heatmap"`:
+    [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
+
+  Common arguments include `title`, `legend.position`, `show_row_names`,
+  `show_column_names`, and color palette parameters. See the respective
+  plotthis documentation for available options.
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object (or a list of `ggplot` objects if `combine = FALSE` is
+passed via `...`)
+
+## Details
+
+`ClonalKmerPlot` extracts k-mers of length `k` from CDR3 amino acid (or
+nucleotide) sequences and visualizes their frequency across samples and
+conditions. The analysis uses
+[`scRepertoire::percentKmer()`](https://www.borch.dev/uploads/scRepertoire/reference/percentKmer.html)
+to identify the `top` most frequent k-mers, then displays them using
+bar, line, or heatmap visualizations.
+
+K-mer analysis is complementary to positional analysis
+([`ClonalPositionalPlot`](https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.md)):
+while positional analysis asks "what happens at position X?", k-mer
+analysis asks "what short sequence motifs appear, regardless of their
+exact position?" This position-independent perspective can capture
+sequence features that are distributed across different CDR3 locations.
+
+## Note
+
+- K-mer extraction is performed by
+  [`scRepertoire::percentKmer()`](https://www.borch.dev/uploads/scRepertoire/reference/percentKmer.html),
+  which uses a sliding window across CDR3 sequences. The resulting
+  frequencies represent the percentage of sequences containing each
+  k-mer at least once.
+
+- For bar plots, `facet_by` is internally set to `group_by` and must not
+  be provided by the user.
+
+- The number of possible k-mers grows exponentially with `k` (20^k for
+  amino acids), but only the `top` most frequent are displayed. Ensure
+  `top` is set high enough to capture motifs of interest.
+
+- K-mer frequencies can be noisy when sample sizes are small. Consider
+  using `split_by` or `facet_by` to disaggregate data rather than
+  relying on small within-group sample sizes.
+
+- For nucleotide k-mers (`clone_call = "nt"`), the alphabet size is 4
+  rather than 20, so shorter k values (2-3) are generally appropriate.
+
+## K-mer length selection
+
+The choice of `k` represents a fundamental trade-off:
+
+- **k = 2** (dipeptides): Highly recurrent but often non-specific — many
+  dipeptides appear in functionally unrelated receptors. Best for broad
+  surveys of amino acid pairing preferences.
+
+- **k = 3** (tripeptides, default): The most commonly used length.
+  Tripeptides are long enough to capture meaningful motifs (e.g., the
+  "CASS" motif at the start of TRB CDR3s) while being short enough to
+  recur frequently across samples for robust statistical analysis.
+
+- **k = 4 or 5**: More specific motifs that are more likely to reflect
+  genuine functional constraints or antigen-driven selection. However,
+  longer k-mers appear less frequently, requiring larger datasets for
+  reliable frequency estimation.
+
+The `top` parameter controls how many of the most frequent k-mers are
+displayed. The default of 25 provides a manageable view for bar and line
+plots; increase for heatmap visualizations that can accommodate many
+more motifs.
+
+## Plot types
+
+Three visualization types are available:
+
+- **`"bar"`** (default): Bar chart of k-mer frequencies, faceted by
+  `group_by`. Best for comparing motif usage across a moderate number of
+  samples or conditions. `facet_by` is not available (set internally).
+
+- **`"line"`**: Line plot connecting k-mer frequencies, with each group
+  as a separate line. Useful for visualizing trends across motifs or
+  comparing the frequency profile shape between conditions. Supports
+  `facet_by` for additional faceting dimensions.
+
+- **`"heatmap"`**: K-mer by group matrix showing frequency as color
+  intensity. Ideal for surveying many motifs across many samples
+  simultaneously, revealing clusters of co-enriched motifs.
+
+## See also
+
+- [`ClonalPositionalPlot`](https://pwwang.github.io/scplotter/reference/ClonalPositionalPlot.md)
+  for position-specific CDR3 analysis (amino acid frequency, entropy,
+  and physicochemical properties)
+
+- [`ClonalLengthPlot`](https://pwwang.github.io/scplotter/reference/ClonalLengthPlot.md)
+  for CDR3 length distribution analysis
+
+- [`ClonalGeneUsagePlot`](https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.md)
+  for V(D)J gene segment usage
+
+- [`ClonalDiversityPlot`](https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.md)
+  for repertoire-level diversity metrics
+
+- [`scRepertoire::percentKmer()`](https://www.borch.dev/uploads/scRepertoire/reference/percentKmer.html)
+  for the underlying k-mer computation
 
 ## Examples
 

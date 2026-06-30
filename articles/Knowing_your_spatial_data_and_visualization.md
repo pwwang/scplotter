@@ -61,7 +61,9 @@ SpatPointsPlot(GiottoClass::getSpatialLocations(g, output = "data.table"))
 
 ## Flowchat of spatial data visualization
 
-![](figures/spatial.png)
+![spatial](figures/spatial.png)
+
+spatial
 
 This diagram details the dispatch logic and internal structure of the
 `SpatXPlot`

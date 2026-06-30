@@ -1,6 +1,17 @@
-# ClonalOverlapPlot
+# Clonal Overlap Plot
 
-Plot the overlap of the clones in different samples/groups.
+Visualizes the overlap (sharing) of T-cell or B-cell clonotypes between
+samples or metadata groups as a heatmap. Each cell in the heatmap
+quantifies the degree of clonal sharing between two groups, using one of
+several similarity or overlap metrics. This is a key analysis for
+identifying public clones shared across individuals, tracking
+antigen-specific clones across time points or tissues, and comparing
+repertoire similarity between conditions.
+
+`ClonalOverlapPlot` computes pairwise overlap via
+[`scRepertoire::clonalOverlap()`](https://www.borch.dev/uploads/scRepertoire/reference/clonalOverlap.html)
+and visualizes the resulting matrix as a labeled heatmap using
+[`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html).
 
 ## Usage
 
@@ -31,97 +42,120 @@ ClonalOverlapPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
+  How to define a clone. One of `"gene"`, `"nt"`, `"aa"` (default),
+  `"strict"`, or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - group_by:
 
-  The column name in the meta data to group the cells. Default: "Sample"
+  Metadata column(s) used to define the groups being compared. Default
+  is `"Sample"`. Multiple columns are concatenated using `group_by_sep`
+  to form compound group labels.
 
 - group_by_sep:
 
-  The separator used to concatenate the group_by when multiple columns
-  are used.
+  Separator used when concatenating multiple `group_by` columns. Default
+  is `"_"`.
 
 - full:
 
-  Whether to plot the full heatmap, or just a triangle. Default is TRUE.
+  Logical; if `TRUE` (default), the full symmetric heatmap is displayed.
+  If `FALSE`, only the upper triangle is shown (lower triangle values
+  are mirrored from the upper triangle).
 
 - split_by:
 
-  The column name in the meta data to split the plots. Default: NULL
+  Metadata column used to split the data into separate heatmaps. When
+  specified, overlaps are only calculated within each split group (not
+  across splits). Default is `NULL`.
 
 - order:
 
-  The order of the groups. Default is an empty list. It should be a list
-  of values. The names are the column names, and the values are the
-  order.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - method:
 
-  The method to calculate the overlap. Default is "raw".
+  The overlap or similarity metric. One of:
 
-  - "overlap" - overlap coefficient
+  - `"raw"` (default) — Absolute number of overlapping clones between
+    two groups.
 
-  - "morisita" - Morisita’s overlap index
+  - `"overlap"` — Overlap coefficient: size of intersection divided by
+    the size of the smaller set.
 
-  - "jaccard" - Jaccard index
+  - `"morisita"` — Morisita’s overlap index, accounting for clone size
+    (abundance) in addition to presence/absence.
 
-  - "cosine" - cosine similarity
+  - `"jaccard"` — Jaccard similarity index: size of intersection divided
+    by size of union.
 
-  - "raw" - exact number of overlapping clones See also
-    [scRepertoire::clonalOverlap](https://www.borch.dev/uploads/scRepertoire/reference/clonalOverlap.html).
+  - `"cosine"` — Cosine similarity between clone abundance vectors.
 
 - palette:
 
-  The color palette to use. Default is "Blues".
+  Color palette for the heatmap. Default is `"Blues"`.
 
 - label_accuracy:
 
-  The accuracy of the labels. Default is NULL. If NULL, it will be 1 for
-  "raw" and 0.01 for other methods.
+  Numeric; the number of decimal places shown in cell labels. Default is
+  `NULL`, which uses `1` for `"raw"` and `0.01` for other methods.
 
 - label_cutoff:
 
-  The cutoff for the labels to show. Default is 1e-3.
+  Numeric; values below this threshold are not labeled in the heatmap
+  cells. Default is `1e-3`. Set to `0` to show all labels.
 
 - cluster_rows:
 
-  Whether to cluster the rows. Default is FALSE.
+  Logical; if `TRUE`, rows are hierarchically clustered. Default is
+  `FALSE`.
 
 - cluster_columns:
 
-  Whether to cluster the columns. Default is FALSE.
+  Logical; if `TRUE`, columns are hierarchically clustered. Default is
+  `FALSE`. Clustering distance is computed as
+  `1 - rescaled_overlap_value`.
 
 - show_row_names:
 
-  Whether to show the row names. Default is TRUE.
+  Logical; if `TRUE` (default), row names are displayed.
 
 - show_column_names:
 
-  Whether to show the column names. Default is TRUE.
+  Logical; if `TRUE` (default), column names are displayed.
 
 - ...:
 
-  Other arguments passed to the specific plot function
-  [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html).
+  Additional arguments passed to
+  [`plotthis::Heatmap()`](https://pwwang.github.io/plotthis/reference/Heatmap.html)
+  (e.g., `name`, `cell_type`, `width`, `height`).
 
 ## Value
 
-A ComplexHeatmap object or a list if `combine` is FALSE
+A `ComplexHeatmap` object, or a list if `combine = FALSE` is passed via
+`...`.
+
+## Note
+
+**Clustering:** When `cluster_rows` or `cluster_columns` is `TRUE`, the
+clustering distance is `1 - rescaled(values)` for the upper triangle,
+ensuring that groups with high overlap are placed close together.
+
+**Split behavior:** When `split_by` is specified, overlap is calculated
+independently within each split group. Groups from different splits are
+never compared against each other.
 
 ## Examples
 

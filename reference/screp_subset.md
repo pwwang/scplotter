@@ -1,6 +1,15 @@
-# Subset scRepertorie object
+# Subset an scRepertoire object with a filter expression
 
-Subset scRepertorie object
+Filters an scRepertoire object (either a Seurat object or a named list
+of data frames) using a character-specified filter expression. This is
+useful for restricting analysis to a subset of cells (e.g., cells with
+short CDR3 sequences, or cells from specific samples) without manually
+manipulating the underlying data structure.
+
+For list-format data (the standard scRepertoire combined TCR/BCR
+format), a `Sample` column is temporarily added to each data frame to
+enable sample-based filtering. Empty data frames after filtering are
+removed from the result.
 
 ## Usage
 
@@ -12,16 +21,24 @@ screp_subset(screp, subset)
 
 - screp:
 
-  The scRepertorie object. It is either a Seurat object or a list of
-  data.frames
+  An scRepertoire object — either a Seurat object (requires tidyseurat
+  for dplyr filter support) or a named list of data frames (the standard
+  output of
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html)
+  or
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html)).
 
 - subset:
 
-  The subset expression (in characters)
+  A character string containing a filter expression (e.g.,
+  `"nchar(CTaa) < 20"` or `"Sample %in% c('P17B', 'P17L')"`). The
+  expression is parsed and evaluated within the data context using
+  [`rlang::parse_expr()`](https://rlang.r-lib.org/reference/parse_expr.html).
 
 ## Value
 
-The subsetted scRepertorie object
+The filtered scRepertoire object in the same format as the input. For
+list-format data, samples with zero rows after filtering are dropped.
 
 ## Examples
 

@@ -1,6 +1,25 @@
-# ClonalCompositionPlot
+# Clonal Composition Plot
 
-Plot the composition of the clones in different samples/groups.
+Visualizes the composition of the immune repertoire by categorizing
+clones into abundance groups (Rare, Small, Medium, Large, Hyperexpanded)
+and plotting their relative proportions across samples or metadata
+groups. This reveals the overall structure of the repertoire — whether
+it is dominated by a few large clones (clonal expansion) or composed of
+many small clones (high diversity).
+
+`ClonalCompositionPlot` supports three analysis methods:
+
+- **Homeostasis** (`"homeostasis"`, `"homeo"`, `"rel"`) — Clones are
+  binned by their frequency (fraction of the total repertoire) into
+  categories such as Rare, Small, Medium, Large, and Hyperexpanded. Uses
+  [`scRepertoire::clonalHomeostasis()`](https://www.borch.dev/uploads/scRepertoire/reference/clonalHomeostasis.html).
+
+- **Top clones** (`"top"`) — Clones are ranked and binned by their rank
+  index (e.g., top 10, top 100, etc.). Uses
+  [`scRepertoire::clonalProportion()`](https://www.borch.dev/uploads/scRepertoire/reference/clonalProportion.html).
+
+- **Rare clones** (`"rare"`) — Clones are binned by their absolute size
+  (clone count). Uses clone size thresholds directly.
 
 ## Usage
 
@@ -28,112 +47,137 @@ ClonalCompositionPlot(
 - data:
 
   The product of
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
-  [scRepertoire::combineTCR](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html),
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
   or
-  [scRepertoire::combineExpression](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
+  [`scRepertoire::combineExpression()`](https://www.borch.dev/uploads/scRepertoire/reference/combineExpression.html).
 
 - clone_call:
 
-  How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt), CDR3
-  amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom
-  variable in the data
+  How to define a clone. One of `"gene"`, `"nt"`, `"aa"` (default),
+  `"strict"`, or a custom variable name in the data.
 
 - chain:
 
-  indicate if both or a specific chain should be used - e.g. "both",
-  "TRA", "TRG", "IGH", "IGL"
+  Which chain(s) to use: `"both"` (default), `"TRA"`, `"TRB"`, `"TRD"`,
+  `"TRG"`, `"IGH"`, or `"IGL"`.
 
 - method:
 
-  The method of plot to use. Default is "homeostasis". Possible values
-  are "homeostasis", "homeo", "rel", "top", and "rare".
+  The clonal categorization method. One of:
 
-  - "homeostasis" - Plot the homeostasis/relative abundance of the
-    clones. The `clone_split` will be the fraction of the clones in each
-    sample.
+  - `"homeostasis"` (default), `"homeo"`, `"rel"` — Frequency-based
+    binning using `clone_split` as abundance thresholds.
 
-  - "homeo" - Same as "homeostasis".
+  - `"top"` — Rank-based binning using `clone_split` as rank cutoffs.
 
-  - "rel" - Same as "homeostasis".
-
-  - "top" - Plot the top clones. The `clone_split` will be indexes to
-    cut the clones.
-
-  - "rare" - Plot the rare clones. The `clone_split` will be the clone
-    sizes.
+  - `"rare"` — Size-based binning using `clone_split` as clone size
+    thresholds.
 
 - clone_split:
 
-  The split for the clones. Default is NULL.
+  Threshold values defining the clonal categories. Default is `NULL`,
+  which picks sensible defaults per method:
 
-  - For "homeostasis", "homeo", "rel" - Default is
-    `list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)`.
+  - For `"homeostasis"`/`"homeo"`/`"rel"` — a named list of frequency
+    thresholds:
+    `list(Rare = 1e-04, Small = 0.001, Medium = 0.01, Large = 0.1, Hyperexpanded = 1)`
 
-  - For "top" - Default is `c(10, 100, 1000, 10000, 30000, 100000)`.
+  - For `"top"` — rank cutoffs: `c(10, 100, 1000, 10000, 30000, 100000)`
 
-  - For "rare" - Default is `c(1, 3, 10, 30, 100)`.
+  - For `"rare"` — clone size thresholds: `c(1, 3, 10, 30, 100)`
 
 - scale:
 
-  Whether to scale the values on the y-axis. Default is TRUE.
+  How to normalize the values. One of:
 
-  - TRUE: The values of each group (on the x-axis) will be scaled to 1.
+  - `TRUE` (default) — Values within each x-axis group sum to 1
+    (group-wise proportion).
 
-  - FALSE: No scaling.
+  - `FALSE` — Raw values (clone counts) are used.
 
-  - "sample"/"Sample": The values in each sample will be scaled to 1.
+  - `"sample"` or `"Sample"` — Values within each sample sum to 1
+    (sample-wise proportion).
 
 - facet_by:
 
-  The column name in the meta data to facet the plots. Default: NULL
+  Metadata column used to facet the plot into separate panels. Default
+  is `NULL`.
 
 - group_by:
 
-  The column name in the meta data to group the cells. Default: NULL
+  Metadata column used to group (color) the data. Default is `NULL`.
+  Required for `"box"` and `"violin"` plot types.
 
 - split_by:
 
-  The column name in the meta data to split the plots. Default: NULL
+  Metadata column used to split the data into separate plots. Default is
+  `NULL`.
 
 - xlab:
 
-  The x-axis label. Default is NULL.
+  X-axis label. Default is `NULL`, which uses the `group_by` column name
+  or `"Sample"`.
 
 - ylab:
 
-  The y-axis label. Default is NULL.
+  Y-axis label. Default is `NULL`, which auto-generates `"Abundance"` or
+  `"Relative Abundance"` depending on `scale`.
 
 - plot_type:
 
-  The type of plot to use. Default is "bar". Possible values are "bar",
-  "ring", "box", and "violin".
+  The visualization type. One of:
+
+  - `"bar"` (default) — Stacked bar chart of clonal categories across
+    groups. Best for comparing composition across categories.
+
+  - `"ring"` — Ring (donut) chart alternative to stacked bars.
+
+  - `"box"` — Box plot showing the distribution of each clonal
+    category's abundance across samples. Requires `group_by`.
+
+  - `"violin"` — Violin plot alternative to box plot. Requires
+    `group_by`.
 
 - order:
 
-  The order of the x-axis items or groups. Default is an empty list. It
-  should be a list of values. The names are the column names, and the
-  values are the order.
+  A named list controlling the order of factor levels. List names are
+  column names; list values are the desired order. Default is `NULL`.
 
 - ...:
 
-  Other arguments passed to the specific plot function.
+  Additional arguments passed to the underlying plotthis function:
 
-  - For `bar` plot, see
-    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html).
+  - `"bar"` —
+    [`plotthis::BarPlot()`](https://pwwang.github.io/plotthis/reference/barplot.html)
+    (`palette`, `position`, `alpha`, ...)
 
-  - For `ring` plot, see
-    [`plotthis::RingPlot()`](https://pwwang.github.io/plotthis/reference/RingPlot.html).
+  - `"ring"` —
+    [`plotthis::RingPlot()`](https://pwwang.github.io/plotthis/reference/RingPlot.html)
+    (`palette`, `alpha`, ...)
 
-  - For `box` plot, see
-    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"box"` —
+    [`plotthis::BoxPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`comparisons`, `add_bg`, `palette`, ...)
 
-  - For `violin` plot, see
-    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html).
+  - `"violin"` —
+    [`plotthis::ViolinPlot()`](https://pwwang.github.io/plotthis/reference/boxviolinplot.html)
+    (`add_box`, `add_bg`, `comparisons`, `palette`, ...)
 
 ## Value
 
-A ggplot object or a list if `combine` is FALSE
+A `ggplot` object, or a list of `ggplot` objects if `combine = FALSE` is
+passed via `...`.
+
+## Note
+
+**group_by for box/violin:** The `group_by` parameter is required when
+`plot_type` is `"box"` or `"violin"`. These plot types show per-sample
+distributions, with `group_by` determining the coloring.
+
+**Bar/ring aggregation:** When `group_by` is specified for bar or ring
+plots, data is aggregated across samples within each group (Sample
+values are summed) before plotting, to show group-level composition.
 
 ## Examples
 

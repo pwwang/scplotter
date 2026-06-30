@@ -1,8 +1,34 @@
-# Helper functions to select clones based on various criteria
+# Programmatic clone selection for TCR/BCR repertoire analysis
 
-These helper functions allow for the selection of clones based on
-various criteria such as size, group comparison, and existence in
-specific groups.
+Clone selectors provide a programmatic, expression-based system for
+filtering and selecting T cell and B cell clones from immune repertoire
+data. They are the foundation of clone-level analysis in scplotter,
+enabling flexible clone selection without manual specification of clone
+IDs.
+
+Clone selectors operate on data frames containing clone abundance
+information (clone IDs paired with group-level counts or fractions).
+They evaluate selection criteria — such as abundance thresholds, group
+comparisons, or shared presence across conditions — and return either
+the selected clone IDs, a logical indicator vector, or a filtered data
+frame. The system is context-aware: it automatically detects whether it
+is being called from within a dplyr pipeline, a scplotter function, or
+standalone code, and adjusts its default behavior accordingly.
+
+The following selector functions are available:
+
+- `top()` — select the `n` largest clones by abundance
+
+- `sel()` — select clones matching a custom logical expression
+
+- `uniq()` — select clones unique to a specified group
+
+- `shared()` — select clones present in all specified groups
+
+- `gt()`, `ge()`, `lt()`, `le()`, `eq()`, `ne()` — comparison-based
+  selection
+
+- `and()`, `or()` — combine multiple selector results
 
 ## Usage
 
@@ -293,34 +319,98 @@ or(x, y, ...)
 A vector of CTaas or a data frame with the selected clones based on the
 criteria.
 
-## Details
+## Note
 
-These helper functions are designed to be used in a dplyr pipeline or
-used internally in other scplotter functions to select clones based on
-various criteria.
+- Clone selectors are designed to work with data produced by
+  [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html)
+  or
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html),
+  where each row represents a cell and clone IDs are stored in a column
+  (default `"CTaa"`).
 
-- When used in a dplyr pipeline, they will return a vector with the same
-  length as the input data, with the selected clones' CTaa values (clone
-  IDs) and NA for others. It is useful for adding a new column to the
-  data frame. For the functions that need `group1`, `group2`, and/or
-  `...`, `group_by` should be provided to specify the grouping columns.
-  Then `group1`, `group2`, and `...` can be the values in the grouping
-  column. To include more grouping columns, just use
-  `c(grouping1, grouping2, ...)`, where `grouping1` is used for values
-  of `group1`, `group2` and `...`; `grouping2` and so on will be kept as
-  the groupings where the clones are selected in each combination of the
-  grouping values.
+- The `within` and `output_within` arguments enable powerful
+  subset-then-select patterns. Use `within` to restrict the selection
+  pool (e.g., select top clones only among CD8+ T cells), and use
+  `output_within` to additionally filter the returned results.
 
-- When used in a scplotter function, they will return a subset of the
-  data frame with only the selected clones. This is useful for filtering
-  the data frame to only include the clones that meet the criteria. It
-  is used internally in some other scplotter functions, such as
-  `ClonalStatPlot`, to select clones. The groupings are also applied,
-  and defaulting to `facet_by` and `split_by` in the parent frame.
+- When using selectors as expression strings in scplotter functions
+  (e.g., `clones = "top(10, group_by = 'Sample')"`), the expression is
+  parsed and evaluated in the function's data context — not in the
+  global environment. Group names should be quoted within the string.
 
-- When used independently, you should pass the arguments explicitly,
-  such as `group_by` and `output`, to control the behavior and the
-  output of the function.
+- Selector functions detect their calling context via
+  [`rlang::caller_env()`](https://rlang.r-lib.org/reference/stack.html).
+  When calling selectors from within nested wrapper functions, the
+  context detection may fail; pass `data`, `in_form`, and `output`
+  explicitly in such cases.
+
+## Usage contexts
+
+Clone selectors adapt their behavior based on the calling environment:
+
+- **In a dplyr pipeline** (e.g., `mutate(data, Top5 = top(5))`): Returns
+  a character vector of clone IDs (the same length as the input data),
+  with `NA` for non-selected rows. This is ideal for adding a selection
+  column to a data frame. For functions requiring `group1`, `group2`,
+  etc., provide `group_by` to identify the grouping column — its values
+  become the group names referenced in the selector. Additional grouping
+  columns can be passed via `c(group1, group2, ...)` to perform
+  selection within each combination of grouping values.
+
+- **In a scplotter function** (e.g., `ClonalStatPlot`): Returns a
+  filtered data frame containing only the selected clones. Groupings
+  default to `facet_by` and `split_by` from the parent frame. This is
+  the mode used when clone selectors are passed as expression strings
+  (e.g., `clones = "top(10)"`).
+
+- **Standalone**: All arguments should be provided explicitly
+  (`group_by`, `output`, `data`) to control behavior and return type.
+
+## Output formats
+
+The `output` parameter controls what the selector returns:
+
+- `"id"` / `"ids"`: A character vector of clone IDs for selected clones,
+  with `NA` for non-selected rows. Same length as the input data.
+  Default in dplyr pipeline context.
+
+- `"logical"` / `"bool"` / `"boolean"` / `"indicator"`: A logical vector
+  (`TRUE`/`FALSE`) indicating selection status. Same information as
+  `"id"` but in Boolean form.
+
+- `"data"` / `"df"` / `"data.frame"`: A subsetted data frame containing
+  only the rows for selected clones. Default in scplotter function
+  context.
+
+## Compound expressions
+
+Multiple selector results can be combined using `and()` and `or()`:
+
+- `and(x, y, ...)`: Returns clones selected by ALL input selectors
+  (intersection). All input vectors must have the same length and output
+  type (all `"id"` or all `"logical"`).
+
+- `or(x, y, ...)`: Returns clones selected by ANY input selector
+  (union). All input vectors must have the same length and output type.
+
+For example, `or(top(3), eq(group1, group2, group_by = "group"))`
+selects clones that are either in the top 3 OR have equal abundance in
+group1 and group2.
+
+## See also
+
+- [`ClonalStatPlot`](https://pwwang.github.io/scplotter/reference/ClonalStatPlot.md)
+  for the primary consumer of clone selectors in expression-string form
+
+- [`ClonalCompositionPlot`](https://pwwang.github.io/scplotter/reference/ClonalCompositionPlot.md),
+  [`ClonalDiversityPlot`](https://pwwang.github.io/scplotter/reference/ClonalDiversityPlot.md),
+  [`ClonalGeneUsagePlot`](https://pwwang.github.io/scplotter/reference/ClonalGeneUsagePlot.md)
+  for other clonal analysis functions
+
+- [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html)
+  and
+  [`scRepertoire::combineBCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineBCR.html)
+  for producing compatible input data
 
 ## Examples
 
