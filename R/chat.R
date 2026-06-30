@@ -1,6 +1,71 @@
-#' SCPlotterChat Class
+#' LLM-Powered Chat Interface for Single-Cell Visualization
 #'
-#' An R6 class that provides chat functionality for SCPlotter
+#' @description
+#' `SCPlotterChat` is an R6 class that provides a conversational interface for
+#' generating single-cell data visualizations through natural language. It
+#' leverages Large Language Models (LLMs) via the \pkg{tidyprompt} package to
+#' interpret user requests, select appropriate visualization functions,
+#' identify relevant data objects, and generate executable R code — all
+#' without requiring the user to know function names, parameter details, or
+#' data formats.
+#'
+#' @section Architecture:
+#' `SCPlotterChat` orchestrates a three-stage LLM pipeline for each user
+#' request:
+#'
+#' **Stage 1 — Tool identification** (`locate_tool`): The user's prompt is
+#' analyzed against a registry of all exported \pkg{scplotter} functions
+#' (built automatically from package documentation). The LLM selects the most
+#' appropriate visualization function, considering the current conversation
+#' history for context (e.g., "do a heatmap instead" reuses the previous
+#' tool).
+#'
+#' **Stage 2 — Data identification** (`locate_data`): The LLM identifies the
+#' target data object from available sources:
+#' \itemize{
+#'   \item Data frames and Seurat objects in the global environment
+#'   \item Datasets exported by \pkg{scplotter}, \pkg{Seurat},
+#'         \pkg{SeuratObject}, and \pkg{scRepertoire}
+#'   \item Manually set data via `$set_data()`
+#' }
+#'
+#' **Stage 3 — Code generation and execution** (`run_tool`): The LLM
+#' generates R code to call the selected visualization function with the
+#' identified data object. The code is evaluated in an isolated environment,
+#' and the resulting plot is returned. Validation ensures the generated code
+#' is syntactically valid R.
+#'
+#' @section Conversation history:
+#' `SCPlotterChat` maintains a conversation history across calls to `$ask()`.
+#' Each interaction records the user's prompt, the selected tool, the data
+#' object, and the generated R code. This enables contextual follow-up
+#' requests such as "change the palette to Spectral" or "facet by condition"
+#' — the LLM understands that these are refinements of the previous plot
+#' rather than new independent requests.
+#'
+#' @section Tool registry:
+#' On initialization, `SCPlotterChat` scans the \pkg{scplotter} package
+#' namespace for all exported functions and parses their Rd documentation to
+#' build a tool registry. Each tool entry contains the function's title,
+#' description, usage signature, arguments (with descriptions), and usage
+#' examples. For `...` arguments that reference other package functions
+#' (e.g., `[plotthis::Heatmap()]`), the documentation is recursively
+#' expanded to include those functions' arguments as well.
+#'
+#' Two special pseudo-tools are also registered:
+#' \itemize{
+#'   \item `ListTools` — Lists all available visualization functions
+#'   \item `ListData` — Lists all available data objects
+#' }
+#' When the LLM selects either of these, the chat responds with a listing
+#' rather than generating a plot.
+#'
+#' @section LLM provider setup:
+#' `SCPlotterChat` requires an LLM provider object from the \pkg{tidyprompt}
+#' package. Any provider supported by \pkg{tidyprompt} can be used:
+#' OpenAI, DeepSeek, Ollama (local), and others. See
+#' \url{https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html#setup-an-llm-provider}
+#' for setup instructions.
 #'
 #' @import R6
 #' @export
@@ -9,29 +74,51 @@
 #' @importFrom rlang %||%
 #' @examples
 #' \donttest{
-#' if (FALSE) {
-#' provider <- tidyprompt::llm_provider_openai(api_key = Sys.getenv("OPENAI_API_KEY"))
+#' # Setup LLM provider (requires an API key)
+#' provider <- tidyprompt::llm_provider_openai(
+#'     parameters = list(model = "deepseek-v4-flash", stream = TRUE),
+#'     url = "https://api.deepseek.com/chat/completions",
+#'     api_key = Sys.getenv("OPENAI_API_KEY")
+#' )
+#'
+#' # Create chat instance
 #' chat <- SCPlotterChat$new(provider)
+#'
+#' # List available tools
 #' chat$ask("What are the tools to use?")
 #' # Tool identified:  ListTools
 #' # Available tools:
-#' # -  ClonalOverlapPlot :  ClonalOverlapPlot
-#' #    Plot the overlap of the clones in different samples/groups.
-#' #
-#' # -  EnrichmentPlot :  Enrichment Plot
-#' #    This function generates various types of plots for enrichment analysis.
+#' # -  CCCPlot :  Cell-Cell Communication Plot
+#' #    Visualizes ligand-receptor interaction inference results ...
 #' # ...
 #'
+#' # List available data
+#' chat$ask("What data is available?")
+#'
+#' # Generate a plot from natural language
 #' chat$ask("Plot the default cell-cell communication plot for the cellphonedb_res dataset")
 #' # Tool identified:  CCCPlot
 #' # Data object identified:  cellphonedb_res
-#' # Running tool:  CCCPlot
+#' # Code ran: CCCPlot(cellphonedb_res)
 #'
+#' # Refine with conversational context
 #' chat$ask("do a heatmap instead")
 #' # Tool identified:  CCCPlot
 #' # Data object identified:  cellphonedb_res
-#' # Running tool:  CCCPlot
-#' }
+#' # Code ran: CCCPlot(cellphonedb_res, plot_type = "heatmap")
+#'
+#' # Add a title
+#' chat$ask("Add a proper title to the plot")
+#'
+#' # Manually set data to avoid auto-detection
+#' chat$set_data(scplotter::cellphonedb_res)
+#' chat$ask("Make a dot plot")
+#'
+#' # Inspect conversation history
+#' chat$get_history()
+#'
+#' # Clear history for a fresh conversation
+#' chat$clear_history()
 #' }
 SCPlotterChat <- R6::R6Class(
     "SCPlotterChat",
@@ -410,13 +497,21 @@ SCPlotterChat <- R6::R6Class(
 
     public = list(
 
-        #' @description Create a new instance of the SCPlotterChat class
-        #' @param provider An LLM provider object
-        #' See https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html#setup-an-llm-provider
-        #' for more details on LLM providers
-        #' @param verbose A logical value indicating whether to print verbose messages
-        #' Default is FALSE. And this will override the verbose setting of the provider
-        #' @return A new instance of the SCPlotterChat class
+        #' @description Create a new instance of the SCPlotterChat class.
+        #'   On initialization, the chat scans the \pkg{scplotter} package for all
+        #'   exported visualization functions and builds a tool registry from their
+        #'   documentation. It also discovers available data objects from the global
+        #'   environment and from packages (\pkg{scplotter}, \pkg{Seurat},
+        #'   \pkg{SeuratObject}, \pkg{scRepertoire}).
+        #' @param provider An LLM provider object from the \pkg{tidyprompt} package
+        #'   (e.g., created via \code{tidyprompt::llm_provider_openai()}). See
+        #'   \url{https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html#setup-an-llm-provider}
+        #'   for a full list of supported providers and setup instructions.
+        #' @param verbose Logical; if `TRUE`, prints the full prompt and LLM
+        #'   response for each interaction. Useful for debugging prompt engineering
+        #'   or understanding how the LLM interprets requests. Default is `FALSE`.
+        #'   Note: this overrides the `verbose` setting of the provider object.
+        #' @return A new `SCPlotterChat` instance (R6 object).
         initialize = function(provider, verbose = FALSE) {
             if (!inherits(provider, "LlmProvider")) {
                 stop("The provider must be an instance of llm_provider-class from tidyprompt.")
@@ -429,14 +524,20 @@ SCPlotterChat <- R6::R6Class(
             private$provider$verbose <- verbose
         },
 
-        #' @description Clear the chat history
-        #' @return NULL
+        #' @description Clear the conversation history. Useful for starting a
+        #'   fresh conversation without creating a new `SCPlotterChat` instance.
+        #'   After clearing, the LLM will have no memory of previous requests.
+        #' @return `NULL` (invisibly).
         clear_history = function() {
             private$history <- NULL
         },
 
-        #' @description Get the chat history
-        #' @return The chat history
+        #' @description Retrieve the conversation history. Each entry records
+        #'   the user prompt and the assistant's response (tool used, data object,
+        #'   and generated R code). The history provides conversational context
+        #'   for follow-up requests.
+        #' @return A character vector of history entries, or `NULL` if no
+        #'   interactions have occurred or the history has been cleared.
         get_history = function() {
             if (is.null(private$history)) {
                 return(NULL)
@@ -444,8 +545,11 @@ SCPlotterChat <- R6::R6Class(
             private$history
         },
 
-        #' @description Print the list of available tools
-        #' @return NULL
+        #' @description Print a list of all available visualization tools
+        #'   (exported \pkg{scplotter} functions) that the LLM can use. Each
+        #'   entry shows the function name, its title, and a brief description
+        #'   extracted from the package documentation.
+        #' @return `NULL` (invisibly). Output is printed to the console.
         list_tools = function() {
             if (length(private$tools) == 0) {
                 private$get_tools()
@@ -457,8 +561,12 @@ SCPlotterChat <- R6::R6Class(
             }
         },
 
-        #' @description Print the list of available data objects that can be used
-        #' @return NULL
+        #' @description Print a list of all available data objects that the LLM
+        #'   can use for visualization. Data sources include: objects in the
+        #'   global environment (data frames and Seurat objects), and datasets
+        #'   exported by \pkg{scplotter}, \pkg{Seurat}, \pkg{SeuratObject}, and
+        #'   \pkg{scRepertoire}.
+        #' @return `NULL` (invisibly). Output is printed to the console.
         list_data = function() {
             if (length(private$datasets) == 0) {
                 private$get_datasets()
@@ -469,10 +577,20 @@ SCPlotterChat <- R6::R6Class(
             }
         },
 
-        #' @description Set the data to be analyzed
-        #' @param data The data object to be set
-        #' @param name The name of the data object (optional)
-        #' @return NULL
+        #' @description Manually set the data object to be used for
+        #'   visualization. This bypasses the automatic data detection in
+        #'   `$ask()` — when data is set via this method, all subsequent
+        #'   `$ask()` calls will use this data regardless of what the LLM
+        #'   identifies from the prompt. Set to `NULL` to restore automatic
+        #'   detection.
+        #' @param data The data object (e.g., a Seurat object, data frame, or
+        #'   any object compatible with \pkg{scplotter} visualization functions).
+        #'   Pass `NULL` to clear the preset data and revert to automatic
+        #'   detection.
+        #' @param name Optional character string to use as the data object's
+        #'   name in generated code. If `NULL` (default), the name is inferred
+        #'   from the `data` argument via `deparse(substitute())`.
+        #' @return `NULL` (invisibly).
         set_data = function(data, name = NULL) {
             if (is.null(name)) {
                 private$data_name <- deparse(substitute(data))
@@ -482,19 +600,46 @@ SCPlotterChat <- R6::R6Class(
             private$data <- data
         },
 
-        #' @description Get the data to be analyzed
-        #' @return The data object
+        #' @description Retrieve the currently set data object (if any).
+        #'   Returns `NULL` if no data has been manually set via `$set_data()`.
+        #' @return The data object set via `$set_data()`, or `NULL` if
+        #'   automatic data detection is active.
         get_data = function() {
             private$data
         },
 
-        #' @description Send a prompt to the chat interface and receive a response
-        #' @param prompt A character string containing the user's query or instruction
-        #' @param verbose A logical value indicating whether to print verbose messages
-        #' Default is NULL, which will use the verbose setting of the SCPlotterChat object
-        #' @param add_to_history A logical value indicating whether to add the prompt and response to the chat history
-        #' Default is TRUE
-        #' @return A response from the chat system
+        #' @description Send a natural language prompt to the chat interface.
+        #'   This is the primary method for interacting with `SCPlotterChat`.
+        #'   It executes a three-stage pipeline:
+        #'   \enumerate{
+        #'     \item **Tool identification** — The LLM selects the most
+        #'           appropriate \pkg{scplotter} visualization function based
+        #'           on the prompt and conversation history.
+        #'     \item **Data identification** — The LLM identifies the target
+        #'           data object from available sources (unless data has been
+        #'           manually set via `$set_data()`).
+        #'     \item **Code generation and execution** — The LLM generates
+        #'           R code to call the selected function with the identified
+        #'           data, which is then evaluated. The resulting plot is
+        #'           returned.
+        #'   }
+        #'   If the selected tool is `ListTools` or `ListData`, the
+        #'   respective listing is printed instead of generating a plot.
+        #' @param prompt A character string containing the user's query or
+        #'   instruction in natural language (e.g., "Plot a UMAP of the
+        #'   pancreas data colored by cell type", "Make it a heatmap instead").
+        #' @param verbose Logical; if `TRUE`, prints the full LLM prompt and
+        #'   response for this interaction. Default is `NULL`, which falls
+        #'   back to the `verbose` setting of the `SCPlotterChat` instance.
+        #'   Use this to debug a single interaction without enabling verbose
+        #'   mode globally.
+        #' @param add_to_history Logical; if `TRUE` (default), this
+        #'   interaction is recorded in the conversation history, enabling
+        #'   the LLM to understand follow-up requests in context. Set to
+        #'   `FALSE` for one-off queries that should not influence subsequent
+        #'   interactions.
+        #' @return The generated plot (typically a `ggplot` object), or
+        #'   `NULL` invisibly for `ListTools`/`ListData` requests.
         ask = function(prompt, verbose = NULL, add_to_history = TRUE) {
             verbose <- verbose %||% private$verbose
             tool_name <- private$locate_tool(prompt, verbose)

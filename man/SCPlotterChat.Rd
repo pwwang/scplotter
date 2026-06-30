@@ -2,40 +2,129 @@
 % Please edit documentation in R/chat.R
 \name{SCPlotterChat}
 \alias{SCPlotterChat}
-\title{SCPlotterChat Class}
+\title{LLM-Powered Chat Interface for Single-Cell Visualization}
 \description{
-SCPlotterChat Class
+\code{SCPlotterChat} is an R6 class that provides a conversational interface for
+generating single-cell data visualizations through natural language. It
+leverages Large Language Models (LLMs) via the \pkg{tidyprompt} package to
+interpret user requests, select appropriate visualization functions,
+identify relevant data objects, and generate executable R code — all
+without requiring the user to know function names, parameter details, or
+data formats.
+}
+\section{Architecture}{
 
-SCPlotterChat Class
+\code{SCPlotterChat} orchestrates a three-stage LLM pipeline for each user
+request:
+
+\strong{Stage 1 — Tool identification} (\code{locate_tool}): The user's prompt is
+analyzed against a registry of all exported \pkg{scplotter} functions
+(built automatically from package documentation). The LLM selects the most
+appropriate visualization function, considering the current conversation
+history for context (e.g., "do a heatmap instead" reuses the previous
+tool).
+
+\strong{Stage 2 — Data identification} (\code{locate_data}): The LLM identifies the
+target data object from available sources:
+\itemize{
+\item Data frames and Seurat objects in the global environment
+\item Datasets exported by \pkg{scplotter}, \pkg{Seurat},
+\pkg{SeuratObject}, and \pkg{scRepertoire}
+\item Manually set data via \verb{$set_data()}
 }
-\details{
-An R6 class that provides chat functionality for SCPlotter
+
+\strong{Stage 3 — Code generation and execution} (\code{run_tool}): The LLM
+generates R code to call the selected visualization function with the
+identified data object. The code is evaluated in an isolated environment,
+and the resulting plot is returned. Validation ensures the generated code
+is syntactically valid R.
 }
+
+\section{Conversation history}{
+
+\code{SCPlotterChat} maintains a conversation history across calls to \verb{$ask()}.
+Each interaction records the user's prompt, the selected tool, the data
+object, and the generated R code. This enables contextual follow-up
+requests such as "change the palette to Spectral" or "facet by condition"
+— the LLM understands that these are refinements of the previous plot
+rather than new independent requests.
+}
+
+\section{Tool registry}{
+
+On initialization, \code{SCPlotterChat} scans the \pkg{scplotter} package
+namespace for all exported functions and parses their Rd documentation to
+build a tool registry. Each tool entry contains the function's title,
+description, usage signature, arguments (with descriptions), and usage
+examples. For \code{...} arguments that reference other package functions
+(e.g., \verb{[plotthis::Heatmap()]}), the documentation is recursively
+expanded to include those functions' arguments as well.
+
+Two special pseudo-tools are also registered:
+\itemize{
+\item \code{ListTools} — Lists all available visualization functions
+\item \code{ListData} — Lists all available data objects
+}
+When the LLM selects either of these, the chat responds with a listing
+rather than generating a plot.
+}
+
+\section{LLM provider setup}{
+
+\code{SCPlotterChat} requires an LLM provider object from the \pkg{tidyprompt}
+package. Any provider supported by \pkg{tidyprompt} can be used:
+OpenAI, DeepSeek, Ollama (local), and others. See
+\url{https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html#setup-an-llm-provider}
+for setup instructions.
+}
+
 \examples{
 \donttest{
-if (FALSE) {
-provider <- tidyprompt::llm_provider_openai(api_key = Sys.getenv("OPENAI_API_KEY"))
+# Setup LLM provider (requires an API key)
+provider <- tidyprompt::llm_provider_openai(
+    parameters = list(model = "deepseek-v4-flash", stream = TRUE),
+    url = "https://api.deepseek.com/chat/completions",
+    api_key = Sys.getenv("OPENAI_API_KEY")
+)
+
+# Create chat instance
 chat <- SCPlotterChat$new(provider)
+
+# List available tools
 chat$ask("What are the tools to use?")
 # Tool identified:  ListTools
 # Available tools:
-# -  ClonalOverlapPlot :  ClonalOverlapPlot
-#    Plot the overlap of the clones in different samples/groups.
-#
-# -  EnrichmentPlot :  Enrichment Plot
-#    This function generates various types of plots for enrichment analysis.
+# -  CCCPlot :  Cell-Cell Communication Plot
+#    Visualizes ligand-receptor interaction inference results ...
 # ...
 
+# List available data
+chat$ask("What data is available?")
+
+# Generate a plot from natural language
 chat$ask("Plot the default cell-cell communication plot for the cellphonedb_res dataset")
 # Tool identified:  CCCPlot
 # Data object identified:  cellphonedb_res
-# Running tool:  CCCPlot
+# Code ran: CCCPlot(cellphonedb_res)
 
+# Refine with conversational context
 chat$ask("do a heatmap instead")
 # Tool identified:  CCCPlot
 # Data object identified:  cellphonedb_res
-# Running tool:  CCCPlot
-}
+# Code ran: CCCPlot(cellphonedb_res, plot_type = "heatmap")
+
+# Add a title
+chat$ask("Add a proper title to the plot")
+
+# Manually set data to avoid auto-detection
+chat$set_data(scplotter::cellphonedb_res)
+chat$ask("Make a dot plot")
+
+# Inspect conversation history
+chat$get_history()
+
+# Clear history for a fresh conversation
+chat$clear_history()
 }
 }
 \section{Methods}{
@@ -56,7 +145,12 @@ chat$ask("do a heatmap instead")
 \if{html}{\out{<a id="method-SCPlotterChat-new"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new instance of the SCPlotterChat class
+Create a new instance of the SCPlotterChat class.
+On initialization, the chat scans the \pkg{scplotter} package for all
+exported visualization functions and builds a tool registry from their
+documentation. It also discovers available data objects from the global
+environment and from packages (\pkg{scplotter}, \pkg{Seurat},
+\pkg{SeuratObject}, \pkg{scRepertoire}).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$new(provider, verbose = FALSE)}\if{html}{\out{</div>}}
 }
@@ -64,76 +158,97 @@ Create a new instance of the SCPlotterChat class
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{provider}}{An LLM provider object
-See https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html#setup-an-llm-provider
-for more details on LLM providers}
+\item{\code{provider}}{An LLM provider object from the \pkg{tidyprompt} package
+(e.g., created via \code{tidyprompt::llm_provider_openai()}). See
+\url{https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html#setup-an-llm-provider}
+for a full list of supported providers and setup instructions.}
 
-\item{\code{verbose}}{A logical value indicating whether to print verbose messages
-Default is FALSE. And this will override the verbose setting of the provider}
+\item{\code{verbose}}{Logical; if \code{TRUE}, prints the full prompt and LLM
+response for each interaction. Useful for debugging prompt engineering
+or understanding how the LLM interprets requests. Default is \code{FALSE}.
+Note: this overrides the \code{verbose} setting of the provider object.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new instance of the SCPlotterChat class
+A new \code{SCPlotterChat} instance (R6 object).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-clear_history"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-clear_history}{}}}
 \subsection{Method \code{clear_history()}}{
-Clear the chat history
+Clear the conversation history. Useful for starting a
+fresh conversation without creating a new \code{SCPlotterChat} instance.
+After clearing, the LLM will have no memory of previous requests.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$clear_history()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-NULL
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-get_history"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-get_history}{}}}
 \subsection{Method \code{get_history()}}{
-Get the chat history
+Retrieve the conversation history. Each entry records
+the user prompt and the assistant's response (tool used, data object,
+and generated R code). The history provides conversational context
+for follow-up requests.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$get_history()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-The chat history
+A character vector of history entries, or \code{NULL} if no
+interactions have occurred or the history has been cleared.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-list_tools"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-list_tools}{}}}
 \subsection{Method \code{list_tools()}}{
-Print the list of available tools
+Print a list of all available visualization tools
+(exported \pkg{scplotter} functions) that the LLM can use. Each
+entry shows the function name, its title, and a brief description
+extracted from the package documentation.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$list_tools()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-NULL
+\code{NULL} (invisibly). Output is printed to the console.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-list_data"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-list_data}{}}}
 \subsection{Method \code{list_data()}}{
-Print the list of available data objects that can be used
+Print a list of all available data objects that the LLM
+can use for visualization. Data sources include: objects in the
+global environment (data frames and Seurat objects), and datasets
+exported by \pkg{scplotter}, \pkg{Seurat}, \pkg{SeuratObject}, and
+\pkg{scRepertoire}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$list_data()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-NULL
+\code{NULL} (invisibly). Output is printed to the console.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-set_data"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-set_data}{}}}
 \subsection{Method \code{set_data()}}{
-Set the data to be analyzed
+Manually set the data object to be used for
+visualization. This bypasses the automatic data detection in
+\verb{$ask()} — when data is set via this method, all subsequent
+\verb{$ask()} calls will use this data regardless of what the LLM
+identifies from the prompt. Set to \code{NULL} to restore automatic
+detection.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$set_data(data, name = NULL)}\if{html}{\out{</div>}}
 }
@@ -141,34 +256,57 @@ Set the data to be analyzed
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{The data object to be set}
+\item{\code{data}}{The data object (e.g., a Seurat object, data frame, or
+any object compatible with \pkg{scplotter} visualization functions).
+Pass \code{NULL} to clear the preset data and revert to automatic
+detection.}
 
-\item{\code{name}}{The name of the data object (optional)}
+\item{\code{name}}{Optional character string to use as the data object's
+name in generated code. If \code{NULL} (default), the name is inferred
+from the \code{data} argument via \code{deparse(substitute())}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-NULL
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-get_data"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-get_data}{}}}
 \subsection{Method \code{get_data()}}{
-Get the data to be analyzed
+Retrieve the currently set data object (if any).
+Returns \code{NULL} if no data has been manually set via \verb{$set_data()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$get_data()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-The data object
+The data object set via \verb{$set_data()}, or \code{NULL} if
+automatic data detection is active.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-SCPlotterChat-ask"></a>}}
 \if{latex}{\out{\hypertarget{method-SCPlotterChat-ask}{}}}
 \subsection{Method \code{ask()}}{
-Send a prompt to the chat interface and receive a response
+Send a natural language prompt to the chat interface.
+This is the primary method for interacting with \code{SCPlotterChat}.
+It executes a three-stage pipeline:
+\enumerate{
+\item \strong{Tool identification} — The LLM selects the most
+appropriate \pkg{scplotter} visualization function based
+on the prompt and conversation history.
+\item \strong{Data identification} — The LLM identifies the target
+data object from available sources (unless data has been
+manually set via \verb{$set_data()}).
+\item \strong{Code generation and execution} — The LLM generates
+R code to call the selected function with the identified
+data, which is then evaluated. The resulting plot is
+returned.
+}
+If the selected tool is \code{ListTools} or \code{ListData}, the
+respective listing is printed instead of generating a plot.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SCPlotterChat$ask(prompt, verbose = NULL, add_to_history = TRUE)}\if{html}{\out{</div>}}
 }
@@ -176,18 +314,27 @@ Send a prompt to the chat interface and receive a response
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{prompt}}{A character string containing the user's query or instruction}
+\item{\code{prompt}}{A character string containing the user's query or
+instruction in natural language (e.g., "Plot a UMAP of the
+pancreas data colored by cell type", "Make it a heatmap instead").}
 
-\item{\code{verbose}}{A logical value indicating whether to print verbose messages
-Default is NULL, which will use the verbose setting of the SCPlotterChat object}
+\item{\code{verbose}}{Logical; if \code{TRUE}, prints the full LLM prompt and
+response for this interaction. Default is \code{NULL}, which falls
+back to the \code{verbose} setting of the \code{SCPlotterChat} instance.
+Use this to debug a single interaction without enabling verbose
+mode globally.}
 
-\item{\code{add_to_history}}{A logical value indicating whether to add the prompt and response to the chat history
-Default is TRUE}
+\item{\code{add_to_history}}{Logical; if \code{TRUE} (default), this
+interaction is recorded in the conversation history, enabling
+the LLM to understand follow-up requests in context. Set to
+\code{FALSE} for one-off queries that should not influence subsequent
+interactions.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A response from the chat system
+The generated plot (typically a \code{ggplot} object), or
+\code{NULL} invisibly for \code{ListTools}/\code{ListData} requests.
 }
 }
 \if{html}{\out{<hr>}}
