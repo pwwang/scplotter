@@ -14,7 +14,7 @@
 \alias{ne}
 \alias{and}
 \alias{or}
-\title{Helper functions to select clones based on various criteria}
+\title{Programmatic clone selection for TCR/BCR repertoire analysis}
 \usage{
 top(
   n,
@@ -236,26 +236,106 @@ If FALSE, only the first group must be greater than the second group.}
 A vector of CTaas or a data frame with the selected clones based on the criteria.
 }
 \description{
-These helper functions allow for the selection of clones based on various criteria such as size, group comparison, and existence in specific groups.
-}
-\details{
-These helper functions are designed to be used in a dplyr pipeline or used internally in other scplotter
-functions to select clones based on various criteria.
+Clone selectors provide a programmatic, expression-based system for filtering
+and selecting T cell and B cell clones from immune repertoire data. They are
+the foundation of clone-level analysis in \pkg{scplotter}, enabling flexible
+clone selection without manual specification of clone IDs.
+
+Clone selectors operate on data frames containing clone abundance information
+(clone IDs paired with group-level counts or fractions). They evaluate
+selection criteria — such as abundance thresholds, group comparisons, or
+shared presence across conditions — and return either the selected clone IDs,
+a logical indicator vector, or a filtered data frame. The system is
+context-aware: it automatically detects whether it is being called from
+within a \pkg{dplyr} pipeline, a \pkg{scplotter} function, or standalone
+code, and adjusts its default behavior accordingly.
+
+The following selector functions are available:
 \itemize{
-\item When used in a dplyr pipeline, they will return a vector with the same length as the input data, with the selected
-clones' CTaa values (clone IDs) and NA for others. It is useful for adding a new column to the data frame. For the
-functions that need \code{group1}, \code{group2}, and/or \code{...}, \code{group_by} should be provided to specify the grouping columns.
-Then \code{group1}, \code{group2}, and \code{...} can be the values in the grouping column. To include more grouping columns, just use
-\code{c(grouping1, grouping2, ...)}, where \code{grouping1} is used for values of \code{group1}, \code{group2} and \code{...}; \code{grouping2} and
-so on will be kept as the groupings where the clones are selected in each combination of the grouping values.
-\item When used in a scplotter function, they will return a subset of the data frame with only the selected clones.
-This is useful for filtering the data frame to only include the clones that meet the criteria. It is used internally in
-some other scplotter functions, such as \code{ClonalStatPlot}, to select clones. The groupings are also applied, and defaulting
-to \code{facet_by} and \code{split_by} in the parent frame.
-\item When used independently, you should pass the arguments explicitly, such as \code{group_by} and \code{output}, to control the
-behavior and the output of the function.
+\item \code{top()} — select the \code{n} largest clones by abundance
+\item \code{sel()} — select clones matching a custom logical expression
+\item \code{uniq()} — select clones unique to a specified group
+\item \code{shared()} — select clones present in all specified groups
+\item \code{gt()}, \code{ge()}, \code{lt()}, \code{le()}, \code{eq()}, \code{ne()} — comparison-based selection
+\item \code{and()}, \code{or()} — combine multiple selector results
 }
 }
+\note{
+\itemize{
+\item Clone selectors are designed to work with data produced by
+\code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}} or
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, where each
+row represents a cell and clone IDs are stored in a column (default \code{"CTaa"}).
+\item The \code{within} and \code{output_within} arguments enable powerful
+subset-then-select patterns. Use \code{within} to restrict the selection
+pool (e.g., select top clones only among CD8+ T cells), and use
+\code{output_within} to additionally filter the returned results.
+\item When using selectors as expression strings in scplotter functions
+(e.g., \code{clones = "top(10, group_by = 'Sample')"}), the expression is
+parsed and evaluated in the function's data context — not in the global
+environment. Group names should be quoted within the string.
+\item Selector functions detect their calling context via
+\code{\link[rlang:caller_env]{rlang::caller_env()}}. When calling selectors
+from within nested wrapper functions, the context detection may fail; pass
+\code{data}, \code{in_form}, and \code{output} explicitly in such cases.
+}
+}
+\section{Usage contexts}{
+
+
+Clone selectors adapt their behavior based on the calling environment:
+\itemize{
+\item \strong{In a dplyr pipeline} (e.g., \code{mutate(data, Top5 = top(5))}):
+Returns a character vector of clone IDs (the same length as the input data),
+with \code{NA} for non-selected rows. This is ideal for adding a selection
+column to a data frame. For functions requiring \code{group1}, \code{group2},
+etc., provide \code{group_by} to identify the grouping column — its values
+become the group names referenced in the selector. Additional grouping
+columns can be passed via \code{c(group1, group2, ...)} to perform selection
+within each combination of grouping values.
+\item \strong{In a scplotter function} (e.g., \code{ClonalStatPlot}):
+Returns a filtered data frame containing only the selected clones.
+Groupings default to \code{facet_by} and \code{split_by} from the parent
+frame. This is the mode used when clone selectors are passed as expression
+strings (e.g., \code{clones = "top(10)"}).
+\item \strong{Standalone}: All arguments should be provided explicitly
+(\code{group_by}, \code{output}, \code{data}) to control behavior and
+return type.
+}
+}
+
+\section{Output formats}{
+
+
+The \code{output} parameter controls what the selector returns:
+\itemize{
+\item \code{"id"} / \code{"ids"}: A character vector of clone IDs for selected
+clones, with \code{NA} for non-selected rows. Same length as the input data.
+Default in dplyr pipeline context.
+\item \code{"logical"} / \code{"bool"} / \code{"boolean"} / \code{"indicator"}:
+A logical vector (\code{TRUE}/\code{FALSE}) indicating selection status.
+Same information as \code{"id"} but in Boolean form.
+\item \code{"data"} / \code{"df"} / \code{"data.frame"}: A subsetted data
+frame containing only the rows for selected clones. Default in scplotter
+function context.
+}
+}
+
+\section{Compound expressions}{
+
+
+Multiple selector results can be combined using \code{and()} and \code{or()}:
+\itemize{
+\item \code{and(x, y, ...)}: Returns clones selected by ALL input selectors
+(intersection). All input vectors must have the same length and output type
+(all \code{"id"} or all \code{"logical"}).
+\item \code{or(x, y, ...)}: Returns clones selected by ANY input selector
+(union). All input vectors must have the same length and output type.
+}
+For example, \code{or(top(3), eq(group1, group2, group_by = "group"))} selects
+clones that are either in the top 3 OR have equal abundance in group1 and group2.
+}
+
 \examples{
 set.seed(8525)
 data <- data.frame(
@@ -334,4 +414,15 @@ dplyr::mutate(data,
         gt(group1, group2, group_by = "group", output = "logical")
     )
 )$SharedAndGreater
+}
+\seealso{
+\itemize{
+\item \code{\link{ClonalStatPlot}} for the primary consumer of clone selectors
+in expression-string form
+\item \code{\link{ClonalCompositionPlot}}, \code{\link{ClonalDiversityPlot}},
+\code{\link{ClonalGeneUsagePlot}} for other clonal analysis functions
+\item \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}} and
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}} for
+producing compatible input data
+}
 }

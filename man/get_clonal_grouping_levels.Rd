@@ -2,22 +2,38 @@
 % Please edit documentation in R/clonalutils.R
 \name{get_clonal_grouping_levels}
 \alias{get_clonal_grouping_levels}
-\title{Get the grouping levels for clonal data for later to restore}
+\title{Extract grouping levels from clonal data for later restoration}
 \usage{
 get_clonal_grouping_levels(data, groupings, order = NULL)
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or \link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+May also be a Seurat object or a single data frame.}
 
-\item{groupings}{The column names in the meta data to group the cells.}
+\item{groupings}{A character vector of column names in the metadata to group the cells by.}
 
-\item{order}{A list specifying the order of the levels for each grouping variable.}
+\item{order}{A named list specifying the order of the levels for each grouping variable.
+Each element name should match a grouping column, and the element value should be a
+character vector of level names in the desired order. Default: \code{NULL} (use the
+order present in the data).}
 }
 \value{
-A list of the grouping levels for each grouping variable.
+A named list where each element corresponds to a grouping variable and contains
+a character vector of its factor levels.
 }
 \description{
-Data transform with multiple groupings may lose the original grouping levels.
-This function is to get the grouping levels for later to restore.
+When clonal data is transformed with multiple groupings (e.g., via
+\code{merge_clonal_groupings}), the original factor levels of the grouping
+variables can be lost. This function captures those levels before
+transformation so they can be restored later, preserving the intended
+ordering of groups in plots and analyses.
+
+The function handles multiple data formats: Seurat objects, single data
+frames, and lists of data frames (the standard scRepertoire combined
+TCR/BCR format). For list-format data, if all samples share the same
+value for a grouping variable, the per-sample values are collected;
+otherwise the levels from the first sample are used.
 }
 \keyword{internal}

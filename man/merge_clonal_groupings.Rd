@@ -2,25 +2,37 @@
 % Please edit documentation in R/clonalutils.R
 \name{merge_clonal_groupings}
 \alias{merge_clonal_groupings}
-\title{merge_clonal_groupings}
+\title{Merge multiple grouping columns into a single composite grouping}
 \usage{
 merge_clonal_groupings(data, groupings, sep = " // ")
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+May also be a Seurat object.}
 
-\item{groupings}{A list of the clonal groupings. Each element is a column in the data.}
+\item{groupings}{A character vector of column names to merge into the composite
+\code{.group} column. If empty, \code{.group} is set to an empty string.}
+
+\item{sep}{The separator string used to join grouping values. Default: \code{" // "}.}
 }
 \value{
-The data with the combined groupings (\code{.group})
+The input data with an added \code{.group} column containing the
+concatenated grouping values (or an empty string if no groupings are provided).
+For Seurat objects, the column is added to \code{@meta.data}. For list-format
+data, each data frame gains the column.
 }
 \description{
-Merge the multiple clonal groupings into a single grouping.
-}
-\details{
-Because \link[scRepertoire:clonalQuant]{scRepertoire::clonalQuant} and families don't support mutliple groupings,
-this is trying to merge the multiple groupings into a single grouping. And then
-later restore the original groupings.
+Because \code{\link[scRepertoire:clonalQuant]{scRepertoire::clonalQuant()}} and related
+functions do not support multiple grouping variables, this function merges all
+grouping columns into a single composite \code{.group} column (using
+\code{\link[tidyr:unite]{tidyr::unite()}} with a separator). The original groupings
+can later be restored by splitting on the separator.
+
+The function handles both Seurat objects (operating on \code{@meta.data}) and
+the standard scRepertoire list-of-data-frames format. When no groupings are
+provided, a placeholder \code{.group} column set to an empty string is created,
+effectively treating all cells as a single group.
 }
 \keyword{internal}

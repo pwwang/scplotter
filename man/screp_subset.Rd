@@ -2,20 +2,36 @@
 % Please edit documentation in R/clonalutils.R
 \name{screp_subset}
 \alias{screp_subset}
-\title{Subset scRepertorie object}
+\title{Subset an scRepertoire object with a filter expression}
 \usage{
 screp_subset(screp, subset)
 }
 \arguments{
-\item{screp}{The scRepertorie object. It is either a Seurat object or a list of data.frames}
+\item{screp}{An scRepertoire object — either a Seurat object (requires
+\pkg{tidyseurat} for dplyr filter support) or a named list of data frames
+(the standard output of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}}
+or \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}).}
 
-\item{subset}{The subset expression (in characters)}
+\item{subset}{A character string containing a filter expression (e.g.,
+\code{"nchar(CTaa) < 20"} or \code{"Sample \%in\% c('P17B', 'P17L')"}).
+The expression is parsed and evaluated within the data context using
+\code{\link[rlang:parse_expr]{rlang::parse_expr()}}.}
 }
 \value{
-The subsetted scRepertorie object
+The filtered scRepertoire object in the same format as the input.
+For list-format data, samples with zero rows after filtering are dropped.
 }
 \description{
-Subset scRepertorie object
+Filters an scRepertoire object (either a Seurat object or a named list of
+data frames) using a character-specified filter expression. This is useful
+for restricting analysis to a subset of cells (e.g., cells with short CDR3
+sequences, or cells from specific samples) without manually manipulating the
+underlying data structure.
+
+For list-format data (the standard scRepertoire combined TCR/BCR format), a
+\code{Sample} column is temporarily added to each data frame to enable
+sample-based filtering. Empty data frames after filtering are removed from
+the result.
 }
 \examples{
 \donttest{

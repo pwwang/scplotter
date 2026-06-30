@@ -1,11 +1,28 @@
-#' Get the grouping levels for clonal data for later to restore
+#' Extract grouping levels from clonal data for later restoration
 #'
-#' @description Data transform with multiple groupings may lose the original grouping levels.
-#' This function is to get the grouping levels for later to restore.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or [scRepertoire::combineExpression].
-#' @param groupings The column names in the meta data to group the cells.
-#' @param order A list specifying the order of the levels for each grouping variable.
-#' @return A list of the grouping levels for each grouping variable.
+#' @description
+#' When clonal data is transformed with multiple groupings (e.g., via
+#' `merge_clonal_groupings`), the original factor levels of the grouping
+#' variables can be lost. This function captures those levels before
+#' transformation so they can be restored later, preserving the intended
+#' ordering of groups in plots and analyses.
+#'
+#' The function handles multiple data formats: Seurat objects, single data
+#' frames, and lists of data frames (the standard scRepertoire combined
+#' TCR/BCR format). For list-format data, if all samples share the same
+#' value for a grouping variable, the per-sample values are collected;
+#' otherwise the levels from the first sample are used.
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#'   May also be a Seurat object or a single data frame.
+#' @param groupings A character vector of column names in the metadata to group the cells by.
+#' @param order A named list specifying the order of the levels for each grouping variable.
+#'   Each element name should match a grouping column, and the element value should be a
+#'   character vector of level names in the desired order. Default: \code{NULL} (use the
+#'   order present in the data).
+#' @return A named list where each element corresponds to a grouping variable and contains
+#'   a character vector of its factor levels.
 #' @keywords internal
 get_clonal_grouping_levels <- function(data, groupings, order = NULL) {
     grouping_levels <- sapply(groupings, function(g) {
@@ -36,24 +53,58 @@ get_clonal_grouping_levels <- function(data, groupings, order = NULL) {
     grouping_levels[!sapply(grouping_levels, is.null)]
 }
 
-#' clonal_size_data
+#' Prepare clonal abundance data for visualization
 #'
-#' @description Function to get the clonal size data for all group_by values.
+#' @description
+#' This is the central data preparation function used by all clonal visualization
+#' functions in \pkg{scplotter}. It transforms raw scRepertoire combined TCR/BCR
+#' data (a list of data frames or Seurat object) into a standardized long-format
+#' data frame suitable for plotting.
 #'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param clone_call How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-#'  CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-#'  in the data
-#' @param chain indicate if both or a specific chain should be used - e.g. "both",
-#'  "TRA", "TRG", "IGH", "IGL"
-#' @param groupings The column names in the meta data to group the cells.
-#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
-#' @return A data frame with the clonal size data.
-#' @keywords internal
+#' The function performs the following steps:
+#' \enumerate{
+#'   \item Extracts grouping levels via \code{get_clonal_grouping_levels()}.
+#'   \item Merges multiple grouping columns into a single composite \code{.group}
+#'     column via \code{merge_clonal_groupings()}.
+#'   \item Reorganizes list-format data by splitting on \code{.group} and
+#'     combining cells that share the same group across samples.
+#'   \item Calls scRepertoire's internal \code{.data.wrangle()} and \code{.theCall()}
+#'     to compute clone-level counts per group.
+#'   \item Pivots the resulting wide-format table (clones × groups) to long format
+#'     with columns \code{CloneID}, \code{.group}, \code{count}, and \code{fraction}.
+#'   \item Separates the composite \code{.group} column back into the original
+#'     grouping columns.
+#'   \item Restores original factor levels for each grouping variable.
+#' }
+#'
+#' The output data frame contains one row per clone per group, with columns for
+#' each grouping variable, \code{CloneID}, \code{count} (number of cells), and
+#' \code{fraction} (proportion of cells within the group).
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#'   A named list of data frames where each element represents a sample, or a
+#'   Seurat object with TCR/BCR information in the metadata.
+#' @param clone_call How to identify a clone. One of \code{"gene"} (VDJC gene
+#'   segment), \code{"nt"} (CDR3 nucleotide sequence), \code{"aa"} (CDR3 amino
+#'   acid sequence), \code{"strict"} (VDJC gene + CDR3 nucleotide), or a custom
+#'   column name present in the data.
+#' @param chain Which TCR/BCR chain(s) to include. One of \code{"both"} (both
+#'   chains combined), \code{"TRA"}, \code{"TRB"}, \code{"TRG"}, \code{"TRD"},
+#'   \code{"IGH"}, \code{"IGL"}, or \code{"IGK"}.
+#' @param groupings A character vector of column names in the metadata to use
+#'   for grouping cells. These define the categories across which clone
+#'   abundances are computed.
+#' @param order A named list specifying the order of the levels for each
+#'   grouping variable. Default: \code{NULL} (uses the order in the data).
+#' @return A data frame in long format with columns: the grouping variables,
+#'   \code{CloneID} (clone identifier), \code{count} (number of cells per clone
+#'   per group), and \code{fraction} (proportion of cells per clone within each
+#'   group). Only rows with \code{count > 0} are retained.
 #' @importFrom rlang sym
 #' @importFrom dplyr distinct filter rename
 #' @importFrom tidyr pivot_longer
+#' @keywords internal
 clonal_size_data <- function(data, clone_call, chain, groupings, order) {
     if (length(groupings > 0)) {
         grouping_levels <- get_clonal_grouping_levels(data, groupings, order)
@@ -142,16 +193,30 @@ clonal_size_data <- function(data, clone_call, chain, groupings, order) {
     df
 }
 
-#' merge_clonal_groupings
+#' Merge multiple grouping columns into a single composite grouping
 #'
-#' @description Merge the multiple clonal groupings into a single grouping.
-#' @details Because [scRepertoire::clonalQuant] and families don't support mutliple groupings,
-#'  this is trying to merge the multiple groupings into a single grouping. And then
-#'  later restore the original groupings.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param groupings A list of the clonal groupings. Each element is a column in the data.
-#' @return The data with the combined groupings (`.group`)
+#' @description
+#' Because \code{\link[scRepertoire:clonalQuant]{scRepertoire::clonalQuant()}} and related
+#' functions do not support multiple grouping variables, this function merges all
+#' grouping columns into a single composite \code{.group} column (using
+#' \code{\link[tidyr:unite]{tidyr::unite()}} with a separator). The original groupings
+#' can later be restored by splitting on the separator.
+#'
+#' The function handles both Seurat objects (operating on \code{@meta.data}) and
+#' the standard scRepertoire list-of-data-frames format. When no groupings are
+#' provided, a placeholder \code{.group} column set to an empty string is created,
+#' effectively treating all cells as a single group.
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'   \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#'   May also be a Seurat object.
+#' @param groupings A character vector of column names to merge into the composite
+#'   \code{.group} column. If empty, \code{.group} is set to an empty string.
+#' @param sep The separator string used to join grouping values. Default: \code{" // "}.
+#' @return The input data with an added \code{.group} column containing the
+#'   concatenated grouping values (or an empty string if no groupings are provided).
+#'   For Seurat objects, the column is added to \code{@meta.data}. For list-format
+#'   data, each data frame gains the column.
 #' @importFrom rlang syms
 #' @importFrom tidyr unite
 #' @keywords internal
@@ -195,11 +260,29 @@ merge_clonal_groupings <- function(data, groupings, sep = " // ") {
     data
 }
 
-#' Subset scRepertorie object
+#' Subset an scRepertoire object with a filter expression
 #'
-#' @param screp The scRepertorie object. It is either a Seurat object or a list of data.frames
-#' @param subset The subset expression (in characters)
-#' @return The subsetted scRepertorie object
+#' @description
+#' Filters an scRepertoire object (either a Seurat object or a named list of
+#' data frames) using a character-specified filter expression. This is useful
+#' for restricting analysis to a subset of cells (e.g., cells with short CDR3
+#' sequences, or cells from specific samples) without manually manipulating the
+#' underlying data structure.
+#'
+#' For list-format data (the standard scRepertoire combined TCR/BCR format), a
+#' \code{Sample} column is temporarily added to each data frame to enable
+#' sample-based filtering. Empty data frames after filtering are removed from
+#' the result.
+#' @param screp An scRepertoire object — either a Seurat object (requires
+#'   \pkg{tidyseurat} for dplyr filter support) or a named list of data frames
+#'   (the standard output of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}}
+#'   or \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}).
+#' @param subset A character string containing a filter expression (e.g.,
+#'   \code{"nchar(CTaa) < 20"} or \code{"Sample \%in\% c('P17B', 'P17L')"}).
+#'   The expression is parsed and evaluated within the data context using
+#'   \code{\link[rlang:parse_expr]{rlang::parse_expr()}}.
+#' @return The filtered scRepertoire object in the same format as the input.
+#'   For list-format data, samples with zero rows after filtering are dropped.
 #' @keywords internal
 #' @importFrom rlang parse_expr
 #' @importFrom dplyr filter

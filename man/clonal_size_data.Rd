@@ -2,29 +2,63 @@
 % Please edit documentation in R/clonalutils.R
 \name{clonal_size_data}
 \alias{clonal_size_data}
-\title{clonal_size_data}
+\title{Prepare clonal abundance data for visualization}
 \usage{
 clonal_size_data(data, clone_call, chain, groupings, order)
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+A named list of data frames where each element represents a sample, or a
+Seurat object with TCR/BCR information in the metadata.}
 
-\item{clone_call}{How to call the clone - VDJC gene (gene), CDR3 nucleotide (nt),
-CDR3 amino acid (aa), VDJC gene + CDR3 nucleotide (strict) or a custom variable
-in the data}
+\item{clone_call}{How to identify a clone. One of \code{"gene"} (VDJC gene
+segment), \code{"nt"} (CDR3 nucleotide sequence), \code{"aa"} (CDR3 amino
+acid sequence), \code{"strict"} (VDJC gene + CDR3 nucleotide), or a custom
+column name present in the data.}
 
-\item{chain}{indicate if both or a specific chain should be used - e.g. "both",
-"TRA", "TRG", "IGH", "IGL"}
+\item{chain}{Which TCR/BCR chain(s) to include. One of \code{"both"} (both
+chains combined), \code{"TRA"}, \code{"TRB"}, \code{"TRG"}, \code{"TRD"},
+\code{"IGH"}, \code{"IGL"}, or \code{"IGK"}.}
 
-\item{groupings}{The column names in the meta data to group the cells.}
+\item{groupings}{A character vector of column names in the metadata to use
+for grouping cells. These define the categories across which clone
+abundances are computed.}
 
-\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
+\item{order}{A named list specifying the order of the levels for each
+grouping variable. Default: \code{NULL} (uses the order in the data).}
 }
 \value{
-A data frame with the clonal size data.
+A data frame in long format with columns: the grouping variables,
+\code{CloneID} (clone identifier), \code{count} (number of cells per clone
+per group), and \code{fraction} (proportion of cells per clone within each
+group). Only rows with \code{count > 0} are retained.
 }
 \description{
-Function to get the clonal size data for all group_by values.
+This is the central data preparation function used by all clonal visualization
+functions in \pkg{scplotter}. It transforms raw scRepertoire combined TCR/BCR
+data (a list of data frames or Seurat object) into a standardized long-format
+data frame suitable for plotting.
+
+The function performs the following steps:
+\enumerate{
+\item Extracts grouping levels via \code{get_clonal_grouping_levels()}.
+\item Merges multiple grouping columns into a single composite \code{.group}
+column via \code{merge_clonal_groupings()}.
+\item Reorganizes list-format data by splitting on \code{.group} and
+combining cells that share the same group across samples.
+\item Calls scRepertoire's internal \code{.data.wrangle()} and \code{.theCall()}
+to compute clone-level counts per group.
+\item Pivots the resulting wide-format table (clones × groups) to long format
+with columns \code{CloneID}, \code{.group}, \code{count}, and \code{fraction}.
+\item Separates the composite \code{.group} column back into the original
+grouping columns.
+\item Restores original factor levels for each grouping variable.
+}
+
+The output data frame contains one row per clone per group, with columns for
+each grouping variable, \code{CloneID}, \code{count} (number of cells), and
+\code{fraction} (proportion of cells within the group).
 }
 \keyword{internal}
