@@ -1,10 +1,39 @@
 
-#' Plot features for spatial data
+#' Internal workhorse for spatial plot rendering
 #'
-#' The features can include  expression, dimension reduction components, metadata, etc
+#' @description
+#' \code{SpatPlot()} is the S3 generic that underpins all spatial
+#' visualization in \pkg{scplotter}. It dispatches based on the class of
+#' \code{object} and, for Seurat objects, further inspects the image type
+#' (\code{VisiumV1}, \code{VisiumV2}, \code{FOV}, or \code{SlideSeq}) to
+#' invoke the correct rendering method. End-users should use
+#' \code{\link{SpatFeaturePlot}} or \code{\link{SpatDimPlot}} instead of
+#' calling \code{SpatPlot()} directly.
+#'
+#' Each method assembles the requested spatial \code{layers} (image, masks,
+#' shapes, points) into a list of ggplot layer objects, then wraps them
+#' together via \pkg{plotthis}'s internal spatial compositing functions
+#' to produce a final coordinate-aligned ggplot.
+#'
+#' @section Method dispatch:
+#' \itemize{
+#'   \item \code{SpatPlot.Seurat} — Inspects the first image's class to
+#'     delegate to \code{SpatPlot.Seurat.Visium},
+#'     \code{SpatPlot.Seurat.FOV}, or \code{SpatPlot.Seurat.SlideSeq}.
+#'   \item \code{SpatPlot.Seurat.Visium} — Renders 10x Visium data with
+#'     tissue image, spot points, and optional shape/mask layers.
+#'   \item \code{SpatPlot.Seurat.FOV} — Renders FOV-based data (Xenium,
+#'     CosMx, etc.) with molecule-level or cell-level points, cell boundary
+#'     shapes, and optional registered images.
+#'   \item \code{SpatPlot.Seurat.SlideSeq} — Renders Slide-seq bead data
+#'     with colored background and point layer.
+#'   \item \code{SpatPlot.giotto} — Renders spatial data from Giotto objects
+#'     with full support for images, shapes, points, molecules, and spatial
+#'     network graphs.
+#' }
 #'
 #' @inheritParams spatialplot_args
-#' @return A ggplot object
+#' @return A \code{ggplot} object representing the assembled spatial plot.
 #' @keywords internal
 SpatPlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
@@ -970,17 +999,70 @@ SpatPlot.giotto <- function(
     p
 }
 
-#' Plot features for spatial data
+#' Visualize feature expression on spatial coordinates
 #'
-#' The features can include  expression, dimension reduction components, metadata, etc
+#' @description
+#' Plot continuous feature values — gene expression, dimension reduction
+#' components, metadata columns, or any numeric variable — directly on
+#' spatial tissue coordinates. \code{SpatFeaturePlot()} is the spatial
+#' analogue of a feature plot over a UMAP/t-SNE embedding: it paints each
+#' spot, cell, or molecule with the expression level of one or more features,
+#' revealing the spatial organization of gene activity.
 #'
-#' @inheritParams SpatPlot
-#' @return A ggplot object
+#' Multiple features are automatically faceted, making it easy to compare
+#' spatial expression patterns across a gene panel in a single plot. For
+#' categorical grouping (e.g., cluster identity on spatial coordinates), use
+#' \code{\link{SpatDimPlot}} instead.
+#'
+#' @section Supported spatial technologies:
+#' \code{SpatFeaturePlot} inherits all spatial technology support from the
+#' internal \code{SpatPlot()} workhorse. See
+#' \code{\link{spatialplot_args}} for details on coordinate handling, layer
+#' order, and technology-specific defaults.
+
+#' @inheritParams spatialplot_args
+#' @param object A Seurat object (with spatial data) or a Giotto object.
+#'   S3 methods dispatch to the appropriate spatial technology handler.
+#' @param group_by For \code{SpatFeaturePlot}, \code{group_by} is typically
+#'   \code{NULL}. If you want to color by a categorical variable, use
+#'   \code{\link{SpatDimPlot}} instead. Note: for Giotto objects,
+#'   \code{group_by} must be \code{NULL} — an error is raised otherwise.
+#' @return A \code{ggplot} object representing the spatial feature plot.
+#'   When multiple features are provided, the plot is faceted with one panel
+#'   per feature, sharing a common color scale (by default). The return
+#'   value is always a single ggplot object (faceted if needed), not a list.
+#' @note
+#' \itemize{
+#'   \item \code{SpatFeaturePlot} requires \code{features} to be set. If
+#'     \code{features} is \code{NULL} and no \code{group_by} is provided,
+#'     the plot will be empty — use \code{\link{SpatDimPlot}} for
+#'     categorical visualization or set \code{features} to a gene name.
+#'   \item For molecule-level visualization in FOV data, use
+#'     \code{\link{SpatDimPlot}} with \code{group_by = "molecules"} and
+#'     \code{features} set to the molecule names of interest.
+#'   \item The expression \code{layer} can significantly affect the visual
+#'     dynamic range. Use \code{"data"} (log-normalized) for balanced
+#'     visualization or \code{"counts"} for raw counts.
+#'   \item For Giotto objects, \code{group_by} is explicitly disallowed in
+#'     \code{SpatFeaturePlot} — use \code{\link{SpatDimPlot}} for group-based
+#'     coloring.
+#' }
+#' @seealso
+#' \code{\link{SpatDimPlot}},
+#' \code{\link[plotthis:SpatPointsPlot]{plotthis::SpatPointsPlot()}},
+#' \code{\link[plotthis:SpatImagePlot]{plotthis::SpatImagePlot()}},
+#' \code{\link[plotthis:SpatShapesPlot]{plotthis::SpatShapesPlot()}}
 #' @export
-#' @details
-#' See:
-#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details, and
-#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html#examples> for examples.
+#' @examples
+#' \donttest{
+#' # Feature plot on Visium data
+#' data(stxBrain, package = "SeuratData")
+#' SpatFeaturePlot(stxBrain, features = c("Hpca", "Ttr"))
+#'
+#' # Feature plot with image and shapes on FOV data
+#' data(xenium_sub, package = "scplotter")
+#' SpatFeaturePlot(xenium_sub, features = c("Bace2", "Gad1", "Nrg1"))
+#' }
 SpatFeaturePlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -1063,15 +1145,76 @@ SpatFeaturePlot.giotto <- function(
     )
 }
 
-#' Plot categories for spatial data
+#' Visualize categorical groups on spatial coordinates
 #'
-#' @inheritParams SpatPlot
-#' @return A ggplot object
+#' @description
+#' Plot categorical metadata — cluster identities, tissue regions, sample
+#' labels, or any discrete grouping variable — directly on spatial tissue
+#' coordinates. \code{SpatDimPlot()} is the spatial analogue of a UMAP/t-SNE
+#' plot colored by cluster: each spot, cell, or molecule is colored by its
+#' group membership, making it easy to assess the spatial organization of
+#' cell types, anatomical regions, or experimental conditions.
+#'
+#' For continuous features (gene expression, dimension reduction scores),
+#' use \code{\link{SpatFeaturePlot}} instead.
+#'
+#' @section Molecule-level visualization:
+#' In FOV-based technologies (Xenium, CosMx, MERSCOPE), setting
+#' \code{group_by = "molecules"} and providing \code{features} as molecule
+#' names switches to molecule-level rendering: individual transcript
+#' detections are plotted as points colored by feature identity, limited to
+#' \code{nmols} molecules per feature. This is analogous to
+#' \code{\link[Seurat:ImageDimPlot]{Seurat::ImageDimPlot()}} and is the
+#' default behavior when \code{features} is set on a Seurat FOV object.
+#'
+#' @section Default grouping:
+#' When neither \code{group_by} nor \code{features} is set:
+#' \itemize{
+#'   \item For Seurat objects with FOV data, defaults to
+#'     \code{group_by = "molecules"} if \code{features} is set.
+#'   \item Otherwise, defaults to \code{group_by = "Identity"}, which maps to
+#'     the active cluster identities in the Seurat object (i.e.,
+#'     \code{\link[Seurat:Idents]{Seurat::Idents()}}).
+#'   \item For Giotto objects, defaults to \code{group_by = "molecules"} if
+#'     \code{features} is set.
+#' }
+#'
+#' @inheritParams spatialplot_args
+#' @param object A Seurat object (with spatial data) or a Giotto object.
+#'   S3 methods dispatch to the appropriate spatial technology handler.
+#' @return A \code{ggplot} object representing the spatial dimension plot
+#'   with points (and optionally image/shapes layers) colored by group
+#'   membership. When \code{group_by} or \code{features} produce multiple
+#'   color mappings, the plot may include a legend for each mapping via
+#'   \pkg{ggnewscale}.
+#' @note
+#' \itemize{
+#'   \item \code{SpatDimPlot} and \code{\link{SpatFeaturePlot}} share the
+#'     same underlying \code{SpatPlot()} engine. The difference is
+#'     conceptual: \code{SpatDimPlot} visualizes discrete groups,
+#'     \code{SpatFeaturePlot} visualizes continuous values.
+#'   \item For Giotto objects, when \code{features} is provided, the behavior
+#'     automatically switches to molecule mode (\code{group_by = "molecules"}).
+#'   \item The \code{layers} argument controls rendering order. Place
+#'     \code{"image"} first when you want the tissue image as background,
+#'     followed by \code{"shapes"} for cell boundaries, and \code{"points"}
+#'     on top.
+#' }
+#' @seealso
+#' \code{\link{SpatFeaturePlot}},
+#' \code{\link[plotthis:SpatPointsPlot]{plotthis::SpatPointsPlot()}},
+#' \code{\link[plotthis:SpatImagePlot]{plotthis::SpatImagePlot()}},
+#' \code{\link[Seurat:SpatialDimPlot]{Seurat::SpatialDimPlot()}},
+#' \code{\link[Seurat:ImageDimPlot]{Seurat::ImageDimPlot()}}
 #' @export
-#' @details
-#' See:
-#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html> for more details, and
-#' * <https://pwwang.github.io/scplotter/articles/Knowing_your_spatial_data_and_visualization.html#examples> for examples.
+#' @examples
+#' \donttest{
+#' data(stxBrain, package = "SeuratData")
+#' SpatDimPlot(stxBrain, group_by = "seurat_clusters")
+#'
+#' data(xenium_sub, package = "scplotter")
+#' SpatDimPlot(xenium_sub, group_by = "cell_type")
+#' }
 SpatDimPlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,

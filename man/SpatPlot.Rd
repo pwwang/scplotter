@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatialplot.R
 \name{SpatPlot}
 \alias{SpatPlot}
-\title{Plot features for spatial data}
+\title{Internal workhorse for spatial plot rendering}
 \usage{
 SpatPlot(
   object,
@@ -51,150 +51,273 @@ SpatPlot(
 )
 }
 \arguments{
-\item{object}{A Seurat object or a Giotto object.}
+\item{object}{A Seurat object (with spatial data loaded via
+\pkg{SeuratObject}) or a Giotto object (created with \pkg{Giotto}).
+The spatial technology is auto-detected from the object's image class.}
 
-\item{fov}{The name of the field of view (FOV) to plot, only works for Seurat objects.}
+\item{fov}{The name of the field of view (FOV) to plot. For Seurat FOV-based
+objects (Xenium, CosMx, etc.), defaults to
+\code{\link[SeuratObject:DefaultFOV]{SeuratObject::DefaultFOV()}}. Not
+applicable to Visium or Slide-seq objects.}
 
-\item{boundaries}{The name of the boundaries to plot, only works for Seurat objects.}
+\item{boundaries}{The name of the segmentation boundaries within the FOV
+to use for cell outlines. For Seurat FOV-based objects, defaults to
+\code{\link[SeuratObject:DefaultBoundary]{SeuratObject::DefaultBoundary()}}.
+Not applicable to Visium or Slide-seq objects.}
 
-\item{image}{The name of the image to plot. Possible values are:
+\item{image}{Controls the image/background layer. Possible values:
 \itemize{
-\item NULL: For Seurat objects with Visium data, the first image will be used.
-For Giotto objects and Seurat objects with other spatial data, no image will be plotted.
-\item image name(s): the name of the image(s) to plot.
-\item color name: a color to use as a background for the plot.
-\item TRUE: For Seurat objects with Visium data, the first image will be used.
-For Seurat objects with other spatial data, an error will be raised.
-For Giotto objects with FOV, all (non-overlapping) images will be plotted; otherwise first image will be used.
-\item FALSE: disable image plotting.
+\item \code{NULL} — Default behavior: for Visium, the first image is
+used; for Giotto and FOV objects, no image is plotted.
+\item A character string naming an image in the object — that specific
+image is plotted.
+\item A color name (e.g., \code{"white"}, \code{"lightgray"}) — fills
+the background with a solid color rectangle.
+\item \code{TRUE} — For Visium: uses the first image. For Giotto FOV:
+plots all non-overlapping images. For Seurat FOV: raises an error
+(no single default image).
+\item \code{FALSE} — Disables the image layer entirely.
 }}
 
-\item{masks}{Logical, whether to plot masks. Not supported for Seurat or Giotto objects for now.}
+\item{masks}{Logical. Whether to plot cell segmentation masks. Currently
+not supported — setting this to \code{TRUE} will produce an error for
+all object types.}
 
-\item{shapes}{Plot shapes on the spatial plot.
-Not supported for Seurat objects with Visium or SlideSeq data.
-For Seurat objects with FOV, when TRUE, \code{boundaries} will be
-used as boundaries for the shapes. Otherwise itself will be used as boundaries.
-For Giotto objects or Seurat objects with FOV, this defaults to TRUE when \code{shapes_fill_by} is provided.
-Set to FALSE to disable shapes plotting.}
-
-\item{points}{Logical, whether to plot points. If TRUE, the points will be plotted using the coordinates from the object.
-Defaults to TRUE.}
-
-\item{ext}{The extent of the plot. If NULL, the extent will be calculated from the data.
-If a numeric vector of length 4, it should be in the format c(xmin, xmax, ymin, ymax).
-It can also be an object created by \code{\link[terra:ext]{terra::ext()}}.}
-
-\item{crop}{Whether to crop the plot to the extent of the available data. Similar to \code{crop} argument in
-\code{\link[Seurat:SpatialPlot]{Seurat::SpatialDimPlot()}}. Defaults to TRUE.}
-
-\item{group_by}{The name of the metadata column to group the points by. Should be a character or factor column.
-A special value "molecules" can be used to plot molecules in the FOV.}
-
-\item{features}{A character vector of feature names to plot. If provided, the points will be colored by the features.
-For \code{SpatDimPlot()}, this will be used to plot the molecules in the FOV.
-For \code{SpatFeaturePlot()}, the plots will be faceted by the features.}
-
-\item{layer}{The layer to use for the feature expression data.
-Applicable for both Seurat and Giotto objects.
-Defaults to "data" for Seurat objects, and "normalized" for Giotto objects.
-For Giotto objects, it can also be "scaled", "raw", "counts", or "custom".
-For Seurat objects, it can be "data", "scale.data", or "counts".}
-
-\item{scale_factor}{Internal use only. The scale factor to use for the image, which will be extracted from the object.}
-
-\item{layers}{A character vector of layers to plot. Possible values are:
+\item{shapes}{Controls the cell boundary (shapes) layer. Possible values:
 \itemize{
-\item "image": plot the image as a background, which should be the first layer if provided.
-\item "masks": plot the masks
-\item "shapes": plot the shapes
-\item "points": plot the points
-The order of the layers matters, as the first layer will be plotted first.
-You can also use it to disable some layers by excluding them from the vector.
+\item \code{TRUE} — For Seurat FOV objects, uses \code{boundaries} as
+the shape boundaries. For other object types, uses the default
+boundaries. Not supported for Visium or Slide-seq objects.
+\item A character string — The name of a specific set of boundaries
+within the FOV (Seurat) or spatial info name (Giotto) to use as shapes.
+\item \code{FALSE} — Disables the shapes layer.
+}
+Defaults to \code{TRUE} when \code{shapes_fill_by} is provided, and
+\code{NULL} otherwise.}
+
+\item{points}{Logical. Whether to plot the points layer (cells, spots, or
+molecules as points on the spatial coordinates). Default: \code{TRUE}.}
+
+\item{ext}{The spatial extent (bounding box) of the plot. If \code{NULL},
+the extent is calculated automatically from the data or, when
+\code{crop = TRUE}, from the tissue coordinates. Can be a numeric vector
+in the format \code{c(xmin, xmax, ymin, ymax)} or a
+\code{\link[terra:ext]{terra::SpatExtent}} object.}
+
+\item{crop}{Logical. Whether to crop the plot to the extent of the
+tissue/spots. When \code{TRUE} (default), the plot is automatically
+zoomed to the data extent with optional \code{padding}. Analogous to the
+\code{crop} argument in
+\code{\link[Seurat:SpatialDimPlot]{Seurat::SpatialDimPlot()}}.}
+
+\item{group_by}{A metadata column name used to color the points. Must be a
+character or factor column in the object's metadata. For
+\code{SpatDimPlot()}, if \code{NULL} and the object has FOV data with
+features, defaults to \code{"molecules"}; otherwise defaults to
+\code{"Identity"} (the active cluster identities). For
+\code{SpatFeaturePlot()}, \code{group_by} is ignored — use
+\code{\link{SpatDimPlot}} for categorical grouping. The special value
+\code{"molecules"} enables molecule-level visualization in FOV-based
+data.}
+
+\item{features}{A character vector of feature names to visualize. For
+\code{SpatFeaturePlot()}, each feature is plotted as a separate facet
+(or combined theme when a single feature is given), with expression
+values coloring the points. For \code{SpatDimPlot()}, features are
+treated as molecule names to plot at single-molecule resolution (FOV
+data only). Can include gene names, metadata column names, or dimension
+reduction components.}
+
+\item{layer}{The assay layer from which to extract feature expression
+values. For Seurat objects, one of \code{"data"} (default),
+\code{"scale.data"}, or \code{"counts"}. For Giotto objects, one of
+\code{"normalized"} (default), \code{"scaled"}, \code{"raw"},
+\code{"counts"}, or \code{"custom"}.}
+
+\item{scale_factor}{Internal use. The image scale factor extracted from
+the object, used to map between pixel and tissue coordinate spaces.
+Automatically determined from the object's image data.}
+
+\item{layers}{A character vector specifying which layers to include and in
+what order. Possible values are \code{"image"}, \code{"masks"},
+\code{"shapes"}, and \code{"points"}. Order matters — the first element
+is drawn first (bottom). Omit a layer name to disable it. Default:
+\code{c("image", "masks", "shapes", "points")} intersected with which
+layers are non-\code{FALSE}/non-\code{NULL}.}
+
+\item{flip_y}{Logical. Whether to flip the y-axis. This is primarily for
+internal coordinate system alignment — Visium/Slide-seq objects default
+to \code{TRUE}, FOV-based objects to \code{FALSE}. In most cases you do
+not need to set this manually.}
+
+\item{padding}{Numeric. Extra space added around the data extent when
+\code{crop = TRUE}. Expressed as a fraction of the data range (e.g.,
+\code{0.05} adds 5\\% padding on each side). For Seurat FOV objects,
+defaults to \code{0}. For other object types, defaults to \code{0} when
+an image layer is present and \code{0.05} otherwise.}
+
+\item{image_scale}{The image scale factor name to use, typically
+\code{"lowres"} or \code{"hires"}. Controls which resolution of the
+stored image is rendered. Analogous to the \code{image.scale} argument
+in \code{\link[Seurat:SpatialDimPlot]{Seurat::SpatialDimPlot()}}.}
+
+\item{x}{Internal use. The name of the x-coordinate column in the spatial
+data. Auto-detected based on the spatial technology (\code{"imagerow"}
+for Visium V1, varies for other types).}
+
+\item{y}{Internal use. The name of the y-coordinate column in the spatial
+data. Auto-detected based on the spatial technology (\code{"imagecol"}
+for Visium V1, varies for other types).}
+
+\item{nmols}{Integer. Maximum number of molecules to plot per feature when
+\code{group_by = "molecules"}. Analogous to the \code{nmols} argument in
+\code{\link[Seurat:ImageDimPlot]{Seurat::ImageDimPlot()}}. Default:
+\code{1000}.}
+
+\item{shapes_fill_by}{A column name in the metadata (or a feature/gene
+name) used to fill the cell boundary shapes. If a single color string is
+provided, all shapes are filled with that color. When set, \code{shapes}
+defaults to \code{TRUE}.}
+
+\item{graph}{The name of a spatial network graph to overlay on the plot.
+Currently supported only for Giotto objects. Possible values:
+\itemize{
+\item \code{TRUE} — Use the default spatial network.
+\item A character string — The graph name. If the name contains
+\code{":"}, the part before the colon is used as \code{spat_unit}
+and the part after as the graph name.
+\item \code{NULL} (default) — No graph overlay.
+}
+The graph data is retrieved via
+\code{\link[GiottoClass:getSpatialNetwork]{GiottoClass::getSpatialNetwork()}}.}
+
+\item{shape}{Numeric. The point shape (ggplot2 shape aesthetic). Default:
+\code{16} (filled circle). See
+\url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html}
+for the full shape palette.}
+
+\item{legend.position}{Character. Legend position. One of
+\code{"right"} (default), \code{"left"}, \code{"top"},
+\code{"bottom"}, or \code{"none"}.}
+
+\item{legend.direction}{Character. Legend direction. One of
+\code{"vertical"} (default) or \code{"horizontal"}.}
+
+\item{theme}{A theme function or a character string naming one. Default:
+\code{"theme_box"}. Built-in aliases (usable without namespace):
+\code{"theme_box"} (\code{\link[plotthis:theme_box]{plotthis::theme_box()}}),
+\code{"theme_this"} (\code{\link[plotthis:theme_this]{plotthis::theme_this()}}),
+\code{"theme_blank"} (\code{\link[ggplot2:theme_void]{ggplot2::theme_void()}}).
+Any \pkg{ggplot2} theme can be used with its fully qualified name (e.g.,
+\code{"ggplot2::theme_bw"}).}
+
+\item{theme_args}{A named list of additional arguments passed to the theme
+function. Default: \code{list()}.}
+
+\item{title}{Character. Plot title. Default: \code{NULL} (no title).}
+
+\item{subtitle}{Character. Plot subtitle. Default: \code{NULL}.}
+
+\item{xlab}{Character. x-axis label. Default: \code{NULL}.}
+
+\item{ylab}{Character. y-axis label. Default: \code{NULL}.}
+
+\item{facet_scales}{Character. Whether facet scales are \code{"fixed"}
+(default), \code{"free"}, \code{"free_x"}, or \code{"free_y"}. Passed
+to \code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}} when
+multiple features are plotted.}
+
+\item{facet_nrow}{Integer. Number of facet rows. Default: \code{NULL}
+(auto-calculated).}
+
+\item{facet_ncol}{Integer. Number of facet columns. Default: \code{NULL}
+(auto-calculated).}
+
+\item{facet_byrow}{Logical. Whether to fill facets by row. Default:
+\code{TRUE}.}
+
+\item{feat_type}{Character. The feature type (modality) to query for
+expression values in Giotto objects. Common values: \code{"rna"}
+(default), \code{"dna"}, \code{"protein"}. Ignored for Seurat objects.}
+
+\item{use_overlap}{Logical. For Giotto FOV objects, whether to use
+pre-computed polygon-feature overlap results (from
+\code{GiottoClass::combineFeatureOverlapData()}) instead of cell-level
+expression. Default: \code{FALSE}.}
+
+\item{shapes_feat_type}{Character. The feature type to use when extracting
+metadata for shape filling in Giotto objects. Default: \code{"cell"}.}
+
+\item{shapes_alpha}{Numeric. Transparency (alpha) value for the shapes
+layer, between 0 and 1. When points are also plotted, defaults to
+\code{0.5} so points remain visible on top of shapes; otherwise defaults
+to \code{1}.}
+
+\item{spat_unit}{Character. The spatial unit to query in a Giotto object
+(e.g., \code{"cell"}, \code{"subcellular"}). Auto-detected if
+\code{NULL}. Ignored for Seurat objects.}
+
+\item{spat_loc_name}{Character. The spatial locations name to query in a
+Giotto object. Auto-detected from available spatial locations if
+\code{NULL}. Ignored for Seurat objects.}
+
+\item{spat_enr_names}{Character. Spatial enrichment results names in a
+Giotto object (for enrichment-based feature extraction). Ignored for
+Seurat objects.}
+
+\item{...}{Additional arguments passed to the underlying layer functions.
+Arguments are dispatched by prefix:
+\describe{
+\item{\code{image_*}}{Arguments passed to
+\code{\link[plotthis:SpatImagePlot]{plotthis::SpatImagePlot()}}
+(e.g., \code{image_alpha}, \code{image_interpolation}).}
+\item{\code{masks_*}}{Arguments passed to
+\code{\link[plotthis:SpatMasksPlot]{plotthis::SpatMasksPlot()}}.}
+\item{\code{shapes_*}}{Arguments passed to
+\code{\link[plotthis:SpatShapesPlot]{plotthis::SpatShapesPlot()}}
+(e.g., \code{shapes_color}, \code{shapes_linewidth}).}
+\item{\code{points_*}}{Arguments passed to
+\code{\link[plotthis:SpatPointsPlot]{plotthis::SpatPointsPlot()}}
+(e.g., \code{points_size}, \code{points_alpha}).}
+\item{No prefix}{Arguments without a recognized prefix are treated as
+points arguments, but with lower priority than \code{points_*}
+arguments.}
 }}
-
-\item{flip_y}{Internal use mostly, unless you want to flip the y-axis of the plot.}
-
-\item{padding}{The padding to add to the extent of the plot, only available when \code{crop = TRUE} and \code{ext = NULL}.
-For Seurat objects with FOV, this defaults to 0. In other cases, this defaults to 0 when image is plotted, and 0.05 otherwise.}
-
-\item{image_scale}{Choose the scale factor ("lowres"/"hires") to apply in order to matchthe plot with the specified \code{image}.
-Similar to \code{image.scale} argument in \code{\link[Seurat:SpatialPlot]{Seurat::SpatialDimPlot()}}.}
-
-\item{x}{Internal use only, the name of the x coordinate column in the data. Used to adopt different data types.}
-
-\item{y}{Internal use only, the name of the y coordinate column in the data. Used to adopt different data types.}
-
-\item{nmols}{Max number of each molecule specified in \code{features} for dim plot
-Similar to \code{nmols} argument in \code{\link[Seurat:ImageDimPlot]{Seurat::ImageDimPlot()}}. It also applied to Giotto objects.}
-
-\item{shapes_fill_by}{The name of the variable to fill the shapes by.
-It can also be a color name, in which case the shapes will be filled with that color.
-When this is provided, the \code{shapes} argument will be set to TRUE by default.}
-
-\item{graph}{The name of the graph to use for the spatial plot. Currently only supported for Giotto objects.
-The graph data is obtained using \code{\link[GiottoClass:getSpatialNetwork]{GiottoClass::getSpatialNetwork()}}.
-When TRUE, the default graph will be used.
-When given as a character, it should be the name of the graph to use.
-If there is ":" in the name, the first part will be used as spat_unit, and the second part as the graph name.}
-
-\item{shape}{The shape of the points, alias of \code{points_shape}.
-See \url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html} for more details.}
-
-\item{legend.position}{The position of the legend. Defaults to "right".}
-
-\item{legend.direction}{The direction of the legend. Defaults to "vertical".}
-
-\item{theme}{The theme to use for the plot. Defaults to \code{"theme_box"}.
-It can be the name of the theme (e.g. "ggplot2::theme_bw") or the function itself.
-There are three themes that can be passed without namespace: "theme_box", "theme_this" and "theme_blank", which
-are actually aliases of \code{\link[plotthis:theme_box]{plotthis::theme_box()}}, \code{\link[plotthis:theme_this]{plotthis::theme_this()}} and \code{\link[ggplot2:ggtheme]{ggplot2::theme_void()}} (without braces).}
-
-\item{theme_args}{A list of arguments to pass to the theme function.}
-
-\item{title}{The title of the plot. If NULL, no title will be added.}
-
-\item{subtitle}{The subtitle of the plot. If NULL, no subtitle will be added.}
-
-\item{xlab}{The label for the x-axis. If NULL, no label will be added.}
-
-\item{ylab}{The label for the y-axis. If NULL, no label will be added.}
-
-\item{facet_scales}{The scales to use for the facets. Defaults to "free". Can be "free", "fixed", "free_x", "free_y".}
-
-\item{facet_nrow}{The number of rows to use for the facets. Defaults to NULL, which means the number of rows will be calculated automatically.}
-
-\item{facet_ncol}{The number of columns to use for the facets. Defaults to NULL, which means the number of columns will be calculated automatically.}
-
-\item{facet_byrow}{Logical, whether to facet by row. Defaults to FALSE.}
-
-\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
-
-\item{use_overlap}{use polygon and feature coordinates overlap results, only applied to Giotto objects.}
-
-\item{shapes_feat_type}{feature type of the features to use for shapes (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
-
-\item{shapes_alpha}{The alpha value to use for the shapes.
-When "points" are plotted, this defaults to 0.5; otherwise it defaults to 1.}
-
-\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
-
-\item{spat_loc_name}{The name of the spatial location to use for the plot. Only applied to Giotto objects.}
-
-\item{spat_enr_names}{The names of the spatial enrichment results to use for the plot. Only applied to Giotto objects.}
-
-\item{...}{Additional arguments that will be passed to the spatial plot function.
-With the \code{image_} prefix, these arguments will be used to plot the image (\code{\link[plotthis:spatialplots]{plotthis::SpatImagePlot()}}).
-With the \code{masks_} prefix, these arguments will be used to plot the masks (\code{\link[plotthis:spatialplots]{plotthis::SpatMasksPlot()}}).
-With the \code{shapes_} prefix, these arguments will be used to plot the shapes (\code{\link[plotthis:spatialplots]{plotthis::SpatShapesPlot()}}).
-With the \code{points_} prefix, these arguments will be used to plot the points (\code{\link[plotthis:spatialplots]{plotthis::SpatPointsPlot()}}).
-If the prefix is not provided, the arguments will be used as points arguments, but
-with lower priority than the \code{points_} prefixed arguments.}
 }
 \value{
-A ggplot object
+A \code{ggplot} object representing the assembled spatial plot.
 }
 \description{
-The features can include  expression, dimension reduction components, metadata, etc
+\code{SpatPlot()} is the S3 generic that underpins all spatial
+visualization in \pkg{scplotter}. It dispatches based on the class of
+\code{object} and, for Seurat objects, further inspects the image type
+(\code{VisiumV1}, \code{VisiumV2}, \code{FOV}, or \code{SlideSeq}) to
+invoke the correct rendering method. End-users should use
+\code{\link{SpatFeaturePlot}} or \code{\link{SpatDimPlot}} instead of
+calling \code{SpatPlot()} directly.
+
+Each method assembles the requested spatial \code{layers} (image, masks,
+shapes, points) into a list of ggplot layer objects, then wraps them
+together via \pkg{plotthis}'s internal spatial compositing functions
+to produce a final coordinate-aligned ggplot.
 }
+\section{Method dispatch}{
+
+\itemize{
+\item \code{SpatPlot.Seurat} — Inspects the first image's class to
+delegate to \code{SpatPlot.Seurat.Visium},
+\code{SpatPlot.Seurat.FOV}, or \code{SpatPlot.Seurat.SlideSeq}.
+\item \code{SpatPlot.Seurat.Visium} — Renders 10x Visium data with
+tissue image, spot points, and optional shape/mask layers.
+\item \code{SpatPlot.Seurat.FOV} — Renders FOV-based data (Xenium,
+CosMx, etc.) with molecule-level or cell-level points, cell boundary
+shapes, and optional registered images.
+\item \code{SpatPlot.Seurat.SlideSeq} — Renders Slide-seq bead data
+with colored background and point layer.
+\item \code{SpatPlot.giotto} — Renders spatial data from Giotto objects
+with full support for images, shapes, points, molecules, and spatial
+network graphs.
+}
+}
+
 \keyword{internal}

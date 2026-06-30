@@ -29,62 +29,102 @@
 )
 }
 \arguments{
-\item{object}{A Seurat object or a Giotto object.}
+\item{object}{A Seurat object (with spatial data loaded via
+\pkg{SeuratObject}) or a Giotto object (created with \pkg{Giotto}).
+The spatial technology is auto-detected from the object's image class.}
 
-\item{fov}{The name of the field of view (FOV) to plot, only works for Seurat objects.}
+\item{fov}{The name of the field of view (FOV) to plot. For Seurat FOV-based
+objects (Xenium, CosMx, etc.), defaults to
+\code{\link[SeuratObject:DefaultFOV]{SeuratObject::DefaultFOV()}}. Not
+applicable to Visium or Slide-seq objects.}
 
-\item{boundaries}{The name of the boundaries to plot, only works for Seurat objects.}
+\item{boundaries}{The name of the segmentation boundaries within the FOV
+to use for cell outlines. For Seurat FOV-based objects, defaults to
+\code{\link[SeuratObject:DefaultBoundary]{SeuratObject::DefaultBoundary()}}.
+Not applicable to Visium or Slide-seq objects.}
 
-\item{x}{Internal use only, the name of the x coordinate column in the data. Used to adopt different data types.}
+\item{x}{Internal use. The name of the x-coordinate column in the spatial
+data. Auto-detected based on the spatial technology (\code{"imagerow"}
+for Visium V1, varies for other types).}
 
-\item{y}{Internal use only, the name of the y coordinate column in the data. Used to adopt different data types.}
+\item{y}{Internal use. The name of the y-coordinate column in the spatial
+data. Auto-detected based on the spatial technology (\code{"imagecol"}
+for Visium V1, varies for other types).}
 
 \item{swap_xy}{Logical, whether to swap x and y coordinates in the points data.
 Seurat objects, loaded with Visium, Xenium or SlideSeq data, have x and y coordinates
 in the opposite order. But when loaded with FOV data, the coordinates are in the correct order.}
 
-\item{image}{The name of the image to plot. Possible values are:
+\item{image}{Controls the image/background layer. Possible values:
 \itemize{
-\item NULL: For Seurat objects with Visium data, the first image will be used.
-For Giotto objects and Seurat objects with other spatial data, no image will be plotted.
-\item image name(s): the name of the image(s) to plot.
-\item color name: a color to use as a background for the plot.
-\item TRUE: For Seurat objects with Visium data, the first image will be used.
-For Seurat objects with other spatial data, an error will be raised.
-For Giotto objects with FOV, all (non-overlapping) images will be plotted; otherwise first image will be used.
-\item FALSE: disable image plotting.
+\item \code{NULL} — Default behavior: for Visium, the first image is
+used; for Giotto and FOV objects, no image is plotted.
+\item A character string naming an image in the object — that specific
+image is plotted.
+\item A color name (e.g., \code{"white"}, \code{"lightgray"}) — fills
+the background with a solid color rectangle.
+\item \code{TRUE} — For Visium: uses the first image. For Giotto FOV:
+plots all non-overlapping images. For Seurat FOV: raises an error
+(no single default image).
+\item \code{FALSE} — Disables the image layer entirely.
 }}
 
-\item{crop}{Whether to crop the plot to the extent of the available data. Similar to \code{crop} argument in
-\code{\link[Seurat:SpatialPlot]{Seurat::SpatialDimPlot()}}. Defaults to TRUE.}
+\item{crop}{Logical. Whether to crop the plot to the extent of the
+tissue/spots. When \code{TRUE} (default), the plot is automatically
+zoomed to the data extent with optional \code{padding}. Analogous to the
+\code{crop} argument in
+\code{\link[Seurat:SpatialDimPlot]{Seurat::SpatialDimPlot()}}.}
 
-\item{scale_factor}{Internal use only. The scale factor to use for the image, which will be extracted from the object.}
+\item{scale_factor}{Internal use. The image scale factor extracted from
+the object, used to map between pixel and tissue coordinate spaces.
+Automatically determined from the object's image data.}
 
-\item{group_by}{The name of the metadata column to group the points by. Should be a character or factor column.
-A special value "molecules" can be used to plot molecules in the FOV.}
+\item{group_by}{A metadata column name used to color the points. Must be a
+character or factor column in the object's metadata. For
+\code{SpatDimPlot()}, if \code{NULL} and the object has FOV data with
+features, defaults to \code{"molecules"}; otherwise defaults to
+\code{"Identity"} (the active cluster identities). For
+\code{SpatFeaturePlot()}, \code{group_by} is ignored — use
+\code{\link{SpatDimPlot}} for categorical grouping. The special value
+\code{"molecules"} enables molecule-level visualization in FOV-based
+data.}
 
-\item{shape}{The shape of the points, alias of \code{points_shape}.
-See \url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html} for more details.}
+\item{shape}{Numeric. The point shape (ggplot2 shape aesthetic). Default:
+\code{16} (filled circle). See
+\url{https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html}
+for the full shape palette.}
 
-\item{features}{A character vector of feature names to plot. If provided, the points will be colored by the features.
-For \code{SpatDimPlot()}, this will be used to plot the molecules in the FOV.
-For \code{SpatFeaturePlot()}, the plots will be faceted by the features.}
+\item{features}{A character vector of feature names to visualize. For
+\code{SpatFeaturePlot()}, each feature is plotted as a separate facet
+(or combined theme when a single feature is given), with expression
+values coloring the points. For \code{SpatDimPlot()}, features are
+treated as molecule names to plot at single-molecule resolution (FOV
+data only). Can include gene names, metadata column names, or dimension
+reduction components.}
 
-\item{layer}{The layer to use for the feature expression data.
-Applicable for both Seurat and Giotto objects.
-Defaults to "data" for Seurat objects, and "normalized" for Giotto objects.
-For Giotto objects, it can also be "scaled", "raw", "counts", or "custom".
-For Seurat objects, it can be "data", "scale.data", or "counts".}
+\item{layer}{The assay layer from which to extract feature expression
+values. For Seurat objects, one of \code{"data"} (default),
+\code{"scale.data"}, or \code{"counts"}. For Giotto objects, one of
+\code{"normalized"} (default), \code{"scaled"}, \code{"raw"},
+\code{"counts"}, or \code{"custom"}.}
 
-\item{legend.position}{The position of the legend. Defaults to "right".}
+\item{legend.position}{Character. Legend position. One of
+\code{"right"} (default), \code{"left"}, \code{"top"},
+\code{"bottom"}, or \code{"none"}.}
 
-\item{legend.direction}{The direction of the legend. Defaults to "vertical".}
+\item{legend.direction}{Character. Legend direction. One of
+\code{"vertical"} (default) or \code{"horizontal"}.}
 
-\item{flip_y}{Internal use mostly, unless you want to flip the y-axis of the plot.}
+\item{flip_y}{Logical. Whether to flip the y-axis. This is primarily for
+internal coordinate system alignment — Visium/Slide-seq objects default
+to \code{TRUE}, FOV-based objects to \code{FALSE}. In most cases you do
+not need to set this manually.}
 
-\item{ext}{The extent of the plot. If NULL, the extent will be calculated from the data.
-If a numeric vector of length 4, it should be in the format c(xmin, xmax, ymin, ymax).
-It can also be an object created by \code{\link[terra:ext]{terra::ext()}}.}
+\item{ext}{The spatial extent (bounding box) of the plot. If \code{NULL},
+the extent is calculated automatically from the data or, when
+\code{crop = TRUE}, from the tissue coordinates. Can be a numeric vector
+in the format \code{c(xmin, xmax, ymin, ymax)} or a
+\code{\link[terra:ext]{terra::SpatExtent}} object.}
 }
 \value{
 A list containing the ggplot2 layer object and the facet_by variable if applicable.
