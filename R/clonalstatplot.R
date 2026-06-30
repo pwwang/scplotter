@@ -22,7 +22,7 @@
 #' evaluate within the context of each faceting/splitting group, enabling per-group
 #' selection of the most expanded clones, clones shared between conditions, or clones
 #' meeting custom abundance thresholds. See the \strong{Clone selection} section below
-#' and \code{\link{clone_selectors}} for full details.
+#' and \code{\link{CloneSelectors}} for full details.
 #'
 #' Clones can also be aggregated into named groups (by passing a named list to
 #' \code{clones}), where each group is defined by its own selection expression. In
@@ -49,7 +49,7 @@
 #'       \item \code{gt(g1, g2)}, \code{lt(g1, g2)}, \code{eq(g1, g2)}, etc. — comparison-based selection
 #'     }
 #'     All selectors accept \code{group_by}, \code{top}, \code{order}, \code{within},
-#'     and \code{output_within} arguments. See \code{\link{clone_selectors}} for
+#'     and \code{output_within} arguments. See \code{\link{CloneSelectors}} for
 #'     complete documentation.
 #'   }
 #'   \item{Named list of expressions}{Defines clone groups. Each element is a selection
@@ -231,7 +231,7 @@
 #' }
 #' @seealso
 #' \itemize{
-#'   \item \code{\link{clone_selectors}} for the full clone selection expression system
+#'   \item \code{\link{CloneSelectors}} for the full clone selection expression system
 #'   \item \code{\link{ClonalCompositionPlot}} for visualizing clonal space composition (homeostasis)
 #'   \item \code{\link{ClonalDiversityPlot}} for clonal diversity metrics
 #'   \item \code{\link{ClonalGeneUsagePlot}} for V(D)J gene segment usage
@@ -421,7 +421,7 @@ ClonalStatPlot <- function(
                 error = function(e) {
                     stop(
                         "Invalid clone selector expression: '", clones_expr, "'.\n",
-                        "See ?clone_selectors for available selector functions.\n",
+                        "See ?CloneSelectors for available selector functions.\n",
                         "Parse error: ", e$message,
                         call. = FALSE
                     )

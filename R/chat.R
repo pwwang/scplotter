@@ -74,6 +74,7 @@
 #' @importFrom rlang %||%
 #' @examples
 #' \donttest{
+#' if (FALSE) {
 #' # Setup LLM provider (requires an API key)
 #' provider <- tidyprompt::llm_provider_openai(
 #'     parameters = list(model = "deepseek-v4-flash", stream = TRUE),
@@ -119,6 +120,7 @@
 #'
 #' # Clear history for a fresh conversation
 #' chat$clear_history()
+#' }
 #' }
 SCPlotterChat <- R6::R6Class(
     "SCPlotterChat",

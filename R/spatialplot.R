@@ -1053,16 +1053,6 @@ SpatPlot.giotto <- function(
 #' \code{\link[plotthis:SpatImagePlot]{plotthis::SpatImagePlot()}},
 #' \code{\link[plotthis:SpatShapesPlot]{plotthis::SpatShapesPlot()}}
 #' @export
-#' @examples
-#' \donttest{
-#' # Feature plot on Visium data
-#' data(stxBrain, package = "SeuratData")
-#' SpatFeaturePlot(stxBrain, features = c("Hpca", "Ttr"))
-#'
-#' # Feature plot with image and shapes on FOV data
-#' data(xenium_sub, package = "scplotter")
-#' SpatFeaturePlot(xenium_sub, features = c("Bace2", "Gad1", "Nrg1"))
-#' }
 SpatFeaturePlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -1207,14 +1197,6 @@ SpatFeaturePlot.giotto <- function(
 #' \code{\link[Seurat:SpatialDimPlot]{Seurat::SpatialDimPlot()}},
 #' \code{\link[Seurat:ImageDimPlot]{Seurat::ImageDimPlot()}}
 #' @export
-#' @examples
-#' \donttest{
-#' data(stxBrain, package = "SeuratData")
-#' SpatDimPlot(stxBrain, group_by = "seurat_clusters")
-#'
-#' data(xenium_sub, package = "scplotter")
-#' SpatDimPlot(xenium_sub, group_by = "cell_type")
-#' }
 SpatDimPlot <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,

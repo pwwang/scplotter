@@ -38,7 +38,7 @@
 #'         (`lineages`).
 #'   \item **Velocity arrows** — Overlay RNA velocity vectors on the embedding
 #'         (`velocity`). For dedicated velocity visualization with grid or
-#'         stream plots, see [CellVelocityPlot()].
+#'         stream plots, see \code{\link{CellVelocityPlot}}.
 #'   \item **Statistical charts** — Embed small bar, ring, or line charts at
 #'         group positions showing composition of a second variable (`stat_by`,
 #'         `stat_plot_type`).
@@ -78,7 +78,7 @@
 #' reduction plot. The `velocity` parameter names a second reduction
 #' (e.g., `"stochastic_UMAP"`) whose first two dimensions encode the velocity
 #' arrows. This is a lightweight overlay — for dedicated velocity visualization
-#' with grid or stream plots, use [CellVelocityPlot()] which delegates to
+#' with grid or stream plots, use \code{\link{CellVelocityPlot}} which delegates to
 #' \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.
 #'
 #' @param object A Seurat object, a Giotto object, a path to an `.h5ad` file,
@@ -100,7 +100,7 @@
 #'   encode RNA velocity vectors to overlay on the plot. Typical values are
 #'   `"stochastic_<reduction>"`, `"deterministic_<reduction>"`, or
 #'   `"dynamical_<reduction>"` (e.g., `"stochastic_UMAP"`). For dedicated
-#'   velocity visualization (grid or stream plots), use [CellVelocityPlot()]
+#'   velocity visualization (grid or stream plots), use \code{\link{CellVelocityPlot}}
 #'   instead. Default is `NULL` (no velocity overlay).
 #' @param group_by Character vector of metadata column name(s) used to color
 #'   the cells. Can be a single column (e.g., `"CellType"`) or multiple
@@ -169,8 +169,8 @@
 #' \itemize{
 #'   \item \code{\link[plotthis:DimPlot]{plotthis::DimPlot()}} — The
 #'         underlying plotting engine
-#'   \item [CellVelocityPlot()] — Dedicated RNA velocity visualization
-#'   \item [CellStatPlot()] — Statistical summaries and comparisons
+#'   \item \code{\link{CellVelocityPlot}} — Dedicated RNA velocity visualization
+#'   \item \code{\link{CellStatPlot}} — Statistical summaries and comparisons
 #' }
 #'
 #' @export
@@ -573,7 +573,7 @@ CellDimPlot.H5File <- function(
 #' For example, `"stochastic_UMAP"` or `"dynamical_PCA"`.
 #'
 #' @section Relationship to CellDimPlot:
-#' While [CellDimPlot()] can overlay velocity arrows on a dimension reduction
+#' While \code{\link{CellDimPlot}} can overlay velocity arrows on a dimension reduction
 #' plot via its `velocity` parameter, `CellVelocityPlot` is the dedicated
 #' velocity visualization function. The key differences are:
 #' \itemize{
@@ -608,7 +608,7 @@ CellDimPlot.H5File <- function(
 #'   or an opened `H5File` from the \pkg{hdf5r} package.
 #' @param reduction Name of the main dimension reduction that defines cell
 #'   positions in the plot (e.g., `"umap"`, `"pca"`, `"tsne"`). This
-#'   reduction must already exist in the object. Unlike [CellDimPlot()],
+#'   reduction must already exist in the object. Unlike \code{\link{CellDimPlot}},
 #'   this parameter is required — there is no default.
 #' @param v_reduction Name of the velocity reduction that encodes RNA velocity
 #'   vectors (e.g., `"stochastic_UMAP"`, `"dynamical_PCA"`). Only the first
@@ -623,7 +623,7 @@ CellDimPlot.H5File <- function(
 #'   default feature type is auto-detected via
 #'   `GiottoClass::set_default_feat_type()`.
 #' @param group_by Metadata column name used to color cells by group (e.g.,
-#'   `"CellType"`, `"Phase"`). Unlike [CellDimPlot()], this parameter is
+#'   `"CellType"`, `"Phase"`). Unlike \code{\link{CellDimPlot}}, this parameter is
 #'   optional — when `NULL`, all cells are plotted in a uniform color, which
 #'   can be useful for focusing on the velocity flow patterns without visual
 #'   distraction from cluster colors.
@@ -670,9 +670,9 @@ CellDimPlot.H5File <- function(
 #'   \item \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}} —
 #'         The underlying plotting engine supporting arrow, grid, and stream
 #'         plot types
-#'   \item [CellDimPlot()] — Standard dimension reduction plot; can overlay
+#'   \item \code{\link{CellDimPlot}} — Standard dimension reduction plot; can overlay
 #'         velocity arrows via the `velocity` parameter
-#'   \item [CellStatPlot()] — Statistical summaries and comparisons
+#'   \item \code{\link{CellStatPlot}} — Statistical summaries and comparisons
 #' }
 #'
 #' @export

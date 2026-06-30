@@ -58,7 +58,7 @@ default feature type is auto-detected via
 encode RNA velocity vectors to overlay on the plot. Typical values are
 \code{"stochastic_<reduction>"}, \code{"deterministic_<reduction>"}, or
 \code{"dynamical_<reduction>"} (e.g., \code{"stochastic_UMAP"}). For dedicated
-velocity visualization (grid or stream plots), use \code{\link[=CellVelocityPlot]{CellVelocityPlot()}}
+velocity visualization (grid or stream plots), use \code{\link{CellVelocityPlot}}
 instead. Default is \code{NULL} (no velocity overlay).}
 
 \item{...}{Additional arguments passed to
@@ -129,7 +129,7 @@ k-NN or shared-nearest-neighbor graphs (\code{graph}).
 (\code{lineages}).
 \item \strong{Velocity arrows} — Overlay RNA velocity vectors on the embedding
 (\code{velocity}). For dedicated velocity visualization with grid or
-stream plots, see \code{\link[=CellVelocityPlot]{CellVelocityPlot()}}.
+stream plots, see \code{\link{CellVelocityPlot}}.
 \item \strong{Statistical charts} — Embed small bar, ring, or line charts at
 group positions showing composition of a second variable (\code{stat_by},
 \code{stat_plot_type}).
@@ -210,7 +210,7 @@ When \code{velocity} is specified, velocity vectors are overlaid on the dimensio
 reduction plot. The \code{velocity} parameter names a second reduction
 (e.g., \code{"stochastic_UMAP"}) whose first two dimensions encode the velocity
 arrows. This is a lightweight overlay — for dedicated velocity visualization
-with grid or stream plots, use \code{\link[=CellVelocityPlot]{CellVelocityPlot()}} which delegates to
+with grid or stream plots, use \code{\link{CellVelocityPlot}} which delegates to
 \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}.
 }
 
@@ -342,7 +342,7 @@ CellDimPlot(pancreas_sub, group_by = "SubCellType", reduction = "UMAP",
 \itemize{
 \item \code{\link[plotthis:DimPlot]{plotthis::DimPlot()}} — The
 underlying plotting engine
-\item \code{\link[=CellVelocityPlot]{CellVelocityPlot()}} — Dedicated RNA velocity visualization
-\item \code{\link[=CellStatPlot]{CellStatPlot()}} — Statistical summaries and comparisons
+\item \code{\link{CellVelocityPlot}} — Dedicated RNA velocity visualization
+\item \code{\link{CellStatPlot}} — Statistical summaries and comparisons
 }
 }

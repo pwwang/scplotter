@@ -340,15 +340,6 @@ the active cluster identities in the Seurat object (i.e.,
 }
 }
 
-\examples{
-\donttest{
-data(stxBrain, package = "SeuratData")
-SpatDimPlot(stxBrain, group_by = "seurat_clusters")
-
-data(xenium_sub, package = "scplotter")
-SpatDimPlot(xenium_sub, group_by = "cell_type")
-}
-}
 \seealso{
 \code{\link{SpatFeaturePlot}},
 \code{\link[plotthis:SpatPointsPlot]{plotthis::SpatPointsPlot()}},

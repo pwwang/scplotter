@@ -272,9 +272,9 @@
 #'
 #' @seealso
 #' \itemize{
-#'   \item [CellDimPlot()] — Dimension reduction visualization of
+#'   \item \code{\link{CellDimPlot}} — Dimension reduction visualization of
 #'         cell clusters
-#'   \item [FeatureStatPlot()] — Feature expression statistics
+#'   \item \code{\link{FeatureStatPlot}} — Feature expression statistics
 #'   \item \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}},
 #'         \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
 #'         \code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}} —

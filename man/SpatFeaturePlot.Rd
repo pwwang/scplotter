@@ -322,17 +322,6 @@ internal \code{SpatPlot()} workhorse. See
 order, and technology-specific defaults.
 }
 
-\examples{
-\donttest{
-# Feature plot on Visium data
-data(stxBrain, package = "SeuratData")
-SpatFeaturePlot(stxBrain, features = c("Hpca", "Ttr"))
-
-# Feature plot with image and shapes on FOV data
-data(xenium_sub, package = "scplotter")
-SpatFeaturePlot(xenium_sub, features = c("Bace2", "Gad1", "Nrg1"))
-}
-}
 \seealso{
 \code{\link{SpatDimPlot}},
 \code{\link[plotthis:SpatPointsPlot]{plotthis::SpatPointsPlot()}},

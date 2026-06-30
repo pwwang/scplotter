@@ -53,7 +53,7 @@ SpatPointsPlot(GiottoClass::getSpatialLocations(g, output = "data.table"))
 
 # Flowchat of spatial data visualization
 
-![](./figures/spatial.png)
+![spatial](./figures/spatial.png)
 
 This diagram details the dispatch logic and internal structure of the `SpatXPlot` ([`SpatDimPlot`][5] or [`SpatFeaturePlot`][6]) function, which handles spatial visualizations for both **Seurat** and **Giotto** objects. The dispatch begins by checking `class(object)` and routes the call to either `SpatXPlot.Seurat` or `SpatXPlot.giotto`. In the Seurat case, if the image class (`class(object@images[[1]])`) is recognized (e.g., Visium, SlideSeq, FOV), it is further dispatched to a specialized `SpatPlot.Seurat.<type>` function.
 

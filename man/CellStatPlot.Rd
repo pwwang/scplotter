@@ -442,9 +442,9 @@ CellStatPlot(ifnb_sub, group_by = "stim", agg = "sum(group == 'g1') / n()",
 }
 \seealso{
 \itemize{
-\item \code{\link[=CellDimPlot]{CellDimPlot()}} — Dimension reduction visualization of
+\item \code{\link{CellDimPlot}} — Dimension reduction visualization of
 cell clusters
-\item \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} — Feature expression statistics
+\item \code{\link{FeatureStatPlot}} — Feature expression statistics
 \item \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}},
 \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
 \code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}} —

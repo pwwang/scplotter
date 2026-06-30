@@ -80,6 +80,7 @@ for setup instructions.
 
 \examples{
 \donttest{
+if (FALSE) {
 # Setup LLM provider (requires an API key)
 provider <- tidyprompt::llm_provider_openai(
     parameters = list(model = "deepseek-v4-flash", stream = TRUE),
@@ -125,6 +126,7 @@ chat$get_history()
 
 # Clear history for a fresh conversation
 chat$clear_history()
+}
 }
 }
 \section{Methods}{

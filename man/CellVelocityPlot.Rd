@@ -21,7 +21,7 @@ or an opened \code{H5File} from the \pkg{hdf5r} package.}
 
 \item{reduction}{Name of the main dimension reduction that defines cell
 positions in the plot (e.g., \code{"umap"}, \code{"pca"}, \code{"tsne"}). This
-reduction must already exist in the object. Unlike \code{\link[=CellDimPlot]{CellDimPlot()}},
+reduction must already exist in the object. Unlike \code{\link{CellDimPlot}},
 this parameter is required — there is no default.}
 
 \item{v_reduction}{Name of the velocity reduction that encodes RNA velocity
@@ -40,7 +40,7 @@ default feature type is auto-detected via
 \code{GiottoClass::set_default_feat_type()}.}
 
 \item{group_by}{Metadata column name used to color cells by group (e.g.,
-\code{"CellType"}, \code{"Phase"}). Unlike \code{\link[=CellDimPlot]{CellDimPlot()}}, this parameter is
+\code{"CellType"}, \code{"Phase"}). Unlike \code{\link{CellDimPlot}}, this parameter is
 optional — when \code{NULL}, all cells are plotted in a uniform color, which
 can be useful for focusing on the velocity flow patterns without visual
 distraction from cluster colors.}
@@ -145,7 +145,7 @@ For example, \code{"stochastic_UMAP"} or \code{"dynamical_PCA"}.
 
 \section{Relationship to CellDimPlot}{
 
-While \code{\link[=CellDimPlot]{CellDimPlot()}} can overlay velocity arrows on a dimension reduction
+While \code{\link{CellDimPlot}} can overlay velocity arrows on a dimension reduction
 plot via its \code{velocity} parameter, \code{CellVelocityPlot} is the dedicated
 velocity visualization function. The key differences are:
 \itemize{
@@ -204,8 +204,8 @@ CellVelocityPlot(pancreas_sub, reduction = "PCA", v_reduction = "stochastic_PCA"
 \item \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}} —
 The underlying plotting engine supporting arrow, grid, and stream
 plot types
-\item \code{\link[=CellDimPlot]{CellDimPlot()}} — Standard dimension reduction plot; can overlay
+\item \code{\link{CellDimPlot}} — Standard dimension reduction plot; can overlay
 velocity arrows via the \code{velocity} parameter
-\item \code{\link[=CellStatPlot]{CellStatPlot()}} — Statistical summaries and comparisons
+\item \code{\link{CellStatPlot}} — Statistical summaries and comparisons
 }
 }
