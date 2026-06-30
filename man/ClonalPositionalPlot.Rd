@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalpositionalplot.R
 \name{ClonalPositionalPlot}
 \alias{ClonalPositionalPlot}
-\title{ClonalPositionalPlot}
+\title{Visualize positional properties of CDR3 sequences}
 \usage{
 ClonalPositionalPlot(
   data,
@@ -26,74 +26,250 @@ ClonalPositionalPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+Must contain columns with CDR3 amino acid sequences (e.g., \code{TRA_cdr3_aa},
+\code{TRB_cdr3_aa}).}
 
-\item{chain}{The chain to be analyzed. Default is "TRB".}
+\item{chain}{Character; the TCR or BCR chain to analyze. Default is \code{"TRB"}.
+Common values include \code{"TRA"} (TCR alpha), \code{"TRB"} (TCR beta), \code{"TRG"}
+(TCR gamma), \code{"TRD"} (TCR delta), \code{"IGH"} (BCR heavy), \code{"IGL"} (BCR
+lambda), and \code{"IGK"} (BCR kappa). The chain determines which CDR3 column
+is used for analysis.}
 
-\item{aa_length}{The length of the amino acid sequence. Default is 20.}
+\item{aa_length}{Integer; the number of CDR3 amino acid positions to analyze,
+counting from the N-terminus. Default is \code{20}. Sequences shorter than this
+length contribute data only to the positions they span. Increase for
+receptors with longer CDR3s (e.g., BCR heavy chain).}
 
-\item{group_by}{The variable to group the data by. Default is "Sample".}
+\item{group_by}{Character vector; the column(s) in \code{data} to group samples by.
+Default is \code{"Sample"}. Each unique combination of grouping values becomes
+a distinct line/bar/facet in the plot. For box and violin plot types in
+entropy mode, \code{group_by} must be explicitly provided (cannot be the default
+\code{"Sample"}).}
 
-\item{group_by_sep}{The separator to use when combining groupings. Default is "_".}
+\item{group_by_sep}{Character; the separator used when concatenating multiple
+\code{group_by} columns into a single identifier. Default is \code{"_"}.}
 
-\item{split_by}{The variable to split the data by. Default is NULL.}
+\item{split_by}{Character vector; column(s) in \code{data} to split the plot by,
+producing separate sub-plots for each unique combination. Default is \code{NULL}.}
 
-\item{method}{The method to calculate the positional entropy. Default is "AA".
+\item{method}{Character; the analysis method. One of:
 \itemize{
-\item "AA": Amino acid frequency.
-\item "shannon": Shannon entropy.
-\item "inv.simpson": Inverse Simpson index.
-\item "norm.entropy": Normalized entropy.
-\item "Atchley": Atchley factors.
-\item "Kidera": Kidera factors.
-\item "stScales": stScales factors.
-\item "tScales": tScales factors.
-\item "VHSE": Vectors of Hydrophobic, Steric, and Electronic properties.
-See also \link[scRepertoire:percentAA]{scRepertoire::percentAA}, \link[scRepertoire:positionalEntropy]{scRepertoire::positionalEntropy} and
-\link[scRepertoire:positionalProperty]{scRepertoire::positionalProperty}.
-}}
+\item \code{"AA"} — Amino acid frequency at each position (default).
+\item \code{"shannon"} — Shannon entropy (diversity).
+\item \code{"inv.simpson"} — Inverse Simpson index (diversity, emphasizes dominant
+amino acids).
+\item \code{"norm.entropy"} — Normalized entropy (diversity, scaled to the range 0–1).
+\item \code{"Atchley"} — Atchley factor scores (5 properties).
+\item \code{"Kidera"} — Kidera factor scores (10 properties).
+\item \code{"stScales"} — ST-scale property scores.
+\item \code{"tScales"} — T-scale property scores.
+\item \code{"VHSE"} — VHSE property scores (8 descriptors).
+}
 
-\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
+See the \strong{Analysis methods} and \strong{Physicochemical property sets}
+sections for details on each method.}
 
-\item{plot_type}{The type of plot to generate. Default is "bar".
+\item{order}{A named list specifying the order of factor levels for grouping
+variables. For example, \code{list(Type = c("L", "B"))}. Default is \code{NULL},
+which uses the order present in the data. Names in the list must match
+column names in \code{data}.}
+
+\item{plot_type}{Character; the type of visualization. One of \code{"bar"}
+(default), \code{"line"}, \code{"heatmap"}, \code{"box"}, or \code{"violin"}. Not all plot
+types are available for all methods — see the \strong{Analysis methods}
+section for the full mapping.}
+
+\item{theme_args}{A named list of arguments passed to
+\code{\link[ggplot2:theme]{ggplot2::theme()}} for customizing the plot
+appearance. For bar plots, \code{panel.grid.major.y} defaults to
+\code{element_blank()} for a cleaner look.}
+
+\item{xlab}{Character; the x-axis label. Default is \code{NULL}, which
+automatically uses \code{"Position"}.}
+
+\item{ylab}{Character; the y-axis label. Default is \code{NULL}, which
+automatically uses a method-appropriate label (\code{"Amino Acid Frequency"}
+for AA, the method name for entropy, or \code{"Mean Values"} for properties).}
+
+\item{facet_by}{A character vector of column names to facet the plots by.
+Default is \code{NULL}. Note that for AA and property bar plots, \code{facet_by}
+is set internally and should not be specified manually (doing so will
+raise an error). For entropy line plots, it can be used to add an
+additional faceting dimension.}
+
+\item{facet_ncol}{Integer; the number of columns in the facet grid.
+Default is \code{NULL}, which uses \code{1} for bar plots and automatic
+determination for other plot types.}
+
+\item{facet_nrow}{Integer; the number of rows in the facet grid.
+Default is \code{NULL}. For property bar plots, defaults to the number of
+properties in the selected factor set.}
+
+\item{aspect.ratio}{Numeric; the aspect ratio (height / width) of plot
+panels. Default is \code{NULL}, which uses method- and plot_type-appropriate
+defaults (e.g., \code{2 / aa_length} for entropy bar plots,
+\code{6 / aa_length} for entropy line plots, \code{10 / aa_length} for box/violin
+plots).}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+visualization function, depending on \code{plot_type}:
 \itemize{
-\item "bar": Bar plot.
-\item "line": Line plot.
-\item "heatmap": Heatmap.
-\item "box": Box plot.
-\item "violin": Violin plot.
-}}
+\item For \code{"bar"}: \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+\item For \code{"line"}: \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}
+\item For \code{"heatmap"}: \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+\item For \code{"box"}: \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+\item For \code{"violin"}: \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+}
 
-\item{theme_args}{A list of arguments to be passed to the \link[ggplot2:theme]{ggplot2::theme} function.}
-
-\item{xlab}{The x-axis label. Default is NULL.}
-
-\item{ylab}{The y-axis label. Default is NULL.}
-
-\item{facet_by}{A character vector of column names to facet the plots. Default is NULL.}
-
-\item{facet_ncol}{The number of columns in the facet grid. Default is NULL.}
-
-\item{facet_nrow}{The number of rows in the facet grid. Default is NULL.}
-
-\item{aspect.ratio}{The aspect ratio of the plot. Default is NULL.}
-
-\item{...}{Other arguments passed to the specific plot function.
-\itemize{
-\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For "line", \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}.
-\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-\item For "box", \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For "violin", \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
-}}
+Common arguments include \code{title}, \code{legend.position}, and color palette
+parameters. See the respective \pkg{plotthis} documentation for
+available options.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object (or a list of \code{ggplot} objects if \code{combine = FALSE}
+is passed via \code{...})
 }
 \description{
-Visualize the positional entropy, property or amino acid frequency of CDR3 sequences.
+The complementarity-determining region 3 (CDR3) is the most variable region of
+T cell and B cell receptors, and is the primary determinant of antigen
+specificity. Analyzing how amino acid composition, diversity, and
+physicochemical properties vary across CDR3 positions provides insight into
+repertoire structure, selection pressures, and the biophysical constraints
+that shape antigen recognition.
 }
+\details{
+\code{ClonalPositionalPlot} computes and visualizes position-level properties of
+CDR3 sequences by aligning them at their N-terminus (Cys residue) and analyzing
+each position independently. Three fundamentally different categories of
+analysis are available through the \code{method} parameter:
+\itemize{
+\item \strong{Amino acid frequency} (\code{method = "AA"}): Raw frequency of each amino acid
+at each position, displayed as stacked bars or a pie-chart heatmap. This
+reveals position-specific amino acid preferences (e.g., hydrophobic residues
+in the center of the CDR3 loop, or glycine enrichment at turn positions).
+\item \strong{Positional entropy} (\code{method = "shannon"}, \code{"inv.simpson"}, or
+\code{"norm.entropy"}): Quantifies the diversity of amino acid usage at each
+position. Low entropy at a position indicates conservation (often structural
+constraint), while high entropy indicates variability (potential antigen
+contact). Supports bar, line, heatmap, box, and violin plot types, with
+box/violin requiring a \code{group_by} variable for comparisons.
+\item \strong{Physicochemical properties} (\code{method = "Atchley"}, \code{"Kidera"},
+\code{"stScales"}, \code{"tScales"}, or \code{"VHSE"}): Each amino acid is represented by
+a set of numeric factor scores that capture its physicochemical properties
+(e.g., hydrophobicity, size, charge, secondary structure propensity). These
+are averaged at each position to reveal trends along the CDR3 sequence.
+Supports bar and line plot types.
+}
+
+The function delegates computation to three \pkg{scRepertoire} functions:
+\code{\link[scRepertoire:percentAA]{scRepertoire::percentAA()}} for amino acid
+frequency, \code{\link[scRepertoire:positionalEntropy]{scRepertoire::positionalEntropy()}}
+for entropy metrics, and \code{\link[scRepertoire:positionalProperty]{scRepertoire::positionalProperty()}}
+for physicochemical property scores.
+}
+\note{
+\itemize{
+\item Positional analysis requires CDR3 amino acid sequences. These are
+automatically extracted by \pkg{scRepertoire} during data processing.
+Ensure your input data has been processed with
+\code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}} or
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}.
+\item For the \code{"AA"} method, \code{facet_by} is internally set to \code{group_by} and
+must not be provided by the user. The same applies to property bar plots.
+\item Box and violin plot types (entropy methods only) require \code{group_by} to
+be explicitly set to a value other than the default \code{"Sample"}. This is
+because these plots need meaningful groups to compare distributions.
+\item Property methods (\code{"Atchley"}, \code{"Kidera"}, etc.) only support \code{"bar"},
+\code{"line"}, and in some cases \code{"heatmap"} plot types. Box and violin plots
+are not available for property methods.
+\item CDR3 sequences shorter than \code{aa_length} will have missing data at
+C-terminal positions. This can introduce noise at those positions,
+especially for entropy and property analyses. Consider the length
+distribution of your CDR3s when choosing \code{aa_length}.
+\item The \code{"AA"} heatmap uses a pie-chart cell type (\code{cell_type = "pie"}),
+where each cell represents a position and pie segments show amino acid
+composition. This is a distinctive visualization unique to this method.
+}
+}
+\section{Analysis methods}{
+
+The \code{method} parameter selects both the computational method and determines
+which plot types are available:
+
+\strong{Amino acid frequency (\code{"AA"}):}
+Computes the frequency of each of the 20 standard amino acids at every CDR3
+position up to \code{aa_length}. Plot types:
+\itemize{
+\item \code{"bar"} — Stacked bar chart with one bar per position, colored by amino acid.
+Faceted by \code{group_by}. \code{facet_by} is not available (set internally).
+\item \code{"heatmap"} — Pie-chart heatmap where each cell is a position and the pie
+segments show amino acid proportions at that position. Groups are on rows.
+}
+
+\strong{Entropy methods (\code{"shannon"}, \code{"inv.simpson"}, \code{"norm.entropy"}):}
+Each produces a single diversity value per position per sample. Plot types:
+\itemize{
+\item \code{"bar"} — Bar chart of diversity per position, faceted by \code{group_by}.
+\item \code{"line"} — Line plot connecting positions, with each group as a separate
+line. Useful for comparing diversity trends between conditions.
+\item \code{"heatmap"} — Position-by-group matrix of diversity values.
+\item \code{"box"} — Box plot summarizing diversity across positions for each group.
+Requires \code{group_by} to be provided (not \code{"Sample"}).
+\item \code{"violin"} — Violin plot variant of the box plot. Requires \code{group_by}.
+}
+
+\strong{Property methods (\code{"Atchley"}, \code{"Kidera"}, \code{"stScales"}, \code{"tScales"}, \code{"VHSE"}):}
+Each yields multiple numeric property scores per position. Plot types:
+\itemize{
+\item \code{"bar"} — Mean property values per position, faceted by property and
+\code{group_by}. \code{facet_by} is not available (set internally).
+\item \code{"line"} — Line plot of mean property values by position, with \code{group_by}
+as line grouping and \code{"property"} as faceting.
+}
+}
+
+\section{Physicochemical property sets}{
+
+Each property method represents amino acids using a different set of derived
+factors. The choice depends on the biological question:
+\itemize{
+\item \strong{Atchley factors} (\code{"Atchley"}): Five factors derived from 494 amino acid
+properties — Factor I (polarity / hydrophobicity), Factor II (secondary
+structure), Factor III (molecular size), Factor IV (codon diversity), and
+Factor V (electrostatic charge). Widely used and interpretable.
+\item \strong{Kidera factors} (\code{"Kidera"}): Ten factors derived from 188 physical
+properties of amino acids, capturing more granular property variation
+than Atchley factors.
+\item \strong{VHSE} (\code{"VHSE"}): Vectors of Hydrophobic, Steric, and Electronic
+properties — eight descriptors derived from 50 physicochemical properties.
+\item \strong{stScales} (\code{"stScales"}): A set of scales derived from the structural
+topology of proteins (ST-scale), emphasizing local structural context.
+\item \strong{tScales} (\code{"tScales"}): T-scales derived from the topological properties
+of amino acids (T-scale), focusing on structural and folding properties.
+}
+}
+
+\section{CDR3 length and alignment}{
+
+The \code{aa_length} parameter controls how many positions from the CDR3 are
+analyzed. CDR3 sequences are aligned at their N-terminus (the conserved
+cysteine residue), and positions beyond \code{aa_length} are excluded. Sequences
+shorter than a given position contribute no data to that position. This means:
+\itemize{
+\item A larger \code{aa_length} includes more positions but the C-terminal positions
+may have sparser data (fewer sequences reach those lengths).
+\item The default of 20 amino acids captures the majority of typical TCR beta
+chain CDR3 lengths, though BCR heavy chain CDR3s can be substantially
+longer.
+\item For entropy and property methods, sparse positions may show artificially
+low or noisy values — consider the distribution of CDR3 lengths in your
+dataset when setting \code{aa_length}.
+}
+}
+
 \examples{
 \donttest{
 set.seed(8525)
@@ -110,5 +286,18 @@ ClonalPositionalPlot(data, method = "shannon")
 ClonalPositionalPlot(data, method = "norm.entropy", plot_type = "heatmap")
 ClonalPositionalPlot(data, method = "Atchley", group_by = "Type", plot_type = "bar")
 ClonalPositionalPlot(data, method = "Atchley", plot_type = "line")
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{ClonalKmerPlot}} for k-mer (short motif) analysis of CDR3
+sequences
+\item \code{\link{ClonalLengthPlot}} for CDR3 length distribution analysis
+\item \code{\link{ClonalDiversityPlot}} for repertoire-level diversity metrics
+\item \code{\link{ClonalGeneUsagePlot}} for V(D)J gene segment usage analysis
+\item \code{\link[scRepertoire:percentAA]{scRepertoire::percentAA()}},
+\code{\link[scRepertoire:positionalEntropy]{scRepertoire::positionalEntropy()}},
+\code{\link[scRepertoire:positionalProperty]{scRepertoire::positionalProperty()}}
+for the underlying computational methods
 }
 }

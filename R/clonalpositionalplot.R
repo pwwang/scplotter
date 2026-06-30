@@ -1,47 +1,222 @@
-#' ClonalPositionalPlot
+#' Visualize positional properties of CDR3 sequences
 #'
-#' Visualize the positional entropy, property or amino acid frequency of CDR3 sequences.
+#' The complementarity-determining region 3 (CDR3) is the most variable region of
+#' T cell and B cell receptors, and is the primary determinant of antigen
+#' specificity. Analyzing how amino acid composition, diversity, and
+#' physicochemical properties vary across CDR3 positions provides insight into
+#' repertoire structure, selection pressures, and the biophysical constraints
+#' that shape antigen recognition.
 #'
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param chain The chain to be analyzed. Default is "TRB".
-#' @param aa_length The length of the amino acid sequence. Default is 20.
-#' @param group_by The variable to group the data by. Default is "Sample".
-#' @param group_by_sep The separator to use when combining groupings. Default is "_".
-#' @param split_by The variable to split the data by. Default is NULL.
-#' @param method The method to calculate the positional entropy. Default is "AA".
-#'  * "AA": Amino acid frequency.
-#'  * "shannon": Shannon entropy.
-#'  * "inv.simpson": Inverse Simpson index.
-#'  * "norm.entropy": Normalized entropy.
-#'  * "Atchley": Atchley factors.
-#'  * "Kidera": Kidera factors.
-#'  * "stScales": stScales factors.
-#'  * "tScales": tScales factors.
-#'  * "VHSE": Vectors of Hydrophobic, Steric, and Electronic properties.
-#'  See also [scRepertoire::percentAA], [scRepertoire::positionalEntropy] and
-#'  [scRepertoire::positionalProperty].
-#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
-#' @param plot_type The type of plot to generate. Default is "bar".
-#'  * "bar": Bar plot.
-#'  * "line": Line plot.
-#'  * "heatmap": Heatmap.
-#'  * "box": Box plot.
-#'  * "violin": Violin plot.
-#' @param theme_args A list of arguments to be passed to the [ggplot2::theme] function.
-#' @param xlab The x-axis label. Default is NULL.
-#' @param ylab The y-axis label. Default is NULL.
-#' @param facet_by A character vector of column names to facet the plots. Default is NULL.
-#' @param facet_ncol The number of columns in the facet grid. Default is NULL.
-#' @param facet_nrow The number of rows in the facet grid. Default is NULL.
-#' @param aspect.ratio The aspect ratio of the plot. Default is NULL.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot()].
-#'  * For "line", [plotthis::LinePlot()].
-#'  * For "heatmap", [plotthis::Heatmap()].
-#'  * For "box", [plotthis::BoxPlot()].
-#'  * For "violin", [plotthis::ViolinPlot()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' `ClonalPositionalPlot` computes and visualizes position-level properties of
+#' CDR3 sequences by aligning them at their N-terminus (Cys residue) and analyzing
+#' each position independently. Three fundamentally different categories of
+#' analysis are available through the `method` parameter:
+#'
+#' * **Amino acid frequency** (`method = "AA"`): Raw frequency of each amino acid
+#'   at each position, displayed as stacked bars or a pie-chart heatmap. This
+#'   reveals position-specific amino acid preferences (e.g., hydrophobic residues
+#'   in the center of the CDR3 loop, or glycine enrichment at turn positions).
+#'
+#' * **Positional entropy** (`method = "shannon"`, `"inv.simpson"`, or
+#'   `"norm.entropy"`): Quantifies the diversity of amino acid usage at each
+#'   position. Low entropy at a position indicates conservation (often structural
+#'   constraint), while high entropy indicates variability (potential antigen
+#'   contact). Supports bar, line, heatmap, box, and violin plot types, with
+#'   box/violin requiring a `group_by` variable for comparisons.
+#'
+#' * **Physicochemical properties** (`method = "Atchley"`, `"Kidera"`,
+#'   `"stScales"`, `"tScales"`, or `"VHSE"`): Each amino acid is represented by
+#'   a set of numeric factor scores that capture its physicochemical properties
+#'   (e.g., hydrophobicity, size, charge, secondary structure propensity). These
+#'   are averaged at each position to reveal trends along the CDR3 sequence.
+#'   Supports bar and line plot types.
+#'
+#' The function delegates computation to three \pkg{scRepertoire} functions:
+#' \code{\link[scRepertoire:percentAA]{scRepertoire::percentAA()}} for amino acid
+#' frequency, \code{\link[scRepertoire:positionalEntropy]{scRepertoire::positionalEntropy()}}
+#' for entropy metrics, and \code{\link[scRepertoire:positionalProperty]{scRepertoire::positionalProperty()}}
+#' for physicochemical property scores.
+#'
+#' @section Analysis methods:
+#' The `method` parameter selects both the computational method and determines
+#' which plot types are available:
+#'
+#' **Amino acid frequency (`"AA"`):**
+#' Computes the frequency of each of the 20 standard amino acids at every CDR3
+#' position up to `aa_length`. Plot types:
+#' * `"bar"` — Stacked bar chart with one bar per position, colored by amino acid.
+#'   Faceted by `group_by`. `facet_by` is not available (set internally).
+#' * `"heatmap"` — Pie-chart heatmap where each cell is a position and the pie
+#'   segments show amino acid proportions at that position. Groups are on rows.
+#'
+#' **Entropy methods (`"shannon"`, `"inv.simpson"`, `"norm.entropy"`):**
+#' Each produces a single diversity value per position per sample. Plot types:
+#' * `"bar"` — Bar chart of diversity per position, faceted by `group_by`.
+#' * `"line"` — Line plot connecting positions, with each group as a separate
+#'   line. Useful for comparing diversity trends between conditions.
+#' * `"heatmap"` — Position-by-group matrix of diversity values.
+#' * `"box"` — Box plot summarizing diversity across positions for each group.
+#'   Requires `group_by` to be provided (not `"Sample"`).
+#' * `"violin"` — Violin plot variant of the box plot. Requires `group_by`.
+#'
+#' **Property methods (`"Atchley"`, `"Kidera"`, `"stScales"`, `"tScales"`, `"VHSE"`):**
+#' Each yields multiple numeric property scores per position. Plot types:
+#' * `"bar"` — Mean property values per position, faceted by property and
+#'   `group_by`. `facet_by` is not available (set internally).
+#' * `"line"` — Line plot of mean property values by position, with `group_by`
+#'   as line grouping and `"property"` as faceting.
+#'
+#' @section Physicochemical property sets:
+#' Each property method represents amino acids using a different set of derived
+#' factors. The choice depends on the biological question:
+#'
+#' * **Atchley factors** (`"Atchley"`): Five factors derived from 494 amino acid
+#'   properties — Factor I (polarity / hydrophobicity), Factor II (secondary
+#'   structure), Factor III (molecular size), Factor IV (codon diversity), and
+#'   Factor V (electrostatic charge). Widely used and interpretable.
+#'
+#' * **Kidera factors** (`"Kidera"`): Ten factors derived from 188 physical
+#'   properties of amino acids, capturing more granular property variation
+#'   than Atchley factors.
+#'
+#' * **VHSE** (`"VHSE"`): Vectors of Hydrophobic, Steric, and Electronic
+#'   properties — eight descriptors derived from 50 physicochemical properties.
+#'
+#' * **stScales** (`"stScales"`): A set of scales derived from the structural
+#'   topology of proteins (ST-scale), emphasizing local structural context.
+#'
+#' * **tScales** (`"tScales"`): T-scales derived from the topological properties
+#'   of amino acids (T-scale), focusing on structural and folding properties.
+#'
+#' @section CDR3 length and alignment:
+#' The `aa_length` parameter controls how many positions from the CDR3 are
+#' analyzed. CDR3 sequences are aligned at their N-terminus (the conserved
+#' cysteine residue), and positions beyond `aa_length` are excluded. Sequences
+#' shorter than a given position contribute no data to that position. This means:
+#'
+#' * A larger `aa_length` includes more positions but the C-terminal positions
+#'   may have sparser data (fewer sequences reach those lengths).
+#' * The default of 20 amino acids captures the majority of typical TCR beta
+#'   chain CDR3 lengths, though BCR heavy chain CDR3s can be substantially
+#'   longer.
+#' * For entropy and property methods, sparse positions may show artificially
+#'   low or noisy values — consider the distribution of CDR3 lengths in your
+#'   dataset when setting `aa_length`.
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'  \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'  \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#'  Must contain columns with CDR3 amino acid sequences (e.g., `TRA_cdr3_aa`,
+#'  `TRB_cdr3_aa`).
+#' @param chain Character; the TCR or BCR chain to analyze. Default is `"TRB"`.
+#'  Common values include `"TRA"` (TCR alpha), `"TRB"` (TCR beta), `"TRG"`
+#'  (TCR gamma), `"TRD"` (TCR delta), `"IGH"` (BCR heavy), `"IGL"` (BCR
+#'  lambda), and `"IGK"` (BCR kappa). The chain determines which CDR3 column
+#'  is used for analysis.
+#' @param aa_length Integer; the number of CDR3 amino acid positions to analyze,
+#'  counting from the N-terminus. Default is `20`. Sequences shorter than this
+#'  length contribute data only to the positions they span. Increase for
+#'  receptors with longer CDR3s (e.g., BCR heavy chain).
+#' @param group_by Character vector; the column(s) in `data` to group samples by.
+#'  Default is `"Sample"`. Each unique combination of grouping values becomes
+#'  a distinct line/bar/facet in the plot. For box and violin plot types in
+#'  entropy mode, `group_by` must be explicitly provided (cannot be the default
+#'  `"Sample"`).
+#' @param group_by_sep Character; the separator used when concatenating multiple
+#'  `group_by` columns into a single identifier. Default is `"_"`.
+#' @param split_by Character vector; column(s) in `data` to split the plot by,
+#'  producing separate sub-plots for each unique combination. Default is `NULL`.
+#' @param method Character; the analysis method. One of:
+#'  * `"AA"` — Amino acid frequency at each position (default).
+#'  * `"shannon"` — Shannon entropy (diversity).
+#'  * `"inv.simpson"` — Inverse Simpson index (diversity, emphasizes dominant
+#'    amino acids).
+#'  * `"norm.entropy"` — Normalized entropy (diversity, scaled to the range 0–1).
+#'  * `"Atchley"` — Atchley factor scores (5 properties).
+#'  * `"Kidera"` — Kidera factor scores (10 properties).
+#'  * `"stScales"` — ST-scale property scores.
+#'  * `"tScales"` — T-scale property scores.
+#'  * `"VHSE"` — VHSE property scores (8 descriptors).
+#'
+#'  See the **Analysis methods** and **Physicochemical property sets**
+#'  sections for details on each method.
+#' @param order A named list specifying the order of factor levels for grouping
+#'  variables. For example, `list(Type = c("L", "B"))`. Default is `NULL`,
+#'  which uses the order present in the data. Names in the list must match
+#'  column names in `data`.
+#' @param plot_type Character; the type of visualization. One of `"bar"`
+#'  (default), `"line"`, `"heatmap"`, `"box"`, or `"violin"`. Not all plot
+#'  types are available for all methods — see the **Analysis methods**
+#'  section for the full mapping.
+#' @param theme_args A named list of arguments passed to
+#'  \code{\link[ggplot2:theme]{ggplot2::theme()}} for customizing the plot
+#'  appearance. For bar plots, `panel.grid.major.y` defaults to
+#'  `element_blank()` for a cleaner look.
+#' @param xlab Character; the x-axis label. Default is `NULL`, which
+#'  automatically uses `"Position"`.
+#' @param ylab Character; the y-axis label. Default is `NULL`, which
+#'  automatically uses a method-appropriate label (`"Amino Acid Frequency"`
+#'  for AA, the method name for entropy, or `"Mean Values"` for properties).
+#' @param facet_by A character vector of column names to facet the plots by.
+#'  Default is `NULL`. Note that for AA and property bar plots, `facet_by`
+#'  is set internally and should not be specified manually (doing so will
+#'  raise an error). For entropy line plots, it can be used to add an
+#'  additional faceting dimension.
+#' @param facet_ncol Integer; the number of columns in the facet grid.
+#'  Default is `NULL`, which uses `1` for bar plots and automatic
+#'  determination for other plot types.
+#' @param facet_nrow Integer; the number of rows in the facet grid.
+#'  Default is `NULL`. For property bar plots, defaults to the number of
+#'  properties in the selected factor set.
+#' @param aspect.ratio Numeric; the aspect ratio (height / width) of plot
+#'  panels. Default is `NULL`, which uses method- and plot_type-appropriate
+#'  defaults (e.g., `2 / aa_length` for entropy bar plots,
+#'  `6 / aa_length` for entropy line plots, `10 / aa_length` for box/violin
+#'  plots).
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'  visualization function, depending on `plot_type`:
+#'  * For `"bar"`: \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+#'  * For `"line"`: \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}
+#'  * For `"heatmap"`: \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+#'  * For `"box"`: \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+#'  * For `"violin"`: \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
+#'
+#'  Common arguments include `title`, `legend.position`, and color palette
+#'  parameters. See the respective \pkg{plotthis} documentation for
+#'  available options.
+#' @return A `ggplot` object (or a list of `ggplot` objects if `combine = FALSE`
+#'  is passed via `...`)
+#' @note
+#' * Positional analysis requires CDR3 amino acid sequences. These are
+#'   automatically extracted by \pkg{scRepertoire} during data processing.
+#'   Ensure your input data has been processed with
+#'   \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}} or
+#'   \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}.
+#' * For the `"AA"` method, `facet_by` is internally set to `group_by` and
+#'   must not be provided by the user. The same applies to property bar plots.
+#' * Box and violin plot types (entropy methods only) require `group_by` to
+#'   be explicitly set to a value other than the default `"Sample"`. This is
+#'   because these plots need meaningful groups to compare distributions.
+#' * Property methods (`"Atchley"`, `"Kidera"`, etc.) only support `"bar"`,
+#'   `"line"`, and in some cases `"heatmap"` plot types. Box and violin plots
+#'   are not available for property methods.
+#' * CDR3 sequences shorter than `aa_length` will have missing data at
+#'   C-terminal positions. This can introduce noise at those positions,
+#'   especially for entropy and property analyses. Consider the length
+#'   distribution of your CDR3s when choosing `aa_length`.
+#' * The `"AA"` heatmap uses a pie-chart cell type (`cell_type = "pie"`),
+#'   where each cell represents a position and pie segments show amino acid
+#'   composition. This is a distinctive visualization unique to this method.
+#' @seealso
+#' * \code{\link{ClonalKmerPlot}} for k-mer (short motif) analysis of CDR3
+#'   sequences
+#' * \code{\link{ClonalLengthPlot}} for CDR3 length distribution analysis
+#' * \code{\link{ClonalDiversityPlot}} for repertoire-level diversity metrics
+#' * \code{\link{ClonalGeneUsagePlot}} for V(D)J gene segment usage analysis
+#' * \code{\link[scRepertoire:percentAA]{scRepertoire::percentAA()}},
+#'   \code{\link[scRepertoire:positionalEntropy]{scRepertoire::positionalEntropy()}},
+#'   \code{\link[scRepertoire:positionalProperty]{scRepertoire::positionalProperty()}}
+#'   for the underlying computational methods
 #' @export
 #' @importFrom ggplot2 element_blank
 #' @importFrom scRepertoire percentAA positionalEntropy positionalProperty
@@ -220,32 +395,140 @@ ClonalPositionalPlot <- function (
     }
 }
 
-#' ClonalKmerPlot
+#' Visualize CDR3 k-mer (motif) frequency
 #'
-#' Explore the k-mer frequency of CDR3 sequences.
-#' @param data The product of [scRepertoire::combineTCR], [scRepertoire::combineTCR], or
-#'  [scRepertoire::combineExpression].
-#' @param chain The chain to be analyzed. Default is "TRB".
-#' @param clone_call The column name of the clone call. Default is "aa".
-#' @param k The length of the k-mer. Default is 3.
-#' @param top The number of top k-mers to display. Default is 25.
-#' @param group_by The variable to group the data by. Default is "Sample".
-#' @param group_by_sep The separator to use when combining groupings. Default is "_".
-#' @param order A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.
-#' @param facet_by A character vector of column names to facet the plots. Default is NULL.
-#' @param split_by A character vector of column names to split the plots. Default is NULL.
-#' @param plot_type The type of plot to generate. Default is "bar".
-#'  * "bar": Bar plot.
-#'  * "line": Line plot.
-#'  * "heatmap": Heatmap.
-#' @param theme_args A list of arguments to be passed to the [ggplot2::theme] function.
-#' @param aspect.ratio The aspect ratio of the plot. Default is NULL.
-#' @param facet_ncol The number of columns in the facet grid. Default is NULL.
-#' @param ... Other arguments passed to the specific plot function.
-#'  * For "bar", [plotthis::BarPlot()].
-#'  * For "line", [plotthis::LinePlot()].
-#'  * For "heatmap", [plotthis::Heatmap()].
-#' @return A ggplot object or a list if `combine` is FALSE
+#' Short amino acid motifs within CDR3 sequences — termed *k-mers* — can reveal
+#' shared binding specificities, common structural elements, and repertoire-level
+#' sequence features that are not apparent from full-length sequence analysis
+#' alone. Specific k-mers may be enriched in responses to particular antigens,
+#' represent public TCR/BCR motifs shared across individuals, or reflect
+#' convergent recombination events.
+#'
+#' `ClonalKmerPlot` extracts k-mers of length `k` from CDR3 amino acid (or
+#' nucleotide) sequences and visualizes their frequency across samples and
+#' conditions. The analysis uses \code{\link[scRepertoire:percentKmer]{scRepertoire::percentKmer()}}
+#' to identify the `top` most frequent k-mers, then displays them using bar,
+#' line, or heatmap visualizations.
+#'
+#' K-mer analysis is complementary to positional analysis
+#' (\code{\link{ClonalPositionalPlot}}): while positional analysis asks "what
+#' happens at position X?", k-mer analysis asks "what short sequence motifs
+#' appear, regardless of their exact position?" This position-independent
+#' perspective can capture sequence features that are distributed across
+#' different CDR3 locations.
+#'
+#' @section K-mer length selection:
+#' The choice of `k` represents a fundamental trade-off:
+#'
+#' * **k = 2** (dipeptides): Highly recurrent but often non-specific — many
+#'   dipeptides appear in functionally unrelated receptors. Best for broad
+#'   surveys of amino acid pairing preferences.
+#' * **k = 3** (tripeptides, default): The most commonly used length. Tripeptides
+#'   are long enough to capture meaningful motifs (e.g., the "CASS" motif at the
+#'   start of TRB CDR3s) while being short enough to recur frequently across
+#'   samples for robust statistical analysis.
+#' * **k = 4 or 5**: More specific motifs that are more likely to reflect
+#'   genuine functional constraints or antigen-driven selection. However,
+#'   longer k-mers appear less frequently, requiring larger datasets for
+#'   reliable frequency estimation.
+#'
+#' The `top` parameter controls how many of the most frequent k-mers are
+#' displayed. The default of 25 provides a manageable view for bar and line
+#' plots; increase for heatmap visualizations that can accommodate many more
+#' motifs.
+#'
+#' @section Plot types:
+#' Three visualization types are available:
+#'
+#' * **`"bar"`** (default): Bar chart of k-mer frequencies, faceted by
+#'   `group_by`. Best for comparing motif usage across a moderate number of
+#'   samples or conditions. `facet_by` is not available (set internally).
+#'
+#' * **`"line"`**: Line plot connecting k-mer frequencies, with each group
+#'   as a separate line. Useful for visualizing trends across motifs or
+#'   comparing the frequency profile shape between conditions. Supports
+#'   `facet_by` for additional faceting dimensions.
+#'
+#' * **`"heatmap"`**: K-mer by group matrix showing frequency as color
+#'   intensity. Ideal for surveying many motifs across many samples
+#'   simultaneously, revealing clusters of co-enriched motifs.
+#'
+#' @param data The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+#'  \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+#'  \code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+#'  Must contain columns with CDR3 sequences (amino acid or nucleotide).
+#' @param chain Character; the TCR or BCR chain to analyze. Default is `"TRB"`.
+#'  Common values include `"TRA"`, `"TRB"`, `"TRG"`, `"TRD"`, `"IGH"`,
+#'  `"IGL"`, and `"IGK"`.
+#' @param clone_call Character; the column name specifying which CDR3 sequence
+#'  to use for k-mer extraction. Default is `"aa"` (amino acid). Use `"nt"`
+#'  for nucleotide sequences or `"strict"` for strict clonotype calls.
+#' @param k Integer; the length of k-mers (motifs) to extract. Default is `3`.
+#'  See the **K-mer length selection** section for guidance on choosing an
+#'  appropriate value.
+#' @param top Integer; the number of most frequent k-mers to display. Default
+#'  is `25`. K-mers are ranked by total frequency across all groups. Increase
+#'  for heatmap visualizations; decrease for focused bar charts.
+#' @param group_by Character vector; the column(s) in `data` to group samples by.
+#'  Default is `"Sample"`.
+#' @param group_by_sep Character; the separator used when concatenating multiple
+#'  `group_by` columns into a single identifier. Default is `"_"`.
+#' @param order A named list specifying the order of factor levels for grouping
+#'  variables. For example, `list(Type = c("L", "B"))`. Default is `NULL`,
+#'  which uses the order present in the data.
+#' @param facet_by A character vector of column names to facet the plots by.
+#'  Default is `NULL`. For bar plots, `facet_by` is set internally to
+#'  `group_by` and must not be specified manually (doing so will raise an
+#'  error). For line plots, it can be used for additional faceting.
+#' @param split_by Character vector; column(s) in `data` to split the plot by,
+#'  producing separate sub-plots for each unique combination. Default is `NULL`.
+#' @param plot_type Character; the type of visualization. One of `"bar"`
+#'  (default), `"line"`, or `"heatmap"`. See the **Plot types** section
+#'  for guidance.
+#' @param theme_args A named list of arguments passed to
+#'  \code{\link[ggplot2:theme]{ggplot2::theme()}} for customizing the plot
+#'  appearance. For bar and line plots, `panel.grid.major.y` defaults to
+#'  `element_blank()`.
+#' @param aspect.ratio Numeric; the aspect ratio (height / width) of plot
+#'  panels. Default is `NULL`, which uses `4 / length(motifs)` for bar
+#'  plots and `8 / length(motifs)` for line plots, automatically scaling
+#'  with the number of k-mers.
+#' @param facet_ncol Integer; the number of columns in the facet grid.
+#'  Default is `NULL`, which uses `1` for bar plots.
+#' @param ... Additional arguments passed to the underlying \pkg{plotthis}
+#'  visualization function, depending on `plot_type`:
+#'  * For `"bar"`: \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+#'  * For `"line"`: \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}
+#'  * For `"heatmap"`: \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+#'
+#'  Common arguments include `title`, `legend.position`, `show_row_names`,
+#'  `show_column_names`, and color palette parameters. See the respective
+#'  \pkg{plotthis} documentation for available options.
+#' @return A `ggplot` object (or a list of `ggplot` objects if `combine = FALSE`
+#'  is passed via `...`)
+#' @note
+#' * K-mer extraction is performed by
+#'   \code{\link[scRepertoire:percentKmer]{scRepertoire::percentKmer()}}, which
+#'   uses a sliding window across CDR3 sequences. The resulting frequencies
+#'   represent the percentage of sequences containing each k-mer at least once.
+#' * For bar plots, `facet_by` is internally set to `group_by` and must not
+#'   be provided by the user.
+#' * The number of possible k-mers grows exponentially with `k` (20^k for
+#'   amino acids), but only the `top` most frequent are displayed. Ensure
+#'   `top` is set high enough to capture motifs of interest.
+#' * K-mer frequencies can be noisy when sample sizes are small. Consider
+#'   using `split_by` or `facet_by` to disaggregate data rather than relying
+#'   on small within-group sample sizes.
+#' * For nucleotide k-mers (`clone_call = "nt"`), the alphabet size is 4
+#'   rather than 20, so shorter k values (2-3) are generally appropriate.
+#' @seealso
+#' * \code{\link{ClonalPositionalPlot}} for position-specific CDR3 analysis
+#'   (amino acid frequency, entropy, and physicochemical properties)
+#' * \code{\link{ClonalLengthPlot}} for CDR3 length distribution analysis
+#' * \code{\link{ClonalGeneUsagePlot}} for V(D)J gene segment usage
+#' * \code{\link{ClonalDiversityPlot}} for repertoire-level diversity metrics
+#' * \code{\link[scRepertoire:percentKmer]{scRepertoire::percentKmer()}} for
+#'   the underlying k-mer computation
 #' @export
 #' @importFrom tidyr pivot_longer separate unite
 #' @importFrom dplyr %>% rename

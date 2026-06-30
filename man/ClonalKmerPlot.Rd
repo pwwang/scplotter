@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalpositionalplot.R
 \name{ClonalKmerPlot}
 \alias{ClonalKmerPlot}
-\title{ClonalKmerPlot}
+\title{Visualize CDR3 k-mer (motif) frequency}
 \usage{
 ClonalKmerPlot(
   data,
@@ -23,53 +23,158 @@ ClonalKmerPlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+Must contain columns with CDR3 sequences (amino acid or nucleotide).}
 
-\item{chain}{The chain to be analyzed. Default is "TRB".}
+\item{chain}{Character; the TCR or BCR chain to analyze. Default is \code{"TRB"}.
+Common values include \code{"TRA"}, \code{"TRB"}, \code{"TRG"}, \code{"TRD"}, \code{"IGH"},
+\code{"IGL"}, and \code{"IGK"}.}
 
-\item{clone_call}{The column name of the clone call. Default is "aa".}
+\item{clone_call}{Character; the column name specifying which CDR3 sequence
+to use for k-mer extraction. Default is \code{"aa"} (amino acid). Use \code{"nt"}
+for nucleotide sequences or \code{"strict"} for strict clonotype calls.}
 
-\item{k}{The length of the k-mer. Default is 3.}
+\item{k}{Integer; the length of k-mers (motifs) to extract. Default is \code{3}.
+See the \strong{K-mer length selection} section for guidance on choosing an
+appropriate value.}
 
-\item{top}{The number of top k-mers to display. Default is 25.}
+\item{top}{Integer; the number of most frequent k-mers to display. Default
+is \code{25}. K-mers are ranked by total frequency across all groups. Increase
+for heatmap visualizations; decrease for focused bar charts.}
 
-\item{group_by}{The variable to group the data by. Default is "Sample".}
+\item{group_by}{Character vector; the column(s) in \code{data} to group samples by.
+Default is \code{"Sample"}.}
 
-\item{group_by_sep}{The separator to use when combining groupings. Default is "_".}
+\item{group_by_sep}{Character; the separator used when concatenating multiple
+\code{group_by} columns into a single identifier. Default is \code{"_"}.}
 
-\item{facet_by}{A character vector of column names to facet the plots. Default is NULL.}
+\item{facet_by}{A character vector of column names to facet the plots by.
+Default is \code{NULL}. For bar plots, \code{facet_by} is set internally to
+\code{group_by} and must not be specified manually (doing so will raise an
+error). For line plots, it can be used for additional faceting.}
 
-\item{split_by}{A character vector of column names to split the plots. Default is NULL.}
+\item{split_by}{Character vector; column(s) in \code{data} to split the plot by,
+producing separate sub-plots for each unique combination. Default is \code{NULL}.}
 
-\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
+\item{order}{A named list specifying the order of factor levels for grouping
+variables. For example, \code{list(Type = c("L", "B"))}. Default is \code{NULL},
+which uses the order present in the data.}
 
-\item{plot_type}{The type of plot to generate. Default is "bar".
+\item{plot_type}{Character; the type of visualization. One of \code{"bar"}
+(default), \code{"line"}, or \code{"heatmap"}. See the \strong{Plot types} section
+for guidance.}
+
+\item{theme_args}{A named list of arguments passed to
+\code{\link[ggplot2:theme]{ggplot2::theme()}} for customizing the plot
+appearance. For bar and line plots, \code{panel.grid.major.y} defaults to
+\code{element_blank()}.}
+
+\item{aspect.ratio}{Numeric; the aspect ratio (height / width) of plot
+panels. Default is \code{NULL}, which uses \code{4 / length(motifs)} for bar
+plots and \code{8 / length(motifs)} for line plots, automatically scaling
+with the number of k-mers.}
+
+\item{facet_ncol}{Integer; the number of columns in the facet grid.
+Default is \code{NULL}, which uses \code{1} for bar plots.}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+visualization function, depending on \code{plot_type}:
 \itemize{
-\item "bar": Bar plot.
-\item "line": Line plot.
-\item "heatmap": Heatmap.
-}}
+\item For \code{"bar"}: \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+\item For \code{"line"}: \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}
+\item For \code{"heatmap"}: \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+}
 
-\item{theme_args}{A list of arguments to be passed to the \link[ggplot2:theme]{ggplot2::theme} function.}
-
-\item{aspect.ratio}{The aspect ratio of the plot. Default is NULL.}
-
-\item{facet_ncol}{The number of columns in the facet grid. Default is NULL.}
-
-\item{...}{Other arguments passed to the specific plot function.
-\itemize{
-\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For "line", \code{\link[plotthis:LinePlot]{plotthis::LinePlot()}}.
-\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-}}
+Common arguments include \code{title}, \code{legend.position}, \code{show_row_names},
+\code{show_column_names}, and color palette parameters. See the respective
+\pkg{plotthis} documentation for available options.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object (or a list of \code{ggplot} objects if \code{combine = FALSE}
+is passed via \code{...})
 }
 \description{
-Explore the k-mer frequency of CDR3 sequences.
+Short amino acid motifs within CDR3 sequences — termed \emph{k-mers} — can reveal
+shared binding specificities, common structural elements, and repertoire-level
+sequence features that are not apparent from full-length sequence analysis
+alone. Specific k-mers may be enriched in responses to particular antigens,
+represent public TCR/BCR motifs shared across individuals, or reflect
+convergent recombination events.
 }
+\details{
+\code{ClonalKmerPlot} extracts k-mers of length \code{k} from CDR3 amino acid (or
+nucleotide) sequences and visualizes their frequency across samples and
+conditions. The analysis uses \code{\link[scRepertoire:percentKmer]{scRepertoire::percentKmer()}}
+to identify the \code{top} most frequent k-mers, then displays them using bar,
+line, or heatmap visualizations.
+
+K-mer analysis is complementary to positional analysis
+(\code{\link{ClonalPositionalPlot}}): while positional analysis asks "what
+happens at position X?", k-mer analysis asks "what short sequence motifs
+appear, regardless of their exact position?" This position-independent
+perspective can capture sequence features that are distributed across
+different CDR3 locations.
+}
+\note{
+\itemize{
+\item K-mer extraction is performed by
+\code{\link[scRepertoire:percentKmer]{scRepertoire::percentKmer()}}, which
+uses a sliding window across CDR3 sequences. The resulting frequencies
+represent the percentage of sequences containing each k-mer at least once.
+\item For bar plots, \code{facet_by} is internally set to \code{group_by} and must not
+be provided by the user.
+\item The number of possible k-mers grows exponentially with \code{k} (20^k for
+amino acids), but only the \code{top} most frequent are displayed. Ensure
+\code{top} is set high enough to capture motifs of interest.
+\item K-mer frequencies can be noisy when sample sizes are small. Consider
+using \code{split_by} or \code{facet_by} to disaggregate data rather than relying
+on small within-group sample sizes.
+\item For nucleotide k-mers (\code{clone_call = "nt"}), the alphabet size is 4
+rather than 20, so shorter k values (2-3) are generally appropriate.
+}
+}
+\section{K-mer length selection}{
+
+The choice of \code{k} represents a fundamental trade-off:
+\itemize{
+\item \strong{k = 2} (dipeptides): Highly recurrent but often non-specific — many
+dipeptides appear in functionally unrelated receptors. Best for broad
+surveys of amino acid pairing preferences.
+\item \strong{k = 3} (tripeptides, default): The most commonly used length. Tripeptides
+are long enough to capture meaningful motifs (e.g., the "CASS" motif at the
+start of TRB CDR3s) while being short enough to recur frequently across
+samples for robust statistical analysis.
+\item \strong{k = 4 or 5}: More specific motifs that are more likely to reflect
+genuine functional constraints or antigen-driven selection. However,
+longer k-mers appear less frequently, requiring larger datasets for
+reliable frequency estimation.
+}
+
+The \code{top} parameter controls how many of the most frequent k-mers are
+displayed. The default of 25 provides a manageable view for bar and line
+plots; increase for heatmap visualizations that can accommodate many more
+motifs.
+}
+
+\section{Plot types}{
+
+Three visualization types are available:
+\itemize{
+\item \strong{\code{"bar"}} (default): Bar chart of k-mer frequencies, faceted by
+\code{group_by}. Best for comparing motif usage across a moderate number of
+samples or conditions. \code{facet_by} is not available (set internally).
+\item \strong{\code{"line"}}: Line plot connecting k-mer frequencies, with each group
+as a separate line. Useful for visualizing trends across motifs or
+comparing the frequency profile shape between conditions. Supports
+\code{facet_by} for additional faceting dimensions.
+\item \strong{\code{"heatmap"}}: K-mer by group matrix showing frequency as color
+intensity. Ideal for surveying many motifs across many samples
+simultaneously, revealing clusters of co-enriched motifs.
+}
+}
+
 \examples{
 \donttest{
 set.seed(8525)
@@ -89,5 +194,16 @@ ClonalKmerPlot(data)
 ClonalKmerPlot(data, group_by = "Type")
 ClonalKmerPlot(data, group_by = "Type", plot_type = "line")
 ClonalKmerPlot(data, group_by = "Type", plot_type = "heatmap")
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{ClonalPositionalPlot}} for position-specific CDR3 analysis
+(amino acid frequency, entropy, and physicochemical properties)
+\item \code{\link{ClonalLengthPlot}} for CDR3 length distribution analysis
+\item \code{\link{ClonalGeneUsagePlot}} for V(D)J gene segment usage
+\item \code{\link{ClonalDiversityPlot}} for repertoire-level diversity metrics
+\item \code{\link[scRepertoire:percentKmer]{scRepertoire::percentKmer()}} for
+the underlying k-mer computation
 }
 }
