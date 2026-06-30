@@ -7,10 +7,12 @@
 CCCPlot(
   data,
   plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial",
-    "box", "violin", "ridge"),
+    "box", "violin", "ridge", "linkedheatmap"),
   method = c("aggregation", "interaction"),
   magnitude = waiver(),
   specificity = waiver(),
+  ligand_expr = "ligand_means",
+  receptor_expr = "receptor_means",
   magnitude_agg = length,
   magnitude_name = "No. of interactions",
   meta_specificity = "sumlog",
@@ -21,6 +23,8 @@ CCCPlot(
   facet_by = NULL,
   show_row_names = TRUE,
   show_column_names = TRUE,
+  values_fill = 0,
+  right_row_dend_side = "right",
   ...
 )
 }
@@ -60,6 +64,9 @@ the interaction strengths of the ligand-receptor pairs.
 the interaction strengths of the ligand-receptor pairs.
 \item ridge: Ridge plots for source cell types. Each row is a target cell type and the values will be
 the interaction strengths of the ligand-receptor pairs.
+\item linkedheatmap: A heatmap-links-heatmap plot to show the expression of the ligands and receptors
+in the source and target cell types. The links are the ligand-receptor pairs.
+\code{ligand_means} and \code{receptor_means} are required for this plot type.
 }}
 
 \item{method}{The method to determine the plot entities.
@@ -78,6 +85,12 @@ or \url{https://liana-py.readthedocs.io/en/latest/notebooks/basic_usage.html#Til
 \item{specificity}{The column name in the data to use as the specificity of the communication.
 By default, the last column will be used.
 If the method doesn't have a specificity, set it to NULL.}
+
+\item{ligand_expr}{The column name in the data to use as the ligand expression.
+By default, the column \code{ligand_means} will be used.}
+
+\item{receptor_expr}{The column name in the data to use as the receptor expression.
+By default, the column \code{receptor_means} will be used.}
 
 \item{magnitude_agg}{A function to aggregate the magnitude of the communication.
 Default is \code{length}.}
@@ -117,10 +130,17 @@ Only used when \code{plot_type} is "network".}
 It should always be NULL.}
 
 \item{show_row_names}{Whether to show the row names in the heatmap. Default is TRUE.
-Only used when \code{plot_type} is "heatmap".}
+Only used when \code{plot_type} is "heatmap" or "linkedheatmap".}
 
 \item{show_column_names}{Whether to show the column names in the heatmap. Default is TRUE.
-Only used when \code{plot_type} is "heatmap".}
+Only used when \code{plot_type} is "heatmap" or "linkedheatmap".}
+
+\item{values_fill}{The value to fill the missing values in the heatmap. Default is 0.
+Only used when \code{plot_type} is "heatmap" or "linkedheatmap".}
+
+\item{right_row_dend_side}{The side of the right row dendrogram in the linked heatmap.
+Default is "right". It should be one of "left" or "right".
+Only used when \code{plot_type} is "linkedheatmap".}
 
 \item{...}{Other arguments passed to the specific plot function.
 \itemize{
@@ -129,6 +149,10 @@ Only used when \code{plot_type} is "heatmap".}
 \item For \code{Heatmap}, see \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
 \item For \code{SankeyPlot}, see \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}.
 \item For \code{DotPlot}, see \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}.
+\item For \code{BoxPlot}, see \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
+\item For \code{ViolinPlot}, see \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
+\item For \code{RidgePlot}, see \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}.
+\item For \code{LinkedHeatmap}, see \code{\link[plotthis:LinkedHeatmap]{plotthis::LinkedHeatmap()}}.
 }}
 }
 \value{
@@ -154,6 +178,7 @@ CCCPlot(cellphonedb_res, plot_type = "heatmap")
 CCCPlot(cellphonedb_res, plot_type = "dot",
   magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
 CCCPlot(cellphonedb_res, plot_type = "sankey")
+CCCPlot(cellphonedb_res, plot_type = "linkedheatmap")
 
 cellphonedb_res_sub <- cellphonedb_res[
   cellphonedb_res$source \%in\% c("Dendritic", "CD14+ Monocyte"),]

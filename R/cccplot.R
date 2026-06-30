@@ -37,6 +37,9 @@
 #'    the interaction strengths of the ligand-receptor pairs.
 #'  * ridge: Ridge plots for source cell types. Each row is a target cell type and the values will be
 #'    the interaction strengths of the ligand-receptor pairs.
+#'  * linkedheatmap: A heatmap-links-heatmap plot to show the expression of the ligands and receptors
+#'    in the source and target cell types. The links are the ligand-receptor pairs.
+#'    `ligand_means` and `receptor_means` are required for this plot type.
 #' @param method The method to determine the plot entities.
 #'  * aggregation: Aggregate the ligand-receptor pairs interactions for each source-target pair.
 #'    Only the source / target pairs will be plotted.
@@ -49,6 +52,10 @@
 #' @param specificity The column name in the data to use as the specificity of the communication.
 #'  By default, the last column will be used.
 #'  If the method doesn't have a specificity, set it to NULL.
+#' @param ligand_expr The column name in the data to use as the ligand expression.
+#'  By default, the column `ligand_means` will be used.
+#' @param receptor_expr The column name in the data to use as the receptor expression.
+#'  By default, the column `receptor_means` will be used.
 #' @param magnitude_agg A function to aggregate the magnitude of the communication.
 #'  Default is `length`.
 #' @param magnitude_name The name of the magnitude in the plot.
@@ -77,22 +84,32 @@
 #' @param facet_by A character vector of column names to facet the plots. Default is NULL.
 #'  It should always be NULL.
 #' @param show_row_names Whether to show the row names in the heatmap. Default is TRUE.
-#'  Only used when `plot_type` is "heatmap".
+#'  Only used when `plot_type` is "heatmap" or "linkedheatmap".
 #' @param show_column_names Whether to show the column names in the heatmap. Default is TRUE.
-#'  Only used when `plot_type` is "heatmap".
+#'  Only used when `plot_type` is "heatmap" or "linkedheatmap".
+#' @param values_fill The value to fill the missing values in the heatmap. Default is 0.
+#'  Only used when `plot_type` is "heatmap" or "linkedheatmap".
+#' @param right_row_dend_side The side of the right row dendrogram in the linked heatmap.
+#'  Default is "right". It should be one of "left" or "right".
+#'  Only used when `plot_type` is "linkedheatmap".
 #' @param ... Other arguments passed to the specific plot function.
 #'  * For `Network`, see [plotthis::Network()].
 #'  * For `ChordPlot`, see [plotthis::ChordPlot()].
 #'  * For `Heatmap`, see [plotthis::Heatmap()].
 #'  * For `SankeyPlot`, see [plotthis::SankeyPlot()].
 #'  * For `DotPlot`, see [plotthis::DotPlot()].
+#'  * For `BoxPlot`, see [plotthis::BoxPlot()].
+#'  * For `ViolinPlot`, see [plotthis::ViolinPlot()].
+#'  * For `RidgePlot`, see [plotthis::RidgePlot()].
+#'  * For `LinkedHeatmap`, see [plotthis::LinkedHeatmap()].
+#'
 #' @return A ggplot object or a list if `combine` is FALSE
 #' @importFrom utils getFromNamespace
 #' @importFrom rlang syms sym
 #' @importFrom dplyr group_by summarise distinct filter n
 #' @importFrom tidyr replace_na pivot_wider
 #' @importFrom ggplot2 waiver
-#' @importFrom plotthis Network ChordPlot Heatmap SankeyPlot DotPlot BoxPlot ViolinPlot RidgePlot
+#' @importFrom plotthis Network ChordPlot Heatmap SankeyPlot DotPlot BoxPlot ViolinPlot RidgePlot LinkedHeatmap
 #' @export
 #' @examples
 #' \donttest{
@@ -105,6 +122,7 @@
 #' CCCPlot(cellphonedb_res, plot_type = "dot",
 #'   magnitude_agg = mean, magnitude_name = "Average Interaction Strength")
 #' CCCPlot(cellphonedb_res, plot_type = "sankey")
+#' CCCPlot(cellphonedb_res, plot_type = "linkedheatmap")
 #'
 #' cellphonedb_res_sub <- cellphonedb_res[
 #'   cellphonedb_res$source %in% c("Dendritic", "CD14+ Monocyte"),]
@@ -121,10 +139,12 @@
 CCCPlot <- function(
     data,
     plot_type = c("dot", "network", "chord", "circos", "heatmap", "sankey", "alluvial",
-        "box", "violin", "ridge"),
+        "box", "violin", "ridge", "linkedheatmap"),
     method = c("aggregation", "interaction"),
     magnitude = waiver(),
     specificity = waiver(),
+    ligand_expr = "ligand_means",
+    receptor_expr = "receptor_means",
     magnitude_agg = length,
     magnitude_name = "No. of interactions",
     meta_specificity = "sumlog",
@@ -135,6 +155,8 @@ CCCPlot <- function(
     facet_by = NULL,
     show_row_names = TRUE,
     show_column_names = TRUE,
+    values_fill = 0,
+    right_row_dend_side = "right",
     ...
 ) {
     stopifnot("[CCCPlot] 'facet_by' is not supported." = is.null(facet_by))
@@ -164,102 +186,128 @@ CCCPlot <- function(
     stopifnot("[CCCPlot] At least one of 'magnitude' and 'specificity' is required." =
         !inherits(magnitude, "waiver") || !inherits(specificity, "waiver"))
 
-    if (method == "aggregation") {
-        links <- data %>% group_by(!!!syms(c(source_col, target_col, split_by)))
-        if (is.null(magnitude)) {
-            magnitiude <- "mag_score"
-            links[[magnitiude]] <- NA
-        }
-        if (is.null(specificity)) {
-            links <- suppressWarnings({ links %>%
-                summarise(
-                    !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
-                    .groups = "drop"
-                )
-            })
-        } else {
-            metap_fn <- getFromNamespace(meta_specificity, "metap")
-            links <- suppressWarnings({ links %>%
-                filter(!is.na(!!sym(specificity))) %>%
-                summarise(
-                    !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
-                    .specificity = if (n() == 1) {
-                        !!sym(specificity)
-                    } else {
-                        metap_fn(!!sym(specificity))$p
-                    },
-                    .groups = "drop") %>%
-                replace_na(list(.specificity = 0))
-            })
-        }
+    if (identical(plot_type, "linkedheatmap")) {
+        ligand_expr <- check_columns(data, ligand_expr)
+        receptor_expr <- check_columns(data, receptor_expr)
+        stopifnot("[CCCPlot] Columns 'ligand_means' and 'receptor_means' are required for plot type 'linkedheatmap'." =
+            !is.null(ligand_expr) && !is.null(receptor_expr))
 
-        if (plot_type == "network") {
-            Network(links, from = source_col, to = target_col, node_fill_by = "name", split_by = split_by,
-                link_curvature = link_curvature, link_weight_name = magnitude_name, link_alpha = link_alpha,
-                node_fill_name = "Source/Target", link_weight_by = magnitude_name, ...)
-        } else if (plot_type %in% c("chord", "circos")) {
-            ChordPlot(links, y = magnitude_name, from = source_col, to = target_col,
-                split_by = split_by, ...)
-        } else if (plot_type == "heatmap") {
-            Heatmap(links, values_by = magnitude_name, rows_by = source_col, columns_by = target_col,
-                split_by = split_by, show_row_names = show_row_names, show_column_names = show_column_names,
-                ...)
-        } else if (plot_type %in% c("sankey", "alluvial")) {
-            SankeyPlot(links, y = magnitude_name, x = c(source_col, target_col), split_by = split_by,
-                links_fill_by = source_col, flow = TRUE, xlab = "", ylab = "Strength", ...)
-        } else if (plot_type == "dot") {
-            if (!is.null(specificity)) {
-                DotPlot(links, x = source_col, y = target_col, size_by = magnitude_name,
-                    fill_by = ".specificity", fill_name = paste0(meta_specificity, "(", specificity, ")"),
-                    size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
+        LinkedHeatmap(
+            data,
+            left_values_by = ligand_expr,
+            right_values_by = receptor_expr,
+            left_rows_by = ligand_col,
+            right_rows_by = receptor_col,
+            left_columns_by = source_col,
+            right_columns_by = target_col,
+            links_width_by = magnitude,
+            values_fill = values_fill,
+            show_row_names = show_row_names,
+            show_column_names = show_column_names,
+            split_by = split_by,
+            right_row_dend_side = right_row_dend_side,
+            ...
+        )
+    } else {
+
+
+        if (method == "aggregation") {
+            links <- data %>% group_by(!!!syms(c(source_col, target_col, split_by)))
+            if (is.null(magnitude)) {
+                magnitiude <- "mag_score"
+                links[[magnitiude]] <- NA
+            }
+            if (is.null(specificity)) {
+                links <- suppressWarnings({ links %>%
+                    summarise(
+                        !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
+                        .groups = "drop"
+                    )
+                })
             } else {
-                DotPlot(links, x = source_col, y = target_col, size_by = magnitude_name,
-                    size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
+                metap_fn <- getFromNamespace(meta_specificity, "metap")
+                links <- suppressWarnings({ links %>%
+                    filter(!is.na(!!sym(specificity))) %>%
+                    summarise(
+                        !!sym(magnitude_name) := magnitude_agg(!!sym(magnitude)),
+                        .specificity = if (n() == 1) {
+                            !!sym(specificity)
+                        } else {
+                            metap_fn(!!sym(specificity))$p
+                        },
+                        .groups = "drop") %>%
+                    replace_na(list(.specificity = 0))
+                })
             }
-        } else {
-            stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'aggregation' yet.")
-        }
-    } else if (method == "interaction") {
-        stopifnot("[CCCPlot] 'magnitude' is required when 'method' is 'interaction'." =
-            !is.null(magnitude))
 
-        if (plot_type == "dot") {
-            if (!is.null(specificity)) {
-                data[[specificity]] <- -log10(data[[specificity]])
+            if (plot_type == "network") {
+                Network(links, from = source_col, to = target_col, node_fill_by = "name", split_by = split_by,
+                    link_curvature = link_curvature, link_weight_name = magnitude_name, link_alpha = link_alpha,
+                    node_fill_name = "Source/Target", link_weight_by = magnitude_name, ...)
+            } else if (plot_type %in% c("chord", "circos")) {
+                ChordPlot(links, y = magnitude_name, from = source_col, to = target_col,
+                    split_by = split_by, ...)
+            } else if (plot_type == "heatmap") {
+                Heatmap(links, values_by = magnitude_name, rows_by = source_col, columns_by = target_col,
+                    split_by = split_by, show_row_names = show_row_names, show_column_names = show_column_names,
+                    values_fill = values_fill, ...)
+            } else if (plot_type %in% c("sankey", "alluvial")) {
+                SankeyPlot(links, y = magnitude_name, x = c(source_col, target_col), split_by = split_by,
+                    links_fill_by = source_col, flow = TRUE, xlab = "", ylab = "Strength", ...)
+            } else if (plot_type == "dot") {
+                if (!is.null(specificity)) {
+                    DotPlot(links, x = source_col, y = target_col, size_by = magnitude_name,
+                        fill_by = ".specificity", fill_name = paste0(meta_specificity, "(", specificity, ")"),
+                        size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
+                } else {
+                    DotPlot(links, x = source_col, y = target_col, size_by = magnitude_name,
+                        size_name = magnitude_name, x_text_angle = x_text_angle, split_by = split_by, ...)
+                }
+            } else {
+                stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'aggregation' yet.")
             }
-            data[[source_col]] <- paste0("source: ", data[[source_col]])
-            DotPlot(data, x = target_col, y = c(ligand_col, receptor_col), y_sep = " -> ",
-                fill_by = specificity, fill_name = paste0("-log10(", specificity, ")"),
-                size_by = magnitude, x_text_angle = x_text_angle, split_by = split_by,
-                facet_by = source_col, ...)
-        } else if (plot_type == "network") {
-            data$source_target <- paste0(data[[source_col]], " -> ", data[[target_col]])
-            Network(data, from = "ligand", to = "receptor",
-                link_weight_by = magnitude, link_alpha = link_alpha, link_color_by = "source_target",
-                link_color_name = "source -> target", split_by = split_by, ...)
-        } else if (plot_type == "heatmap") {
-            data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
-            Heatmap(data, rows_by = "ligand_receptor", rows_name = "Ligand -> Receptor", split_by = split_by,
-                values_by = magnitude, columns_by = target_col, columns_split_by = source_col, values_fill = 0,
-                show_row_names = show_row_names, show_column_names = show_column_names,
-                ...)
-        } else if (plot_type == "box") {
-            data[[source_col]] <- paste0("source: ", data[[source_col]])
-            BoxPlot(data, x = target_col, y = magnitude, facet_by = source_col,
-                xlab = "Target", ylab = "Interaction Strength", split_by = split_by,
-                x_text_angle = x_text_angle, ...)
-        } else if (plot_type == "violin") {
-            data[[source_col]] <- paste0("source: ", data[[source_col]])
-            ViolinPlot(data, x = target_col, y = magnitude, facet_by = source_col,
-                xlab = "Target", ylab = "Interaction Strength", split_by = split_by,
-                x_text_angle = x_text_angle, ...)
-        } else if (plot_type == "ridge") {
-            data[[source_col]] <- paste0("source: ", data[[source_col]])
-            RidgePlot(data, x = magnitude, group_by = target_col, facet_by = source_col,
-                xlab = "Interaction Strength", ylab = "", split_by = split_by,
-                ...)
-        } else {
-            stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'interaction' yet.")
+        } else if (method == "interaction") {
+            stopifnot("[CCCPlot] 'magnitude' is required when 'method' is 'interaction'." =
+                !is.null(magnitude))
+
+            if (plot_type == "dot") {
+                if (!is.null(specificity)) {
+                    data[[specificity]] <- -log10(data[[specificity]])
+                }
+                data[[source_col]] <- paste0("source: ", data[[source_col]])
+                DotPlot(data, x = target_col, y = c(ligand_col, receptor_col), y_sep = " -> ",
+                    fill_by = specificity, fill_name = paste0("-log10(", specificity, ")"),
+                    size_by = magnitude, x_text_angle = x_text_angle, split_by = split_by,
+                    facet_by = source_col, ...)
+            } else if (plot_type == "network") {
+                data$source_target <- paste0(data[[source_col]], " -> ", data[[target_col]])
+                Network(data, from = "ligand", to = "receptor",
+                    link_weight_by = magnitude, link_alpha = link_alpha, link_color_by = "source_target",
+                    link_color_name = "source -> target", split_by = split_by, ...)
+            } else if (plot_type == "heatmap") {
+                data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
+                Heatmap(data, rows_by = "ligand_receptor", rows_name = "Ligand -> Receptor", split_by = split_by,
+                    values_by = magnitude, columns_by = target_col, columns_split_by = source_col, values_fill = values_fill,
+                    show_row_names = show_row_names, show_column_names = show_column_names,
+                    ...)
+            } else if (plot_type == "box") {
+                data[[source_col]] <- paste0("source: ", data[[source_col]])
+                BoxPlot(data, x = target_col, y = magnitude, facet_by = source_col,
+                    xlab = "Target", ylab = "Interaction Strength", split_by = split_by,
+                    x_text_angle = x_text_angle, ...)
+            } else if (plot_type == "violin") {
+                data[[source_col]] <- paste0("source: ", data[[source_col]])
+                ViolinPlot(data, x = target_col, y = magnitude, facet_by = source_col,
+                    xlab = "Target", ylab = "Interaction Strength", split_by = split_by,
+                    x_text_angle = x_text_angle, ...)
+            } else if (plot_type == "ridge") {
+                data[[source_col]] <- paste0("source: ", data[[source_col]])
+                RidgePlot(data, x = magnitude, group_by = target_col, facet_by = source_col,
+                    xlab = "Interaction Strength", ylab = "", split_by = split_by,
+                    ...)
+            } else {
+                stop("[CCCPlot] Plot type '", plot_type, "' is not supported for method 'interaction' yet.")
+            }
         }
     }
 }
