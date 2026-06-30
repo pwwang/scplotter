@@ -2,7 +2,7 @@
 % Please edit documentation in R/featurestatplot.R
 \name{.feature_stat_plot}
 \alias{.feature_stat_plot}
-\title{Feature statistic plot when given a composed data frame}
+\title{Internal dispatcher for FeatureStatPlot — plot from a composed data frame}
 \usage{
 .feature_stat_plot(
   data,
@@ -28,64 +28,158 @@
 )
 }
 \arguments{
-\item{data}{A data frame containing the feature data and metadata.}
+\item{data}{A data frame containing the feature expression columns, metadata
+columns (cell identities, groupings), and optionally dimension reduction
+coordinates.}
 
-\item{features}{A character vector of feature names}
+\item{features}{A character vector or a named list of character vectors
+specifying the features to plot. Features can be gene names, gene
+signature scores, or any column present in the expression matrix or
+metadata. Named lists (e.g., \code{list(Beta = c("Ins1", "Ins2"))})
+enable automatic row grouping in heatmap and dot plots.}
 
-\item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"}
+\item{plot_type}{Character. The type of plot to generate. One of:
+\code{"violin"}, \code{"box"}, \code{"bar"}, \code{"ridge"},
+\code{"dim"}, \code{"cor"}, \code{"heatmap"}, or \code{"dot"}.
+See the Description section for guidance on choosing a plot type.
+Default: \code{"violin"}.}
 
-\item{downsample}{A numeric the number of cells in each identity group to downsample to for violin, box, or ridge plots.
-If n > 1, it is treated as the number of cells to downsample to.
-If 0 < n <= 1, it is treated as the fraction of cells to downsample to.}
+\item{should_shrink}{Logical. If \code{TRUE}, the data frame is subset to
+only the columns needed for the plot (features, ident, group_by,
+split_by, and optionally dims). This prevents unnecessary data from
+being passed through the plotting pipeline.}
 
-\item{graph}{Specify the graph name to add edges between cell neighbors to the plot, only used when \code{plot_type} is "dim".}
+\item{should_pivot}{Logical. If \code{TRUE}, the wide-format feature
+columns are pivoted to long format with \code{.features} and
+\code{.value} columns, and features are used for faceting.}
 
-\item{bg_cutoff}{Background cutoff for the dim plot, only used when \code{plot_type} is "dim".}
-
-\item{dims}{Dimensions to plot, only used when \code{plot_type} is "dim".}
-
-\item{rows_name}{The name of the rows in the heatmap, only used when \code{plot_type} is "heatmap".}
-
-\item{ident}{The column name in the meta data to identify the cells.}
-
-\item{agg}{The aggregation function to use for the bar plot.}
-
-\item{group_by}{The column name in the meta data to group the cells.}
-
-\item{pos_only}{Whether to only include cells with positive feature values.
+\item{downsample}{Numeric. Number or fraction of cells to downsample to
+per identity group. Used for \code{"violin"}, \code{"box"}, and
+\code{"ridge"} plot types to reduce overplotting in large datasets:
 \itemize{
-\item "no": Do not filter cells based on feature values. (default)
-\item "any": Include cells with positive values for any of the features.
-\item "all": Include cells with positive values for all of the features.
-If you have named features (i.e. a named list), \code{pos_only} will be applied to all flattened features.
-}}
+\item If \code{downsample > 1}: Exact number of cells per group.
+\item If \code{0 < downsample <= 1}: Fraction of cells per group.
+}
+Downsampling is performed within each identity group
+(via \code{dplyr::slice_sample(by = ident)}). Default: \code{NULL}
+(no downsampling).}
 
-\item{split_by}{Column name in the meta data to split the cells to different plots.
-If TRUE, the cells are split by the features.}
+\item{graph}{Character or \code{TRUE}. A graph (nearest-neighbor network)
+name to overlay edges between connected cells on the dim plot. For
+Seurat objects, the name should exist in \code{object@graphs}. For
+Giotto objects, the name should exist in the nearest network list. If
+\code{TRUE}, the first available graph is used. Only used when
+\code{plot_type = "dim"}. Default: \code{NULL} (no edges).}
 
-\item{facet_by}{Column name in the meta data to facet the plots. Should be always NULL.}
+\item{bg_cutoff}{Numeric. Expression cutoff for the background in dim
+plots. Cells with expression below this value are shown in the
+background color (typically gray). Set to \code{-Inf} to color all
+cells. Only used when \code{plot_type = "dim"}. Default: \code{0}.}
 
-\item{xlab}{The x-axis label.}
+\item{dims}{Integer vector of length 2. The dimensions (columns) of the
+reduction to plot on the x and y axes. Only used when
+\code{plot_type = "dim"}. Default: \code{1:2}.}
 
-\item{ylab}{The y-axis label.}
+\item{rows_name}{Character. The column name used to identify feature rows
+in the heatmap and as the key when merging \code{rows_data}. Only used
+when \code{plot_type = "heatmap"} or \code{"dot"}. Default:
+\code{"Features"}.}
 
-\item{x_text_angle}{The angle of the x-axis text. Only used when \code{plot_type} is "violin", "bar", or "box".}
+\item{ident}{Character. The metadata column name identifying cell groups
+(e.g., \code{"CellType"}, \code{"SubCellType"}, \code{"seurat_clusters"}).
+Used as the x-axis for violin, box, bar, and ridge plots; as the
+heatmap columns for heatmap and dot plots; and as the grouping variable
+for correlation plots. For Seurat objects, defaults to the active
+identity (\code{"Identity"}). Required for non-dim plots on Giotto and
+H5File objects. Default: \code{NULL}.}
+
+\item{agg}{Function. The aggregation function applied when
+\code{plot_type = "bar"}. Common choices: \code{mean} (default),
+\code{median}, \code{sum}. Applied within each group defined by
+\code{ident}, \code{group_by}, and \code{split_by}.}
+
+\item{group_by}{Character. A metadata column name to further subdivide
+cells within each identity group (e.g., coloring by treatment within
+cell type). Works with \code{"violin"}, \code{"box"}, \code{"bar"},
+and \code{"ridge"} plot types. Default: \code{NULL}.}
+
+\item{pos_only}{Character. Whether to restrict to cells with positive
+feature values:
+\itemize{
+\item \code{"no"} — Include all cells (default).
+\item \code{"any"} — Include cells where at least one feature is > 0.
+\item \code{"all"} — Include only cells where all features are > 0.
+}
+For named feature lists, filtering is applied to all flattened features.}
+
+\item{split_by}{Character vector or \code{TRUE}. Metadata column name(s)
+to split the data into separate plots (one per unique value).
+If \code{TRUE}, splits by the features themselves, creating one plot
+per feature. Multiple columns are concatenated. Default: \code{NULL}.}
+
+\item{facet_by}{Character vector. Metadata column name(s) to facet the
+data within a plot. Note: for \code{"violin"}, \code{"box"},
+\code{"bar"}, and \code{"ridge"} plot types, \code{facet_by} should
+always be \code{NULL} because the plot is already faceted by features.
+Works normally with \code{"dim"}, \code{"heatmap"}, \code{"dot"}, and
+\code{"cor"} plot types. Default: \code{NULL}.}
+
+\item{xlab}{Character. Custom x-axis label. Default: \code{NULL}
+(auto-generated based on plot type).}
+
+\item{ylab}{Character. Custom y-axis label. Default: \code{NULL}
+(auto-generated based on plot type).}
+
+\item{x_text_angle}{Numeric. Angle (in degrees) for x-axis text labels.
+Used for \code{"violin"}, \code{"box"}, and \code{"bar"} plot types.
+Default: \code{NULL} (defaults to \code{45}).}
 
 \item{...}{
   Arguments passed on to \code{\link[=FeatureStatPlot]{FeatureStatPlot}}
   \describe{
-    \item{\code{object}}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
-    \item{\code{spat_unit}}{The spatial unit to use for the plot. Only applied to Giotto objects.}
-    \item{\code{feat_type}}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
-    \item{\code{reduction}}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}
-    \item{\code{assay}}{The assay to use for the feature data.}
-    \item{\code{layer}}{The layer to use for the feature data.}
+    \item{\code{object}}{An object containing single-cell expression data. Supported
+types: a \pkg{Seurat} object, a \pkg{Giotto} object, a character path to
+an \code{.h5ad} file, or an opened \code{H5File} object from the
+\pkg{hdf5r} package.}
+    \item{\code{spat_unit}}{Character. The spatial unit to extract data from.
+Only applicable to \pkg{Giotto} objects. Default: \code{NULL}
+(auto-detected by Giotto).}
+    \item{\code{feat_type}}{Character. The feature type to extract (e.g.,
+\code{"rna"}, \code{"dna"}, \code{"protein"}). Only applicable to
+\pkg{Giotto} objects. Default: \code{NULL} (auto-detected by Giotto).}
+    \item{\code{reduction}}{Character. Name of the dimensionality reduction to use
+(e.g., \code{"umap"}, \code{"tsne"}, \code{"pca"}). Required when
+\code{plot_type = "dim"}; optional for other types where the reduction
+coordinates can be used as feature values. For Seurat objects, defaults
+to the default reduction if available. Default: \code{NULL}.}
+    \item{\code{assay}}{Character. The assay name to extract feature data from
+(e.g., \code{"RNA"}, \code{"SCT"}, \code{"integrated"}). For Seurat
+objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
+For H5File objects, determines whether to read from \code{X} (when
+\code{assay = "RNA"}) or \code{layers/<assay>}. Not applicable to
+Giotto objects. Default: \code{NULL}.}
+    \item{\code{layer}}{Character. The layer name within the assay to extract data
+from (e.g., \code{"data"}, \code{"counts"}, \code{"scale.data"}). For
+Seurat objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
+For Giotto objects, passed to \code{GiottoClass::getExpression()}.
+Default: \code{NULL}.}
   }}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A ggplot object (or a \code{patchwork} object when \code{split_by}
+generates multiple plots and \code{combine = TRUE}), or a list of ggplot
+objects if \code{combine = FALSE}.
 }
 \description{
-Feature statistic plot when given a composed data frame
+This is the internal workhorse of \code{FeatureStatPlot}. After the S3
+methods (\code{FeatureStatPlot.Seurat}, \code{FeatureStatPlot.giotto}, etc.)
+extract expression data and metadata into a unified data frame, this function
+handles the common logic: pivoting wide feature columns to long format,
+optionally downsampling cells within identity groups, and dispatching to the
+appropriate \pkg{plotthis} plotting function based on \code{plot_type}.
+
+Named feature lists are handled by converting the names to a
+\code{rows_data} data frame with \code{rows_split_by}, enabling automatic
+row grouping in heatmap and dot plots.
 }
 \keyword{internal}

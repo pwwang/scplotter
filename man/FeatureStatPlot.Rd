@@ -2,7 +2,7 @@
 % Please edit documentation in R/featurestatplot.R
 \name{FeatureStatPlot}
 \alias{FeatureStatPlot}
-\title{Feature statistic plot}
+\title{Visualize feature expression and statistics across cell groups}
 \usage{
 FeatureStatPlot(
   object,
@@ -31,98 +31,280 @@ FeatureStatPlot(
 )
 }
 \arguments{
-\item{object}{A seurat object, a giotto object, a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.}
+\item{object}{An object containing single-cell expression data. Supported
+types: a \pkg{Seurat} object, a \pkg{Giotto} object, a character path to
+an \code{.h5ad} file, or an opened \code{H5File} object from the
+\pkg{hdf5r} package.}
 
-\item{features}{A character vector of feature names}
+\item{features}{A character vector or a named list of character vectors
+specifying the features to plot. Features can be gene names, gene
+signature scores, or any column present in the expression matrix or
+metadata. Named lists (e.g., \code{list(Beta = c("Ins1", "Ins2"))})
+enable automatic row grouping in heatmap and dot plots.}
 
-\item{plot_type}{Type of the plot. It can be "violin", "box", "bar", "ridge", "dim", "cor", "heatmap" or "dot"}
+\item{plot_type}{Character. The type of plot to generate. One of:
+\code{"violin"}, \code{"box"}, \code{"bar"}, \code{"ridge"},
+\code{"dim"}, \code{"cor"}, \code{"heatmap"}, or \code{"dot"}.
+See the Description section for guidance on choosing a plot type.
+Default: \code{"violin"}.}
 
-\item{spat_unit}{The spatial unit to use for the plot. Only applied to Giotto objects.}
+\item{spat_unit}{Character. The spatial unit to extract data from.
+Only applicable to \pkg{Giotto} objects. Default: \code{NULL}
+(auto-detected by Giotto).}
 
-\item{feat_type}{feature type of the features (e.g. "rna", "dna", "protein"), only applied to Giotto objects.}
+\item{feat_type}{Character. The feature type to extract (e.g.,
+\code{"rna"}, \code{"dna"}, \code{"protein"}). Only applicable to
+\pkg{Giotto} objects. Default: \code{NULL} (auto-detected by Giotto).}
 
-\item{downsample}{A numeric the number of cells in each identity group to downsample to for violin, box, or ridge plots.
-If n > 1, it is treated as the number of cells to downsample to.
-If 0 < n <= 1, it is treated as the fraction of cells to downsample to.}
-
-\item{pos_only}{Whether to only include cells with positive feature values.
+\item{downsample}{Numeric. Number or fraction of cells to downsample to
+per identity group. Used for \code{"violin"}, \code{"box"}, and
+\code{"ridge"} plot types to reduce overplotting in large datasets:
 \itemize{
-\item "no": Do not filter cells based on feature values. (default)
-\item "any": Include cells with positive values for any of the features.
-\item "all": Include cells with positive values for all of the features.
-If you have named features (i.e. a named list), \code{pos_only} will be applied to all flattened features.
-}}
+\item If \code{downsample > 1}: Exact number of cells per group.
+\item If \code{0 < downsample <= 1}: Fraction of cells per group.
+}
+Downsampling is performed within each identity group
+(via \code{dplyr::slice_sample(by = ident)}). Default: \code{NULL}
+(no downsampling).}
 
-\item{reduction}{Name of the reduction to plot (for example, "umap"), only used when \code{plot_type} is "dim" or you can to use the reduction as feature.}
-
-\item{graph}{Specify the graph name to add edges between cell neighbors to the plot, only used when \code{plot_type} is "dim".}
-
-\item{bg_cutoff}{Background cutoff for the dim plot, only used when \code{plot_type} is "dim".}
-
-\item{dims}{Dimensions to plot, only used when \code{plot_type} is "dim".}
-
-\item{rows_name}{The name of the rows in the heatmap, only used when \code{plot_type} is "heatmap".}
-
-\item{ident}{The column name in the meta data to identify the cells.}
-
-\item{assay}{The assay to use for the feature data.}
-
-\item{layer}{The layer to use for the feature data.}
-
-\item{agg}{The aggregation function to use for the bar plot.}
-
-\item{group_by}{The column name in the meta data to group the cells.}
-
-\item{split_by}{Column name in the meta data to split the cells to different plots.
-If TRUE, the cells are split by the features.}
-
-\item{facet_by}{Column name in the meta data to facet the plots. Should be always NULL.}
-
-\item{xlab}{The x-axis label.}
-
-\item{ylab}{The y-axis label.}
-
-\item{x_text_angle}{The angle of the x-axis text. Only used when \code{plot_type} is "violin", "bar", or "box".}
-
-\item{...}{Other arguments passed to the plot functions.
+\item{pos_only}{Character. Whether to restrict to cells with positive
+feature values:
 \itemize{
-\item For \code{plot_type} "violin", the arguments are passed to \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}.
-\item For \code{plot_type} "box", the arguments are passed to \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}.
-\item For \code{plot_type} "bar", the arguments are passed to \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For \code{plot_type} "ridge", the arguments are passed to \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}.
-\item For \code{plot_type} "dim", the arguments are passed to \code{\link[plotthis:dimplot]{plotthis::FeatureDimPlot()}}.
-\item For \code{plot_type} "heatmap", the arguments are passed to \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-\item For \code{plot_type} "cor" with 2 features, the arguments are passed to \code{\link[plotthis:CorPlot]{plotthis::CorPlot()}}.
-\item For \code{plot_type} "cor" with more than 2 features, the arguments are passed to \code{\link[plotthis:CorPairsPlot]{plotthis::CorPairsPlot()}}.
-\item For \code{plot_type} "dot", the arguments are passed to \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} with \code{cell_type} set to "dot".
-}}
+\item \code{"no"} — Include all cells (default).
+\item \code{"any"} — Include cells where at least one feature is > 0.
+\item \code{"all"} — Include only cells where all features are > 0.
+}
+For named feature lists, filtering is applied to all flattened features.}
+
+\item{reduction}{Character. Name of the dimensionality reduction to use
+(e.g., \code{"umap"}, \code{"tsne"}, \code{"pca"}). Required when
+\code{plot_type = "dim"}; optional for other types where the reduction
+coordinates can be used as feature values. For Seurat objects, defaults
+to the default reduction if available. Default: \code{NULL}.}
+
+\item{graph}{Character or \code{TRUE}. A graph (nearest-neighbor network)
+name to overlay edges between connected cells on the dim plot. For
+Seurat objects, the name should exist in \code{object@graphs}. For
+Giotto objects, the name should exist in the nearest network list. If
+\code{TRUE}, the first available graph is used. Only used when
+\code{plot_type = "dim"}. Default: \code{NULL} (no edges).}
+
+\item{bg_cutoff}{Numeric. Expression cutoff for the background in dim
+plots. Cells with expression below this value are shown in the
+background color (typically gray). Set to \code{-Inf} to color all
+cells. Only used when \code{plot_type = "dim"}. Default: \code{0}.}
+
+\item{dims}{Integer vector of length 2. The dimensions (columns) of the
+reduction to plot on the x and y axes. Only used when
+\code{plot_type = "dim"}. Default: \code{1:2}.}
+
+\item{rows_name}{Character. The column name used to identify feature rows
+in the heatmap and as the key when merging \code{rows_data}. Only used
+when \code{plot_type = "heatmap"} or \code{"dot"}. Default:
+\code{"Features"}.}
+
+\item{ident}{Character. The metadata column name identifying cell groups
+(e.g., \code{"CellType"}, \code{"SubCellType"}, \code{"seurat_clusters"}).
+Used as the x-axis for violin, box, bar, and ridge plots; as the
+heatmap columns for heatmap and dot plots; and as the grouping variable
+for correlation plots. For Seurat objects, defaults to the active
+identity (\code{"Identity"}). Required for non-dim plots on Giotto and
+H5File objects. Default: \code{NULL}.}
+
+\item{assay}{Character. The assay name to extract feature data from
+(e.g., \code{"RNA"}, \code{"SCT"}, \code{"integrated"}). For Seurat
+objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
+For H5File objects, determines whether to read from \code{X} (when
+\code{assay = "RNA"}) or \code{layers/<assay>}. Not applicable to
+Giotto objects. Default: \code{NULL}.}
+
+\item{layer}{Character. The layer name within the assay to extract data
+from (e.g., \code{"data"}, \code{"counts"}, \code{"scale.data"}). For
+Seurat objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
+For Giotto objects, passed to \code{GiottoClass::getExpression()}.
+Default: \code{NULL}.}
+
+\item{agg}{Function. The aggregation function applied when
+\code{plot_type = "bar"}. Common choices: \code{mean} (default),
+\code{median}, \code{sum}. Applied within each group defined by
+\code{ident}, \code{group_by}, and \code{split_by}.}
+
+\item{group_by}{Character. A metadata column name to further subdivide
+cells within each identity group (e.g., coloring by treatment within
+cell type). Works with \code{"violin"}, \code{"box"}, \code{"bar"},
+and \code{"ridge"} plot types. Default: \code{NULL}.}
+
+\item{split_by}{Character vector or \code{TRUE}. Metadata column name(s)
+to split the data into separate plots (one per unique value).
+If \code{TRUE}, splits by the features themselves, creating one plot
+per feature. Multiple columns are concatenated. Default: \code{NULL}.}
+
+\item{facet_by}{Character vector. Metadata column name(s) to facet the
+data within a plot. Note: for \code{"violin"}, \code{"box"},
+\code{"bar"}, and \code{"ridge"} plot types, \code{facet_by} should
+always be \code{NULL} because the plot is already faceted by features.
+Works normally with \code{"dim"}, \code{"heatmap"}, \code{"dot"}, and
+\code{"cor"} plot types. Default: \code{NULL}.}
+
+\item{xlab}{Character. Custom x-axis label. Default: \code{NULL}
+(auto-generated based on plot type).}
+
+\item{ylab}{Character. Custom y-axis label. Default: \code{NULL}
+(auto-generated based on plot type).}
+
+\item{x_text_angle}{Numeric. Angle (in degrees) for x-axis text labels.
+Used for \code{"violin"}, \code{"box"}, and \code{"bar"} plot types.
+Default: \code{NULL} (defaults to \code{45}).}
+
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+plotting function, determined by \code{plot_type}:
+\describe{
+\item{\code{"violin"}}{\code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}}
+\item{\code{"box"}}{\code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}}
+\item{\code{"bar"}}{\code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}}
+\item{\code{"ridge"}}{\code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}}
+\item{\code{"dim"}}{\code{\link[plotthis:FeatureDimPlot]{plotthis::FeatureDimPlot()}}}
+\item{\code{"heatmap"}}{\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}}
+\item{\code{"dot"}}{\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}} with \code{cell_type = "dot"}}
+\item{\code{"cor"}}{\code{\link[plotthis:CorPlot]{plotthis::CorPlot()}} (2 features) or
+\code{\link[plotthis:CorPairsPlot]{plotthis::CorPairsPlot()}} (3+ features)}
+}
+Common arguments include \code{palette}, \code{flip}, \code{add_bg},
+\code{add_point}, \code{add_box}, \code{stack}, \code{comparisons},
+\code{theme}, \code{legend.position}, and many more — see the
+documentation of the specific \pkg{plotthis} function for details.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A ggplot object (or a \code{patchwork} object when
+\code{split_by} generates multiple plots and \code{combine = TRUE}), or
+a list of ggplot objects if \code{combine = FALSE}. The specific return
+type depends on the underlying \pkg{plotthis} function dispatched by
+\code{plot_type}.
 }
 \description{
-This function creates various types of feature statistic plots for a Seurat object, a Giotto object,
-a path to an .h5ad file or an opened \code{H5File} by \code{hdf5r} package.
-It allows for plotting features such as gene expression, scores, or other metadata across different groups or conditions.
-The function supports multiple plot types including violin, box, bar, ridge, dimension reduction, correlation, heatmap, and dot plots.
-It can also handle multiple features and supports faceting, splitting, and grouping by metadata columns.
+A central question in single-cell analysis is how features — genes, gene
+signatures, module scores, or other molecular measurements — vary across cell
+types, conditions, or experimental groups. \code{FeatureStatPlot} answers this
+question by providing eight complementary visualization types, each suited to
+a different analytical perspective:
+\itemize{
+\item \strong{violin} — Violin plot showing the full distribution of feature
+values per identity group. Best for comparing expression distributions
+and detecting bimodality or outliers.
+\item \strong{box} — Box plot summarizing feature values with quartiles and
+outliers. A compact alternative to the violin plot.
+\item \strong{bar} — Bar chart of aggregated feature values (default: mean)
+per group. Useful for summary-level comparisons with error bars.
+\item \strong{ridge} — Ridge (joy) plot showing density curves per group.
+Effective when comparing many groups or when distribution shape matters.
+\item \strong{dim} — Dimensionality reduction plot (UMAP, t-SNE, PCA) with
+cells colored by feature expression. Reveals spatial patterns of gene
+expression in the reduced space.
+\item \strong{cor} — Correlation plot between two features (scatter with
+fitted line and annotations) or among multiple features (pairs plot).
+Reveals co-expression relationships.
+\item \strong{heatmap} — Heatmap of feature expression across identity
+groups. Supports rich annotations (row/column metadata, bar charts,
+pie charts, violin plots) and flexible clustering. The go-to choice
+for visualizing many features across many groups.
+\item \strong{dot} — Dot plot (a shortcut for heatmap with
+\code{cell_type = "dot"}) where dot size reflects the fraction of
+expressing cells and dot color reflects mean expression. A compact,
+publication-ready format for marker gene visualization.
+}
+
+The function is an S3 generic with methods for \pkg{Seurat} objects,
+\pkg{Giotto} objects, AnnData (.h5ad) file paths, and \code{H5File} objects
+(via \pkg{hdf5r}). Each method extracts the relevant expression matrix and
+metadata, then delegates to the internal \code{.feature_stat_plot()} which
+dispatches to the appropriate \pkg{plotthis} plotting function.
 }
 \details{
-See:
+See the vignettes for examples with non-Seurat objects:
 \itemize{
-\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Visium.html}
-\item \url{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}
+\item \href{https://pwwang.github.io/scplotter/articles/Giotto_Visium.html}{Giotto Visium}
+\item \href{https://pwwang.github.io/scplotter/articles/Giotto_Xenium.html}{Giotto Xenium}
+\item \href{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}{Working with AnnData .h5ad files}
 }
-
-for examples of using this function with Giotto objects.
-
-And see:
+}
+\note{
 \itemize{
-\item \url{https://pwwang.github.io/scplotter/articles/Working_with_anndata_h5ad_files.html}
+\item For \code{"violin"}, \code{"box"}, \code{"bar"}, and
+\code{"ridge"} plot types, the data is automatically pivoted from wide
+to long format and features are faceted. Do not use \code{facet_by}
+with these types — use \code{split_by} instead.
+\item For \code{"heatmap"} and \code{"dot"} plot types, named feature
+lists are automatically converted to a \code{rows_data} data frame
+with \code{rows_split_by} set. You can also provide your own
+\code{rows_data} for richer annotations (e.g., TF status, CSPA
+membership).
+\item The \code{dot} plot type is a convenience shortcut for
+\code{plot_type = "heatmap"} with \code{cell_type = "dot"}. It
+pre-configures sensible defaults: dot size = fraction of expressing
+cells, dot color = mean expression, reticle added, no clustering.
+\item For \code{"dim"} plots with \code{graph}, edges are drawn between
+connected cells. This helps reveal whether feature expression follows
+the neighborhood structure (e.g., continuous gradients vs scattered
+expression).
+\item When \code{ident} is not specified for Seurat objects, the active
+identity (\code{Idents(object)}) is used automatically.
+\item Giotto objects require \code{spat_unit} and \code{feat_type} to
+locate the correct expression matrix and metadata.
+}
+}
+\section{Input objects}{
+
+\code{FeatureStatPlot} supports four input types, each handled by its own
+S3 method:
+\itemize{
+\item \strong{Seurat} (\code{FeatureStatPlot.Seurat}) — Uses
+\code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}} to
+extract expression data and \code{@meta.data} for cell metadata.
+Reductions are accessed via \code{\link[SeuratObject:Embeddings]{SeuratObject::Embeddings()}}.
+\item \strong{Giotto} (\code{FeatureStatPlot.giotto}) — Uses
+\code{GiottoClass::getExpression()} and
+\code{GiottoClass::getCellMetadata()}. Requires \code{spat_unit} and
+\code{feat_type} parameters.
+\item \strong{.h5ad path} (\code{FeatureStatPlot.character}) — Opens the
+file via \pkg{hdf5r}, then delegates to \code{FeatureStatPlot.H5File}.
+Currently only \code{.h5ad} (AnnData) files are supported.
+\item \strong{H5File} (\code{FeatureStatPlot.H5File}) — Reads expression
+from \code{X} (or \code{layers/<assay>}), cell metadata from \code{obs},
+and reductions from \code{obsm}.
+}
 }
 
-for examples of using this function with .h5ad files.
+\section{Feature specification}{
+
+Features can be provided as:
+\itemize{
+\item \strong{A character vector} — e.g., \code{c("Sox9", "Neurog3", "Ins1")}.
+All features are treated equally.
+\item \strong{A named list} — e.g.,
+\code{list(Ductal = c("Sox9", "Anxa2"), Endocrine = c("Ins1", "Gcg"))}.
+The names are used as row group annotations in heatmap and dot plots
+(via \code{rows_split_by}), automatically creating a \code{rows_data}
+data frame that maps each feature to its group. This is especially
+useful for organizing marker genes by cell type.
 }
+When \code{pos_only} is \code{"any"} or \code{"all"}, cells are filtered
+based on whether they have positive values for the specified features.
+For named feature lists, the filter applies to the flattened set of all
+features.
+}
+
+\section{Faceting and splitting behavior}{
+
+For most plot types (\code{"violin"}, \code{"box"}, \code{"bar"},
+\code{"ridge"}), features are automatically faceted — each feature appears
+in its own panel. The \code{facet_by} parameter is therefore restricted
+for these types. Use \code{split_by} (or \code{split_by = TRUE} to split
+by feature) for creating separate plots per category. For \code{"dim"},
+\code{"heatmap"}, \code{"dot"}, and \code{"cor"} plots, features are
+incorporated into a single visualization and \code{split_by}/\code{facet_by}
+behave normally.
+}
+
 \examples{
 \donttest{
 data(pancreas_sub)
@@ -326,4 +508,15 @@ FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
 FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
    plot_type = "cor")
 }
+}
+\seealso{
+\code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}},
+\code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}},
+\code{\link[plotthis:BarPlot]{plotthis::BarPlot()}},
+\code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}},
+\code{\link[plotthis:FeatureDimPlot]{plotthis::FeatureDimPlot()}},
+\code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
+\code{\link[plotthis:CorPlot]{plotthis::CorPlot()}},
+\code{\link[plotthis:CorPairsPlot]{plotthis::CorPairsPlot()}},
+\code{\link{CellDimPlot}}, \code{\link{CellStatPlot}}
 }
