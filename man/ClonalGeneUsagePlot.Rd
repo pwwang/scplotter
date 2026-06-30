@@ -2,7 +2,7 @@
 % Please edit documentation in R/clonalgeneusageplot.R
 \name{ClonalGeneUsagePlot}
 \alias{ClonalGeneUsagePlot}
-\title{ClonalGeneUsagePlot}
+\title{Visualize TCR/BCR gene segment usage}
 \usage{
 ClonalGeneUsagePlot(
   data,
@@ -28,63 +28,236 @@ ClonalGeneUsagePlot(
 )
 }
 \arguments{
-\item{data}{The product of \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, \link[scRepertoire:combineTCR]{scRepertoire::combineTCR}, or
-\link[scRepertoire:combineExpression]{scRepertoire::combineExpression}.}
+\item{data}{The product of \code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}},
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}, or
+\code{\link[scRepertoire:combineExpression]{scRepertoire::combineExpression()}}.
+Must contain columns with gene segment information (e.g., TRBV_, TRBJ_ for TCR beta chain).}
 
-\item{genes}{The prefix of genes to be plotted. Default is "TRBV".
-If two sets of genes are provided (e.g. c("TRBV", "TRBJ")), the second dimension will be the
-second set of genes instead of the group_by variable.}
+\item{genes}{A character vector of gene segment prefixes to analyze. Default is \code{"TRBV"}.
+If a single prefix is provided (e.g., \code{"TRBV"}), the second dimension of the plot
+will be the \code{group_by} variable. If two prefixes are provided
+(e.g., \code{c("TRBV", "TRBJ")}), both axes represent gene segments, revealing
+V-J pairing frequencies, and \code{group_by} is used for faceting. Must be of
+length 1 or 2.}
 
-\item{scale}{Whether to use the proportion that is scaled to the group or the count.}
+\item{scale}{Logical; whether to normalize gene usage as proportions within each
+group (\code{TRUE}, default), or display raw counts (\code{FALSE}). Setting \code{scale = TRUE}
+is recommended when comparing samples of different sequencing depths, as it
+accounts for differences in total clone counts. Raw counts may be preferred
+when absolute clone numbers are biologically meaningful.}
 
-\item{top}{The number of top genes/genepairs to be plotted.}
+\item{top}{Integer; the number of top genes (single gene mode) or top gene pairs
+(dual gene mode) to display. Genes are ranked by total usage across all groups.
+Default is \code{20}. Increase this value to show more genes, or decrease it to
+focus on the most dominant segments.}
 
-\item{order}{A list specifying the order of the levels for each grouping variable. Default is NULL, which will use the order in the data.}
+\item{order}{A named list specifying the order of factor levels for grouping
+variables. For example, \code{list(Sample = c("P17B", "P17L"))} or
+\code{list(Type = c("L", "B"))}. Default is \code{NULL}, which uses the order
+present in the data. Names in the list must match column names in \code{data}.}
 
-\item{plot_type}{The type of plot to be generated. Default is "bar".
-Options are "bar", "heatmap", "circos" (aka "chord").}
+\item{plot_type}{Character; the type of visualization. One of \code{"bar"} (default),
+\code{"heatmap"}, \code{"circos"}, \code{"chord"}, \code{"alluvial"}, or \code{"sankey"}. Note that
+\code{"alluvial"} and \code{"sankey"} are treated identically. See the \strong{Plot types}
+section for guidance on selecting the appropriate visualization.}
 
-\item{group_by}{The variable to group the data by. Default is "Sample".}
+\item{group_by}{Character vector; the column(s) in \code{data} to group by.
+Default is \code{"Sample"}. For single gene analysis, this becomes the second
+dimension of the plot. For dual gene analysis, it is used for faceting.
+Set to \code{NULL} to disable grouping.}
 
-\item{facet_by}{A character vector of column names to facet the plots. Default is NULL.
-Should not be specified manually.}
+\item{facet_by}{A character vector of column names to facet the plots by.
+Default is \code{NULL}. This parameter is typically set automatically by the
+function and should not be specified manually — providing a value will
+raise an error.}
 
-\item{facet_ncol}{The number of columns in the facet grid. Default is 1.}
+\item{facet_ncol}{Integer; the number of columns in the facet grid when
+faceting is applied. Default is \code{1}. Only relevant for plot types that
+produce faceted output (e.g., sankey in dual gene mode).}
 
-\item{split_by}{A character vector of column names to split the plots. Default is NULL.}
+\item{split_by}{A character vector of column names to split the plots by.
+Default is \code{NULL}. When provided, separate plots are generated for each
+combination of values in the specified columns. For dual gene analysis,
+\code{split_by} is used in single gene mode; in dual gene mode, the plot is
+automatically split by \code{group_by} and specifying \code{split_by} will raise
+an error.}
 
-\item{aspect.ratio}{The aspect ratio of the plot. Only available for "bar" plot. Default is 2/top.}
+\item{aspect.ratio}{Numeric; the aspect ratio (height / width) of bar plot
+panels. Default is \code{2 / top}, which automatically scales the ratio based
+on the number of genes displayed. Only applicable for \code{plot_type = "bar"}.}
 
-\item{theme_args}{A list of arguments to be passed to the \link[ggplot2:theme]{ggplot2::theme} function.}
+\item{theme_args}{A named list of arguments passed to
+\code{\link[ggplot2:theme]{ggplot2::theme()}} for customizing the plot
+appearance. For bar plots, \code{panel.grid.major.y} defaults to
+\code{element_blank()} for a cleaner look.}
 
-\item{ylab}{The y-axis label. Default is NULL.}
+\item{ylab}{Character; the y-axis label. Default is \code{NULL}, which
+automatically uses \code{"Gene Usage Fraction"} when \code{scale = TRUE} or
+\code{"Gene Usage Count"} when \code{scale = FALSE}.}
 
-\item{show_row_names}{Whether to show row names in the heatmap. Default is TRUE.}
+\item{show_row_names}{Logical; whether to display row names (gene segment
+names) in the heatmap. Default is \code{TRUE}. Set to \code{FALSE} to hide gene
+labels when there are too many to display legibly. Only applicable for
+\code{plot_type = "heatmap"}.}
 
-\item{show_column_names}{Whether to show column names in the heatmap. Default is TRUE.}
+\item{show_column_names}{Logical; whether to display column names (sample/
+group names or second gene set names) in the heatmap. Default is \code{TRUE}.
+Only applicable for \code{plot_type = "heatmap"}.}
 
-\item{row_annotation}{A list of row annotations to be added to the heatmap. Default is NULL.}
+\item{row_annotation}{A named list specifying row annotations for heatmap
+plots. Each element should be a column name in the data to use as
+annotation data. Default is \code{NULL}. When a single gene prefix is used,
+a \code{"Total Usage"} annotation is automatically added showing the aggregate
+usage per gene. Only applicable for \code{plot_type = "heatmap"}.}
 
-\item{row_annotation_type}{A list of row annotation types.}
+\item{row_annotation_type}{A named list specifying the annotation type for
+each row annotation. For example, \code{list("Total Usage" = "lines")}. Default
+is an empty list. The \code{"Total Usage"} annotation defaults to \code{"lines"}.
+Only applicable for \code{plot_type = "heatmap"}.}
 
-\item{row_annotation_side}{The side of the row annotation. Default is "right".}
+\item{row_annotation_side}{Character; the side of the heatmap where row
+annotations are placed. One of \code{"right"} (default) or \code{"left"}. Only
+applicable for \code{plot_type = "heatmap"}.}
 
-\item{row_annotation_agg}{A list of row annotation aggregation functions.}
+\item{row_annotation_agg}{A named list of aggregation functions for row
+annotations when multiple values exist per row. For example,
+\code{list("Total Usage" = function(x) ifelse(length(x) > 1, x[1], 0))}.
+Default is an empty list. Only applicable for \code{plot_type = "heatmap"}.}
 
-\item{...}{Other arguments passed to the specific plot function.
+\item{...}{Additional arguments passed to the underlying \pkg{plotthis}
+visualization function, depending on \code{plot_type}:
 \itemize{
-\item For "bar", \code{\link[plotthis:barplot]{plotthis::BarPlot()}}.
-\item For "heatmap", \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}.
-\item For "circos", \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}.
-\item For "chord", \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}.
-}}
+\item For \code{"bar"}: \code{\link[plotthis:BarPlot]{plotthis::BarPlot()}}
+\item For \code{"heatmap"}: \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
+\item For \code{"circos"} / \code{"chord"}: \code{\link[plotthis:ChordPlot]{plotthis::ChordPlot()}}
+\item For \code{"alluvial"} / \code{"sankey"}: \code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}}
+}
+
+Common arguments include \code{title} (plot title), \code{legend.position}, and
+color palette parameters. See the respective \pkg{plotthis} documentation
+for available options.}
 }
 \value{
-A ggplot object or a list if \code{combine} is FALSE
+A \code{ggplot} object (or a list of \code{ggplot} objects if \code{combine = FALSE}
+is passed via \code{...})
 }
 \description{
-ClonalGeneUsagePlot
+Adaptive immune receptors (TCRs and BCRs) are assembled through V(D)J recombination,
+where variable (V), diversity (D), and joining (J) gene segments are randomly selected
+and rearranged. The frequency with which different gene segments are used — termed
+\emph{gene usage} — provides insight into immune repertoire composition, T/B cell
+development, and antigen-driven selection. Skewed gene usage can indicate clonal
+expansion, immune aging, or disease-associated repertoire bias.
 }
+\details{
+\code{ClonalGeneUsagePlot} visualizes the usage frequency of TCR or BCR gene segments
+across samples and conditions. It supports two modes of analysis:
+\itemize{
+\item \strong{Single gene analysis} (\code{genes = "TRBV"}): The second axis is the \code{group_by}
+variable (typically Sample), producing a gene-by-sample matrix suitable for
+comparing usage across conditions.
+\item \strong{Dual gene analysis} (\code{genes = c("TRBV", "TRBJ")}): Both axes are gene segments,
+and the \code{group_by} variable is used for faceting. This reveals preferential
+V-J pairings, which can reflect structural constraints in the receptor or
+antigen-driven selection for specific chain combinations.
+}
+
+Gene usage can be displayed as raw counts or as proportions scaled within each
+group (when \code{scale = TRUE}), the latter being more appropriate for comparing
+samples of different sequencing depths.
+
+The function uses \code{\link[scRepertoire:vizGenes]{scRepertoire::vizGenes()}}
+internally to compute gene usage frequencies, then passes the result to the
+appropriate \pkg{plotthis} visualization function.
+}
+\note{
+\itemize{
+\item Gene usage data is computed using
+\code{\link[scRepertoire:vizGenes]{scRepertoire::vizGenes()}}, which
+requires the input data to contain gene segment columns (e.g., \code{TRBV_gene},
+\code{TRBJ_gene}). These columns are automatically created by
+\code{\link[scRepertoire:combineTCR]{scRepertoire::combineTCR()}} and
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}.
+\item For bar plots, \code{aspect.ratio} is automatically set to \code{2 / top} to
+accommodate varying numbers of genes. You can override this by passing
+a custom value.
+\item The \code{facet_by} parameter is set internally by the function and should not
+be provided by the user. Doing so will raise an error.
+\item Dual gene analysis with \code{split_by} in chord/circos mode is not supported —
+the plot is automatically split by \code{group_by} instead.
+\item When using \code{scale = TRUE}, proportions sum to 1 within each group for
+each gene set, making it possible to compare relative usage across
+groups of different sizes. However, this normalization can mask
+differences in absolute clone counts — use \code{scale = FALSE} when
+total clone numbers are of interest.
+\item Gene segment names follow IMGT nomenclature. Ensure your gene prefixes
+match the naming convention in your dataset (e.g., \code{"TRBV"} for human
+TRB V genes, \code{"Trbv"} for mouse).
+}
+}
+\section{Single vs. dual gene analysis}{
+
+The \code{genes} parameter determines the dimensionality of the analysis:
+\itemize{
+\item \strong{Single gene prefix} (e.g., \code{"TRBV"}, \code{"TRBJ"}, \code{"IGHV"}): The x-axis shows
+gene segments (e.g., TRBV5-1, TRBV7-2), and the y-axis (or columns in a heatmap)
+shows the \code{group_by} variable, typically Sample. This is the standard mode for
+comparing gene usage across samples or conditions. Use a bar plot to quickly
+identify over- or under-represented genes, or a heatmap for a compact overview
+of many genes across many samples.
+\item \strong{Two gene prefixes} (e.g., \code{c("TRBV", "TRBJ")}): The x-axis shows the first
+gene set and the y-axis (or columns) shows the second gene set. Each cell
+represents a specific V-J pair, and the \code{group_by} variable is used for
+faceting. This mode is essential for studying chain pairing — certain V segments
+preferentially pair with specific J segments, and deviations from expected
+pairing frequencies can indicate structural constraints or disease-associated
+repertoire features. The sankey/alluvial plot type is particularly effective
+for dual gene analysis, showing the flow from one gene set to the other.
+}
+}
+
+\section{Plot types}{
+
+Five visualization types are available, each suited to different analytical goals:
+\itemize{
+\item \strong{\code{"bar"}} (default): Horizontal bar chart showing gene usage per sample/group.
+Best for comparing a moderate number of genes across a few samples. Gene labels
+are rotated 90 degrees for readability. The \code{aspect.ratio} parameter controls
+bar height (defaults to \code{2 / top} to automatically scale with the number of genes).
+\item \strong{\code{"heatmap"}}: Matrix heatmap with genes on rows and samples/conditions on
+columns. Ideal for surveying many genes across many samples simultaneously.
+When a single gene prefix is used, a "Total Usage" row annotation is
+automatically added showing the aggregate usage per gene as a line plot.
+Supports custom row annotations, annotation types, and aggregation functions.
+\item \strong{\code{"circos"} / \code{"chord"}}: Chord diagram showing flow from gene segments to
+samples (single gene) or from one gene set to another (dual gene). Chord
+diagrams excel at revealing broad patterns of connectivity. In dual gene mode,
+the plot is automatically split by the \code{group_by} variable.
+\item \strong{\code{"alluvial"} / \code{"sankey"}}: Sankey diagram showing the flow from gene
+segments to samples (single gene) or from one gene set to another (dual gene).
+Unlike chord diagrams, sankey diagrams preserve the ordering of categories
+and are often easier to read when there are many connections. In dual gene
+mode, the plot is faceted by \code{group_by}. Note that \code{"alluvial"} is
+automatically mapped to \code{"sankey"}.
+}
+}
+
+\section{Gene segment naming}{
+
+Gene segment prefixes follow standard IMGT nomenclature:
+\itemize{
+\item \strong{Human TCR}: \code{TRBV}, \code{TRBD}, \code{TRBJ} (beta chain); \code{TRAV}, \code{TRAJ} (alpha chain);
+\code{TRGV}, \code{TRGJ} (gamma chain); \code{TRDV}, \code{TRDJ} (delta chain)
+\item \strong{Human BCR}: \code{IGHV}, \code{IGHD}, \code{IGHJ} (heavy chain); \code{IGKV}, \code{IGKJ} (kappa chain);
+\code{IGLV}, \code{IGLJ} (lambda chain)
+\item \strong{Mouse}: Prefixes are similar but use \code{Trbv}, \code{Ighv}, etc. (sentence case)
+}
+
+The gene prefix is used to identify matching columns in the data. Only genes
+matching the prefix will be included in the analysis. The \code{top} parameter
+selects the most frequently used genes/genepairs for display.
+}
+
 \examples{
 \donttest{
 set.seed(8525)
@@ -110,5 +283,17 @@ ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
      facet_scales = "free_y")
 ClonalGeneUsagePlot(data, genes = c("TRBV", "TRBJ"), plot_type = "alluvial",
      group_by = NULL)
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{ClonalCompositionPlot}} for analyzing clonal homeostasis and
+expansion/contraction composition
+\item \code{\link{ClonalDiversityPlot}} for analyzing clonal diversity metrics
+\item \code{\link{ClonalPositionalPlot}} for analyzing amino acid positional
+distributions within CDR3 sequences
+\item \code{\link{ClonalKmerPlot}} for analyzing k-mer motifs in CDR3 sequences
+\item \code{\link[scRepertoire:vizGenes]{scRepertoire::vizGenes()}} for the
+underlying gene usage computation
 }
 }
