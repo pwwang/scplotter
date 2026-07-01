@@ -170,6 +170,13 @@
 #'  in the right-hand heatmap of the linked heatmap plot. Must be `"left"` or
 #'  `"right"`. Default is `"right"`. Only used when
 #'  `plot_type = "linkedheatmap"`.
+#' @param columns_split_by An optional character vector of column names used to
+#'  split the columns of the heatmap into separate blocks. Only used when
+#'  `plot_type` is `"heatmap"` or `"linkedheatmap"`.
+#'  When `method = "interaction"`, `source` is automatically used as a column split.
+#' @param rows_split_by An optional character vector of column names used to
+#'  split the rows of the heatmap into separate blocks. Only used when
+#'  `plot_type` is `"heatmap"` or `"linkedheatmap"`.
 #' @param ... Additional arguments forwarded to the underlying \pkg{plotthis}
 #'  plotting function. The target function depends on `plot_type`:
 #'  * `"network"` → [plotthis::Network()]
@@ -307,6 +314,8 @@ CCCPlot <- function(
     show_column_names = TRUE,
     values_fill = 0,
     right_row_dend_side = "right",
+    columns_split_by = NULL,
+    rows_split_by = NULL,
     ...
 ) {
     stopifnot("[CCCPlot] 'facet_by' is not supported." = is.null(facet_by))
@@ -356,13 +365,15 @@ CCCPlot <- function(
             show_column_names = show_column_names,
             split_by = split_by,
             right_row_dend_side = right_row_dend_side,
+            columns_split_by = columns_split_by,
+            rows_split_by = rows_split_by,
             ...
         )
     } else {
 
 
         if (method == "aggregation") {
-            links <- data %>% group_by(!!!syms(c(source_col, target_col, split_by)))
+            links <- data %>% group_by(!!!syms(c(source_col, target_col, split_by, columns_split_by, rows_split_by)))
             if (is.null(magnitude)) {
                 magnitiude <- "mag_score"
                 links[[magnitiude]] <- NA
@@ -400,7 +411,7 @@ CCCPlot <- function(
             } else if (plot_type == "heatmap") {
                 Heatmap(links, values_by = magnitude_name, rows_by = source_col, columns_by = target_col,
                     split_by = split_by, show_row_names = show_row_names, show_column_names = show_column_names,
-                    values_fill = values_fill, ...)
+                    values_fill = values_fill, columns_split_by = columns_split_by, rows_split_by = rows_split_by, ...)
             } else if (plot_type %in% c("sankey", "alluvial")) {
                 SankeyPlot(links, y = magnitude_name, x = c(source_col, target_col), split_by = split_by,
                     links_fill_by = source_col, flow = TRUE, xlab = "", ylab = "Strength", ...)
@@ -435,11 +446,14 @@ CCCPlot <- function(
                     link_weight_by = magnitude, link_alpha = link_alpha, link_color_by = "source_target",
                     link_color_name = "source -> target", split_by = split_by, ...)
             } else if (plot_type == "heatmap") {
+                if (!is.null(columns_split_by)) {
+                    stop("[CCCPlot] source will be used as `columns_split_by` when 'method' is 'interaction', do not specify `columns_split_by`.")
+                }
                 data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
                 Heatmap(data, rows_by = "ligand_receptor", rows_name = "Ligand -> Receptor", split_by = split_by,
                     values_by = magnitude, columns_by = target_col, columns_split_by = source_col, values_fill = values_fill,
                     show_row_names = show_row_names, show_column_names = show_column_names,
-                    ...)
+                    rows_split_by = rows_split_by, ...)
             } else if (plot_type == "box") {
                 data[[source_col]] <- paste0("source: ", data[[source_col]])
                 BoxPlot(data, x = target_col, y = magnitude, facet_by = source_col,

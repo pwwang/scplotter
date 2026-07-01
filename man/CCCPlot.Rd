@@ -25,6 +25,8 @@ CCCPlot(
   show_column_names = TRUE,
   values_fill = 0,
   right_row_dend_side = "right",
+  columns_split_by = NULL,
+  rows_split_by = NULL,
   ...
 )
 }
@@ -161,6 +163,15 @@ is \code{0}. Used when \code{plot_type} is \code{"heatmap"} or \code{"linkedheat
 in the right-hand heatmap of the linked heatmap plot. Must be \code{"left"} or
 \code{"right"}. Default is \code{"right"}. Only used when
 \code{plot_type = "linkedheatmap"}.}
+
+\item{columns_split_by}{An optional character vector of column names used to
+split the columns of the heatmap into separate blocks. Only used when
+\code{plot_type} is \code{"heatmap"} or \code{"linkedheatmap"}.
+When \code{method = "interaction"}, \code{source} is automatically used as a column split.}
+
+\item{rows_split_by}{An optional character vector of column names used to
+split the rows of the heatmap into separate blocks. Only used when
+\code{plot_type} is \code{"heatmap"} or \code{"linkedheatmap"}.}
 
 \item{...}{Additional arguments forwarded to the underlying \pkg{plotthis}
 plotting function. The target function depends on \code{plot_type}:
