@@ -1931,6 +1931,8 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;     show_column_names = TRUE,</span></span>
 <span><span class="co">#&gt;     values_fill = 0,</span></span>
 <span><span class="co">#&gt;     right_row_dend_side = "right",</span></span>
+<span><span class="co">#&gt;     columns_split_by = NULL,</span></span>
+<span><span class="co">#&gt;     rows_split_by = NULL,</span></span>
 <span><span class="co">#&gt;     ...</span></span>
 <span><span class="co">#&gt;   )</span></span>
 <span><span class="co">#&gt;   </span></span>
@@ -2049,6 +2051,13 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;   in the right-hand heatmap of the linked heatmap plot. Must be "left" or</span></span>
 <span><span class="co">#&gt;   "right". Default is "right". Only used when</span></span>
 <span><span class="co">#&gt;   plot_type = "linkedheatmap".</span></span>
+<span><span class="co">#&gt;   - columns_split_by: An optional character vector of column names used to</span></span>
+<span><span class="co">#&gt;   split the columns of the heatmap into separate blocks. Only used when</span></span>
+<span><span class="co">#&gt;   plot_type is "heatmap" or "linkedheatmap".</span></span>
+<span><span class="co">#&gt;   When method = "interaction", source is automatically used as a column split.</span></span>
+<span><span class="co">#&gt;   - rows_split_by: An optional character vector of column names used to</span></span>
+<span><span class="co">#&gt;   split the rows of the heatmap into separate blocks. Only used when</span></span>
+<span><span class="co">#&gt;   plot_type is "heatmap" or "linkedheatmap".</span></span>
 <span><span class="co">#&gt;   - ...: Additional arguments forwarded to the underlying plotthis</span></span>
 <span><span class="co">#&gt;   plotting function. The target function depends on plot_type:</span></span>
 <span><span class="co">#&gt;   </span></span>
@@ -2370,14 +2379,12 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       When in_form is "long" or "wide-columns", this is requied, and multiple columns can be specified,</span></span>
 <span><span class="co">#&gt;       which will be concatenated by rows_by_sep into a single column.</span></span>
 <span><span class="co">#&gt;       - rows_by_sep: A character string to concat multiple columns in rows_by.</span></span>
-<span><span class="co">#&gt;       - rows_split_by: A character of column name in data that contains the split information for rows.</span></span>
 <span><span class="co">#&gt;       - rows_split_by_sep: A character string to concat multiple columns in rows_split_by.</span></span>
 <span><span class="co">#&gt;       - columns_by: A vector of column names in data that contains the column information.</span></span>
 <span><span class="co">#&gt;       This is used to create the columns of the heatmap.</span></span>
 <span><span class="co">#&gt;       When in_form is "long" or "wide-rows", this is required, and multiple columns can be specified,</span></span>
 <span><span class="co">#&gt;       which will be concatenated by columns_by_sep into a single column.</span></span>
 <span><span class="co">#&gt;       - columns_by_sep: A character string to concat multiple columns in columns_by.</span></span>
-<span><span class="co">#&gt;       - columns_split_by: A character of column name in data that contains the split information for columns.</span></span>
 <span><span class="co">#&gt;       - columns_split_by_sep: A character string to concat multiple columns in columns_split_by.</span></span>
 <span><span class="co">#&gt;       - rows_data: A data frame containing additional data for rows, which can be used to add annotations to the heatmap.</span></span>
 <span><span class="co">#&gt;       It will be joined to the main data by rows_by and split_by if split_by exists in rows_data.</span></span>
@@ -3400,19 +3407,12 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - rows_by: Default column for rows in both heatmaps.  Used as</span></span>
 <span><span class="co">#&gt;       fallback for left_rows_by / right_rows_by.</span></span>
 <span><span class="co">#&gt;       - rows_by_sep: Separator for concatenated rows_by columns.</span></span>
-<span><span class="co">#&gt;       - rows_split_by: Optional column name to split the rows of both</span></span>
-<span><span class="co">#&gt;       heatmaps into groups (passed as row_split).  When provided, row</span></span>
-<span><span class="co">#&gt;       names in the link table are prefixed with the split level to</span></span>
-<span><span class="co">#&gt;       disambiguate rows across splits.</span></span>
 <span><span class="co">#&gt;       - rows_split_by_sep: Separator for concatenated</span></span>
 <span><span class="co">#&gt;       rows_split_by columns.</span></span>
 <span><span class="co">#&gt;       - columns_by: Default column for columns in both heatmaps.  Used as</span></span>
 <span><span class="co">#&gt;       fallback for left_columns_by / right_columns_by.</span></span>
 <span><span class="co">#&gt;       - columns_by_sep: Separator for concatenated columns_by</span></span>
 <span><span class="co">#&gt;       columns.</span></span>
-<span><span class="co">#&gt;       - columns_split_by: Default column to split columns into groups.</span></span>
-<span><span class="co">#&gt;       Used as fallback for left_columns_split_by /</span></span>
-<span><span class="co">#&gt;       right_columns_split_by.</span></span>
 <span><span class="co">#&gt;       - columns_split_by_sep: Separator for concatenated</span></span>
 <span><span class="co">#&gt;       columns_split_by columns.</span></span>
 <span><span class="co">#&gt;       - rows_data, columns_data: Optional data frames providing additional</span></span>
@@ -3690,10 +3690,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -4634,6 +4634,8 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;     show_column_names = TRUE,</span></span>
 <span><span class="co">#&gt;     values_fill = 0,</span></span>
 <span><span class="co">#&gt;     right_row_dend_side = "right",</span></span>
+<span><span class="co">#&gt;     columns_split_by = NULL,</span></span>
+<span><span class="co">#&gt;     rows_split_by = NULL,</span></span>
 <span><span class="co">#&gt;     ...</span></span>
 <span><span class="co">#&gt;   )</span></span>
 <span><span class="co">#&gt;   </span></span>
@@ -4752,6 +4754,13 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;   in the right-hand heatmap of the linked heatmap plot. Must be "left" or</span></span>
 <span><span class="co">#&gt;   "right". Default is "right". Only used when</span></span>
 <span><span class="co">#&gt;   plot_type = "linkedheatmap".</span></span>
+<span><span class="co">#&gt;   - columns_split_by: An optional character vector of column names used to</span></span>
+<span><span class="co">#&gt;   split the columns of the heatmap into separate blocks. Only used when</span></span>
+<span><span class="co">#&gt;   plot_type is "heatmap" or "linkedheatmap".</span></span>
+<span><span class="co">#&gt;   When method = "interaction", source is automatically used as a column split.</span></span>
+<span><span class="co">#&gt;   - rows_split_by: An optional character vector of column names used to</span></span>
+<span><span class="co">#&gt;   split the rows of the heatmap into separate blocks. Only used when</span></span>
+<span><span class="co">#&gt;   plot_type is "heatmap" or "linkedheatmap".</span></span>
 <span><span class="co">#&gt;   - ...: Additional arguments forwarded to the underlying plotthis</span></span>
 <span><span class="co">#&gt;   plotting function. The target function depends on plot_type:</span></span>
 <span><span class="co">#&gt;   </span></span>
@@ -5073,14 +5082,12 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       When in_form is "long" or "wide-columns", this is requied, and multiple columns can be specified,</span></span>
 <span><span class="co">#&gt;       which will be concatenated by rows_by_sep into a single column.</span></span>
 <span><span class="co">#&gt;       - rows_by_sep: A character string to concat multiple columns in rows_by.</span></span>
-<span><span class="co">#&gt;       - rows_split_by: A character of column name in data that contains the split information for rows.</span></span>
 <span><span class="co">#&gt;       - rows_split_by_sep: A character string to concat multiple columns in rows_split_by.</span></span>
 <span><span class="co">#&gt;       - columns_by: A vector of column names in data that contains the column information.</span></span>
 <span><span class="co">#&gt;       This is used to create the columns of the heatmap.</span></span>
 <span><span class="co">#&gt;       When in_form is "long" or "wide-rows", this is required, and multiple columns can be specified,</span></span>
 <span><span class="co">#&gt;       which will be concatenated by columns_by_sep into a single column.</span></span>
 <span><span class="co">#&gt;       - columns_by_sep: A character string to concat multiple columns in columns_by.</span></span>
-<span><span class="co">#&gt;       - columns_split_by: A character of column name in data that contains the split information for columns.</span></span>
 <span><span class="co">#&gt;       - columns_split_by_sep: A character string to concat multiple columns in columns_split_by.</span></span>
 <span><span class="co">#&gt;       - rows_data: A data frame containing additional data for rows, which can be used to add annotations to the heatmap.</span></span>
 <span><span class="co">#&gt;       It will be joined to the main data by rows_by and split_by if split_by exists in rows_data.</span></span>
@@ -6103,19 +6110,12 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - rows_by: Default column for rows in both heatmaps.  Used as</span></span>
 <span><span class="co">#&gt;       fallback for left_rows_by / right_rows_by.</span></span>
 <span><span class="co">#&gt;       - rows_by_sep: Separator for concatenated rows_by columns.</span></span>
-<span><span class="co">#&gt;       - rows_split_by: Optional column name to split the rows of both</span></span>
-<span><span class="co">#&gt;       heatmaps into groups (passed as row_split).  When provided, row</span></span>
-<span><span class="co">#&gt;       names in the link table are prefixed with the split level to</span></span>
-<span><span class="co">#&gt;       disambiguate rows across splits.</span></span>
 <span><span class="co">#&gt;       - rows_split_by_sep: Separator for concatenated</span></span>
 <span><span class="co">#&gt;       rows_split_by columns.</span></span>
 <span><span class="co">#&gt;       - columns_by: Default column for columns in both heatmaps.  Used as</span></span>
 <span><span class="co">#&gt;       fallback for left_columns_by / right_columns_by.</span></span>
 <span><span class="co">#&gt;       - columns_by_sep: Separator for concatenated columns_by</span></span>
 <span><span class="co">#&gt;       columns.</span></span>
-<span><span class="co">#&gt;       - columns_split_by: Default column to split columns into groups.</span></span>
-<span><span class="co">#&gt;       Used as fallback for left_columns_split_by /</span></span>
-<span><span class="co">#&gt;       right_columns_split_by.</span></span>
 <span><span class="co">#&gt;       - columns_split_by_sep: Separator for concatenated</span></span>
 <span><span class="co">#&gt;       columns_split_by columns.</span></span>
 <span><span class="co">#&gt;       - rows_data, columns_data: Optional data frames providing additional</span></span>

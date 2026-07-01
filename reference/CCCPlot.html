@@ -164,6 +164,8 @@ those functions can be passed through <code>...</code>.</p>
 <span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  values_fill <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  right_row_dend_side <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>  columns_split_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rows_split_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -335,6 +337,19 @@ is <code>0</code>. Used when <code>plot_type</code> is <code>"heatmap"</code> or
 in the right-hand heatmap of the linked heatmap plot. Must be <code>"left"</code> or
 <code>"right"</code>. Default is <code>"right"</code>. Only used when
 <code>plot_type = "linkedheatmap"</code>.</p></dd>
+
+
+<dt id="arg-columns-split-by">columns_split_by<a class="anchor" aria-label="anchor" href="#arg-columns-split-by"></a></dt>
+<dd><p>An optional character vector of column names used to
+split the columns of the heatmap into separate blocks. Only used when
+<code>plot_type</code> is <code>"heatmap"</code> or <code>"linkedheatmap"</code>.
+When <code>method = "interaction"</code>, <code>source</code> is automatically used as a column split.</p></dd>
+
+
+<dt id="arg-rows-split-by">rows_split_by<a class="anchor" aria-label="anchor" href="#arg-rows-split-by"></a></dt>
+<dd><p>An optional character vector of column names used to
+split the rows of the heatmap into separate blocks. Only used when
+<code>plot_type</code> is <code>"heatmap"</code> or <code>"linkedheatmap"</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

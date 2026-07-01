@@ -1860,6 +1860,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>     show_column_names = TRUE,
     #>     values_fill = 0,
     #>     right_row_dend_side = "right",
+    #>     columns_split_by = NULL,
+    #>     rows_split_by = NULL,
     #>     ...
     #>   )
     #>   
@@ -1978,6 +1980,13 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>   in the right-hand heatmap of the linked heatmap plot. Must be "left" or
     #>   "right". Default is "right". Only used when
     #>   plot_type = "linkedheatmap".
+    #>   - columns_split_by: An optional character vector of column names used to
+    #>   split the columns of the heatmap into separate blocks. Only used when
+    #>   plot_type is "heatmap" or "linkedheatmap".
+    #>   When method = "interaction", source is automatically used as a column split.
+    #>   - rows_split_by: An optional character vector of column names used to
+    #>   split the rows of the heatmap into separate blocks. Only used when
+    #>   plot_type is "heatmap" or "linkedheatmap".
     #>   - ...: Additional arguments forwarded to the underlying plotthis
     #>   plotting function. The target function depends on plot_type:
     #>   
@@ -2299,14 +2308,12 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       When in_form is "long" or "wide-columns", this is requied, and multiple columns can be specified,
     #>       which will be concatenated by rows_by_sep into a single column.
     #>       - rows_by_sep: A character string to concat multiple columns in rows_by.
-    #>       - rows_split_by: A character of column name in data that contains the split information for rows.
     #>       - rows_split_by_sep: A character string to concat multiple columns in rows_split_by.
     #>       - columns_by: A vector of column names in data that contains the column information.
     #>       This is used to create the columns of the heatmap.
     #>       When in_form is "long" or "wide-rows", this is required, and multiple columns can be specified,
     #>       which will be concatenated by columns_by_sep into a single column.
     #>       - columns_by_sep: A character string to concat multiple columns in columns_by.
-    #>       - columns_split_by: A character of column name in data that contains the split information for columns.
     #>       - columns_split_by_sep: A character string to concat multiple columns in columns_split_by.
     #>       - rows_data: A data frame containing additional data for rows, which can be used to add annotations to the heatmap.
     #>       It will be joined to the main data by rows_by and split_by if split_by exists in rows_data.
@@ -3329,19 +3336,12 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - rows_by: Default column for rows in both heatmaps.  Used as
     #>       fallback for left_rows_by / right_rows_by.
     #>       - rows_by_sep: Separator for concatenated rows_by columns.
-    #>       - rows_split_by: Optional column name to split the rows of both
-    #>       heatmaps into groups (passed as row_split).  When provided, row
-    #>       names in the link table are prefixed with the split level to
-    #>       disambiguate rows across splits.
     #>       - rows_split_by_sep: Separator for concatenated
     #>       rows_split_by columns.
     #>       - columns_by: Default column for columns in both heatmaps.  Used as
     #>       fallback for left_columns_by / right_columns_by.
     #>       - columns_by_sep: Separator for concatenated columns_by
     #>       columns.
-    #>       - columns_split_by: Default column to split columns into groups.
-    #>       Used as fallback for left_columns_split_by /
-    #>       right_columns_split_by.
     #>       - columns_split_by_sep: Separator for concatenated
     #>       columns_split_by columns.
     #>       - rows_data, columns_data: Optional data frames providing additional
@@ -3621,11 +3621,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -4571,6 +4571,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>     show_column_names = TRUE,
     #>     values_fill = 0,
     #>     right_row_dend_side = "right",
+    #>     columns_split_by = NULL,
+    #>     rows_split_by = NULL,
     #>     ...
     #>   )
     #>   
@@ -4689,6 +4691,13 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>   in the right-hand heatmap of the linked heatmap plot. Must be "left" or
     #>   "right". Default is "right". Only used when
     #>   plot_type = "linkedheatmap".
+    #>   - columns_split_by: An optional character vector of column names used to
+    #>   split the columns of the heatmap into separate blocks. Only used when
+    #>   plot_type is "heatmap" or "linkedheatmap".
+    #>   When method = "interaction", source is automatically used as a column split.
+    #>   - rows_split_by: An optional character vector of column names used to
+    #>   split the rows of the heatmap into separate blocks. Only used when
+    #>   plot_type is "heatmap" or "linkedheatmap".
     #>   - ...: Additional arguments forwarded to the underlying plotthis
     #>   plotting function. The target function depends on plot_type:
     #>   
@@ -5010,14 +5019,12 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       When in_form is "long" or "wide-columns", this is requied, and multiple columns can be specified,
     #>       which will be concatenated by rows_by_sep into a single column.
     #>       - rows_by_sep: A character string to concat multiple columns in rows_by.
-    #>       - rows_split_by: A character of column name in data that contains the split information for rows.
     #>       - rows_split_by_sep: A character string to concat multiple columns in rows_split_by.
     #>       - columns_by: A vector of column names in data that contains the column information.
     #>       This is used to create the columns of the heatmap.
     #>       When in_form is "long" or "wide-rows", this is required, and multiple columns can be specified,
     #>       which will be concatenated by columns_by_sep into a single column.
     #>       - columns_by_sep: A character string to concat multiple columns in columns_by.
-    #>       - columns_split_by: A character of column name in data that contains the split information for columns.
     #>       - columns_split_by_sep: A character string to concat multiple columns in columns_split_by.
     #>       - rows_data: A data frame containing additional data for rows, which can be used to add annotations to the heatmap.
     #>       It will be joined to the main data by rows_by and split_by if split_by exists in rows_data.
@@ -6040,19 +6047,12 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - rows_by: Default column for rows in both heatmaps.  Used as
     #>       fallback for left_rows_by / right_rows_by.
     #>       - rows_by_sep: Separator for concatenated rows_by columns.
-    #>       - rows_split_by: Optional column name to split the rows of both
-    #>       heatmaps into groups (passed as row_split).  When provided, row
-    #>       names in the link table are prefixed with the split level to
-    #>       disambiguate rows across splits.
     #>       - rows_split_by_sep: Separator for concatenated
     #>       rows_split_by columns.
     #>       - columns_by: Default column for columns in both heatmaps.  Used as
     #>       fallback for left_columns_by / right_columns_by.
     #>       - columns_by_sep: Separator for concatenated columns_by
     #>       columns.
-    #>       - columns_split_by: Default column to split columns into groups.
-    #>       Used as fallback for left_columns_split_by /
-    #>       right_columns_split_by.
     #>       - columns_split_by_sep: Separator for concatenated
     #>       columns_split_by columns.
     #>       - rows_data, columns_data: Optional data frames providing additional

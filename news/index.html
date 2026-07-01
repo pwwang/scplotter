@@ -56,6 +56,72 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.5" id="version-075">Version 0.7.5<a class="anchor" aria-label="anchor" href="#version-075"></a></h2>
+<ul><li>fix(DESCRIPTION): specify exact version for drieslab/GiottoClass dependency</li>
+<li>fix(DESCRIPTION): update GiottoClass and GiottoUtils dependency versions</li>
+<li>fix(DESCRIPTION): update GiottoClass dependency to use the latest version without a specific commit</li>
+<li>ci: update GiottoClass dependency to version 0.4.7</li>
+<li>ci: update GiottoClass dependency to version R4.4.0</li>
+<li>chore(DESCRIPTION): specify exact version for drieslab/GiottoClass dependency</li>
+<li>ci: update GiottoClass and GiottoUtils dependencies to specific versions</li>
+<li>ci: update GiottoClass dependency to use the latest version</li>
+<li>docs: add documentation section with link to online resources [skip ci]</li>
+<li>fix: enhance gene selection logic in MarkersPlot function for heatmap and dot plots</li>
+<li>fix(CCCPlot): fix rows_split_by and columns_split_by for heatmp with method = ‘interaction’</li>
+<li>docs: update LLM provider model and API endpoint in Visualizing_data_with_LLMs vignette</li>
+<li>docs: update example in FeatureStatPlot documentation to include row annotation palette</li>
+<li>fix: enhance handling of heatmap and dot plot types in FeatureStatPlot function</li>
+<li>fix(FeatureStatPlot): hide column names for heatmap with cell_type bars</li>
+<li>refactor(do_call): use do_call from plotthis</li>
+<li>feat: add linkedheatmap plot type to CCCPlot function with new parameters for ligand and receptor expressions</li>
+<li>docs(CCCPlot): enhance CCCPlot documentation: Update title, arguments, and descriptions for clarity and detail. Improve data format and method sections, and refine examples for better usability.</li>
+<li>docs(CellDimPlot/CellVelocityPlot): enhance documentation for CellDimPlot and CellVelocityPlot functions</li>
+<li>docs(CellStatPlot): enhance CellStatPlot documentation and argument descriptions</li>
+<li>docs(SCPlotterChat): enhance documentation for LLM-powered chat interface, including detailed descriptions of architecture, conversation history, tool registry, and LLM provider setup</li>
+<li>docs: update documentation for Clonal Composition, Length, Overlap, Residency, and Volume plots</li>
+<li>docs: enhance ClonalDiversityPlot and ClonalRarefactionPlot documentation for clarity and detail</li>
+<li>docs(ClonalGeneUsagePlot): enhance documentation for clarity and detail, including usage examples and parameter descriptions</li>
+<li>docs: update documentation for ClonalKmerPlot and ClonalPositionalPlot</li>
+<li>docs: enhance ClonalStatPlot documentation with detailed arguments and usage examples</li>
+<li>docs: enhance documentation for clonal data processing functions, improving clarity and detail</li>
+<li>docs: enhance ClustreePlot documentation for clarity and detail, including usage examples and parameter descriptions</li>
+<li>docs: enhance EnrichmentPlot documentation for clarity and detail, including comprehensive parameter descriptions and usage examples</li>
+<li>docs: enhance FeatureStatPlot documentation and internal dispatcher</li>
+<li>docs: enhance MarkersPlot documentation for clarity and detail</li>
+<li>docs: enhance documentation for spatial plot functions in Seurat and Giotto</li>
+<li>docs: update documentation links and examples for clarity and consistency across multiple plot functions</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.4" id="version-074">Version 0.7.4<a class="anchor" aria-label="anchor" href="#version-074"></a></h2>
+<ul><li>feat(ClonalStatPlot): enhance group selection (argument: groups) with named vector/list</li>
+<li>feat(ClonalResidencyPlot): enhance group handling for scatter plots with named vectors/lists</li>
+<li>feat(MarkersPlot): enhance selection functionality with custom filtering conditions</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.3" id="version-073">Version 0.7.3<a class="anchor" aria-label="anchor" href="#version-073"></a></h2>
+<ul><li>fix(ClonalResidencyPlot): update data selection to include unique split_by parameter for upset plots</li>
+<li>chore: update LLM provider configuration in vignette to use new model and API key</li>
+<li>fix: update LLM provider model to use openai/gpt-5.4-nano in vignette</li>
+<li>fix(ClonalResidencyPlot): remove unused title parameter and update function usage in documentation</li>
+<li>fix(ClonalResidencyPlot): refactor segment data handling for improved readability</li>
+<li>feat: implement default dimension reduction functions for Seurat objects</li>
+<li>ci: update package dependencies in workflow for improved compatibility</li>
+<li>feat(MarkersPlot): add options to show labels and customize significant markers in heatmap plots</li>
+<li>fix: fix setting default dimreduction when “DefaultDimReduc&lt;-` is available</li>
+<li>fix(CellStatPlot): ensure rows_name is set correctly for heatmap arguments</li>
+<li>refactor(CellStatPlot): remove rows_name parameter from function and documentation</li>
+<li>chore(CellStatPlot): improve error messages for ‘group_by’ and ‘rows_by’ parameters in pie heatmap</li>
+<li>refactor(FeatureStatPlot): comment out row and column name annotation arguments</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.2" id="version-072">Version 0.7.2<a class="anchor" aria-label="anchor" href="#version-072"></a></h2>
+<ul><li>docs: update title and description to include spatial data analysis</li>
+<li>refactor: make implementation of group level retaining consistant across all clonal functions</li>
+<li>fix: set sample identity for Seurat objects in ClonalLengthPlot function</li>
+<li>fix: adjust x-axis breaks in ClonalLengthPlot to nearest tens and handle missing breaks</li>
+<li>chore(ClonalLengthPlot): add default value for position_dodge_preserve</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.1" id="version-071">Version 0.7.1<a class="anchor" aria-label="anchor" href="#version-071"></a></h2>
 <ul><li>fix(ClonalStatPlot): streamline xlab assignment for clarity in plots</li>
 <li>feat(ClonalResidencyPlot): add group_by_sep parameter for combining multiple group_by columns</li>
@@ -68,7 +134,8 @@
 <li>ci: update ggrepel package version to 0.9.5 in dependencies (0.9.6 requires R 4.5)</li>
 <li>fix(ClonalVolumePlot): ensure grouping_levels are simplified correctly (fixing order not working)</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

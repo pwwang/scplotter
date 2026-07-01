@@ -60,6 +60,8 @@ CCCPlot(
   show_column_names = TRUE,
   values_fill = 0,
   right_row_dend_side = "right",
+  columns_split_by = NULL,
+  rows_split_by = NULL,
   ...
 )
 ```
@@ -254,6 +256,19 @@ CCCPlot(
   The side on which to place the row dendrogram in the right-hand
   heatmap of the linked heatmap plot. Must be `"left"` or `"right"`.
   Default is `"right"`. Only used when `plot_type = "linkedheatmap"`.
+
+- columns_split_by:
+
+  An optional character vector of column names used to split the columns
+  of the heatmap into separate blocks. Only used when `plot_type` is
+  `"heatmap"` or `"linkedheatmap"`. When `method = "interaction"`,
+  `source` is automatically used as a column split.
+
+- rows_split_by:
+
+  An optional character vector of column names used to split the rows of
+  the heatmap into separate blocks. Only used when `plot_type` is
+  `"heatmap"` or `"linkedheatmap"`.
 
 - ...:
 
