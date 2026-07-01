@@ -864,7 +864,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res)
+#> CCCPlot(data = cellphonedb_res)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -880,7 +880,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -895,7 +895,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -904,12 +904,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res)"                                                                      
-#> [3] "User: Do a heatmap instead"                                                                                                                                         
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
-#> [5] "User: Add a proper title to the plot"                                                                                                                               
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                                
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                                      
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -3437,6 +3437,12 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       TRUE.
     #>       - title: A character string for the overall plot title.  A function
     #>       can be used to generate a dynamic title from the default.
+    #>       Note that, left_title and right_title are used to set the title for each heatmap,
+    #>       and title is used to set the overall title for the combined plot.
+    #>       - title_gp: A gpar object controlling the graphical
+    #>       parameters of the overall plot title (font size, font face, color, etc.).
+    #>       Only used when title is not NULL.
+    #>       Default is gpar(fontsize = 14, fontface = "bold").
     #>       - column_title, row_title: Character title displayed above the columns
     #>       / beside the rows of each heatmap.
     #>       - na_col: Colour used for NA cells.  Default "grey85".
@@ -3621,11 +3627,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -6148,6 +6154,12 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       TRUE.
     #>       - title: A character string for the overall plot title.  A function
     #>       can be used to generate a dynamic title from the default.
+    #>       Note that, left_title and right_title are used to set the title for each heatmap,
+    #>       and title is used to set the overall title for the combined plot.
+    #>       - title_gp: A gpar object controlling the graphical
+    #>       parameters of the overall plot title (font size, font face, color, etc.).
+    #>       Only used when title is not NULL.
+    #>       Default is gpar(fontsize = 14, fontface = "bold").
     #>       - column_title, row_title: Character title displayed above the columns
     #>       / beside the rows of each heatmap.
     #>       - na_col: Colour used for NA cells.  Default "grey85".
