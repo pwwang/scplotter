@@ -10,6 +10,7 @@
 - ci: update GiottoClass dependency to use the latest version
 - docs: add documentation section with link to online resources [skip ci]
 - fix: enhance gene selection logic in MarkersPlot function for heatmap and dot plots
+- fix(CCCPlot): fix rows_split_by and columns_split_by for heatmp with method = 'interaction'
 - docs: update LLM provider model and API endpoint in Visualizing_data_with_LLMs vignette
 - docs: update example in FeatureStatPlot documentation to include row annotation palette
 - fix: enhance handling of heatmap and dot plot types in FeatureStatPlot function
