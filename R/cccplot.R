@@ -155,6 +155,7 @@
 #' @param link_alpha The transparency (alpha) of the edges in the network
 #'  plot. Values range from `0` (fully transparent) to `1` (fully opaque).
 #'  Default is `0.6`. Only used when `plot_type = "network"`.
+#'  Only used when `plot_type` is `"network"` or `linkedheatmap"`.
 #' @param facet_by Deprecated. Not supported — must be `NULL` (the default).
 #'  Use `split_by` to produce separate plots instead.
 #' @param show_row_names Whether to display row names in heatmap plots.
@@ -359,7 +360,8 @@ CCCPlot <- function(
             right_rows_by = receptor_col,
             left_columns_by = source_col,
             right_columns_by = target_col,
-            links_width_by = magnitude,
+            link_width_by = magnitude,
+            link_alpha = link_alpha,
             values_fill = values_fill,
             show_row_names = show_row_names,
             show_column_names = show_column_names,
