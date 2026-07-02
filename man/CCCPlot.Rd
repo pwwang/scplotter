@@ -142,7 +142,8 @@ Default is \code{90} (vertical labels).}
 
 \item{link_alpha}{The transparency (alpha) of the edges in the network
 plot. Values range from \code{0} (fully transparent) to \code{1} (fully opaque).
-Default is \code{0.6}. Only used when \code{plot_type = "network"}.}
+Default is \code{0.6}. Only used when \code{plot_type = "network"}.
+Only used when \code{plot_type} is \code{"network"} or \verb{linkedheatmap"}.}
 
 \item{facet_by}{Deprecated. Not supported — must be \code{NULL} (the default).
 Use \code{split_by} to produce separate plots instead.}

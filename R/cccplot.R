@@ -352,15 +352,14 @@ CCCPlot <- function(
         stopifnot("[CCCPlot] Columns 'ligand_means' and 'receptor_means' are required for plot type 'linkedheatmap'." =
             !is.null(ligand_expr) && !is.null(receptor_expr))
 
-        LinkedHeatmap(
-            data,
+        args <- list(
+            data = data,
             left_values_by = ligand_expr,
             right_values_by = receptor_expr,
             left_rows_by = ligand_col,
             right_rows_by = receptor_col,
             left_columns_by = source_col,
             right_columns_by = target_col,
-            link_width_by = magnitude,
             link_alpha = link_alpha,
             values_fill = values_fill,
             show_row_names = show_row_names,
@@ -371,6 +370,9 @@ CCCPlot <- function(
             rows_split_by = rows_split_by,
             ...
         )
+        args$link_width_by <- args$link_width_by %||% magnitude
+
+        do_call(LinkedHeatmap, args)
     } else {
 
 
