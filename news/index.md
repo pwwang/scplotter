@@ -5,6 +5,7 @@
 - fix(CCCPlot): clarify link_alpha usage in parameter documentation
 - fix(CCCPlot): ensure link_width_by defaults to magnitude in
   linkedheatmap
+- fix: adapt plot APIs/docs for plotthis 0.13
 
 ## Version 0.7.5
 
