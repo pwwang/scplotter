@@ -21,9 +21,6 @@ ClonalGeneUsagePlot(
   show_row_names = TRUE,
   show_column_names = TRUE,
   row_annotation = NULL,
-  row_annotation_type = list(),
-  row_annotation_side = "right",
-  row_annotation_agg = list(),
   ...
 )
 }
@@ -105,24 +102,9 @@ group names or second gene set names) in the heatmap. Default is \code{TRUE}.
 Only applicable for \code{plot_type = "heatmap"}.}
 
 \item{row_annotation}{A named list specifying row annotations for heatmap
-plots. Each element should be a column name in the data to use as
-annotation data. Default is \code{NULL}. When a single gene prefix is used,
+plots. Default is \code{NULL}. When a single gene prefix is used,
 a \code{"Total Usage"} annotation is automatically added showing the aggregate
 usage per gene. Only applicable for \code{plot_type = "heatmap"}.}
-
-\item{row_annotation_type}{A named list specifying the annotation type for
-each row annotation. For example, \code{list("Total Usage" = "lines")}. Default
-is an empty list. The \code{"Total Usage"} annotation defaults to \code{"lines"}.
-Only applicable for \code{plot_type = "heatmap"}.}
-
-\item{row_annotation_side}{Character; the side of the heatmap where row
-annotations are placed. One of \code{"right"} (default) or \code{"left"}. Only
-applicable for \code{plot_type = "heatmap"}.}
-
-\item{row_annotation_agg}{A named list of aggregation functions for row
-annotations when multiple values exist per row. For example,
-\code{list("Total Usage" = function(x) ifelse(length(x) > 1, x[1], 0))}.
-Default is an empty list. Only applicable for \code{plot_type = "heatmap"}.}
 
 \item{...}{Additional arguments passed to the underlying \pkg{plotthis}
 visualization function, depending on \code{plot_type}:

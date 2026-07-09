@@ -139,21 +139,9 @@
 #'  automatically uses `"Gene Usage Fraction"` when `scale = TRUE` or
 #'  `"Gene Usage Count"` when `scale = FALSE`.
 #' @param row_annotation A named list specifying row annotations for heatmap
-#'  plots. Each element should be a column name in the data to use as
-#'  annotation data. Default is `NULL`. When a single gene prefix is used,
+#'  plots. Default is `NULL`. When a single gene prefix is used,
 #'  a `"Total Usage"` annotation is automatically added showing the aggregate
 #'  usage per gene. Only applicable for `plot_type = "heatmap"`.
-#' @param row_annotation_type A named list specifying the annotation type for
-#'  each row annotation. For example, `list("Total Usage" = "lines")`. Default
-#'  is an empty list. The `"Total Usage"` annotation defaults to `"lines"`.
-#'  Only applicable for `plot_type = "heatmap"`.
-#' @param row_annotation_side Character; the side of the heatmap where row
-#'  annotations are placed. One of `"right"` (default) or `"left"`. Only
-#'  applicable for `plot_type = "heatmap"`.
-#' @param row_annotation_agg A named list of aggregation functions for row
-#'  annotations when multiple values exist per row. For example,
-#'  `list("Total Usage" = function(x) ifelse(length(x) > 1, x[1], 0))`.
-#'  Default is an empty list. Only applicable for `plot_type = "heatmap"`.
 #' @param show_row_names Logical; whether to display row names (gene segment
 #'  names) in the heatmap. Default is `TRUE`. Set to `FALSE` to hide gene
 #'  labels when there are too many to display legibly. Only applicable for
@@ -243,8 +231,7 @@ ClonalGeneUsagePlot <- function(
     group_by = "Sample", facet_by = NULL, facet_ncol = 1, split_by = NULL,
     aspect.ratio = 2 / top, theme_args = list(), ylab = NULL,
     show_row_names = TRUE, show_column_names = TRUE,
-    row_annotation = NULL, row_annotation_type = list(), row_annotation_side = "right",
-    row_annotation_agg = list(), ...
+    row_annotation = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
     if (plot_type == "alluvial") { plot_type <- "sankey" }
@@ -327,13 +314,17 @@ ClonalGeneUsagePlot <- function(
             split_by = split_by, legend.position = "none", x_text_angle = 90, aspect.ratio = aspect.ratio,
             facet_args = list(strip.position = "right"), theme_args = theme_args, ylab = ylab, ...)
     } else if (plot_type == "heatmap") {
-        row_annotation_type[["Total Usage"]] <- row_annotation_type[["Total Usage"]] %||% "lines"
-        row_annotation_agg[["Total Usage"]] <- row_annotation_agg[["Total Usage"]] %||% function(x) ifelse(length(x) > 1, x[1], 0)
+        row_annotation <- row_annotation %||% list()
+
         if (is.null(genes2)) {
             data <- data %>% dplyr::group_by(!!!syms(c(axis1, split_by))) %>%
                 mutate(.total = sum(!!sym(ifelse(scale, "proportion", "count")))) %>%
                 ungroup()
-            row_annotation <- row_annotation %||% list(`Total Usage` = ".total")
+
+            row_annotation[["Total Usage"]] <- row_annotation[["Total Usage"]] %||% list()
+            row_annotation[["Total Usage"]]$col <- ".total"
+            row_annotation[["Total Usage"]]$type <- "lines"
+            row_annotation[["Total Usage"]]$agg <- row_annotation[["Total Usage"]]$agg %||% function(x) ifelse(length(x) > 1, x[1], 0)
         }
 
         Heatmap(
@@ -341,8 +332,7 @@ ClonalGeneUsagePlot <- function(
             values_by = ifelse(scale, "proportion", "count"), values_fill = 0,
             rows_by = axis1, columns_by = axis2, split_by = split_by,
             rows_name = axis1, name = ifelse(scale, "Gene Usage Fraction", "Gene Usage Count"),
-            row_annotation = row_annotation, row_annotation_type = row_annotation_type, row_annotation_agg = row_annotation_agg,
-            row_annotation_side = row_annotation_side,
+            row_annotation = row_annotation,
             show_row_names = show_row_names, show_column_names = show_column_names,
             ...)
     } else if (plot_type %in% c("circos", "chord")) {
