@@ -28,9 +28,6 @@ ClonalGeneUsagePlot(
   show_row_names = TRUE,
   show_column_names = TRUE,
   row_annotation = NULL,
-  row_annotation_type = list(),
-  row_annotation_side = "right",
-  row_annotation_agg = list(),
   ...
 )
 ```
@@ -151,31 +148,10 @@ ClonalGeneUsagePlot(
 
 - row_annotation:
 
-  A named list specifying row annotations for heatmap plots. Each
-  element should be a column name in the data to use as annotation data.
-  Default is `NULL`. When a single gene prefix is used, a
-  `"Total Usage"` annotation is automatically added showing the
-  aggregate usage per gene. Only applicable for `plot_type = "heatmap"`.
-
-- row_annotation_type:
-
-  A named list specifying the annotation type for each row annotation.
-  For example, `list("Total Usage" = "lines")`. Default is an empty
-  list. The `"Total Usage"` annotation defaults to `"lines"`. Only
-  applicable for `plot_type = "heatmap"`.
-
-- row_annotation_side:
-
-  Character; the side of the heatmap where row annotations are placed.
-  One of `"right"` (default) or `"left"`. Only applicable for
-  `plot_type = "heatmap"`.
-
-- row_annotation_agg:
-
-  A named list of aggregation functions for row annotations when
-  multiple values exist per row. For example,
-  `list("Total Usage" = function(x) ifelse(length(x) > 1, x[1], 0))`.
-  Default is an empty list. Only applicable for `plot_type = "heatmap"`.
+  A named list specifying row annotations for heatmap plots. Default is
+  `NULL`. When a single gene prefix is used, a `"Total Usage"`
+  annotation is automatically added showing the aggregate usage per
+  gene. Only applicable for `plot_type = "heatmap"`.
 
 - ...:
 

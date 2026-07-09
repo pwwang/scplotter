@@ -532,11 +532,16 @@ behave normally.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>       subset <span class="op">=</span> <span class="va">SubCellType</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Ngn3 low EP"</span>, <span class="st">"Ngn3 high EP"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   ident <span class="op">=</span> <span class="st">"SubCellType"</span>, group_by <span class="op">=</span> <span class="st">"Phase"</span>, comparisons <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggpubr"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># https://github.com/kassambara/ggpubr/issues/751</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/ggpubr/" class="external-link">ggpubr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>         subset <span class="op">=</span> <span class="va">SubCellType</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Ngn3 low EP"</span>, <span class="st">"Ngn3 high EP"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>     features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>     ident <span class="op">=</span> <span class="st">"SubCellType"</span>, group_by <span class="op">=</span> <span class="st">"Phase"</span>, comparisons <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: ggplot2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Detected more than 2 groups. Use multiple_method for comparison</span>
 <span class="r-plt img"><img src="FeatureStatPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span><span class="op">)</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -690,6 +695,10 @@ behave normally.</p>
 <span class="r-in"><span>   row_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   row_annotation_side <span class="op">=</span> <span class="st">"right"</span>,</span></span>
 <span class="r-in"><span>   row_annotation_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>TF <span class="op">=</span> <span class="st">"simple"</span>, CSPA <span class="op">=</span> <span class="st">"simple"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`row_annotation_side` is deprecated. Use `row_annotation = list(&lt;key&gt; = list(side = ...))` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`row_annotation_type` is deprecated. Use `row_annotation = list(&lt;key&gt; = list(type = ...))` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`column_annotation_type` is deprecated. Use `column_annotation = list(&lt;key&gt; = list(type = ...))` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`column_annotation_params` is deprecated. Use `column_annotation = list(&lt;key&gt; = list(params = ...))` instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation</span>
 <span class="r-plt img"><img src="FeatureStatPlot-38.png" alt="" width="700" height="433"></span>
@@ -704,6 +713,10 @@ behave normally.</p>
 <span class="r-in"><span>   row_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   row_annotation_side <span class="op">=</span> <span class="st">"right"</span>,</span></span>
 <span class="r-in"><span>   row_annotation_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>TF <span class="op">=</span> <span class="st">"simple"</span>, CSPA <span class="op">=</span> <span class="st">"simple"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`row_annotation_side` is deprecated. Use `row_annotation = list(&lt;key&gt; = list(side = ...))` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`row_annotation_type` is deprecated. Use `row_annotation = list(&lt;key&gt; = list(type = ...))` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`column_annotation_type` is deprecated. Use `column_annotation = list(&lt;key&gt; = list(type = ...))` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`column_annotation_params` is deprecated. Use `column_annotation = list(&lt;key&gt; = list(params = ...))` instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation</span>
 <span class="r-plt img"><img src="FeatureStatPlot-39.png" alt="" width="700" height="433"></span>
@@ -741,6 +754,7 @@ behave normally.</p>
 <span class="r-in"><span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>,</span></span>
 <span class="r-in"><span>  cluster_rows <span class="op">=</span> <span class="cn">FALSE</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  row_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>.row <span class="op">=</span> <span class="st">"Paired"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`row_annotation_palette` is deprecated. Use `row_annotation = list(&lt;key&gt; = list(palette = ...))` instead.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-42.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"</span></span></span>
@@ -777,7 +791,7 @@ behave normally.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

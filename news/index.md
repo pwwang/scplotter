@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.7.6
+
+- fix(CCCPlot): clarify link_alpha usage in parameter documentation
+- fix(CCCPlot): ensure link_width_by defaults to magnitude in
+  linkedheatmap
+
 ## Version 0.7.5
 
 - fix(DESCRIPTION): specify exact version for drieslab/GiottoClass

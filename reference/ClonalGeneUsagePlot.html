@@ -94,9 +94,6 @@ expansion, immune aging, or disease-associated repertoire bias.</p>
 <span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  row_annotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  row_annotation_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  row_annotation_side <span class="op">=</span> <span class="st">"right"</span>,</span>
-<span>  row_annotation_agg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -213,30 +210,9 @@ Only applicable for <code>plot_type = "heatmap"</code>.</p></dd>
 
 <dt id="arg-row-annotation">row_annotation<a class="anchor" aria-label="anchor" href="#arg-row-annotation"></a></dt>
 <dd><p>A named list specifying row annotations for heatmap
-plots. Each element should be a column name in the data to use as
-annotation data. Default is <code>NULL</code>. When a single gene prefix is used,
+plots. Default is <code>NULL</code>. When a single gene prefix is used,
 a <code>"Total Usage"</code> annotation is automatically added showing the aggregate
 usage per gene. Only applicable for <code>plot_type = "heatmap"</code>.</p></dd>
-
-
-<dt id="arg-row-annotation-type">row_annotation_type<a class="anchor" aria-label="anchor" href="#arg-row-annotation-type"></a></dt>
-<dd><p>A named list specifying the annotation type for
-each row annotation. For example, <code>list("Total Usage" = "lines")</code>. Default
-is an empty list. The <code>"Total Usage"</code> annotation defaults to <code>"lines"</code>.
-Only applicable for <code>plot_type = "heatmap"</code>.</p></dd>
-
-
-<dt id="arg-row-annotation-side">row_annotation_side<a class="anchor" aria-label="anchor" href="#arg-row-annotation-side"></a></dt>
-<dd><p>Character; the side of the heatmap where row
-annotations are placed. One of <code>"right"</code> (default) or <code>"left"</code>. Only
-applicable for <code>plot_type = "heatmap"</code>.</p></dd>
-
-
-<dt id="arg-row-annotation-agg">row_annotation_agg<a class="anchor" aria-label="anchor" href="#arg-row-annotation-agg"></a></dt>
-<dd><p>A named list of aggregation functions for row
-annotations when multiple values exist per row. For example,
-<code>list("Total Usage" = function(x) ifelse(length(x) &gt; 1, x[1], 0))</code>.
-Default is an empty list. Only applicable for <code>plot_type = "heatmap"</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -416,7 +392,7 @@ underlying gene usage computation</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

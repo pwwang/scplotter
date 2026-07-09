@@ -1965,6 +1965,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>   - link_alpha: The transparency (alpha) of the edges in the network
     #>   plot. Values range from 0 (fully transparent) to 1 (fully opaque).
     #>   Default is 0.6. Only used when plot_type = "network".
+    #>   Only used when plot_type is "network" or linkedheatmap".
     #>   - facet_by: Deprecated. Not supported — must be NULL (the default).
     #>   Use split_by to produce separate plots instead.
     #>   - show_row_names: Whether to display row names in heatmap plots.
@@ -2430,36 +2431,74 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - na_col: Colour for NA cells.  Default "grey85".
     #>       - row_names_side: Side for row names.  Default "right".
     #>       - column_names_side: Side for column names.  Default "bottom".
-    #>       - column_annotation: A character vector of column names, or a named
-    #>       list, specifying column annotations.  See the Annotations
-    #>       section for the full specification.
-    #>       - column_annotation_side: A character string or named list
-    #>       specifying which side each column annotation is placed on.  Accepts
-    #>       "top" (default) or "bottom".  With a named list, use
-    #>       keys .col, .col.split, and .default for
-    #>       per-annotation control.
-    #>       - column_annotation_palette, column_annotation_palcolor: Palette and
-    #>       custom colours for column annotations.  Can be a named list keyed by
-    #>       annotation name.
-    #>       - column_annotation_type: Annotation type: "auto" (default),
-    #>       "simple", "pie", "ring", "bar",
-    #>       "violin", "boxplot", "density", "label",
-    #>       "points", "lines".  Can be a named list for
-    #>       per-annotation control.  Aliases: .col.split, .col.
-    #>       - column_annotation_params: A named list of additional parameters
-    #>       passed to each column annotation function.  Use aliases
-    #>       .col/.cols for columns_by and
-    #>       .col.split/.cols.split for columns_split_by.
-    #>       Setting a key to FALSE disables that annotation;
-    #>       $<key>$show_legend controls its legend visibility.
-    #>       See HeatmapAnnotation for details.
-    #>       - column_annotation_agg: A function or named list of functions to
-    #>       aggregate values for each column annotation.  Defaults vary by
-    #>       annotation type.
-    #>       - row_annotation, row_annotation_side, row_annotation_palette, row_annotation_palcolor, row_annotation_type, row_annotation_params, row_annotation_agg: Row annotation equivalents of the column_annotation_*
-    #>       parameters.  Sides default to "left".  Aliases: .row
-    #>       /.rows for rows_by, .rows.split/.row.split
-    #>       for rows_split_by.
+    #>       - row_annotation: A structured list specifying row annotations.
+    #>       Same format as column_annotation.  Sides default to
+    #>       "left".  Aliases: .row/.rows for
+    #>       rows_by, .row.split/.rows.split for
+    #>       rows_split_by.
+    #>       - row_annotation_side: Deprecated: use
+    #>       row_annotation with the side sub-key instead.
+    #>       - row_annotation_palette: Deprecated: use
+    #>       row_annotation with the palette sub-key instead.
+    #>       - row_annotation_palcolor: Deprecated: use
+    #>       row_annotation with the palcolor sub-key instead.
+    #>       - row_annotation_type: Deprecated: use
+    #>       row_annotation with the type sub-key instead.
+    #>       - row_annotation_params: Deprecated: use
+    #>       row_annotation with the params sub-key instead.
+    #>       - row_annotation_agg: Deprecated: use
+    #>       row_annotation with the agg sub-key instead.
+    #>       - column_annotation: A structured list specifying column annotations.
+    #>       Each entry is a named list with sub-keys:
+    #>       
+    #>       colColumn name in data supplying the annotation
+    #>       values.  If omitted, the entry name is used as the column name.
+    #>       side"top" or "bottom".
+    #>       palettePalette name (see show_palettes).
+    #>       palcolorCustom colour vector overriding palette.
+    #>       typeAnnotation type: "auto", "simple",
+    #>       "pie", "ring", "bar", "violin",
+    #>       "boxplot", "density", "label", "points",
+    #>       "lines".
+    #>       paramsA list of additional parameters passed to the
+    #>       annotation constructor.  FALSE disables the annotation.
+    #>       $show_legend controls legend visibility.  See
+    #>       HeatmapAnnotation.
+    #>       aggA function to aggregate values for the annotation.
+    #>       
+    #>       Shortcuts:
+    #>       
+    #>        column_annotation = list(Score = "score") is short for
+    #>       list(Score = list(col = "score")).
+    #>        column_annotation = TRUE enables annotations with
+    #>       defaults.  FALSE disables all column annotations.
+    #>       
+    #>       Special keys:
+    #>       
+    #>        .default — default values inherited by all entries.
+    #>       params is merged recursively; other keys are inherited
+    #>       only when the entry does not already specify them.
+    #>        .col / .cols / .column / .columns —
+    #>       alias for columns_by (the built-in name annotation).
+    #>        .col.split / .cols.split / .column.split /
+    #>       .columns.split — alias for columns_split_by
+    #>       (the built-in split annotation).
+    #>        .row / .rows — alias for rows_by.
+    #>        .row.split / .rows.split — alias for
+    #>       rows_split_by.
+    #>       
+    #>       - column_annotation_side: Deprecated: use
+    #>       column_annotation with the side sub-key instead.
+    #>       - column_annotation_palette: Deprecated: use
+    #>       column_annotation with the palette sub-key instead.
+    #>       - column_annotation_palcolor: Deprecated: use
+    #>       column_annotation with the palcolor sub-key instead.
+    #>       - column_annotation_type: Deprecated: use
+    #>       column_annotation with the type sub-key instead.
+    #>       - column_annotation_params: Deprecated: use
+    #>       column_annotation with the params sub-key instead.
+    #>       - column_annotation_agg: Deprecated: use
+    #>       column_annotation with the agg sub-key instead.
     #>       - flip: Logical; if TRUE, swap rows and columns
     #>       transparently.  The caller does not need to swap row- and
     #>       column-related arguments manually.
@@ -2932,6 +2971,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - y_max, y_min: Numeric y-axis limits, or quantile notation strings
     #>       (e.g., "q95" for the 95th percentile, "q5" for the
     #>       5th percentile).
+    #>       - y_brackets: Numeric y-axis position for significance brackets
+    #>       (or p-value labels for multiple comparisons).  If NULL, the brackets are placed above the maximum y-value.
     #>       - add_beeswarm: Logical; use ggbeeswarm::geom_beeswarm() for
     #>       non-overlapping point layout instead of jitter.  Requires the
     #>       ggbeeswarm package.
@@ -3107,6 +3148,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - y_max, y_min: Numeric y-axis limits, or quantile notation strings
     #>       (e.g., "q95" for the 95th percentile, "q5" for the
     #>       5th percentile).
+    #>       - y_brackets: Numeric y-axis position for significance brackets
+    #>       (or p-value labels for multiple comparisons).  If NULL, the brackets are placed above the maximum y-value.
     #>       - add_beeswarm: Logical; use ggbeeswarm::geom_beeswarm() for
     #>       non-overlapping point layout instead of jitter.  Requires the
     #>       ggbeeswarm package.
@@ -3275,6 +3318,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - subtitle: A character string specifying the subtitle of the plot.
     #>       - xlab: A character string specifying the x-axis label.
     #>       - ylab: A character string specifying the y-axis label.
+    #>       - x_min, x_max: Numeric limits for the x-axis. When NULL (default),
+    #>       limits are determined from the data range. Passed to coord_cartesian().
     #>       - reverse: A logical value. If TRUE, the y-axis group order is
     #>       reversed. NA groups are renamed to the literal string "NA" and
     #>       placed at the end.
@@ -3439,10 +3484,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       can be used to generate a dynamic title from the default.
     #>       Note that, left_title and right_title are used to set the title for each heatmap,
     #>       and title is used to set the overall title for the combined plot.
-    #>       - title_gp: A gpar object controlling the graphical
-    #>       parameters of the overall plot title (font size, font face, color, etc.).
-    #>       Only used when title is not NULL.
-    #>       Default is gpar(fontsize = 14, fontface = "bold").
+    #>       - title_params: A list of parameters passed to grid::grid.text() to control the title appearance.
+    #>       Default is list(gp = gpar(fontsize = 14, fontface = "bold")).
     #>       - column_title, row_title: Character title displayed above the columns
     #>       / beside the rows of each heatmap.
     #>       - na_col: Colour used for NA cells.  Default "grey85".
@@ -3451,38 +3494,46 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       "right".
     #>       - column_names_side: Side for column names.  Default
     #>       "bottom".
-    #>       - column_annotation: A character vector of column names, or a named
-    #>       list, specifying column annotations for both heatmaps.  See
-    #>       HeatmapAtomic for the full specification.
-    #>       - column_annotation_side: Side for column annotations:
-    #>       "top" (default) or "bottom".  Can also be a named list
-    #>       for per-annotation control.
-    #>       - column_annotation_palette, column_annotation_palcolor: Palette and
-    #>       custom colours for column annotations.
-    #>       - column_annotation_type: Annotation type: "auto" (default),
-    #>       "simple", "pie", "ring", "bar",
-    #>       "violin", "boxplot", "density", "label".
-    #>       Can be a named list for per-annotation control.
-    #>       - column_annotation_params: A named list of additional parameters
-    #>       passed to each column annotation function.  See
-    #>       HeatmapAtomic for details.
-    #>       - column_annotation_agg: A function or named list of functions to
-    #>       aggregate values for each column annotation.
-    #>       - row_annotation, row_annotation_palette, row_annotation_palcolor, row_annotation_type, row_annotation_params, row_annotation_agg: Row annotation equivalents of the column_annotation_* parameters.
-    #>       - row_annotation_side: Default side for row annotations.  Used as
+    #>       - row_annotation: A structured list specifying row annotations.
+    #>       See HeatmapAtomic for the full specification.
+    #>       - row_annotation_side: Deprecated: use
+    #>       row_annotation with the side sub-key instead.  Used as
     #>       fallback for left_row_annotation_side /
     #>       right_row_annotation_side.  Default "left".
-    #>       - links_width_by: Optional column name in data whose values
+    #>       - row_annotation_palette: Deprecated: use
+    #>       row_annotation with the palette sub-key instead.
+    #>       - row_annotation_palcolor: Deprecated: use
+    #>       row_annotation with the palcolor sub-key instead.
+    #>       - row_annotation_type: Deprecated: use
+    #>       row_annotation with the type sub-key instead.
+    #>       - row_annotation_params: Deprecated: use
+    #>       row_annotation with the params sub-key instead.
+    #>       - row_annotation_agg: Deprecated: use
+    #>       row_annotation with the agg sub-key instead.
+    #>       - column_annotation: A structured list specifying column annotations.
+    #>       See HeatmapAtomic for the full specification.
+    #>       - column_annotation_side: Deprecated: use
+    #>       column_annotation with the side sub-key instead.
+    #>       - column_annotation_palette: Deprecated: use
+    #>       column_annotation with the palette sub-key instead.
+    #>       - column_annotation_palcolor: Deprecated: use
+    #>       column_annotation with the palcolor sub-key instead.
+    #>       - column_annotation_type: Deprecated: use
+    #>       column_annotation with the type sub-key instead.
+    #>       - column_annotation_params: Deprecated: use
+    #>       column_annotation with the params sub-key instead.
+    #>       - column_annotation_agg: Deprecated: use
+    #>       column_annotation with the agg sub-key instead.
+    #>       - link_width_by: Optional column name in data whose values
     #>       determine the stroke width of each link line (e.g. interaction
     #>       strength).  Values are min-max scaled to [0, 1] and multiplied by
-    #>       links_width_scale.
-    #>       - links_width_scale: Numeric scaling factor applied to the normalised
+    #>       link_width_scale.
+    #>       You can also pass a numeric value to use a constant width for all links.
+    #>       - link_width_scale: Numeric scaling factor applied to the normalised
     #>       link intensity values to produce final line widths (lwd).
     #>       Default 5.
-    #>       - links_color: Colour of the link spline curves.  Default
+    #>       - link_color: Colour of the link spline curves.  Default
     #>       "grey30".
-    #>       - links_alpha: Alpha transparency of link curves in [0, 1].
-    #>       Default 0.8.
     #>       - flip: Logical; must be FALSE for linked heatmaps (flipping
     #>       is not supported).  Default FALSE.
     #>       - alpha: Alpha transparency for heatmap cells in [0, 1].
@@ -3627,11 +3678,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -4682,6 +4733,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>   - link_alpha: The transparency (alpha) of the edges in the network
     #>   plot. Values range from 0 (fully transparent) to 1 (fully opaque).
     #>   Default is 0.6. Only used when plot_type = "network".
+    #>   Only used when plot_type is "network" or linkedheatmap".
     #>   - facet_by: Deprecated. Not supported — must be NULL (the default).
     #>   Use split_by to produce separate plots instead.
     #>   - show_row_names: Whether to display row names in heatmap plots.
@@ -5147,36 +5199,74 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - na_col: Colour for NA cells.  Default "grey85".
     #>       - row_names_side: Side for row names.  Default "right".
     #>       - column_names_side: Side for column names.  Default "bottom".
-    #>       - column_annotation: A character vector of column names, or a named
-    #>       list, specifying column annotations.  See the Annotations
-    #>       section for the full specification.
-    #>       - column_annotation_side: A character string or named list
-    #>       specifying which side each column annotation is placed on.  Accepts
-    #>       "top" (default) or "bottom".  With a named list, use
-    #>       keys .col, .col.split, and .default for
-    #>       per-annotation control.
-    #>       - column_annotation_palette, column_annotation_palcolor: Palette and
-    #>       custom colours for column annotations.  Can be a named list keyed by
-    #>       annotation name.
-    #>       - column_annotation_type: Annotation type: "auto" (default),
-    #>       "simple", "pie", "ring", "bar",
-    #>       "violin", "boxplot", "density", "label",
-    #>       "points", "lines".  Can be a named list for
-    #>       per-annotation control.  Aliases: .col.split, .col.
-    #>       - column_annotation_params: A named list of additional parameters
-    #>       passed to each column annotation function.  Use aliases
-    #>       .col/.cols for columns_by and
-    #>       .col.split/.cols.split for columns_split_by.
-    #>       Setting a key to FALSE disables that annotation;
-    #>       $<key>$show_legend controls its legend visibility.
-    #>       See HeatmapAnnotation for details.
-    #>       - column_annotation_agg: A function or named list of functions to
-    #>       aggregate values for each column annotation.  Defaults vary by
-    #>       annotation type.
-    #>       - row_annotation, row_annotation_side, row_annotation_palette, row_annotation_palcolor, row_annotation_type, row_annotation_params, row_annotation_agg: Row annotation equivalents of the column_annotation_*
-    #>       parameters.  Sides default to "left".  Aliases: .row
-    #>       /.rows for rows_by, .rows.split/.row.split
-    #>       for rows_split_by.
+    #>       - row_annotation: A structured list specifying row annotations.
+    #>       Same format as column_annotation.  Sides default to
+    #>       "left".  Aliases: .row/.rows for
+    #>       rows_by, .row.split/.rows.split for
+    #>       rows_split_by.
+    #>       - row_annotation_side: Deprecated: use
+    #>       row_annotation with the side sub-key instead.
+    #>       - row_annotation_palette: Deprecated: use
+    #>       row_annotation with the palette sub-key instead.
+    #>       - row_annotation_palcolor: Deprecated: use
+    #>       row_annotation with the palcolor sub-key instead.
+    #>       - row_annotation_type: Deprecated: use
+    #>       row_annotation with the type sub-key instead.
+    #>       - row_annotation_params: Deprecated: use
+    #>       row_annotation with the params sub-key instead.
+    #>       - row_annotation_agg: Deprecated: use
+    #>       row_annotation with the agg sub-key instead.
+    #>       - column_annotation: A structured list specifying column annotations.
+    #>       Each entry is a named list with sub-keys:
+    #>       
+    #>       colColumn name in data supplying the annotation
+    #>       values.  If omitted, the entry name is used as the column name.
+    #>       side"top" or "bottom".
+    #>       palettePalette name (see show_palettes).
+    #>       palcolorCustom colour vector overriding palette.
+    #>       typeAnnotation type: "auto", "simple",
+    #>       "pie", "ring", "bar", "violin",
+    #>       "boxplot", "density", "label", "points",
+    #>       "lines".
+    #>       paramsA list of additional parameters passed to the
+    #>       annotation constructor.  FALSE disables the annotation.
+    #>       $show_legend controls legend visibility.  See
+    #>       HeatmapAnnotation.
+    #>       aggA function to aggregate values for the annotation.
+    #>       
+    #>       Shortcuts:
+    #>       
+    #>        column_annotation = list(Score = "score") is short for
+    #>       list(Score = list(col = "score")).
+    #>        column_annotation = TRUE enables annotations with
+    #>       defaults.  FALSE disables all column annotations.
+    #>       
+    #>       Special keys:
+    #>       
+    #>        .default — default values inherited by all entries.
+    #>       params is merged recursively; other keys are inherited
+    #>       only when the entry does not already specify them.
+    #>        .col / .cols / .column / .columns —
+    #>       alias for columns_by (the built-in name annotation).
+    #>        .col.split / .cols.split / .column.split /
+    #>       .columns.split — alias for columns_split_by
+    #>       (the built-in split annotation).
+    #>        .row / .rows — alias for rows_by.
+    #>        .row.split / .rows.split — alias for
+    #>       rows_split_by.
+    #>       
+    #>       - column_annotation_side: Deprecated: use
+    #>       column_annotation with the side sub-key instead.
+    #>       - column_annotation_palette: Deprecated: use
+    #>       column_annotation with the palette sub-key instead.
+    #>       - column_annotation_palcolor: Deprecated: use
+    #>       column_annotation with the palcolor sub-key instead.
+    #>       - column_annotation_type: Deprecated: use
+    #>       column_annotation with the type sub-key instead.
+    #>       - column_annotation_params: Deprecated: use
+    #>       column_annotation with the params sub-key instead.
+    #>       - column_annotation_agg: Deprecated: use
+    #>       column_annotation with the agg sub-key instead.
     #>       - flip: Logical; if TRUE, swap rows and columns
     #>       transparently.  The caller does not need to swap row- and
     #>       column-related arguments manually.
@@ -5649,6 +5739,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - y_max, y_min: Numeric y-axis limits, or quantile notation strings
     #>       (e.g., "q95" for the 95th percentile, "q5" for the
     #>       5th percentile).
+    #>       - y_brackets: Numeric y-axis position for significance brackets
+    #>       (or p-value labels for multiple comparisons).  If NULL, the brackets are placed above the maximum y-value.
     #>       - add_beeswarm: Logical; use ggbeeswarm::geom_beeswarm() for
     #>       non-overlapping point layout instead of jitter.  Requires the
     #>       ggbeeswarm package.
@@ -5824,6 +5916,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - y_max, y_min: Numeric y-axis limits, or quantile notation strings
     #>       (e.g., "q95" for the 95th percentile, "q5" for the
     #>       5th percentile).
+    #>       - y_brackets: Numeric y-axis position for significance brackets
+    #>       (or p-value labels for multiple comparisons).  If NULL, the brackets are placed above the maximum y-value.
     #>       - add_beeswarm: Logical; use ggbeeswarm::geom_beeswarm() for
     #>       non-overlapping point layout instead of jitter.  Requires the
     #>       ggbeeswarm package.
@@ -5992,6 +6086,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - subtitle: A character string specifying the subtitle of the plot.
     #>       - xlab: A character string specifying the x-axis label.
     #>       - ylab: A character string specifying the y-axis label.
+    #>       - x_min, x_max: Numeric limits for the x-axis. When NULL (default),
+    #>       limits are determined from the data range. Passed to coord_cartesian().
     #>       - reverse: A logical value. If TRUE, the y-axis group order is
     #>       reversed. NA groups are renamed to the literal string "NA" and
     #>       placed at the end.
@@ -6156,10 +6252,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       can be used to generate a dynamic title from the default.
     #>       Note that, left_title and right_title are used to set the title for each heatmap,
     #>       and title is used to set the overall title for the combined plot.
-    #>       - title_gp: A gpar object controlling the graphical
-    #>       parameters of the overall plot title (font size, font face, color, etc.).
-    #>       Only used when title is not NULL.
-    #>       Default is gpar(fontsize = 14, fontface = "bold").
+    #>       - title_params: A list of parameters passed to grid::grid.text() to control the title appearance.
+    #>       Default is list(gp = gpar(fontsize = 14, fontface = "bold")).
     #>       - column_title, row_title: Character title displayed above the columns
     #>       / beside the rows of each heatmap.
     #>       - na_col: Colour used for NA cells.  Default "grey85".
@@ -6168,38 +6262,46 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       "right".
     #>       - column_names_side: Side for column names.  Default
     #>       "bottom".
-    #>       - column_annotation: A character vector of column names, or a named
-    #>       list, specifying column annotations for both heatmaps.  See
-    #>       HeatmapAtomic for the full specification.
-    #>       - column_annotation_side: Side for column annotations:
-    #>       "top" (default) or "bottom".  Can also be a named list
-    #>       for per-annotation control.
-    #>       - column_annotation_palette, column_annotation_palcolor: Palette and
-    #>       custom colours for column annotations.
-    #>       - column_annotation_type: Annotation type: "auto" (default),
-    #>       "simple", "pie", "ring", "bar",
-    #>       "violin", "boxplot", "density", "label".
-    #>       Can be a named list for per-annotation control.
-    #>       - column_annotation_params: A named list of additional parameters
-    #>       passed to each column annotation function.  See
-    #>       HeatmapAtomic for details.
-    #>       - column_annotation_agg: A function or named list of functions to
-    #>       aggregate values for each column annotation.
-    #>       - row_annotation, row_annotation_palette, row_annotation_palcolor, row_annotation_type, row_annotation_params, row_annotation_agg: Row annotation equivalents of the column_annotation_* parameters.
-    #>       - row_annotation_side: Default side for row annotations.  Used as
+    #>       - row_annotation: A structured list specifying row annotations.
+    #>       See HeatmapAtomic for the full specification.
+    #>       - row_annotation_side: Deprecated: use
+    #>       row_annotation with the side sub-key instead.  Used as
     #>       fallback for left_row_annotation_side /
     #>       right_row_annotation_side.  Default "left".
-    #>       - links_width_by: Optional column name in data whose values
+    #>       - row_annotation_palette: Deprecated: use
+    #>       row_annotation with the palette sub-key instead.
+    #>       - row_annotation_palcolor: Deprecated: use
+    #>       row_annotation with the palcolor sub-key instead.
+    #>       - row_annotation_type: Deprecated: use
+    #>       row_annotation with the type sub-key instead.
+    #>       - row_annotation_params: Deprecated: use
+    #>       row_annotation with the params sub-key instead.
+    #>       - row_annotation_agg: Deprecated: use
+    #>       row_annotation with the agg sub-key instead.
+    #>       - column_annotation: A structured list specifying column annotations.
+    #>       See HeatmapAtomic for the full specification.
+    #>       - column_annotation_side: Deprecated: use
+    #>       column_annotation with the side sub-key instead.
+    #>       - column_annotation_palette: Deprecated: use
+    #>       column_annotation with the palette sub-key instead.
+    #>       - column_annotation_palcolor: Deprecated: use
+    #>       column_annotation with the palcolor sub-key instead.
+    #>       - column_annotation_type: Deprecated: use
+    #>       column_annotation with the type sub-key instead.
+    #>       - column_annotation_params: Deprecated: use
+    #>       column_annotation with the params sub-key instead.
+    #>       - column_annotation_agg: Deprecated: use
+    #>       column_annotation with the agg sub-key instead.
+    #>       - link_width_by: Optional column name in data whose values
     #>       determine the stroke width of each link line (e.g. interaction
     #>       strength).  Values are min-max scaled to [0, 1] and multiplied by
-    #>       links_width_scale.
-    #>       - links_width_scale: Numeric scaling factor applied to the normalised
+    #>       link_width_scale.
+    #>       You can also pass a numeric value to use a constant width for all links.
+    #>       - link_width_scale: Numeric scaling factor applied to the normalised
     #>       link intensity values to produce final line widths (lwd).
     #>       Default 5.
-    #>       - links_color: Colour of the link spline curves.  Default
+    #>       - link_color: Colour of the link spline curves.  Default
     #>       "grey30".
-    #>       - links_alpha: Alpha transparency of link curves in [0, 1].
-    #>       Default 0.8.
     #>       - flip: Logical; must be FALSE for linked heatmaps (flipping
     #>       is not supported).  Default FALSE.
     #>       - alpha: Alpha transparency for heatmap cells in [0, 1].

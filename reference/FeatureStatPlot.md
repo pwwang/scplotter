@@ -445,11 +445,16 @@ FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
 #> Warning: Groups with fewer than two datapoints have been dropped.
 #> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 
-FeatureStatPlot(
-   subset(pancreas_sub,
-       subset = SubCellType %in% c("Ductal", "Ngn3 low EP", "Ngn3 high EP")),
-   features = c("G2M_score"),
-   ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
+if (requireNamespace("ggpubr", quietly = TRUE)) {
+  # https://github.com/kassambara/ggpubr/issues/751
+  library(ggpubr)
+  FeatureStatPlot(
+     subset(pancreas_sub,
+         subset = SubCellType %in% c("Ductal", "Ngn3 low EP", "Ngn3 high EP")),
+     features = c("G2M_score"),
+     ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
+}
+#> Loading required package: ggplot2
 #> Detected more than 2 groups. Use multiple_method for comparison
 
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
@@ -603,6 +608,10 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    row_annotation = c("TF", "CSPA"),
    row_annotation_side = "right",
    row_annotation_type = list(TF = "simple", CSPA = "simple"))
+#> Warning: `row_annotation_side` is deprecated. Use `row_annotation = list(<key> = list(side = ...))` instead.
+#> Warning: `row_annotation_type` is deprecated. Use `row_annotation = list(<key> = list(type = ...))` instead.
+#> Warning: `column_annotation_type` is deprecated. Use `column_annotation = list(<key> = list(type = ...))` instead.
+#> Warning: `column_annotation_params` is deprecated. Use `column_annotation = list(<key> = list(params = ...))` instead.
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation
 
@@ -617,6 +626,10 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    row_annotation = c("TF", "CSPA"),
    row_annotation_side = "right",
    row_annotation_type = list(TF = "simple", CSPA = "simple"))
+#> Warning: `row_annotation_side` is deprecated. Use `row_annotation = list(<key> = list(side = ...))` instead.
+#> Warning: `row_annotation_type` is deprecated. Use `row_annotation = list(<key> = list(type = ...))` instead.
+#> Warning: `column_annotation_type` is deprecated. Use `column_annotation = list(<key> = list(type = ...))` instead.
+#> Warning: `column_annotation_params` is deprecated. Use `column_annotation = list(<key> = list(params = ...))` instead.
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation
 
@@ -654,6 +667,7 @@ FeatureStatPlot(pancreas_sub,
   show_row_names = TRUE, show_column_names = TRUE, name = "Expression Level",
   cluster_rows = FALSE, cluster_columns = FALSE,
   row_annotation_palette = list(.row = "Paired"))
+#> Warning: `row_annotation_palette` is deprecated. Use `row_annotation = list(<key> = list(palette = ...))` instead.
 
 
 # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"

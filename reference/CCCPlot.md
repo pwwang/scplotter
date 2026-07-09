@@ -228,7 +228,8 @@ CCCPlot(
 
   The transparency (alpha) of the edges in the network plot. Values
   range from `0` (fully transparent) to `1` (fully opaque). Default is
-  `0.6`. Only used when `plot_type = "network"`.
+  `0.6`. Only used when `plot_type = "network"`. Only used when
+  `plot_type` is `"network"` or `linkedheatmap"`.
 
 - facet_by:
 
