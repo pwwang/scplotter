@@ -1,3 +1,7 @@
+## Version 0.7.7
+
+- chore: use r-meta >=1.12 as conda dependency
+
 ## Version 0.7.6
 
 - fix(CCCPlot): clarify link_alpha usage in parameter documentation
