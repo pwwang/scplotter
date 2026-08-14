@@ -351,7 +351,7 @@ MarkersPlot <- function(
     cutoff = NULL,
     show_labels = FALSE,
     sig_mark = "*",
-    order_by = NULL,
+    order_by = "desc(avg_log2FC)",
     select = ifelse(plot_type %in% c(
         "volcano", "volcano_log2fc", "volcano_pct",
         "jitter", "jitter_log2fc", "jitter_pct"
@@ -680,7 +680,11 @@ MarkersPlot <- function(
         }
 
         if (is.numeric(select)) {
+            if (!is.null(cutoff)) {
+                markers <- dplyr::filter(markers, !!rlang::sym(pcol) < cutoff)
+            }
             if (!is.null(subset_by)) {
+                # e.g. each cluster
                 genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(subset_by_1))
                 if (plot_type %in% c("heatmap", "dot")) {
                     genes <- dplyr::summarise(genes, gene = list(!!sym("gene")), .by = !!rlang::sym(subset_by_1))
@@ -689,13 +693,19 @@ MarkersPlot <- function(
                     genes <- genes$gene
                 }
             } else {
+                # generally, select top N markers overall
                 genes <- dplyr::slice_head(markers, n = select)$gene
             }
         } else if (is.null(subset_by) || length(select) == 1) {
+            # If subset_by is NULL or select has only one expression,
+            # we can just filter the markers directly
             genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select))$gene
         } else {
             # The expressions in select with the entire `subset_by` word in it are
             # supposed to be the ones to filter the data
+            # e.g if subset_by = "cluster" and select = c("cluster %in% c('1', '2')", "avg_log2FC > 0.5"),
+            # the first expression is used to filter the markers data frame, and the second expression is
+            # used to filter the genes within the remaining data
             select_sb <- grepl(paste0("\\b", subset_by_1, "\\b"), select)
             if (any(select_sb)) {
                 markers <- dplyr::filter(markers, !!!rlang::parse_exprs(select[select_sb]))

@@ -17,7 +17,7 @@ MarkersPlot(
   cutoff = NULL,
   show_labels = FALSE,
   sig_mark = "*",
-  order_by = NULL,
+  order_by = "desc(avg_log2FC)",
   select = ifelse(plot_type \%in\% c("volcano", "volcano_log2fc", "volcano_pct",
     "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
   ...
