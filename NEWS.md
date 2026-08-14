@@ -1,7 +1,7 @@
 ## Version 0.7.7
 
 - chore: use r-meta >=1.12 as conda dependency
-- fix: set default order_by parameter to "desc(avg_log2FC)" in MarkersPlot function
+- fix: set default order_by parameter to "desc(abs(avg_log2FC))" in MarkersPlot function
 
 ## Version 0.7.6
 
