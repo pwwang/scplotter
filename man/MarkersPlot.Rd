@@ -17,7 +17,7 @@ MarkersPlot(
   cutoff = NULL,
   show_labels = FALSE,
   sig_mark = "*",
-  order_by = "desc(avg_log2FC)",
+  order_by = "desc(abs(avg_log2FC))",
   select = ifelse(plot_type \%in\% c("volcano", "volcano_log2fc", "volcano_pct",
     "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
   ...
@@ -101,7 +101,7 @@ in \code{markers} as well as columns from the object metadata (when
 \code{object} is provided and \code{subset_by} enables merging). Only
 the first value of merged metadata columns is used. Example:
 \code{"desc(avg_log2FC)"}. The ordering affects which markers are
-selected when \code{select} is numeric. Default: \code{NULL}.}
+selected when \code{select} is numeric. Default: \code{desc(abs(avg_log2FC))}.}
 
 \item{select}{How to select markers for labeling or display. See
 \strong{Marker selection and filtering} section for full details.
