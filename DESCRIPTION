@@ -51,6 +51,7 @@ Suggests:
     scattermore,
     gridGraphics,
     iNEXT,
+    tidygraph,
     tidyprompt,
     callr,
     metap (>= 1.11),

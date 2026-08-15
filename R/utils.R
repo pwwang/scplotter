@@ -4,6 +4,8 @@ check_columns <- getFromNamespace("check_columns", "plotthis")
 
 #' @keywords internal
 #' @importFrom utils getFromNamespace
+# Alias of plotthis's function; its tidygraph:: usage trips "checking
+# dependencies in R code", hence tidygraph in Suggests
 combine_plots <- getFromNamespace("combine_plots", "plotthis")
 
 #' Try to read a H5Group as a data.frame
