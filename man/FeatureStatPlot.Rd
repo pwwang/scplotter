@@ -444,23 +444,27 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
    dot_size_name = "Percent Expressed", add_bg = TRUE, rows_data = rows_data,
    show_row_names = TRUE, rows_split_by = "group", cluster_rows = FALSE,
-   column_annotation = c("Phase", "G2M_score"),
-   column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
-   column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
-   row_annotation = c("TF", "CSPA"),
-   row_annotation_side = "right",
-   row_annotation_type = list(TF = "simple", CSPA = "simple"), layer = "data")
+   column_annotation = list(
+       Phase = list(type = "pie"),
+       G2M_score = list(type = "violin", params = list(show_legend = FALSE))
+   ),
+   row_annotation = list(
+       TF = list(side = "right", type = "simple"),
+       CSPA = list(side = "right", type = "simple")
+   ), layer = "data")
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
    dot_size_name = "Percent Expressed", add_bg = TRUE,
    rows_data = rows_data, show_column_names = TRUE, rows_split_by = "group",
    cluster_rows = FALSE, flip = TRUE, palette = "YlOrRd",
-   column_annotation = c("Phase", "G2M_score"),
-   column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
-   column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
-   row_annotation = c("TF", "CSPA"),
-   row_annotation_side = "right",
-   row_annotation_type = list(TF = "simple", CSPA = "simple"), layer = "data")
+   column_annotation = list(
+       Phase = list(type = "pie"),
+       G2M_score = list(type = "violin", params = list(show_legend = FALSE))
+   ),
+   row_annotation = list(
+       TF = list(side = "right", type = "simple"),
+       CSPA = list(side = "right", type = "simple")
+   ), layer = "data")
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "violin",
    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
    cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data, layer = "data")
@@ -490,9 +494,12 @@ markers <- data.frame(
 FeatureStatPlot(pancreas_sub,
   features = unique(markers$gene), ident = "SubCellType", cell_type = "bars",
   plot_type = "heatmap", rows_data = markers, rows_name = "gene", rows_split_by = "cluster",
-  show_row_names = TRUE, show_column_names = TRUE, name = "Expression Level",
-  cluster_rows = FALSE, cluster_columns = FALSE,
-  row_annotation_palette = list(.row = "Paired"), layer = "data")
+  show_row_names = "none", show_column_names = TRUE, name = "Expression Level",
+  cluster_rows = FALSE, cluster_columns = FALSE, column_title_rot = 90, row_title_rot = 0,
+  row_annotation = list(
+    .row = list(palette = "Paired"),
+    .row.split = list(type = "rownames", params = list(labels_rot = 0, wrap_by = 2))
+  ), layer = "data")
 
 # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
