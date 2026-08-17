@@ -297,39 +297,37 @@
 #'     add_reticle = TRUE)
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-#'    columns_split_by = "CellType",
+#'    columns_split_by = "CellType", layer = "data",
 #'    comparison_by = "cluster:seurat_clusters")
 #'
 #' # Suppose we did a DE between g1 and g2 in each cluster
 #' allmarkers$comparison <- "g1:g2"
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
 #'
 #' # select markers with a custom condition, e.g.,
 #' # significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 > 0.6
 #' # Note that other clusters are still included in the plot
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
 #'    select = c('cluster %in% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
-#'    comparison_by = "cluster:seurat_clusters",
-#'    cutoff = 0.05)
+#'    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 #'
 #' # To exclude other clusters, you can separate the filtering conditions into
 #' # multiple expressions
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
 #'    select = c('cluster %in% c("1", "2", "0")', 'pct.2 - pct.1 > 0.6'),
-#'    comparison_by = "cluster:seurat_clusters",
-#'    cutoff = 0.05)
+#'    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters",
+#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data",
 #'    ncol = 2)
 #' }
 #' @export

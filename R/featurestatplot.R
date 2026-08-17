@@ -311,7 +311,7 @@
 #'   from (e.g., \code{"data"}, \code{"counts"}, \code{"scale.data"}). For
 #'   Seurat objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
 #'   For Giotto objects, passed to \code{GiottoClass::getExpression()}.
-#'   Default: \code{NULL}.
+#'   Default: \code{"scale.data"}.
 #' @param agg Function. The aggregation function applied when
 #'   \code{plot_type = "bar"}. Common choices: \code{mean} (default),
 #'   \code{median}, \code{sum}. Applied within each group defined by
@@ -444,17 +444,17 @@
 #'      ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
 #' }
 #' FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-#'    add_bg = TRUE, add_box = TRUE, stack = TRUE)
+#'    add_bg = TRUE, add_box = TRUE, stack = TRUE, layer = "data")
 #' # Use `pos_only` to include only cells with positive expression of all features
 #' FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-#'    add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all")
+#'    add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all", layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = c(
 #'        "Sox9", "Anxa2", "Bicc1", # Ductal
 #'        "Neurog3", "Hes6", # EPs
 #'        "Fev", "Neurod1", # Pre-endocrine
 #'        "Rbp4", "Pyy", # Endocrine
 #'        "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-#'    ), ident = "SubCellType", add_bg = TRUE, stack = TRUE,
+#'    ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, layer = "data",
 #'    legend.position = "top", legend.direction = "horizontal")
 #' FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
 #'       "Sox9", "Anxa2", "Bicc1", # Ductal
@@ -463,10 +463,10 @@
 #'       "Rbp4", "Pyy", # Endocrine
 #'       "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
 #'    ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, flip = TRUE,
-#'    legend.position = "top", legend.direction = "horizontal")
+#'    legend.position = "top", legend.direction = "horizontal", layer = "data")
 #' # Use splitting instead of facetting
 #' FeatureStatPlot(pancreas_sub, features = c("Neurog3", "Rbp4", "Ins1"),
-#'    ident = "CellType", split_by = TRUE)
+#'    ident = "CellType", split_by = TRUE, layer = "data")
 #'
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reduction = "UMAP")
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reduction = "UMAP",
@@ -478,22 +478,22 @@
 #'
 #' # Label and highlight cell points
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-#'    highlight = 'SubCellType == "Delta"')
+#'    highlight = 'SubCellType == "Delta"', layer = "data")
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim",
 #'    features = "Rbp4", split_by = "Phase", reduction = "UMAP",
-#'    highlight = TRUE, theme = "theme_blank")
+#'    highlight = TRUE, theme = "theme_blank", layer = "data")
 #'
 #' # Add a density layer
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-#'    add_density = TRUE)
+#'    add_density = TRUE, layer = "data")
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-#'    add_density = TRUE, density_filled = TRUE)
+#'    add_density = TRUE, density_filled = TRUE, layer = "data")
 #'
 #' # Change the plot type from point to the hexagonal bin
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-#'    hex = TRUE)
+#'    hex = TRUE, layer = "data")
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-#'    hex = TRUE, hex_bins = 20)
+#'    hex = TRUE, hex_bins = 20, layer = "data")
 #'
 #' # Show lineages on the plot based on the pseudotime
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Lineage3", reduction = "UMAP",
@@ -504,7 +504,7 @@
 #'    lineages = "Lineage3", lineages_span = 0.1)
 #'
 #' FeatureStatPlot(pancreas_sub, plot_type = "dim",
-#'   features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP",
+#'   features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP", layer = "data",
 #'   theme = "theme_blank",
 #'   theme_args = list(plot.subtitle = ggplot2::element_text(size = 10),
 #'      strip.text = ggplot2::element_text(size = 8))
@@ -512,15 +512,16 @@
 #'
 #' # Plot multiple features with different scales
 #' endocrine_markers <- c("Ins1", "Gcg", "Sst", "Ghrl")
-#' FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim")
+#' FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim",
+#'    layer = "data")
 #' FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", lower_quantile = 0,
-#'    upper_quantile = 0.8, plot_type = "dim")
+#'    upper_quantile = 0.8, plot_type = "dim", layer = "data")
 #' FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP",
-#'    lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim")
+#'    lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim", layer = "data")
 #' FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", bg_cutoff = 2,
-#'    lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim")
+#'    lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim", layer = "data")
 #' FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = "UMAP",
-#'    plot_type = "dim")
+#'    plot_type = "dim", layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
 #'    ident = "SubCellType", plot_type = "dim", facet_by = "Phase", split_by = TRUE, ncol = 1)
 #'
@@ -543,11 +544,11 @@
 #'        FALSE, FALSE, FALSE)
 #' )
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
-#'    plot_type = "heatmap", name = "Expression Level")
-#' FeatureStatPlot(pancreas_sub, features = features, ident = "Phase",
+#'    plot_type = "heatmap", name = "Expression Level", layer = "data")
+#' FeatureStatPlot(pancreas_sub, features = features, ident = "Phase", layer = "data",
 #'    plot_type = "heatmap", name = "Expression Level", columns_split_by = "SubCellType")
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
-#'    plot_type = "heatmap", cell_type = "bars", name = "Expression Level")
+#'    plot_type = "heatmap", cell_type = "bars", name = "Expression Level", layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
 #'    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
 #'    dot_size_name = "Percent Expressed", add_bg = TRUE, rows_data = rows_data,
@@ -557,7 +558,7 @@
 #'    column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
 #'    row_annotation = c("TF", "CSPA"),
 #'    row_annotation_side = "right",
-#'    row_annotation_type = list(TF = "simple", CSPA = "simple"))
+#'    row_annotation_type = list(TF = "simple", CSPA = "simple"), layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
 #'    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
 #'    dot_size_name = "Percent Expressed", add_bg = TRUE,
@@ -568,15 +569,15 @@
 #'    column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
 #'    row_annotation = c("TF", "CSPA"),
 #'    row_annotation_side = "right",
-#'    row_annotation_type = list(TF = "simple", CSPA = "simple"))
+#'    row_annotation_type = list(TF = "simple", CSPA = "simple"), layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "violin",
 #'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
-#'    cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data)
+#'    cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data, layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
 #'    plot_type = "heatmap", dot_size = function(x) sum(x > 0) / length(x),
 #'    dot_size_name = "Percent Expressed", palette = "viridis", add_reticle = TRUE,
 #'    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
-#'    rows_split_by = "group")
+#'    rows_split_by = "group", layer = "data")
 #' # Visualize the markers for each sub-cell type (the markers can overlap)
 #' # Say: markers <- Seurat::FindAllMarkers(pancreas_sub, ident = "SubCellType")
 #' markers <- data.frame(
@@ -600,10 +601,11 @@
 #'   plot_type = "heatmap", rows_data = markers, rows_name = "gene", rows_split_by = "cluster",
 #'   show_row_names = TRUE, show_column_names = TRUE, name = "Expression Level",
 #'   cluster_rows = FALSE, cluster_columns = FALSE,
-#'   row_annotation_palette = list(.row = "Paired"))
+#'   row_annotation_palette = list(.row = "Paired"), layer = "data")
 #'
 #' # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
-#' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", plot_type = "dot")
+#' FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
+#'    plot_type = "dot", layer = "data")
 #'
 #' named_features <- list(
 #'    Ductal = c("Sox9", "Anxa2", "Bicc1"),
@@ -613,19 +615,19 @@
 #'    Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
 #' )
 #' FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
-#'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE)
+#'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE, layer = "data")
 #'
 #' # Correlation plot
 #' FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
-#'    anno_items = c("eq", "r2", "spearman"))
+#'    anno_items = c("eq", "r2", "spearman"), layer = "data")
 #' FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
-#'    plot_type = "cor")
+#'    plot_type = "cor", layer = "data")
 #' }
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
     UseMethod("FeatureStatPlot")
@@ -636,7 +638,7 @@ FeatureStatPlot.giotto <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
@@ -751,7 +753,7 @@ FeatureStatPlot.Seurat <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
@@ -769,18 +771,34 @@ FeatureStatPlot.Seurat <- function(
     should_pivot <- !plot_type %in% c("dim", "heatmap", "dot", "cor")
 
     unlisted_features <- unname(unlist(features))
-    assay_data <- GetAssayData(object, assay = assay, layer = layer)
-    assay_feature <- intersect(unlisted_features, rownames(assay_data))
-    assay_data <- t(as.matrix(assay_data[assay_feature, , drop = FALSE]))
+    if (any(unlisted_features %in% rownames(object))) {
+        assay_data <- GetAssayData(object, assay = assay, layer = layer)
+        if (nrow(assay_data) == 0) {
+            stop("[FeatureStatPlot] The assay '", assay, "' does not have any data in layer '", layer, "'.")
+        }
+        assay_feature <- intersect(unlisted_features, rownames(assay_data))
+        assay_data <- t(as.matrix(assay_data[assay_feature, , drop = FALSE]))
+    } else {
+        # The features are from meta.data, so we don't need to get assay data
+        assay_data <- NULL
+    }
     if (is.null(reduction)) {
         data <- cbind(object@meta.data, assay_data)
     } else {
         emb <- Embeddings(object, reduction = reduction)
-        data <- cbind(
-            emb,
-            object@meta.data[rownames(emb), , drop = FALSE],
-            assay_data[rownames(emb), , drop = FALSE]
-        )
+        if (!is.null(assay_data)) {
+            assay_data <- assay_data[rownames(emb), , drop = FALSE]
+            data <- cbind(
+                emb,
+                object@meta.data[rownames(emb), , drop = FALSE],
+                assay_data
+            )
+        } else {
+            data <- cbind(
+                emb,
+                object@meta.data[rownames(emb), , drop = FALSE]
+            )
+        }
     }
 
     if (is.null(ident)) {
@@ -810,7 +828,7 @@ FeatureStatPlot.character <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
     if (!endsWith(object, ".h5ad")) {
@@ -836,7 +854,7 @@ FeatureStatPlot.H5File <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
-    ident = NULL, assay = NULL, layer = NULL, agg = mean, group_by = NULL,
+    ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
     plot_type <- match.arg(plot_type)
