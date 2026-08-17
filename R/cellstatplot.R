@@ -800,7 +800,9 @@ CellStatPlot.data.frame <- function(
             args$rows_by <- rows_by
         } else if (!is.null(rows_split_by)) {
             args$rows_split_by <- rows_split_by
-            args$rows_split_name <- args$rows_split_name %||% " "
+            args$row_annotation <- args$row_annotation %||% list()
+            args$row_annotation$.row.split <- args$row_annotation$.row.split %||% list()
+            args$row_annotation$.row.split$name <- args$row_annotation$.row.split$name %||% FALSE
             args$rows_by <- ident
         } else {
             args$rows_by <- ident
