@@ -26,7 +26,7 @@
 #'         biological question is about detection rate rather than expression
 #'         magnitude.
 #'       \item \code{"jitter"} / \code{"jitter_log2fc"} — Jitter plot of log2
-#'         fold changes across groups (defined by \code{subset_by}). Dot size
+#'         fold changes across groups (defined by \code{each}). Dot size
 #'         encodes \eqn{-log_{10}(p)}. Reveals distribution of effect sizes
 #'         per cluster or condition.
 #'       \item \code{"jitter_pct"} — Jitter plot of percentage-point
@@ -57,7 +57,7 @@
 #' }
 #'
 #' @section Metadata column mapping:
-#' Both \code{subset_by} and \code{comparison_by} support a special
+#' Both \code{each} and \code{comparison_by} support a special
 #' \code{"marker_column:metadata_column"} syntax for linking columns in the
 #' markers data frame to columns in the Seurat object's metadata.
 #' \itemize{
@@ -67,19 +67,24 @@
 #'   \item If only one name is provided (no colon), it is used for both the
 #'     markers column and the metadata column (if a matching metadata column
 #'     exists).
-#'   \item Example: \code{subset_by = "cluster:RNA_snn_res.0.8"} maps the
+#'   \item Example: \code{each = "cluster:RNA_snn_res.0.8"} maps the
 #'     \code{cluster} column in the DE results to the
 #'     \code{RNA_snn_res.0.8} column in the Seurat metadata.
+#'     For expression-based plots, this allows the function to extract the relevant
+#'     expression values from the Seurat object for the specified groups.
+#'     You can also specify \code{each = "cluster:NULL"} to use "cluster"
+#'     to select markers in each cluster but don't split the expression plots
+#'     by cluster.
 #' }
 #' When the markers data frame and object metadata are merged via
-#' \code{subset_by}, only the first value of each non-key column within each
+#' \code{each}, only the first value of each non-key column within each
 #' group is retained — this is by design to avoid duplication.
 #'
 #' @section Marker selection and filtering:
 #' The \code{select} argument supports three modes:
 #' \itemize{
 #'   \item \strong{Numeric} — Select the top \code{N} markers (ordered by
-#'     \code{order_by}) within each group defined by \code{subset_by}. For
+#'     \code{order_by}) within each group defined by \code{each}. For
 #'     volcano and jitter plots, all markers are plotted but only the top
 #'     \code{N} per group are labeled. For other plot types, only the selected
 #'     markers are shown.
@@ -88,7 +93,7 @@
 #'     \code{"p_val_adj < 0.05 & avg_log2FC > 1"}. All markers matching the
 #'     condition are retained across all groups.
 #'   \item \strong{Multiple expressions} (character vector) — Each element is
-#'     evaluated independently. Expressions that mention the \code{subset_by}
+#'     evaluated independently. Expressions that mention the \code{each}
 #'     column filter the overall data (removing groups); other expressions
 #'     filter within the remaining data. For example,
 #'     \code{select = c("cluster \%in\% c('0', '1')", "p_val_adj < 0.05")}
@@ -138,16 +143,18 @@
 #'   \code{"heatmap_pct"}, \code{"dot_log2fc"}, \code{"dot_pct"},
 #'   \code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
 #'   \code{"ridge"}, or \code{"dot"}. See Description for details on each type.
-#' @param subset_by A column name in \code{markers} indicating the grouping
+#' @param subset_by Deprecated. Use \code{each} instead.
+#' @param each A column name in \code{markers} indicating the grouping
 #'   from which each marker was identified (e.g., the \code{cluster} column
 #'   from \code{FindAllMarkers()}). Supports the
 #'   \code{"marker_column:metadata_column"} syntax for linking to Seurat
 #'   object metadata (see \strong{Metadata column mapping} section). For
-#'   jitter and DE heatmap/dot plot types, \code{subset_by} is required and
+#'   jitter and DE heatmap/dot plot types, \code{each} is required and
 #'   defines the x-axis or column groups. For expression plot types,
-#'   \code{subset_by} controls faceting or splitting. Default: \code{NULL}.
-#' @param subset_as_facet Logical. If \code{TRUE}, facet the plot by
-#'   \code{subset_by} groups instead of splitting into separate plots. Most
+#'   \code{each} controls faceting or splitting. Default: \code{NULL}.
+#' @param subset_as_facet Deprecated. Use \code{facet_each} instead.
+#' @param facet_each Logical. If \code{TRUE}, facet the plot by
+#'   \code{each} groups instead of splitting into separate plots. Most
 #'   useful for expression plot types. For volcano plots, controls whether
 #'   faceting or split_by dispatch is used. Default: \code{FALSE}.
 #' @param comparison_by A column name in \code{markers} indicating the
@@ -184,19 +191,19 @@
 #' @param order_by A string expression to order markers by (evaluated with
 #'   \code{\link[dplyr:arrange]{dplyr::arrange()}}). Can reference columns
 #'   in \code{markers} as well as columns from the object metadata (when
-#'   \code{object} is provided and \code{subset_by} enables merging). Only
+#'   \code{object} is provided and \code{each} enables merging). Only
 #'   the first value of merged metadata columns is used. Example:
 #'   \code{"desc(avg_log2FC)"}. The ordering affects which markers are
 #'   selected when \code{select} is numeric. Default: `desc(abs(avg_log2FC))`.
 #' @param select How to select markers for labeling or display. See
 #'   \strong{Marker selection and filtering} section for full details.
 #'   \itemize{
-#'     \item Numeric: Top N markers per \code{subset_by} group (default:
+#'     \item Numeric: Top N markers per \code{each} group (default:
 #'       \code{5} for volcano/jitter types, \code{10} for others).
 #'     \item Character expression: Filter condition for
 #'       \code{\link[dplyr:filter]{dplyr::filter()}}.
 #'     \item Character vector: Multiple filter expressions; those containing
-#'       the \code{subset_by} column name filter the overall data, others
+#'       the \code{each} column name filter the overall data, others
 #'       filter within remaining data.
 #'   }
 #' @param ... Additional arguments passed to the underlying plotting
@@ -236,7 +243,7 @@
 #'   returned.
 #' @note
 #' \itemize{
-#'   \item \code{subset_by} is required for jitter plots
+#'   \item \code{each} is required for jitter plots
 #'     (\code{"jitter"}, \code{"jitter_log2fc"}, \code{"jitter_pct"}) and
 #'     DE heatmap/dot plots (\code{"heatmap_log2fc"}, \code{"heatmap_pct"},
 #'     \code{"dot_log2fc"}, \code{"dot_pct"}). Without it, there is no
@@ -245,14 +252,14 @@
 #'     (\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
 #'     \code{"ridge"}, \code{"dot"}) — it tells the function which
 #'     comparison groups to extract from the object.
-#'   \item When \code{object} is provided and \code{subset_by} maps to a
+#'   \item When \code{object} is provided and \code{each} maps to a
 #'     metadata column, the markers data frame is left-joined with the object
 #'     metadata. Only the first row per group is kept for non-key columns,
 #'     which is sufficient for most annotation purposes but can cause issues
 #'     if per-cell metadata is needed.
 #'   \item For expression-based heatmap and dot plots, when
-#'     \code{subset_by_2} is available (i.e., the metadata column is mapped),
-#'     genes are automatically grouped by \code{subset_by} via
+#'     \code{each_2} is available (i.e., the metadata column is mapped),
+#'     genes are automatically grouped by \code{each} via
 #'     \code{columns_split_by}, and \code{group_by} is set to \code{NULL}.
 #'   \item The function calculates \eqn{-log_{10}(p)} (or
 #'     \eqn{-log_{10}(p_{adj})}) internally and stores it in a temporary
@@ -278,22 +285,21 @@
 #'
 #' MarkersPlot(markers)
 #' MarkersPlot(markers, x_cutoff = 2)
-#' MarkersPlot(allmarkers,
-#'     subset_by = "cluster", ncol = 2, subset_as_facet = TRUE)
+#' MarkersPlot(allmarkers, each = "cluster", ncol = 2, facet_each = TRUE)
 #' MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 #'
-#' MarkersPlot(allmarkers, plot_type = "jitter", subset_by = "cluster")
+#' MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
 #' MarkersPlot(allmarkers, plot_type = "jitter_pct",
-#'     subset_by = "cluster", add_hline = 0, shape = 16)
+#'     each = "cluster", add_hline = 0, shape = 16)
 #'
-#' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
-#' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster",
+#' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster")
+#' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
 #'     label = scales::label_number(accuracy = 0.01),
 #'     cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
-#' MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
+#' MarkersPlot(allmarkers, plot_type = "heatmap_pct", each = "cluster",
 #'     cutoff = 0.05)
 #'
-#' MarkersPlot(allmarkers, plot_type = "dot_log2fc", subset_by = "cluster",
+#' MarkersPlot(allmarkers, plot_type = "dot_log2fc", each = "cluster",
 #'     add_reticle = TRUE)
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
@@ -303,31 +309,31 @@
 #' # Suppose we did a DE between g1 and g2 in each cluster
 #' allmarkers$comparison <- "g1:g2"
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #'
 #' # select markers with a custom condition, e.g.,
 #' # significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 > 0.6
 #' # Note that other clusters are still included in the plot
-#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
 #'    select = c('cluster %in% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
 #'    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 #'
 #' # To exclude other clusters, you can separate the filtering conditions into
 #' # multiple expressions
-#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
 #'    select = c('cluster %in% c("1", "2", "0")', 'pct.2 - pct.1 > 0.6'),
 #'    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
-#'    comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data",
+#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data",
 #'    ncol = 2)
 #' }
 #' @export
@@ -343,7 +349,9 @@ MarkersPlot <- function(
         "heatmap", "violin", "box", "bar", "ridge", "dot"
     ),
     subset_by = NULL,
+    each = NULL,
     subset_as_facet = FALSE,
+    facet_each = FALSE,
     comparison_by = NULL,
     p_adjust = TRUE,
     cutoff = NULL,
@@ -357,6 +365,18 @@ MarkersPlot <- function(
     ...
 ) {
     plot_type <- match.arg(plot_type)
+    if (!missing(subset_by)) {
+        warning("[MarkersPlot] `subset_by` is deprecated; use `each` instead.")
+        if (missing(each)) {
+            each <- subset_by
+        }
+    }
+    if (!missing(subset_as_facet)) {
+        warning("[MarkersPlot] `subset_as_facet` is deprecated; use `facet_each` instead.")
+        if (missing(facet_each)) {
+            facet_each <- subset_as_facet
+        }
+    }
 
     # check if object is provided for plot types that need it
     plot_types_need_object <- c(
@@ -370,36 +390,36 @@ MarkersPlot <- function(
     if (!"gene" %in% colnames(markers)) {
         markers$gene <- rownames(markers)
     }
-    # Check subset_by
+    # Check each
     check_columns <- utils::getFromNamespace("check_columns", "plotthis")
-    if (!is.null(subset_by)) {
-        subset_by_1 <- strsplit(subset_by, ":")[[1]][1]
-        subset_by_2 <- strsplit(subset_by, ":")[[1]][2]  # NA if not provided
-        subset_by_2 <- if (!is.na(subset_by_2)) subset_by_2 else NULL
-        if (is.null(subset_by_2) && !is.null(object) && subset_by_1 %in% colnames(object@meta.data)) {
-            subset_by_2 <- subset_by_1
+    if (!is.null(each)) {
+        each_1 <- strsplit(each, ":")[[1]][1]
+        each_2 <- strsplit(each, ":")[[1]][2]  # NA if not provided
+        each_2 <- if (!is.na(each_2)) each_2 else NULL
+        if (is.null(each_2) && !is.null(object) && each_1 %in% colnames(object@meta.data)) {
+            each_2 <- each_1
         }
     } else {
-        subset_by_1 <- NULL
-        subset_by_2 <- NULL
+        each_1 <- NULL
+        each_2 <- NULL
     }
-    subset_by_1 <- check_columns(markers, subset_by_1)
-    if (!is.null(subset_by_1) && !is.null(subset_by_2) && !is.null(object)) {
-        if (!subset_by_2 %in% colnames(object@meta.data)) {
-            stop("[MarkersPlot] `subset_by` '", subset_by_2, "' is not found in the object's metadata.")
+    each_1 <- check_columns(markers, each_1)
+    if (!is.null(each_1) && !is.null(each_2) && !is.null(object) && !identical(each_2, "NULL")) {
+        if (!each_2 %in% colnames(object@meta.data)) {
+            stop("[MarkersPlot] `each` '", each_2, "' is not found in the object's metadata.")
         }
-        # check if subset_by values are consistent between markers and object
-        sub_markers <- unique(markers[[subset_by_1]])
-        sub_object <- unique(object@meta.data[[subset_by_2]])
+        # check if each values are consistent between markers and object
+        sub_markers <- unique(markers[[each_1]])
+        sub_object <- unique(object@meta.data[[each_2]])
         nonexisting_sub <- setdiff(sub_markers, sub_object)
         if (length(nonexisting_sub) > 0) {
             stop(
-                "[MarkersPlot] The following values in `subset_by` '", subset_by_1,
-                "' are not found in the object's metadata (", subset_by_2, "): ",
+                "[MarkersPlot] The following values in `each` '", each_1,
+                "' are not found in the object's metadata (", each_2, "): ",
                 paste(nonexisting_sub, collapse = ", "))
         }
-        meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(subset_by_2))
-        markers <- dplyr::left_join(markers, meta, by = stats::setNames(subset_by_2, subset_by_1), suffix = c("", ".meta"))
+        meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(each_2))
+        markers <- dplyr::left_join(markers, meta, by = stats::setNames(each_2, each_1), suffix = c("", ".meta"))
     }
 
     # Check comparison_by
@@ -460,22 +480,22 @@ MarkersPlot <- function(
             ...
         )
         args$color_by <- args$color_by %||% ifelse(plot_type == "volcano_pct", "avg_log2FC", "pct_diff")
-        if (!is.null(subset_by_1) && subset_as_facet) {
-            args$facet_by <- subset_by_1
-        } else if (!is.null(subset_by_1)) {
-            args$split_by <- subset_by_1
+        if (!is.null(each_1) && facet_each) {
+            args$facet_by <- each_1
+        } else if (!is.null(each_1)) {
+            args$split_by <- each_1
         }
         do_call(plotthis::VolcanoPlot, args)
     } else if (plot_type %in% c("jitter", "jitter_log2fc", "jitter_pct")) {
-        if (is.null(subset_by_1)) {
-            stop("[MarkersPlot] `subset_by` is required for plot_type '", plot_type, "'. Consider using volcano plot if you don't have groups.")
+        if (is.null(each_1)) {
+            stop("[MarkersPlot] `each` is required for plot_type '", plot_type, "'. Consider using volcano plot if you don't have groups.")
         }
         if (!is.numeric(select)) {
             stop("[MarkersPlot] `select` must be numeric for plot_type '", plot_type, "', to label top N markers in each group.")
         }
         args <- list(
             markers,
-            x = subset_by_1,
+            x = each_1,
             y = ifelse(plot_type == "jitter_pct", "pct_diff", "avg_log2FC"),
             size_by = "neg_log10_p",
             size_name = paste0("-log10(", pcol, ")"),
@@ -488,8 +508,8 @@ MarkersPlot <- function(
         }
         do_call(plotthis::JitterPlot, args)
     } else if (plot_type %in% c("heatmap_log2fc", "heatmap_pct", "dot_log2fc", "dot_pct")) {
-        if (is.null(subset_by)) {
-            stop("[MarkersPlot] `subset_by` is required for plot_type '", plot_type, "'")
+        if (is.null(each)) {
+            stop("[MarkersPlot] `each` is required for plot_type '", plot_type, "'")
         }
         y <- ifelse(endsWith(plot_type, "_pct"), "pct_diff", "avg_log2FC")
         y_max <- max(markers[[y]], na.rm = TRUE)
@@ -500,13 +520,13 @@ MarkersPlot <- function(
             y_min <- -y_max
         }
         if (is.numeric(select)) {
-            genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(subset_by_1))$gene
+            genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(each_1))$gene
         } else if (length(select) == 1) {
             genes <- dplyr::filter(markers, !!rlang::parse_expr(select))$gene
         } else {
-            # The expressions in select with the entire `subset_by` word in it are
+            # The expressions in select with the entire `each` word in it are
             # supposed to be the ones to filter the data
-            select_sb <- grepl(paste0("\\b", subset_by_1, "\\b"), select)
+            select_sb <- grepl(paste0("\\b", each_1, "\\b"), select)
             if (any(select_sb)) {
                 markers <- dplyr::filter(markers, !!!rlang::parse_exprs(select[select_sb]))
                 if (all(select_sb)) {
@@ -514,7 +534,7 @@ MarkersPlot <- function(
                 } else {
                     select_non_sb <- select[!select_sb]
                     if (length(select_non_sb) == 1 && grepl("^\\d+$", select_non_sb)) {
-                        genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb), by = !!rlang::sym(subset_by_1))$gene
+                        genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb), by = !!rlang::sym(each_1))$gene
                     } else {
                         genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select[!select_sb]))$gene
                     }
@@ -528,14 +548,14 @@ MarkersPlot <- function(
         if (!is.factor(markers$gene)) {
             markers$gene <- factor(markers$gene, levels = unique(markers$gene))
         }
-        if (!is.factor(markers[[subset_by_1]])) {
-            markers[[subset_by_1]] <- factor(markers[[subset_by_1]], levels = unique(markers[[subset_by_1]]))
+        if (!is.factor(markers[[each_1]])) {
+            markers[[each_1]] <- factor(markers[[each_1]], levels = unique(markers[[each_1]]))
         }
         args <- list(
             data = markers,
             values_by = y,
             rows_by = "gene",
-            columns_by = subset_by_1,
+            columns_by = each_1,
             in_form = "long",
             upper_cutoff = y_max,
             lower_cutoff = y_min,
@@ -547,12 +567,12 @@ MarkersPlot <- function(
 
         # add label if cutoff is provided for heatmap
         genes <- levels(markers$gene)
-        groups <- levels(markers[[subset_by_1]])
+        groups <- levels(markers[[each_1]])
         if (!is.null(cutoff) && startsWith(plot_type, "heatmap_")) {
             sig_mat <- tidyr::pivot_wider(
                 markers,
                 id_cols = !!sym("gene"),
-                names_from = subset_by_1,
+                names_from = each_1,
                 values_from = !!rlang::sym(pcol),
                 values_fill = 1
             )
@@ -564,7 +584,7 @@ MarkersPlot <- function(
             failed_groups <- setdiff(groups, colnames(sig_mat))
             if (length(failed_groups) > 1) {
                 warning(
-                    "[MarkersPlot] The following groups in `subset_by` '", subset_by_1,
+                    "[MarkersPlot] The following groups in `each` '", each_1,
                     "' are not found in the markers data frame and will be ignored: ",
                     paste(failed_groups, collapse = ", "),
                     immediate. = TRUE
@@ -620,7 +640,7 @@ MarkersPlot <- function(
             ds_mat <- tidyr::pivot_wider(
                 markers,
                 id_cols = !!sym("gene"),
-                names_from = subset_by_1,
+                names_from = each_1,
                 values_from = "neg_log10_p"
             )
             ds_mat <- as.data.frame(ds_mat)
@@ -631,7 +651,7 @@ MarkersPlot <- function(
             failed_groups <- setdiff(groups, colnames(ds_mat))
             if (length(failed_groups) > 1) {
                 warning(
-                    "[MarkersPlot] The following groups in `subset_by` '", subset_by_1,
+                    "[MarkersPlot] The following groups in `each` '", each_1,
                     "' are not found in the markers data frame and will be ignored: ",
                     paste(failed_groups, collapse = ", "),
                     immediate. = TRUE
@@ -658,35 +678,43 @@ MarkersPlot <- function(
                 stop("[MarkersPlot] `comparison_by` '", comparison_by_2, "' is not found in the object's metadata.")
             }
         }
-        if (!is.null(subset_by_1) && is.null(subset_by_2)) {
-            if (subset_by_1 %in% colnames(object@meta.data)) {
-                subset_by_2 <- subset_by_1
+        if (!is.null(each_1) && is.null(each_2)) {
+            if (each_1 %in% colnames(object@meta.data)) {
+                each_2 <- each_1
             } else if (is.numeric(select)) {
                 warning(
-                    "[MarkersPlot] `subset_by` '", subset_by_1, "' is only used to select markers, ",
+                    "[MarkersPlot] `each` '", each_1, "' is only used to select markers, ",
                     "but not in plotting, since it is not found in the object's metadata. ",
-                    "Set `subset_by` to '", subset_by_1, ":<object_metadata_column>' to make it work.",
+                    "Set `each` to '", each_1, ":<object_metadata_column>' to make it work.",
                     immediate. = TRUE)
             } else {
                 warning(
-                    "[MarkersPlot] `subset_by` '", subset_by_1, "' is ignored, ",
+                    "[MarkersPlot] `each` '", each_1, "' is ignored, ",
                     "since it is not found in the object's metadata. ",
-                    "Set `subset_by` to '", subset_by_1, ":<object_metadata_column>' to make it work.",
+                    "Set `each` to '", each_1, ":<object_metadata_column>' to make it work.",
                     immediate. = TRUE)
 
             }
+        }
+        if (identical(each_2, "NULL")) {
+            each_2 <- NULL
         }
 
         if (is.numeric(select)) {
             if (!is.null(cutoff)) {
                 markers <- dplyr::filter(markers, !!rlang::sym(pcol) < cutoff)
             }
-            if (!is.null(subset_by)) {
+            if (!is.null(each)) {
                 # e.g. each cluster
-                genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(subset_by_1))
+                genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(each_1))
+                # print(genes)
+
                 if (plot_type %in% c("heatmap", "dot")) {
-                    genes <- dplyr::summarise(genes, gene = list(!!sym("gene")), .by = !!rlang::sym(subset_by_1))
-                    genes <- stats::setNames(genes$gene, genes[[subset_by_1]])
+                    genes <- dplyr::summarise(genes, gene = list(!!sym("gene")), .by = !!rlang::sym(each_1))
+                    # keep the order of the group name
+                    genes <- dplyr::arrange(genes, !!rlang::sym(each_1))
+                    # convert to a named list, with each group name as the list name
+                    genes <- stats::setNames(genes$gene, genes[[each_1]])
                 } else {
                     genes <- genes$gene
                 }
@@ -694,17 +722,17 @@ MarkersPlot <- function(
                 # generally, select top N markers overall
                 genes <- dplyr::slice_head(markers, n = select)$gene
             }
-        } else if (is.null(subset_by) || length(select) == 1) {
-            # If subset_by is NULL or select has only one expression,
+        } else if (is.null(each) || length(select) == 1) {
+            # If each is NULL or select has only one expression,
             # we can just filter the markers directly
             genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select))$gene
         } else {
-            # The expressions in select with the entire `subset_by` word in it are
+            # The expressions in select with the entire `each` word in it are
             # supposed to be the ones to filter the data
-            # e.g if subset_by = "cluster" and select = c("cluster %in% c('1', '2')", "avg_log2FC > 0.5"),
+            # e.g if each = "cluster" and select = c("cluster %in% c('1', '2')", "avg_log2FC > 0.5"),
             # the first expression is used to filter the markers data frame, and the second expression is
             # used to filter the genes within the remaining data
-            select_sb <- grepl(paste0("\\b", subset_by_1, "\\b"), select)
+            select_sb <- grepl(paste0("\\b", each_1, "\\b"), select)
             if (any(select_sb)) {
                 markers <- dplyr::filter(markers, !!!rlang::parse_exprs(select[select_sb]))
                 if (all(select_sb)) {
@@ -712,10 +740,10 @@ MarkersPlot <- function(
                 } else {
                     select_non_sb <- select[!select_sb]
                     if (length(select_non_sb) == 1 && grepl("^\\d+$", select_non_sb)) {
-                        if (is.null(subset_by)) {
+                        if (is.null(each)) {
                             genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb))$gene
                         } else {
-                            genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb), by = !!rlang::sym(subset_by_1))$gene
+                            genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb), by = !!rlang::sym(each_1))$gene
                         }
                     } else {
                         genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select_non_sb))$gene
@@ -746,30 +774,29 @@ MarkersPlot <- function(
         }, error = function(e) {
             object
         })
-
         args <- list(
             object,
             features = genes,
             group_by = comparison_by_2,
             plot_type = plot_type,
-            facet_by = if (subset_as_facet) subset_by_2 else NULL,
-            split_by = if (!subset_as_facet) subset_by_2 else NULL,
+            facet_by = if (facet_each) each_2 else NULL,
+            split_by = if (!facet_each) each_2 else NULL,
             ident = comparison_by_2,
             ...
         )
         if (plot_type %in% c("heatmap", "dot")) {
             args$name <- args$name %||% "Expression"
             args$cluster_columns <- args$cluster_columns %||% FALSE
-            if (!is.null(subset_by_2)) {
+            if (!is.null(each_2)) {
                 args$facet_by <- NULL
                 args$split_by <- NULL
-                args$columns_split_by <- subset_by_2
+                args$columns_split_by <- each_2
                 args$group_by <- NULL
             }
         } else if (plot_type %in% c("violin", "box", "bar")) {
             args$stack <- args$stack %||% TRUE
-            if (!is.null(subset_by_2)) {
-                args$ident <- subset_by_2
+            if (!is.null(each_2)) {
+                args$ident <- each_2
                 args$group_by <- comparison_by_2
                 args$split_by <- NULL
                 args$facet_by <- NULL

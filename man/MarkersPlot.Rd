@@ -11,7 +11,9 @@ MarkersPlot(
     "jitter_pct", "heatmap_log2fc", "heatmap_pct", "dot_log2fc", "dot_pct", "heatmap",
     "violin", "box", "bar", "ridge", "dot"),
   subset_by = NULL,
+  each = NULL,
   subset_as_facet = FALSE,
+  facet_each = FALSE,
   comparison_by = NULL,
   p_adjust = TRUE,
   cutoff = NULL,
@@ -45,17 +47,21 @@ Default: \code{NULL}.}
 \code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
 \code{"ridge"}, or \code{"dot"}. See Description for details on each type.}
 
-\item{subset_by}{A column name in \code{markers} indicating the grouping
+\item{subset_by}{Deprecated. Use \code{each} instead.}
+
+\item{each}{A column name in \code{markers} indicating the grouping
 from which each marker was identified (e.g., the \code{cluster} column
 from \code{FindAllMarkers()}). Supports the
 \code{"marker_column:metadata_column"} syntax for linking to Seurat
 object metadata (see \strong{Metadata column mapping} section). For
-jitter and DE heatmap/dot plot types, \code{subset_by} is required and
+jitter and DE heatmap/dot plot types, \code{each} is required and
 defines the x-axis or column groups. For expression plot types,
-\code{subset_by} controls faceting or splitting. Default: \code{NULL}.}
+\code{each} controls faceting or splitting. Default: \code{NULL}.}
 
-\item{subset_as_facet}{Logical. If \code{TRUE}, facet the plot by
-\code{subset_by} groups instead of splitting into separate plots. Most
+\item{subset_as_facet}{Deprecated. Use \code{facet_each} instead.}
+
+\item{facet_each}{Logical. If \code{TRUE}, facet the plot by
+\code{each} groups instead of splitting into separate plots. Most
 useful for expression plot types. For volcano plots, controls whether
 faceting or split_by dispatch is used. Default: \code{FALSE}.}
 
@@ -98,7 +104,7 @@ the label layer — use a compound mark instead. Default: \code{"*"}.}
 \item{order_by}{A string expression to order markers by (evaluated with
 \code{\link[dplyr:arrange]{dplyr::arrange()}}). Can reference columns
 in \code{markers} as well as columns from the object metadata (when
-\code{object} is provided and \code{subset_by} enables merging). Only
+\code{object} is provided and \code{each} enables merging). Only
 the first value of merged metadata columns is used. Example:
 \code{"desc(avg_log2FC)"}. The ordering affects which markers are
 selected when \code{select} is numeric. Default: \code{desc(abs(avg_log2FC))}.}
@@ -106,12 +112,12 @@ selected when \code{select} is numeric. Default: \code{desc(abs(avg_log2FC))}.}
 \item{select}{How to select markers for labeling or display. See
 \strong{Marker selection and filtering} section for full details.
 \itemize{
-\item Numeric: Top N markers per \code{subset_by} group (default:
+\item Numeric: Top N markers per \code{each} group (default:
 \code{5} for volcano/jitter types, \code{10} for others).
 \item Character expression: Filter condition for
 \code{\link[dplyr:filter]{dplyr::filter()}}.
 \item Character vector: Multiple filter expressions; those containing
-the \code{subset_by} column name filter the overall data, others
+the \code{each} column name filter the overall data, others
 filter within remaining data.
 }}
 
@@ -179,7 +185,7 @@ difference (\code{pct.1 - pct.2}) on the x-axis. Useful when the
 biological question is about detection rate rather than expression
 magnitude.
 \item \code{"jitter"} / \code{"jitter_log2fc"} — Jitter plot of log2
-fold changes across groups (defined by \code{subset_by}). Dot size
+fold changes across groups (defined by \code{each}). Dot size
 encodes \eqn{-log_{10}(p)}. Reveals distribution of effect sizes
 per cluster or condition.
 \item \code{"jitter_pct"} — Jitter plot of percentage-point
@@ -211,7 +217,7 @@ mean expression) per gene.
 }
 \note{
 \itemize{
-\item \code{subset_by} is required for jitter plots
+\item \code{each} is required for jitter plots
 (\code{"jitter"}, \code{"jitter_log2fc"}, \code{"jitter_pct"}) and
 DE heatmap/dot plots (\code{"heatmap_log2fc"}, \code{"heatmap_pct"},
 \code{"dot_log2fc"}, \code{"dot_pct"}). Without it, there is no
@@ -220,14 +226,14 @@ grouping axis.
 (\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
 \code{"ridge"}, \code{"dot"}) — it tells the function which
 comparison groups to extract from the object.
-\item When \code{object} is provided and \code{subset_by} maps to a
+\item When \code{object} is provided and \code{each} maps to a
 metadata column, the markers data frame is left-joined with the object
 metadata. Only the first row per group is kept for non-key columns,
 which is sufficient for most annotation purposes but can cause issues
 if per-cell metadata is needed.
 \item For expression-based heatmap and dot plots, when
-\code{subset_by_2} is available (i.e., the metadata column is mapped),
-genes are automatically grouped by \code{subset_by} via
+\code{each_2} is available (i.e., the metadata column is mapped),
+genes are automatically grouped by \code{each} via
 \code{columns_split_by}, and \code{group_by} is set to \code{NULL}.
 \item The function calculates \eqn{-log_{10}(p)} (or
 \eqn{-log_{10}(p_{adj})}) internally and stores it in a temporary
@@ -240,7 +246,7 @@ object metadata.
 }
 \section{Metadata column mapping}{
 
-Both \code{subset_by} and \code{comparison_by} support a special
+Both \code{each} and \code{comparison_by} support a special
 \code{"marker_column:metadata_column"} syntax for linking columns in the
 markers data frame to columns in the Seurat object's metadata.
 \itemize{
@@ -250,12 +256,17 @@ markers data frame to columns in the Seurat object's metadata.
 \item If only one name is provided (no colon), it is used for both the
 markers column and the metadata column (if a matching metadata column
 exists).
-\item Example: \code{subset_by = "cluster:RNA_snn_res.0.8"} maps the
+\item Example: \code{each = "cluster:RNA_snn_res.0.8"} maps the
 \code{cluster} column in the DE results to the
 \code{RNA_snn_res.0.8} column in the Seurat metadata.
+For expression-based plots, this allows the function to extract the relevant
+expression values from the Seurat object for the specified groups.
+You can also specify \code{each = "cluster:NULL"} to use "cluster"
+to select markers in each cluster but don't split the expression plots
+by cluster.
 }
 When the markers data frame and object metadata are merged via
-\code{subset_by}, only the first value of each non-key column within each
+\code{each}, only the first value of each non-key column within each
 group is retained — this is by design to avoid duplication.
 }
 
@@ -264,7 +275,7 @@ group is retained — this is by design to avoid duplication.
 The \code{select} argument supports three modes:
 \itemize{
 \item \strong{Numeric} — Select the top \code{N} markers (ordered by
-\code{order_by}) within each group defined by \code{subset_by}. For
+\code{order_by}) within each group defined by \code{each}. For
 volcano and jitter plots, all markers are plotted but only the top
 \code{N} per group are labeled. For other plot types, only the selected
 markers are shown.
@@ -273,7 +284,7 @@ markers are shown.
 \code{"p_val_adj < 0.05 & avg_log2FC > 1"}. All markers matching the
 condition are retained across all groups.
 \item \strong{Multiple expressions} (character vector) — Each element is
-evaluated independently. Expressions that mention the \code{subset_by}
+evaluated independently. Expressions that mention the \code{each}
 column filter the overall data (removing groups); other expressions
 filter within the remaining data. For example,
 \code{select = c("cluster \%in\% c('0', '1')", "p_val_adj < 0.05")}
@@ -317,22 +328,21 @@ allmarkers <- Seurat::FindAllMarkers(pancreas_sub)  # seurat_clusters
 
 MarkersPlot(markers)
 MarkersPlot(markers, x_cutoff = 2)
-MarkersPlot(allmarkers,
-    subset_by = "cluster", ncol = 2, subset_as_facet = TRUE)
+MarkersPlot(allmarkers, each = "cluster", ncol = 2, facet_each = TRUE)
 MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 
-MarkersPlot(allmarkers, plot_type = "jitter", subset_by = "cluster")
+MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
 MarkersPlot(allmarkers, plot_type = "jitter_pct",
-    subset_by = "cluster", add_hline = 0, shape = 16)
+    each = "cluster", add_hline = 0, shape = 16)
 
-MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
-MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster",
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster")
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
     label = scales::label_number(accuracy = 0.01),
     cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
-MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
+MarkersPlot(allmarkers, plot_type = "heatmap_pct", each = "cluster",
     cutoff = 0.05)
 
-MarkersPlot(allmarkers, plot_type = "dot_log2fc", subset_by = "cluster",
+MarkersPlot(allmarkers, plot_type = "dot_log2fc", each = "cluster",
     add_reticle = TRUE)
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
@@ -342,31 +352,31 @@ MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
 # Suppose we did a DE between g1 and g2 in each cluster
 allmarkers$comparison <- "g1:g2"
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 
 # select markers with a custom condition, e.g.,
 # significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 > 0.6
 # Note that other clusters are still included in the plot
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
    select = c('cluster \%in\% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 
 # To exclude other clusters, you can separate the filtering conditions into
 # multiple expressions
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
    select = c('cluster \%in\% c("1", "2", "0")', 'pct.2 - pct.1 > 0.6'),
    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data")
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters", layer = "data",
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data",
    ncol = 2)
 }
 }
