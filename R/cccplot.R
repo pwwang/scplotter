@@ -440,21 +440,21 @@ CCCPlot <- function(
                     data[[specificity]] <- -log10(data[[specificity]])
                 }
                 data[[source_col]] <- paste0("source: ", data[[source_col]])
-                DotPlot(data, x = target_col, y = c(ligand_col, receptor_col), y_sep = " -> ",
+                DotPlot(data, x = target_col, y = c(ligand_col, receptor_col), y_sep = " \u2192 ", y_name = "Ligand \u2192 Receptor",
                     fill_by = specificity, fill_name = paste0("-log10(", specificity, ")"),
                     size_by = magnitude, x_text_angle = x_text_angle, split_by = split_by,
                     facet_by = source_col, ...)
             } else if (plot_type == "network") {
-                data$source_target <- paste0(data[[source_col]], " -> ", data[[target_col]])
+                data$source_target <- paste0(data[[source_col]], " \u2192 ", data[[target_col]])
                 Network(data, from = "ligand", to = "receptor",
                     link_weight_by = magnitude, link_alpha = link_alpha, link_color_by = "source_target",
-                    link_color_name = "source -> target", split_by = split_by, ...)
+                    link_color_name = "source \u2192 target", split_by = split_by, ...)
             } else if (plot_type == "heatmap") {
                 if (!is.null(columns_split_by)) {
                     stop("[CCCPlot] source will be used as `columns_split_by` when 'method' is 'interaction', do not specify `columns_split_by`.")
                 }
-                data$ligand_receptor <- paste0(data[[ligand_col]], " -> ", data[[receptor_col]])
-                Heatmap(data, rows_by = "ligand_receptor", rows_name = "Ligand -> Receptor", split_by = split_by,
+                data$ligand_receptor <- paste0(data[[ligand_col]], " \u2192 ", data[[receptor_col]])
+                Heatmap(data, rows_by = "ligand_receptor", rows_name = "Ligand \u2192 Receptor", split_by = split_by,
                     values_by = magnitude, columns_by = target_col, columns_split_by = source_col, values_fill = values_fill,
                     show_row_names = show_row_names, show_column_names = show_column_names,
                     rows_split_by = rows_split_by, ...)
