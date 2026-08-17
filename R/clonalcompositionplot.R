@@ -1541,15 +1541,30 @@ ClonalOverlapPlot <- function(
         as.dist(m)
     }
 
-    Heatmap(
-        data, rows_by = "rows", columns_by = columns_by, values_by = ".values", split_by = split_by,
-        clustering_distance_rows = function(m) { clustering_distance(t(m)) }, values_fill = 0,
+    args <- list(
+        data,
+        rows_by = "rows",
+        columns_by = columns_by,
+        values_by = ".values",
+        split_by = split_by,
+        clustering_distance_rows = function(m) { clustering_distance(t(m)) },
+        values_fill = 0,
         clustering_distance_columns = clustering_distance,
-        # same rows_name as columns_name (inferred from columns_by) will cause an error
-        rows_name = paste0(" ", columns_by),
-        name = name, palette = palette, label = function(x) {
+        name = name,
+        palette = palette,
+        label = function(x) {
             ifelse(x > label_cutoff, scales::number(x, accuracy = label_accuracy), NA)
         },
-        cluster_rows = cluster_rows, cluster_columns = cluster_columns, cell_type = "label",
-        show_row_names = show_row_names, show_column_names = show_column_names, ...)
+        cluster_rows = cluster_rows,
+        cluster_columns = cluster_columns,
+        cell_type = "label",
+        show_row_names = show_row_names,
+        show_column_names = show_column_names,
+        ...
+    )
+    args$row_annotation <- list()
+    args$row_annotation$.row <- list()
+    args$row_annotation$.row$name <- columns_by
+
+    do_call(Heatmap, args)
 }
