@@ -331,7 +331,7 @@ ClonalGeneUsagePlot <- function(
             data,
             values_by = ifelse(scale, "proportion", "count"), values_fill = 0,
             rows_by = axis1, columns_by = axis2, split_by = split_by,
-            rows_name = axis1, name = ifelse(scale, "Gene Usage Fraction", "Gene Usage Count"),
+            name = ifelse(scale, "Gene Usage Fraction", "Gene Usage Count"),
             row_annotation = row_annotation,
             show_row_names = show_row_names, show_column_names = show_column_names,
             ...)
