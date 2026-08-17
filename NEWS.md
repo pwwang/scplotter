@@ -1,7 +1,18 @@
-## Version 0.7.7
+## Version 0.8.0
 
-- chore: use r-meta >=1.12 as conda dependency
+- BREAKING: set default layer parameter to "scale.data" in FeatureStatPlot and update documentation
 - fix: set default order_by parameter to "desc(abs(avg_log2FC))" in MarkersPlot function
+- fix: update order_by parameter to use absolute log2FC in MarkersPlot function
+- fix: add tidygraph to Suggests in DESCRIPTION and update comment in utils.R
+- fix: add methods import for slot and slotNames in NAMESPACE and utils.R
+- fix: update MarkersPlot function to replace deprecated subset_by with each, and update documentation accordingly
+- fix(ClonalGeneUsagePlot): fix passing rows_name not working for Heatmap
+- chore: use r-meta >=1.12 as conda dependency
+- chore(CCCPlot): use 0x2192 unicode for -> in plots
+- chore(CellStatPlot): use annotation name instead of row_names to hide rows name
+- chore(ClonalOverlapPlot): use annotation name instead of row_names
+- chore(FeatureStatPlot): avoid deprecation warning in the examples to adopt latest plotthis
+- docs(MarkersPlot): make visualization better for the examples
 
 ## Version 0.7.6
 
