@@ -63,7 +63,7 @@ FeatureStatPlot(
   rows_name = "Features",
   ident = NULL,
   assay = NULL,
-  layer = NULL,
+  layer = "scale.data",
   agg = mean,
   group_by = NULL,
   split_by = NULL,
@@ -197,7 +197,7 @@ FeatureStatPlot(
   [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
   For Giotto objects, passed to
   [`GiottoClass::getExpression()`](https://giotto-suite.github.io/GiottoClass/reference/getExpression.html).
-  Default: `NULL`.
+  Default: `"scale.data"`.
 
 - agg:
 
@@ -458,11 +458,11 @@ if (requireNamespace("ggpubr", quietly = TRUE)) {
 #> Detected more than 2 groups. Use multiple_method for comparison
 
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-   add_bg = TRUE, add_box = TRUE, stack = TRUE)
+   add_bg = TRUE, add_box = TRUE, stack = TRUE, layer = "data")
 
 # Use `pos_only` to include only cells with positive expression of all features
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all")
+   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all", layer = "data")
 
 FeatureStatPlot(pancreas_sub, features = c(
        "Sox9", "Anxa2", "Bicc1", # Ductal
@@ -470,7 +470,7 @@ FeatureStatPlot(pancreas_sub, features = c(
        "Fev", "Neurod1", # Pre-endocrine
        "Rbp4", "Pyy", # Endocrine
        "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-   ), ident = "SubCellType", add_bg = TRUE, stack = TRUE,
+   ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, layer = "data",
    legend.position = "top", legend.direction = "horizontal")
 
 FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
@@ -480,11 +480,11 @@ FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
       "Rbp4", "Pyy", # Endocrine
       "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
    ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, flip = TRUE,
-   legend.position = "top", legend.direction = "horizontal")
+   legend.position = "top", legend.direction = "horizontal", layer = "data")
 
 # Use splitting instead of facetting
 FeatureStatPlot(pancreas_sub, features = c("Neurog3", "Rbp4", "Ins1"),
-   ident = "CellType", split_by = TRUE)
+   ident = "CellType", split_by = TRUE, layer = "data")
 
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reduction = "UMAP")
@@ -501,31 +501,31 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reducti
 
 # Label and highlight cell points
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   highlight = 'SubCellType == "Delta"')
+   highlight = 'SubCellType == "Delta"', layer = "data")
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim",
    features = "Rbp4", split_by = "Phase", reduction = "UMAP",
-   highlight = TRUE, theme = "theme_blank")
+   highlight = TRUE, theme = "theme_blank", layer = "data")
 
 
 # Add a density layer
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   add_density = TRUE)
+   add_density = TRUE, layer = "data")
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   add_density = TRUE, density_filled = TRUE)
+   add_density = TRUE, density_filled = TRUE, layer = "data")
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
 
 
 # Change the plot type from point to the hexagonal bin
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   hex = TRUE)
+   hex = TRUE, layer = "data")
 #> Warning: Removed 4 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   hex = TRUE, hex_bins = 20)
+   hex = TRUE, hex_bins = 20, layer = "data")
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 #> Warning: Removed 5 rows containing missing values or values outside the scale range
@@ -544,7 +544,7 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Lineage3", reductio
 
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim",
-  features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP",
+  features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP", layer = "data",
   theme = "theme_blank",
   theme_args = list(plot.subtitle = ggplot2::element_text(size = 10),
      strip.text = ggplot2::element_text(size = 8))
@@ -553,19 +553,20 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim",
 
 # Plot multiple features with different scales
 endocrine_markers <- c("Ins1", "Gcg", "Sst", "Ghrl")
-FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim")
+FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim",
+   layer = "data")
 
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", lower_quantile = 0,
-   upper_quantile = 0.8, plot_type = "dim")
+   upper_quantile = 0.8, plot_type = "dim", layer = "data")
 
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP",
-   lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim")
+   lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim", layer = "data")
 
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", bg_cutoff = 2,
-   lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim")
+   lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim", layer = "data")
 
 FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = "UMAP",
-   plot_type = "dim")
+   plot_type = "dim", layer = "data")
 
 FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
    ident = "SubCellType", plot_type = "dim", facet_by = "Phase", split_by = TRUE, ncol = 1)
@@ -590,28 +591,26 @@ rows_data <- data.frame(
        FALSE, FALSE, FALSE)
 )
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
-   plot_type = "heatmap", name = "Expression Level")
+   plot_type = "heatmap", name = "Expression Level", layer = "data")
 
-FeatureStatPlot(pancreas_sub, features = features, ident = "Phase",
+FeatureStatPlot(pancreas_sub, features = features, ident = "Phase", layer = "data",
    plot_type = "heatmap", name = "Expression Level", columns_split_by = "SubCellType")
 
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
-   plot_type = "heatmap", cell_type = "bars", name = "Expression Level")
+   plot_type = "heatmap", cell_type = "bars", name = "Expression Level", layer = "data")
 
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
    plot_type = "heatmap", name = "Expression Level", dot_size = function(x) sum(x > 0) / length(x),
    dot_size_name = "Percent Expressed", add_bg = TRUE, rows_data = rows_data,
    show_row_names = TRUE, rows_split_by = "group", cluster_rows = FALSE,
-   column_annotation = c("Phase", "G2M_score"),
-   column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
-   column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
-   row_annotation = c("TF", "CSPA"),
-   row_annotation_side = "right",
-   row_annotation_type = list(TF = "simple", CSPA = "simple"))
-#> Warning: `row_annotation_side` is deprecated. Use `row_annotation = list(<key> = list(side = ...))` instead.
-#> Warning: `row_annotation_type` is deprecated. Use `row_annotation = list(<key> = list(type = ...))` instead.
-#> Warning: `column_annotation_type` is deprecated. Use `column_annotation = list(<key> = list(type = ...))` instead.
-#> Warning: `column_annotation_params` is deprecated. Use `column_annotation = list(<key> = list(params = ...))` instead.
+   column_annotation = list(
+       Phase = list(type = "pie"),
+       G2M_score = list(type = "violin", params = list(show_legend = FALSE))
+   ),
+   row_annotation = list(
+       TF = list(side = "right", type = "simple"),
+       CSPA = list(side = "right", type = "simple")
+   ), layer = "data")
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation
 
@@ -620,28 +619,26 @@ FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_t
    dot_size_name = "Percent Expressed", add_bg = TRUE,
    rows_data = rows_data, show_column_names = TRUE, rows_split_by = "group",
    cluster_rows = FALSE, flip = TRUE, palette = "YlOrRd",
-   column_annotation = c("Phase", "G2M_score"),
-   column_annotation_type = list(Phase = "pie", G2M_score = "violin"),
-   column_annotation_params = list(G2M_score = list(show_legend = FALSE)),
-   row_annotation = c("TF", "CSPA"),
-   row_annotation_side = "right",
-   row_annotation_type = list(TF = "simple", CSPA = "simple"))
-#> Warning: `row_annotation_side` is deprecated. Use `row_annotation = list(<key> = list(side = ...))` instead.
-#> Warning: `row_annotation_type` is deprecated. Use `row_annotation = list(<key> = list(type = ...))` instead.
-#> Warning: `column_annotation_type` is deprecated. Use `column_annotation = list(<key> = list(type = ...))` instead.
-#> Warning: `column_annotation_params` is deprecated. Use `column_annotation = list(<key> = list(params = ...))` instead.
+   column_annotation = list(
+       Phase = list(type = "pie"),
+       G2M_score = list(type = "violin", params = list(show_legend = FALSE))
+   ),
+   row_annotation = list(
+       TF = list(side = "right", type = "simple"),
+       CSPA = list(side = "right", type = "simple")
+   ), layer = "data")
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["TF"] = dplyr::first' for the simple annotation
 #> Warning: [Heatmap] Assuming 'row_annotation_agg["CSPA"] = dplyr::first' for the simple annotation
 
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "violin",
    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
-   cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data)
+   cluster_columns = FALSE, rows_split_by = "group", rows_data = rows_data, layer = "data")
 
 FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", cell_type = "dot",
    plot_type = "heatmap", dot_size = function(x) sum(x > 0) / length(x),
    dot_size_name = "Percent Expressed", palette = "viridis", add_reticle = TRUE,
    rows_data = rows_data, name = "Expression Level", show_row_names = TRUE,
-   rows_split_by = "group")
+   rows_split_by = "group", layer = "data")
 
 # Visualize the markers for each sub-cell type (the markers can overlap)
 # Say: markers <- Seurat::FindAllMarkers(pancreas_sub, ident = "SubCellType")
@@ -664,14 +661,17 @@ markers <- data.frame(
 FeatureStatPlot(pancreas_sub,
   features = unique(markers$gene), ident = "SubCellType", cell_type = "bars",
   plot_type = "heatmap", rows_data = markers, rows_name = "gene", rows_split_by = "cluster",
-  show_row_names = TRUE, show_column_names = TRUE, name = "Expression Level",
-  cluster_rows = FALSE, cluster_columns = FALSE,
-  row_annotation_palette = list(.row = "Paired"))
-#> Warning: `row_annotation_palette` is deprecated. Use `row_annotation = list(<key> = list(palette = ...))` instead.
+  show_row_names = "none", show_column_names = TRUE, name = "Expression Level",
+  cluster_rows = FALSE, cluster_columns = FALSE, column_title_rot = 90, row_title_rot = 0,
+  row_annotation = list(
+    .row = list(palette = "Paired"),
+    .row.split = list(type = "rownames", params = list(labels_rot = 0, wrap_by = 2))
+  ), layer = "data")
 
 
 # Use plot_type = "dot" to as a shortcut for heatmap with cell_type = "dot"
-FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType", plot_type = "dot")
+FeatureStatPlot(pancreas_sub, features = features, ident = "SubCellType",
+   plot_type = "dot", layer = "data")
 
 
 named_features <- list(
@@ -682,15 +682,15 @@ named_features <- list(
    Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
 )
 FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
-   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE)
+   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE, layer = "data")
 
 
 # Correlation plot
 FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
-   anno_items = c("eq", "r2", "spearman"))
+   anno_items = c("eq", "r2", "spearman"), layer = "data")
 
 FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
-   plot_type = "cor")
+   plot_type = "cor", layer = "data")
 
 # }
 ```

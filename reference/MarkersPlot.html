@@ -21,7 +21,7 @@ difference (pct.1 - pct.2) on the x-axis. Useful when the
 biological question is about detection rate rather than expression
 magnitude.
 "jitter" / "jitter_log2fc" — Jitter plot of log2
-fold changes across groups (defined by subset_by). Dot size
+fold changes across groups (defined by each). Dot size
 encodes \(-log_{10}(p)\). Reveals distribution of effect sizes
 per cluster or condition.
 "jitter_pct" — Jitter plot of percentage-point
@@ -71,7 +71,7 @@ difference (pct.1 - pct.2) on the x-axis. Useful when the
 biological question is about detection rate rather than expression
 magnitude.
 "jitter" / "jitter_log2fc" — Jitter plot of log2
-fold changes across groups (defined by subset_by). Dot size
+fold changes across groups (defined by each). Dot size
 encodes \(-log_{10}(p)\). Reveals distribution of effect sizes
 per cluster or condition.
 "jitter_pct" — Jitter plot of percentage-point
@@ -107,7 +107,7 @@ mean expression) per gene.
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -177,7 +177,7 @@ difference (<code>pct.1 - pct.2</code>) on the x-axis. Useful when the
 biological question is about detection rate rather than expression
 magnitude.</p></li>
 <li><p><code>"jitter"</code> / <code>"jitter_log2fc"</code> — Jitter plot of log2
-fold changes across groups (defined by <code>subset_by</code>). Dot size
+fold changes across groups (defined by <code>each</code>). Dot size
 encodes \(-log_{10}(p)\). Reveals distribution of effect sizes
 per cluster or condition.</p></li>
 <li><p><code>"jitter_pct"</code> — Jitter plot of percentage-point
@@ -214,13 +214,15 @@ mean expression) per gene.</p></li>
 <span>    <span class="st">"jitter_pct"</span>, <span class="st">"heatmap_log2fc"</span>, <span class="st">"heatmap_pct"</span>, <span class="st">"dot_log2fc"</span>, <span class="st">"dot_pct"</span>, <span class="st">"heatmap"</span>,</span>
 <span>    <span class="st">"violin"</span>, <span class="st">"box"</span>, <span class="st">"bar"</span>, <span class="st">"ridge"</span>, <span class="st">"dot"</span><span class="op">)</span>,</span>
 <span>  subset_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  each <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  subset_as_facet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  facet_each <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  comparison_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_adjust <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  sig_mark <span class="op">=</span> <span class="st">"*"</span>,</span>
-<span>  order_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  order_by <span class="op">=</span> <span class="st">"desc(abs(avg_log2FC))"</span>,</span>
 <span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"volcano"</span>, <span class="st">"volcano_log2fc"</span>, <span class="st">"volcano_pct"</span>,</span>
 <span>    <span class="st">"jitter"</span>, <span class="st">"jitter_log2fc"</span>, <span class="st">"jitter_pct"</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -259,19 +261,27 @@ Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-subset-by">subset_by<a class="anchor" aria-label="anchor" href="#arg-subset-by"></a></dt>
+<dd><p>Deprecated. Use <code>each</code> instead.</p></dd>
+
+
+<dt id="arg-each">each<a class="anchor" aria-label="anchor" href="#arg-each"></a></dt>
 <dd><p>A column name in <code>markers</code> indicating the grouping
 from which each marker was identified (e.g., the <code>cluster</code> column
 from <code>FindAllMarkers()</code>). Supports the
 <code>"marker_column:metadata_column"</code> syntax for linking to Seurat
 object metadata (see <strong>Metadata column mapping</strong> section). For
-jitter and DE heatmap/dot plot types, <code>subset_by</code> is required and
+jitter and DE heatmap/dot plot types, <code>each</code> is required and
 defines the x-axis or column groups. For expression plot types,
-<code>subset_by</code> controls faceting or splitting. Default: <code>NULL</code>.</p></dd>
+<code>each</code> controls faceting or splitting. Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-subset-as-facet">subset_as_facet<a class="anchor" aria-label="anchor" href="#arg-subset-as-facet"></a></dt>
+<dd><p>Deprecated. Use <code>facet_each</code> instead.</p></dd>
+
+
+<dt id="arg-facet-each">facet_each<a class="anchor" aria-label="anchor" href="#arg-facet-each"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, facet the plot by
-<code>subset_by</code> groups instead of splitting into separate plots. Most
+<code>each</code> groups instead of splitting into separate plots. Most
 useful for expression plot types. For volcano plots, controls whether
 faceting or split_by dispatch is used. Default: <code>FALSE</code>.</p></dd>
 
@@ -326,20 +336,20 @@ the label layer — use a compound mark instead. Default: <code>"*"</code>.</p><
 <dd><p>A string expression to order markers by (evaluated with
 <code><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">dplyr::arrange()</a></code>). Can reference columns
 in <code>markers</code> as well as columns from the object metadata (when
-<code>object</code> is provided and <code>subset_by</code> enables merging). Only
+<code>object</code> is provided and <code>each</code> enables merging). Only
 the first value of merged metadata columns is used. Example:
 <code>"desc(avg_log2FC)"</code>. The ordering affects which markers are
-selected when <code>select</code> is numeric. Default: <code>NULL</code>.</p></dd>
+selected when <code>select</code> is numeric. Default: <code>desc(abs(avg_log2FC))</code>.</p></dd>
 
 
 <dt id="arg-select">select<a class="anchor" aria-label="anchor" href="#arg-select"></a></dt>
 <dd><p>How to select markers for labeling or display. See
-<strong>Marker selection and filtering</strong> section for full details.</p><ul><li><p>Numeric: Top N markers per <code>subset_by</code> group (default:
+<strong>Marker selection and filtering</strong> section for full details.</p><ul><li><p>Numeric: Top N markers per <code>each</code> group (default:
 <code>5</code> for volcano/jitter types, <code>10</code> for others).</p></li>
 <li><p>Character expression: Filter condition for
 <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code>.</p></li>
 <li><p>Character vector: Multiple filter expressions; those containing
-the <code>subset_by</code> column name filter the overall data, others
+the <code>each</code> column name filter the overall data, others
 filter within remaining data.</p></li>
 </ul></dd>
 
@@ -387,7 +397,7 @@ returned.</p>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
 
-<ul><li><p><code>subset_by</code> is required for jitter plots
+<ul><li><p><code>each</code> is required for jitter plots
 (<code>"jitter"</code>, <code>"jitter_log2fc"</code>, <code>"jitter_pct"</code>) and
 DE heatmap/dot plots (<code>"heatmap_log2fc"</code>, <code>"heatmap_pct"</code>,
 <code>"dot_log2fc"</code>, <code>"dot_pct"</code>). Without it, there is no
@@ -396,14 +406,14 @@ grouping axis.</p></li>
 (<code>"heatmap"</code>, <code>"violin"</code>, <code>"box"</code>, <code>"bar"</code>,
 <code>"ridge"</code>, <code>"dot"</code>) — it tells the function which
 comparison groups to extract from the object.</p></li>
-<li><p>When <code>object</code> is provided and <code>subset_by</code> maps to a
+<li><p>When <code>object</code> is provided and <code>each</code> maps to a
 metadata column, the markers data frame is left-joined with the object
 metadata. Only the first row per group is kept for non-key columns,
 which is sufficient for most annotation purposes but can cause issues
 if per-cell metadata is needed.</p></li>
 <li><p>For expression-based heatmap and dot plots, when
-<code>subset_by_2</code> is available (i.e., the metadata column is mapped),
-genes are automatically grouped by <code>subset_by</code> via
+<code>each_2</code> is available (i.e., the metadata column is mapped),
+genes are automatically grouped by <code>each</code> via
 <code>columns_split_by</code>, and <code>group_by</code> is set to <code>NULL</code>.</p></li>
 <li><p>The function calculates \(-log_{10}(p)\) (or
 \(-log_{10}(p_{adj})\)) internally and stores it in a temporary
@@ -417,7 +427,7 @@ object metadata.</p></li>
     <h2 id="metadata-column-mapping">Metadata column mapping<a class="anchor" aria-label="anchor" href="#metadata-column-mapping"></a></h2>
 
 
-<p>Both <code>subset_by</code> and <code>comparison_by</code> support a special
+<p>Both <code>each</code> and <code>comparison_by</code> support a special
 <code>"marker_column:metadata_column"</code> syntax for linking columns in the
 markers data frame to columns in the Seurat object's metadata.</p><ul><li><p>The part before the colon refers to a column in <code>markers</code>.</p></li>
 <li><p>The part after the colon refers to a column in
@@ -425,11 +435,16 @@ markers data frame to columns in the Seurat object's metadata.</p><ul><li><p>The
 <li><p>If only one name is provided (no colon), it is used for both the
 markers column and the metadata column (if a matching metadata column
 exists).</p></li>
-<li><p>Example: <code>subset_by = "cluster:RNA_snn_res.0.8"</code> maps the
+<li><p>Example: <code>each = "cluster:RNA_snn_res.0.8"</code> maps the
 <code>cluster</code> column in the DE results to the
-<code>RNA_snn_res.0.8</code> column in the Seurat metadata.</p></li>
+<code>RNA_snn_res.0.8</code> column in the Seurat metadata.
+For expression-based plots, this allows the function to extract the relevant
+expression values from the Seurat object for the specified groups.
+You can also specify <code>each = "cluster:NULL"</code> to use "cluster"
+to select markers in each cluster but don't split the expression plots
+by cluster.</p></li>
 </ul><p>When the markers data frame and object metadata are merged via
-<code>subset_by</code>, only the first value of each non-key column within each
+<code>each</code>, only the first value of each non-key column within each
 group is retained — this is by design to avoid duplication.</p>
     </div>
     <div class="section level2">
@@ -437,7 +452,7 @@ group is retained — this is by design to avoid duplication.</p>
 
 
 <p>The <code>select</code> argument supports three modes:</p><ul><li><p><strong>Numeric</strong> — Select the top <code>N</code> markers (ordered by
-<code>order_by</code>) within each group defined by <code>subset_by</code>. For
+<code>order_by</code>) within each group defined by <code>each</code>. For
 volcano and jitter plots, all markers are plotted but only the top
 <code>N</code> per group are labeled. For other plot types, only the selected
 markers are shown.</p></li>
@@ -446,7 +461,7 @@ markers are shown.</p></li>
 <code>"p_val_adj &lt; 0.05 &amp; avg_log2FC &gt; 1"</code>. All markers matching the
 condition are retained across all groups.</p></li>
 <li><p><strong>Multiple expressions</strong> (character vector) — Each element is
-evaluated independently. Expressions that mention the <code>subset_by</code>
+evaluated independently. Expressions that mention the <code>each</code>
 column filter the overall data (removing groups); other expressions
 filter within the remaining data. For example,
 <code>select = c("cluster %in% c('0', '1')", "p_val_adj &lt; 0.05")</code>
@@ -518,283 +533,233 @@ are labeled with their numeric values.</p></li>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
 <span class="r-plt img"><img src="MarkersPlot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>,</span></span>
-<span class="r-in"><span>    subset_by <span class="op">=</span> <span class="st">"cluster"</span>, ncol <span class="op">=</span> <span class="fl">2</span>, subset_as_facet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, each <span class="op">=</span> <span class="st">"cluster"</span>, ncol <span class="op">=</span> <span class="fl">2</span>, facet_each <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">markers</span>, plot_type <span class="op">=</span> <span class="st">"volcano_pct"</span>, flip_negative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
 <span class="r-plt img"><img src="MarkersPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"jitter"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"jitter"</span>, each <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"jitter_pct"</span>,</span></span>
-<span class="r-in"><span>    subset_by <span class="op">=</span> <span class="st">"cluster"</span>, add_hline <span class="op">=</span> <span class="fl">0</span>, shape <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    each <span class="op">=</span> <span class="st">"cluster"</span>, add_hline <span class="op">=</span> <span class="fl">0</span>, shape <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, each <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>    order_by <span class="op">=</span> <span class="st">"desc(avg_log2FC)"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_log2fc"</span>, each <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>    label <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>    cutoff <span class="op">=</span> <span class="fl">0.05</span>, show_labels <span class="op">=</span> <span class="cn">TRUE</span>, sig_mark <span class="op">=</span> <span class="st">'{}'</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_pct"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
-<span class="r-in"><span>    cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_pct"</span>, each <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>    cutoff <span class="op">=</span> <span class="fl">0.05</span>, select <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"dot_log2fc"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
-<span class="r-in"><span>    add_reticle <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, plot_type <span class="op">=</span> <span class="st">"dot_log2fc"</span>, each <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>    add_reticle <span class="op">=</span> <span class="cn">TRUE</span>, select <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MarkersPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>   columns_split_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>   columns_split_by <span class="op">=</span> <span class="st">"CellType"</span>, layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
 <span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Suppose we did a DE between g1 and g2 in each cluster</span></span></span>
-<span class="r-in"><span><span class="va">allmarkers</span><span class="op">$</span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="st">"g1:g2"</span></span></span>
+<span class="r-in"><span><span class="co"># Suppose we did a DE between G2M and G1 phases in each cluster and</span></span></span>
+<span class="r-in"><span><span class="co"># stored the results in a new column "comparison"</span></span></span>
+<span class="r-in"><span><span class="va">allmarkers</span><span class="op">$</span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="st">"G1:G2M"</span></span></span>
 <span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:Phase"</span>, each <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
+<span class="r-in"><span>   layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-12.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Select by each cluster, but don't split by seurat clusters in the plot</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"comparison:Phase"</span>, each <span class="op">=</span> <span class="st">"cluster:NULL"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>   layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-13.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dot"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, each <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-14.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, each <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
+<span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># select markers with a custom condition, e.g.,</span></span></span>
 <span class="r-in"><span><span class="co"># significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 &gt; 0.6</span></span></span>
 <span class="r-in"><span><span class="co"># Note that other clusters are still included in the plot</span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, each <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
 <span class="r-in"><span>   select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cluster %in% c("1", "2", "0") &amp; pct.2 - pct.1 &gt; 0.6'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
-<span class="r-in"><span>   cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:&lt;object_metadata_column&gt;' to make it work.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-plt img"><img src="MarkersPlot-15.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># To exclude other clusters, you can separate the filtering conditions into</span></span></span>
-<span class="r-in"><span><span class="co"># multiple expressions</span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, subset_by <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
-<span class="r-in"><span>   select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cluster %in% c("1", "2", "0")'</span>, <span class="st">'pct.2 - pct.1 &gt; 0.6'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
-<span class="r-in"><span>   cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:&lt;object_metadata_column&gt;' to make it work.</span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>, cutoff <span class="op">=</span> <span class="fl">0.05</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[MarkersPlot] `each` 'cluster' is ignored, since it is not found in the object's metadata. Set `each` to 'cluster:&lt;object_metadata_column&gt;' to make it work.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># To exclude other clusters, you can separate the filtering conditions into</span></span></span>
+<span class="r-in"><span><span class="co"># multiple expressions</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span>, each <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>   select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cluster %in% c("1", "2", "0")'</span>, <span class="st">'pct.2 - pct.1 &gt; 0.6'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>, cutoff <span class="op">=</span> <span class="fl">0.05</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[MarkersPlot] `each` 'cluster' is ignored, since it is not found in the object's metadata. Set `each` to 'cluster:&lt;object_metadata_column&gt;' to make it work.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-plt img"><img src="MarkersPlot-17.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, subset_by <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>,</span></span>
-<span class="r-in"><span>   ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, select <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, each <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.155</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.331</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.118</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.322</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.105</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.265</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.232</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.326</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.31</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.094</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.306</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0355</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.116</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.33</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.278</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.186</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.251</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.261</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0735</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0714</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.202</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.256</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0755</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.234</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.201</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.381</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.478</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.573</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.515</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.381</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.419</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.132</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.368</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.356</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.461</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.031</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.351</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.385</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.145</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.264</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.26</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0669</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0739</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.187</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.211</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.282</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.255</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.229</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.254</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0798</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0639</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.291</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.193</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.188</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.144</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.185</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0543</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0514</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.18</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.196</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0658</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0491</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.317</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.215</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.204</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0904</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.241</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.295</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0677</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0845</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.468</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.282</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.173</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0847</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.117</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.343</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.318</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.25</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.51</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.378</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0588</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0605</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.032</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.155</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.331</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.118</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.322</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.105</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.265</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.232</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.326</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.31</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.094</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.306</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0355</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.116</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.33</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.278</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.186</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.251</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.261</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0735</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0714</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.202</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.256</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0755</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.234</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.201</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.381</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.478</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.573</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.515</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.381</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.419</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.132</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.368</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.356</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.461</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.031</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.351</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.385</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.145</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.264</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.26</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0669</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0739</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.187</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.211</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.282</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.255</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.229</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.254</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0798</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0639</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.291</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.193</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.188</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.144</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.185</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0543</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0514</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.18</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.196</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0658</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0491</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.317</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.215</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.204</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0904</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.241</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.295</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0677</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0845</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.468</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.282</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.174</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.173</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0847</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.117</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.343</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.318</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.25</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.51</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.378</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0588</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0605</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.032</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.259</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.285</span>
 <span class="r-plt img"><img src="MarkersPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">MarkersPlot</span><span class="op">(</span><span class="va">allmarkers</span>, object <span class="op">=</span> <span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"ridge"</span>, select <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>   comparison_by <span class="op">=</span> <span class="st">"Phase"</span>, each <span class="op">=</span> <span class="st">"cluster:seurat_clusters"</span>, layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>   ncol <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.303</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.177</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.142</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.326</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.359</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.303</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.33</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.433</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.881</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.375</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.202</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.319</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.586</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0593</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0355</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.384</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.427</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.323</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.133</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.368</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.512</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.423</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.512</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.234</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.515</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.363</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.426</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.125</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.131</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.187</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.497</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0635</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0789</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.116</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0982</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0543</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.392</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.115</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0379</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.229</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.193</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.167</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.325</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.241</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.173</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.468</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.358</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.203</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.499</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0658</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0904</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.28</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.12</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.146</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.131</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.179</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.25</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.303</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.177</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.142</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.326</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.464</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.359</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.303</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.222</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.32</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.33</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.433</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.881</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.375</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.202</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.319</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.586</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0593</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0355</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.384</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.427</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.323</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.133</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.368</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.512</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.423</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.512</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.234</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.515</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.363</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.426</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.125</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.131</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.187</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.497</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0635</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.327</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0789</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.116</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.102</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0982</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0543</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.392</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.115</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0379</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.229</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.193</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.167</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.325</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.241</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.173</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.468</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.358</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.203</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.499</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0658</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0904</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.267</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.28</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.12</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.146</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.131</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.179</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.364</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0428</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.25</span>
+<span class="r-plt img"><img src="MarkersPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

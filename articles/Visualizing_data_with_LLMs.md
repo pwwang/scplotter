@@ -589,7 +589,7 @@ chat$list_tools()
 #>    biological question is about detection rate rather than expression
 #>    magnitude.
 #>        "jitter"    /    "jitter_log2fc"    — Jitter plot of log2
-#>    fold changes across groups (defined by    subset_by   ). Dot size
+#>    fold changes across groups (defined by    each   ). Dot size
 #>    encodes    -log_{10}(p)   . Reveals distribution of effect sizes
 #>    per cluster or condition.
 #>        "jitter_pct"    — Jitter plot of percentage-point
@@ -864,7 +864,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res)
+#> CCCPlot(cellphonedb_res)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -880,7 +880,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -895,7 +895,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -904,12 +904,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      
-#> [3] "User: Do a heatmap instead"                                                                                                                                                
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             
-#> [5] "User: Add a proper title to the plot"                                                                                                                                      
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res)"                                                                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                         
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                               
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -1477,7 +1477,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    biological question is about detection rate rather than expression
 #>    magnitude.
 #>        "jitter"    /    "jitter_log2fc"    — Jitter plot of log2
-#>    fold changes across groups (defined by    subset_by   ). Dot size
+#>    fold changes across groups (defined by    each   ). Dot size
 #>    encodes    -log_{10}(p)   . Reveals distribution of effect sizes
 #>    per cluster or condition.
 #>        "jitter_pct"    — Jitter plot of percentage-point
@@ -2370,8 +2370,14 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - pie_group_by_sep: A character string to concat multiple columns in pie_group_by.
     #>       - pie_palette, pie_palcolor: Palette and custom colours for pie slice
     #>       fill colours.
-    #>       - bars_sample: Number of observations sampled per cell when
-    #>       cell_type = "bars".  Default 100.
+    #>       - bars_sample: Fraction of each cell's observations (0 < x <= 1;
+    #>       1 uses all data) or a whole count > 1 sampled per cell when
+    #>       cell_type = "bars".  Column widths are proportional to the
+    #>       number of bars drawn per column, so a numeric count gives equal
+    #>       column widths and a fraction gives widths proportional to the
+    #>       column data sizes.  Proportional widths are skipped when
+    #>       columns_split_by is given, and column clustering is
+    #>       disabled in proportional mode.  Default 1 (all data).
     #>       - label: A function to compute text labels when
     #>       cell_type = "label" (or "label+mark").  Receives the
     #>       aggregated value for a cell and optionally row/column indices and
@@ -2425,9 +2431,15 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       TRUE.
     #>       - title: The global (column) title of the heatmap.
     #>       - column_title: Character string/vector used as the column group
-    #>       annotation title.
+    #>       annotation title.  A character vector consisting entirely of the display
+    #>       modes "inplace" (per-slice split titles), "legend" (split
+    #>       annotation with legend, no title), "simple" (split annotation,
+    #>       no legend/title), "anno" (alias "annotation"; label block
+    #>       annotation) and "none" (no title, annotation, or legend)
+    #>       controls how the split titles are displayed.  A literal title identical
+    #>       to a mode keyword is interpreted as a mode.
     #>       - row_title: Character string/vector used as the row group
-    #>       annotation title.
+    #>       annotation title.  See column_title for the display modes.
     #>       - na_col: Colour for NA cells.  Default "grey85".
     #>       - row_names_side: Side for row names.  Default "right".
     #>       - column_names_side: Side for column names.  Default "bottom".
@@ -2458,13 +2470,26 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       palcolorCustom colour vector overriding palette.
     #>       typeAnnotation type: "auto", "simple",
     #>       "pie", "ring", "bar", "violin",
-    #>       "boxplot", "density", "label", "points",
-    #>       "lines".
+    #>       "boxplot", "density", "label",
+    #>       "rownames", "points", "lines".
+    #>       For split annotations, "rownames" (row splits) /
+    #>       "colnames" (column splits) is like "label" but labels
+    #>       each split block with the concatenated row/column names;
+    #>       "names" and "dimnames" are aliases.
+    #>       params$sep (default " ") controls the separator and
+    #>       params$wrap_by the number of names per line.
+    #>       For name annotations (the built-in rows_by/columns_by
+    #>       annotation), "rownames"/"colnames" renders the
+    #>       row/column names as text labels (this is what
+    #>       show_row_names = "anno" uses).
     #>       paramsA list of additional parameters passed to the
     #>       annotation constructor.  FALSE disables the annotation.
     #>       $show_legend controls legend visibility.  See
     #>       HeatmapAnnotation.
     #>       aggA function to aggregate values for the annotation.
+    #>       nameDisplay name for the annotation, shown next to the
+    #>       annotation bar and used as the legend title.  FALSE hides the
+    #>       displayed name.  Defaults to the annotation key (column name).
     #>       
     #>       Shortcuts:
     #>       
@@ -3424,8 +3449,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       columns.
     #>       - pie_palette, pie_palcolor: Palette and custom colours for pie slice
     #>       fill colours.
-    #>       - bars_sample: Number of observations sampled per cell when
-    #>       cell_type = "bars".  Default 100.
+    #>       - bars_sample: Fraction of each cell's observations (0 < x <= 1;
+    #>       1 uses all data) or a whole count > 1 sampled per cell when
+    #>       cell_type = "bars".  Column widths are proportional to the
+    #>       number of bars drawn per column.  Default 1 (all data).
     #>       - label: A function to compute text labels when
     #>       cell_type = "label" (or "label+mark").  Receives the
     #>       aggregated value for a cell and optionally row/column indices and names.
@@ -3478,6 +3505,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - cluster_rows: Default clustering setting for rows.  Used as
     #>       fallback for left_cluster_rows / right_cluster_rows.
     #>       - show_row_names, show_column_names: Logical; show row/column names.
+    #>       May also be a character vector of display modes; see
+    #>       Heatmap.
     #>       - border: Logical; draw a border around each heatmap.  Default
     #>       TRUE.
     #>       - title: A character string for the overall plot title.  A function
@@ -3487,7 +3516,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - title_params: A list of parameters passed to grid::grid.text() to control the title appearance.
     #>       Default is list(gp = gpar(fontsize = 14, fontface = "bold")).
     #>       - column_title, row_title: Character title displayed above the columns
-    #>       / beside the rows of each heatmap.
+    #>       / beside the rows of each heatmap.  May also be a character vector of
+    #>       display modes; see Heatmap.
     #>       - na_col: Colour used for NA cells.  Default "grey85".
     #>       - row_names_side: Default side for row names.  Used as fallback for
     #>       left_row_names_side / right_row_names_side.  Default
@@ -3678,11 +3708,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -4245,7 +4275,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    biological question is about detection rate rather than expression
 #>    magnitude.
 #>        "jitter"    /    "jitter_log2fc"    — Jitter plot of log2
-#>    fold changes across groups (defined by    subset_by   ). Dot size
+#>    fold changes across groups (defined by    each   ). Dot size
 #>    encodes    -log_{10}(p)   . Reveals distribution of effect sizes
 #>    per cluster or condition.
 #>        "jitter_pct"    — Jitter plot of percentage-point
@@ -5138,8 +5168,14 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - pie_group_by_sep: A character string to concat multiple columns in pie_group_by.
     #>       - pie_palette, pie_palcolor: Palette and custom colours for pie slice
     #>       fill colours.
-    #>       - bars_sample: Number of observations sampled per cell when
-    #>       cell_type = "bars".  Default 100.
+    #>       - bars_sample: Fraction of each cell's observations (0 < x <= 1;
+    #>       1 uses all data) or a whole count > 1 sampled per cell when
+    #>       cell_type = "bars".  Column widths are proportional to the
+    #>       number of bars drawn per column, so a numeric count gives equal
+    #>       column widths and a fraction gives widths proportional to the
+    #>       column data sizes.  Proportional widths are skipped when
+    #>       columns_split_by is given, and column clustering is
+    #>       disabled in proportional mode.  Default 1 (all data).
     #>       - label: A function to compute text labels when
     #>       cell_type = "label" (or "label+mark").  Receives the
     #>       aggregated value for a cell and optionally row/column indices and
@@ -5193,9 +5229,15 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       TRUE.
     #>       - title: The global (column) title of the heatmap.
     #>       - column_title: Character string/vector used as the column group
-    #>       annotation title.
+    #>       annotation title.  A character vector consisting entirely of the display
+    #>       modes "inplace" (per-slice split titles), "legend" (split
+    #>       annotation with legend, no title), "simple" (split annotation,
+    #>       no legend/title), "anno" (alias "annotation"; label block
+    #>       annotation) and "none" (no title, annotation, or legend)
+    #>       controls how the split titles are displayed.  A literal title identical
+    #>       to a mode keyword is interpreted as a mode.
     #>       - row_title: Character string/vector used as the row group
-    #>       annotation title.
+    #>       annotation title.  See column_title for the display modes.
     #>       - na_col: Colour for NA cells.  Default "grey85".
     #>       - row_names_side: Side for row names.  Default "right".
     #>       - column_names_side: Side for column names.  Default "bottom".
@@ -5226,13 +5268,26 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       palcolorCustom colour vector overriding palette.
     #>       typeAnnotation type: "auto", "simple",
     #>       "pie", "ring", "bar", "violin",
-    #>       "boxplot", "density", "label", "points",
-    #>       "lines".
+    #>       "boxplot", "density", "label",
+    #>       "rownames", "points", "lines".
+    #>       For split annotations, "rownames" (row splits) /
+    #>       "colnames" (column splits) is like "label" but labels
+    #>       each split block with the concatenated row/column names;
+    #>       "names" and "dimnames" are aliases.
+    #>       params$sep (default " ") controls the separator and
+    #>       params$wrap_by the number of names per line.
+    #>       For name annotations (the built-in rows_by/columns_by
+    #>       annotation), "rownames"/"colnames" renders the
+    #>       row/column names as text labels (this is what
+    #>       show_row_names = "anno" uses).
     #>       paramsA list of additional parameters passed to the
     #>       annotation constructor.  FALSE disables the annotation.
     #>       $show_legend controls legend visibility.  See
     #>       HeatmapAnnotation.
     #>       aggA function to aggregate values for the annotation.
+    #>       nameDisplay name for the annotation, shown next to the
+    #>       annotation bar and used as the legend title.  FALSE hides the
+    #>       displayed name.  Defaults to the annotation key (column name).
     #>       
     #>       Shortcuts:
     #>       
@@ -6192,8 +6247,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       columns.
     #>       - pie_palette, pie_palcolor: Palette and custom colours for pie slice
     #>       fill colours.
-    #>       - bars_sample: Number of observations sampled per cell when
-    #>       cell_type = "bars".  Default 100.
+    #>       - bars_sample: Fraction of each cell's observations (0 < x <= 1;
+    #>       1 uses all data) or a whole count > 1 sampled per cell when
+    #>       cell_type = "bars".  Column widths are proportional to the
+    #>       number of bars drawn per column.  Default 1 (all data).
     #>       - label: A function to compute text labels when
     #>       cell_type = "label" (or "label+mark").  Receives the
     #>       aggregated value for a cell and optionally row/column indices and names.
@@ -6246,6 +6303,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - cluster_rows: Default clustering setting for rows.  Used as
     #>       fallback for left_cluster_rows / right_cluster_rows.
     #>       - show_row_names, show_column_names: Logical; show row/column names.
+    #>       May also be a character vector of display modes; see
+    #>       Heatmap.
     #>       - border: Logical; draw a border around each heatmap.  Default
     #>       TRUE.
     #>       - title: A character string for the overall plot title.  A function
@@ -6255,7 +6314,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       - title_params: A list of parameters passed to grid::grid.text() to control the title appearance.
     #>       Default is list(gp = gpar(fontsize = 14, fontface = "bold")).
     #>       - column_title, row_title: Character title displayed above the columns
-    #>       / beside the rows of each heatmap.
+    #>       / beside the rows of each heatmap.  May also be a character vector of
+    #>       display modes; see Heatmap.
     #>       - na_col: Colour used for NA cells.  Default "grey85".
     #>       - row_names_side: Default side for row names.  Used as fallback for
     #>       left_row_names_side / right_row_names_side.  Default

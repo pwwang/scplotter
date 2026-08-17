@@ -230,7 +230,7 @@ heatmap and dot plots.
       [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
       For Giotto objects, passed to
       [`GiottoClass::getExpression()`](https://giotto-suite.github.io/GiottoClass/reference/getExpression.html).
-      Default: `NULL`.
+      Default: `"scale.data"`.
 
 ## Value
 

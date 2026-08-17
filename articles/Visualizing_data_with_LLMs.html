@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -674,7 +674,7 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    biological question is about detection rate rather than expression</span></span>
 <span><span class="co">#&gt;    magnitude.</span></span>
 <span><span class="co">#&gt;        "jitter"    /    "jitter_log2fc"    — Jitter plot of log2</span></span>
-<span><span class="co">#&gt;    fold changes across groups (defined by    subset_by   ). Dot size</span></span>
+<span><span class="co">#&gt;    fold changes across groups (defined by    each   ). Dot size</span></span>
 <span><span class="co">#&gt;    encodes    -log_{10}(p)   . Reveals distribution of effect sizes</span></span>
 <span><span class="co">#&gt;    per cluster or condition.</span></span>
 <span><span class="co">#&gt;        "jitter_pct"    — Jitter plot of percentage-point</span></span>
@@ -947,7 +947,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Previous conversation is memorized</span></span>
@@ -960,7 +960,7 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat</span><span class="op">$</span><span class="fu">ask</span><span class="op">(</span><span class="st">"Add a proper title to the plot"</span><span class="op">)</span></span>
@@ -972,18 +972,18 @@ for visualization.</p>
 <span><span class="co">#&gt; required to skim dataframes. Skim summary of dataframes currently not shown in</span></span>
 <span><span class="co">#&gt; prompt</span></span>
 <span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")</span></span></code></pre></div>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To fetch the previous conversation</span></span>
 <span><span class="co"># Note that the response from the LLM is simplified in the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">get_history</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               </span></span>
-<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      </span></span>
-<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                                </span></span>
-<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
-<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                                      </span></span>
-<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
+<span><span class="co">#&gt; [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        </span></span>
+<span><span class="co">#&gt; [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res)"                                                                      </span></span>
+<span><span class="co">#&gt; [3] "User: Do a heatmap instead"                                                                                                                                         </span></span>
+<span><span class="co">#&gt; [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             </span></span>
+<span><span class="co">#&gt; [5] "User: Add a proper title to the plot"                                                                                                                               </span></span>
+<span><span class="co">#&gt; [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"</span></span>
 <span></span>
 <span><span class="co"># To clear the history</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">clear_history</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -1550,7 +1550,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    biological question is about detection rate rather than expression</span></span>
 <span><span class="co">#&gt;    magnitude.</span></span>
 <span><span class="co">#&gt;        "jitter"    /    "jitter_log2fc"    — Jitter plot of log2</span></span>
-<span><span class="co">#&gt;    fold changes across groups (defined by    subset_by   ). Dot size</span></span>
+<span><span class="co">#&gt;    fold changes across groups (defined by    each   ). Dot size</span></span>
 <span><span class="co">#&gt;    encodes    -log_{10}(p)   . Reveals distribution of effect sizes</span></span>
 <span><span class="co">#&gt;    per cluster or condition.</span></span>
 <span><span class="co">#&gt;        "jitter_pct"    — Jitter plot of percentage-point</span></span>
@@ -2441,8 +2441,14 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - pie_group_by_sep: A character string to concat multiple columns in pie_group_by.</span></span>
 <span><span class="co">#&gt;       - pie_palette, pie_palcolor: Palette and custom colours for pie slice</span></span>
 <span><span class="co">#&gt;       fill colours.</span></span>
-<span><span class="co">#&gt;       - bars_sample: Number of observations sampled per cell when</span></span>
-<span><span class="co">#&gt;       cell_type = "bars".  Default 100.</span></span>
+<span><span class="co">#&gt;       - bars_sample: Fraction of each cell's observations (0 &lt; x &lt;= 1;</span></span>
+<span><span class="co">#&gt;       1 uses all data) or a whole count &gt; 1 sampled per cell when</span></span>
+<span><span class="co">#&gt;       cell_type = "bars".  Column widths are proportional to the</span></span>
+<span><span class="co">#&gt;       number of bars drawn per column, so a numeric count gives equal</span></span>
+<span><span class="co">#&gt;       column widths and a fraction gives widths proportional to the</span></span>
+<span><span class="co">#&gt;       column data sizes.  Proportional widths are skipped when</span></span>
+<span><span class="co">#&gt;       columns_split_by is given, and column clustering is</span></span>
+<span><span class="co">#&gt;       disabled in proportional mode.  Default 1 (all data).</span></span>
 <span><span class="co">#&gt;       - label: A function to compute text labels when</span></span>
 <span><span class="co">#&gt;       cell_type = "label" (or "label+mark").  Receives the</span></span>
 <span><span class="co">#&gt;       aggregated value for a cell and optionally row/column indices and</span></span>
@@ -2496,9 +2502,15 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       TRUE.</span></span>
 <span><span class="co">#&gt;       - title: The global (column) title of the heatmap.</span></span>
 <span><span class="co">#&gt;       - column_title: Character string/vector used as the column group</span></span>
-<span><span class="co">#&gt;       annotation title.</span></span>
+<span><span class="co">#&gt;       annotation title.  A character vector consisting entirely of the display</span></span>
+<span><span class="co">#&gt;       modes "inplace" (per-slice split titles), "legend" (split</span></span>
+<span><span class="co">#&gt;       annotation with legend, no title), "simple" (split annotation,</span></span>
+<span><span class="co">#&gt;       no legend/title), "anno" (alias "annotation"; label block</span></span>
+<span><span class="co">#&gt;       annotation) and "none" (no title, annotation, or legend)</span></span>
+<span><span class="co">#&gt;       controls how the split titles are displayed.  A literal title identical</span></span>
+<span><span class="co">#&gt;       to a mode keyword is interpreted as a mode.</span></span>
 <span><span class="co">#&gt;       - row_title: Character string/vector used as the row group</span></span>
-<span><span class="co">#&gt;       annotation title.</span></span>
+<span><span class="co">#&gt;       annotation title.  See column_title for the display modes.</span></span>
 <span><span class="co">#&gt;       - na_col: Colour for NA cells.  Default "grey85".</span></span>
 <span><span class="co">#&gt;       - row_names_side: Side for row names.  Default "right".</span></span>
 <span><span class="co">#&gt;       - column_names_side: Side for column names.  Default "bottom".</span></span>
@@ -2529,13 +2541,26 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       palcolorCustom colour vector overriding palette.</span></span>
 <span><span class="co">#&gt;       typeAnnotation type: "auto", "simple",</span></span>
 <span><span class="co">#&gt;       "pie", "ring", "bar", "violin",</span></span>
-<span><span class="co">#&gt;       "boxplot", "density", "label", "points",</span></span>
-<span><span class="co">#&gt;       "lines".</span></span>
+<span><span class="co">#&gt;       "boxplot", "density", "label",</span></span>
+<span><span class="co">#&gt;       "rownames", "points", "lines".</span></span>
+<span><span class="co">#&gt;       For split annotations, "rownames" (row splits) /</span></span>
+<span><span class="co">#&gt;       "colnames" (column splits) is like "label" but labels</span></span>
+<span><span class="co">#&gt;       each split block with the concatenated row/column names;</span></span>
+<span><span class="co">#&gt;       "names" and "dimnames" are aliases.</span></span>
+<span><span class="co">#&gt;       params$sep (default " ") controls the separator and</span></span>
+<span><span class="co">#&gt;       params$wrap_by the number of names per line.</span></span>
+<span><span class="co">#&gt;       For name annotations (the built-in rows_by/columns_by</span></span>
+<span><span class="co">#&gt;       annotation), "rownames"/"colnames" renders the</span></span>
+<span><span class="co">#&gt;       row/column names as text labels (this is what</span></span>
+<span><span class="co">#&gt;       show_row_names = "anno" uses).</span></span>
 <span><span class="co">#&gt;       paramsA list of additional parameters passed to the</span></span>
 <span><span class="co">#&gt;       annotation constructor.  FALSE disables the annotation.</span></span>
 <span><span class="co">#&gt;       $show_legend controls legend visibility.  See</span></span>
 <span><span class="co">#&gt;       HeatmapAnnotation.</span></span>
 <span><span class="co">#&gt;       aggA function to aggregate values for the annotation.</span></span>
+<span><span class="co">#&gt;       nameDisplay name for the annotation, shown next to the</span></span>
+<span><span class="co">#&gt;       annotation bar and used as the legend title.  FALSE hides the</span></span>
+<span><span class="co">#&gt;       displayed name.  Defaults to the annotation key (column name).</span></span>
 <span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       Shortcuts:</span></span>
 <span><span class="co">#&gt;       </span></span>
@@ -3495,8 +3520,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       columns.</span></span>
 <span><span class="co">#&gt;       - pie_palette, pie_palcolor: Palette and custom colours for pie slice</span></span>
 <span><span class="co">#&gt;       fill colours.</span></span>
-<span><span class="co">#&gt;       - bars_sample: Number of observations sampled per cell when</span></span>
-<span><span class="co">#&gt;       cell_type = "bars".  Default 100.</span></span>
+<span><span class="co">#&gt;       - bars_sample: Fraction of each cell's observations (0 &lt; x &lt;= 1;</span></span>
+<span><span class="co">#&gt;       1 uses all data) or a whole count &gt; 1 sampled per cell when</span></span>
+<span><span class="co">#&gt;       cell_type = "bars".  Column widths are proportional to the</span></span>
+<span><span class="co">#&gt;       number of bars drawn per column.  Default 1 (all data).</span></span>
 <span><span class="co">#&gt;       - label: A function to compute text labels when</span></span>
 <span><span class="co">#&gt;       cell_type = "label" (or "label+mark").  Receives the</span></span>
 <span><span class="co">#&gt;       aggregated value for a cell and optionally row/column indices and names.</span></span>
@@ -3549,6 +3576,8 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - cluster_rows: Default clustering setting for rows.  Used as</span></span>
 <span><span class="co">#&gt;       fallback for left_cluster_rows / right_cluster_rows.</span></span>
 <span><span class="co">#&gt;       - show_row_names, show_column_names: Logical; show row/column names.</span></span>
+<span><span class="co">#&gt;       May also be a character vector of display modes; see</span></span>
+<span><span class="co">#&gt;       Heatmap.</span></span>
 <span><span class="co">#&gt;       - border: Logical; draw a border around each heatmap.  Default</span></span>
 <span><span class="co">#&gt;       TRUE.</span></span>
 <span><span class="co">#&gt;       - title: A character string for the overall plot title.  A function</span></span>
@@ -3558,7 +3587,8 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;       - title_params: A list of parameters passed to grid::grid.text() to control the title appearance.</span></span>
 <span><span class="co">#&gt;       Default is list(gp = gpar(fontsize = 14, fontface = "bold")).</span></span>
 <span><span class="co">#&gt;       - column_title, row_title: Character title displayed above the columns</span></span>
-<span><span class="co">#&gt;       / beside the rows of each heatmap.</span></span>
+<span><span class="co">#&gt;       / beside the rows of each heatmap.  May also be a character vector of</span></span>
+<span><span class="co">#&gt;       display modes; see Heatmap.</span></span>
 <span><span class="co">#&gt;       - na_col: Colour used for NA cells.  Default "grey85".</span></span>
 <span><span class="co">#&gt;       - row_names_side: Default side for row names.  Used as fallback for</span></span>
 <span><span class="co">#&gt;       left_row_names_side / right_row_names_side.  Default</span></span>
@@ -3747,10 +3777,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -4310,7 +4340,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    biological question is about detection rate rather than expression</span></span>
 <span><span class="co">#&gt;    magnitude.</span></span>
 <span><span class="co">#&gt;        "jitter"    /    "jitter_log2fc"    — Jitter plot of log2</span></span>
-<span><span class="co">#&gt;    fold changes across groups (defined by    subset_by   ). Dot size</span></span>
+<span><span class="co">#&gt;    fold changes across groups (defined by    each   ). Dot size</span></span>
 <span><span class="co">#&gt;    encodes    -log_{10}(p)   . Reveals distribution of effect sizes</span></span>
 <span><span class="co">#&gt;    per cluster or condition.</span></span>
 <span><span class="co">#&gt;        "jitter_pct"    — Jitter plot of percentage-point</span></span>
@@ -5201,8 +5231,14 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - pie_group_by_sep: A character string to concat multiple columns in pie_group_by.</span></span>
 <span><span class="co">#&gt;       - pie_palette, pie_palcolor: Palette and custom colours for pie slice</span></span>
 <span><span class="co">#&gt;       fill colours.</span></span>
-<span><span class="co">#&gt;       - bars_sample: Number of observations sampled per cell when</span></span>
-<span><span class="co">#&gt;       cell_type = "bars".  Default 100.</span></span>
+<span><span class="co">#&gt;       - bars_sample: Fraction of each cell's observations (0 &lt; x &lt;= 1;</span></span>
+<span><span class="co">#&gt;       1 uses all data) or a whole count &gt; 1 sampled per cell when</span></span>
+<span><span class="co">#&gt;       cell_type = "bars".  Column widths are proportional to the</span></span>
+<span><span class="co">#&gt;       number of bars drawn per column, so a numeric count gives equal</span></span>
+<span><span class="co">#&gt;       column widths and a fraction gives widths proportional to the</span></span>
+<span><span class="co">#&gt;       column data sizes.  Proportional widths are skipped when</span></span>
+<span><span class="co">#&gt;       columns_split_by is given, and column clustering is</span></span>
+<span><span class="co">#&gt;       disabled in proportional mode.  Default 1 (all data).</span></span>
 <span><span class="co">#&gt;       - label: A function to compute text labels when</span></span>
 <span><span class="co">#&gt;       cell_type = "label" (or "label+mark").  Receives the</span></span>
 <span><span class="co">#&gt;       aggregated value for a cell and optionally row/column indices and</span></span>
@@ -5256,9 +5292,15 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       TRUE.</span></span>
 <span><span class="co">#&gt;       - title: The global (column) title of the heatmap.</span></span>
 <span><span class="co">#&gt;       - column_title: Character string/vector used as the column group</span></span>
-<span><span class="co">#&gt;       annotation title.</span></span>
+<span><span class="co">#&gt;       annotation title.  A character vector consisting entirely of the display</span></span>
+<span><span class="co">#&gt;       modes "inplace" (per-slice split titles), "legend" (split</span></span>
+<span><span class="co">#&gt;       annotation with legend, no title), "simple" (split annotation,</span></span>
+<span><span class="co">#&gt;       no legend/title), "anno" (alias "annotation"; label block</span></span>
+<span><span class="co">#&gt;       annotation) and "none" (no title, annotation, or legend)</span></span>
+<span><span class="co">#&gt;       controls how the split titles are displayed.  A literal title identical</span></span>
+<span><span class="co">#&gt;       to a mode keyword is interpreted as a mode.</span></span>
 <span><span class="co">#&gt;       - row_title: Character string/vector used as the row group</span></span>
-<span><span class="co">#&gt;       annotation title.</span></span>
+<span><span class="co">#&gt;       annotation title.  See column_title for the display modes.</span></span>
 <span><span class="co">#&gt;       - na_col: Colour for NA cells.  Default "grey85".</span></span>
 <span><span class="co">#&gt;       - row_names_side: Side for row names.  Default "right".</span></span>
 <span><span class="co">#&gt;       - column_names_side: Side for column names.  Default "bottom".</span></span>
@@ -5289,13 +5331,26 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       palcolorCustom colour vector overriding palette.</span></span>
 <span><span class="co">#&gt;       typeAnnotation type: "auto", "simple",</span></span>
 <span><span class="co">#&gt;       "pie", "ring", "bar", "violin",</span></span>
-<span><span class="co">#&gt;       "boxplot", "density", "label", "points",</span></span>
-<span><span class="co">#&gt;       "lines".</span></span>
+<span><span class="co">#&gt;       "boxplot", "density", "label",</span></span>
+<span><span class="co">#&gt;       "rownames", "points", "lines".</span></span>
+<span><span class="co">#&gt;       For split annotations, "rownames" (row splits) /</span></span>
+<span><span class="co">#&gt;       "colnames" (column splits) is like "label" but labels</span></span>
+<span><span class="co">#&gt;       each split block with the concatenated row/column names;</span></span>
+<span><span class="co">#&gt;       "names" and "dimnames" are aliases.</span></span>
+<span><span class="co">#&gt;       params$sep (default " ") controls the separator and</span></span>
+<span><span class="co">#&gt;       params$wrap_by the number of names per line.</span></span>
+<span><span class="co">#&gt;       For name annotations (the built-in rows_by/columns_by</span></span>
+<span><span class="co">#&gt;       annotation), "rownames"/"colnames" renders the</span></span>
+<span><span class="co">#&gt;       row/column names as text labels (this is what</span></span>
+<span><span class="co">#&gt;       show_row_names = "anno" uses).</span></span>
 <span><span class="co">#&gt;       paramsA list of additional parameters passed to the</span></span>
 <span><span class="co">#&gt;       annotation constructor.  FALSE disables the annotation.</span></span>
 <span><span class="co">#&gt;       $show_legend controls legend visibility.  See</span></span>
 <span><span class="co">#&gt;       HeatmapAnnotation.</span></span>
 <span><span class="co">#&gt;       aggA function to aggregate values for the annotation.</span></span>
+<span><span class="co">#&gt;       nameDisplay name for the annotation, shown next to the</span></span>
+<span><span class="co">#&gt;       annotation bar and used as the legend title.  FALSE hides the</span></span>
+<span><span class="co">#&gt;       displayed name.  Defaults to the annotation key (column name).</span></span>
 <span><span class="co">#&gt;       </span></span>
 <span><span class="co">#&gt;       Shortcuts:</span></span>
 <span><span class="co">#&gt;       </span></span>
@@ -6255,8 +6310,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       columns.</span></span>
 <span><span class="co">#&gt;       - pie_palette, pie_palcolor: Palette and custom colours for pie slice</span></span>
 <span><span class="co">#&gt;       fill colours.</span></span>
-<span><span class="co">#&gt;       - bars_sample: Number of observations sampled per cell when</span></span>
-<span><span class="co">#&gt;       cell_type = "bars".  Default 100.</span></span>
+<span><span class="co">#&gt;       - bars_sample: Fraction of each cell's observations (0 &lt; x &lt;= 1;</span></span>
+<span><span class="co">#&gt;       1 uses all data) or a whole count &gt; 1 sampled per cell when</span></span>
+<span><span class="co">#&gt;       cell_type = "bars".  Column widths are proportional to the</span></span>
+<span><span class="co">#&gt;       number of bars drawn per column.  Default 1 (all data).</span></span>
 <span><span class="co">#&gt;       - label: A function to compute text labels when</span></span>
 <span><span class="co">#&gt;       cell_type = "label" (or "label+mark").  Receives the</span></span>
 <span><span class="co">#&gt;       aggregated value for a cell and optionally row/column indices and names.</span></span>
@@ -6309,6 +6366,8 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - cluster_rows: Default clustering setting for rows.  Used as</span></span>
 <span><span class="co">#&gt;       fallback for left_cluster_rows / right_cluster_rows.</span></span>
 <span><span class="co">#&gt;       - show_row_names, show_column_names: Logical; show row/column names.</span></span>
+<span><span class="co">#&gt;       May also be a character vector of display modes; see</span></span>
+<span><span class="co">#&gt;       Heatmap.</span></span>
 <span><span class="co">#&gt;       - border: Logical; draw a border around each heatmap.  Default</span></span>
 <span><span class="co">#&gt;       TRUE.</span></span>
 <span><span class="co">#&gt;       - title: A character string for the overall plot title.  A function</span></span>
@@ -6318,7 +6377,8 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;       - title_params: A list of parameters passed to grid::grid.text() to control the title appearance.</span></span>
 <span><span class="co">#&gt;       Default is list(gp = gpar(fontsize = 14, fontface = "bold")).</span></span>
 <span><span class="co">#&gt;       - column_title, row_title: Character title displayed above the columns</span></span>
-<span><span class="co">#&gt;       / beside the rows of each heatmap.</span></span>
+<span><span class="co">#&gt;       / beside the rows of each heatmap.  May also be a character vector of</span></span>
+<span><span class="co">#&gt;       display modes; see Heatmap.</span></span>
 <span><span class="co">#&gt;       - na_col: Colour used for NA cells.  Default "grey85".</span></span>
 <span><span class="co">#&gt;       - row_names_side: Default side for row names.  Used as fallback for</span></span>
 <span><span class="co">#&gt;       left_row_names_side / right_row_names_side.  Default</span></span>

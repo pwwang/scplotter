@@ -27,7 +27,7 @@ The function handles two broad categories of plots:
     is about detection rate rather than expression magnitude.
 
   - `"jitter"` / `"jitter_log2fc"` — Jitter plot of log2 fold changes
-    across groups (defined by `subset_by`). Dot size encodes
+    across groups (defined by `each`). Dot size encodes
     \\-log\_{10}(p)\\. Reveals distribution of effect sizes per cluster
     or condition.
 
@@ -74,13 +74,15 @@ MarkersPlot(
     "jitter_pct", "heatmap_log2fc", "heatmap_pct", "dot_log2fc", "dot_pct", "heatmap",
     "violin", "box", "bar", "ridge", "dot"),
   subset_by = NULL,
+  each = NULL,
   subset_as_facet = FALSE,
+  facet_each = FALSE,
   comparison_by = NULL,
   p_adjust = TRUE,
   cutoff = NULL,
   show_labels = FALSE,
   sig_mark = "*",
-  order_by = NULL,
+  order_by = "desc(abs(avg_log2FC))",
   select = ifelse(plot_type %in% c("volcano", "volcano_log2fc", "volcano_pct",
     "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
   ...
@@ -117,18 +119,25 @@ MarkersPlot(
 
 - subset_by:
 
+  Deprecated. Use `each` instead.
+
+- each:
+
   A column name in `markers` indicating the grouping from which each
   marker was identified (e.g., the `cluster` column from
   `FindAllMarkers()`). Supports the `"marker_column:metadata_column"`
   syntax for linking to Seurat object metadata (see **Metadata column
-  mapping** section). For jitter and DE heatmap/dot plot types,
-  `subset_by` is required and defines the x-axis or column groups. For
-  expression plot types, `subset_by` controls faceting or splitting.
-  Default: `NULL`.
+  mapping** section). For jitter and DE heatmap/dot plot types, `each`
+  is required and defines the x-axis or column groups. For expression
+  plot types, `each` controls faceting or splitting. Default: `NULL`.
 
 - subset_as_facet:
 
-  Logical. If `TRUE`, facet the plot by `subset_by` groups instead of
+  Deprecated. Use `facet_each` instead.
+
+- facet_each:
+
+  Logical. If `TRUE`, facet the plot by `each` groups instead of
   splitting into separate plots. Most useful for expression plot types.
   For volcano plots, controls whether faceting or split_by dispatch is
   used. Default: `FALSE`.
@@ -181,25 +190,25 @@ MarkersPlot(
   A string expression to order markers by (evaluated with
   [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html)).
   Can reference columns in `markers` as well as columns from the object
-  metadata (when `object` is provided and `subset_by` enables merging).
-  Only the first value of merged metadata columns is used. Example:
+  metadata (when `object` is provided and `each` enables merging). Only
+  the first value of merged metadata columns is used. Example:
   `"desc(avg_log2FC)"`. The ordering affects which markers are selected
-  when `select` is numeric. Default: `NULL`.
+  when `select` is numeric. Default: `desc(abs(avg_log2FC))`.
 
 - select:
 
   How to select markers for labeling or display. See **Marker selection
   and filtering** section for full details.
 
-  - Numeric: Top N markers per `subset_by` group (default: `5` for
+  - Numeric: Top N markers per `each` group (default: `5` for
     volcano/jitter types, `10` for others).
 
   - Character expression: Filter condition for
     [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html).
 
   - Character vector: Multiple filter expressions; those containing the
-    `subset_by` column name filter the overall data, others filter
-    within remaining data.
+    `each` column name filter the overall data, others filter within
+    remaining data.
 
 - ...:
 
@@ -250,25 +259,24 @@ when `combine = FALSE`, a list of individual plots is returned.
 
 ## Note
 
-- `subset_by` is required for jitter plots (`"jitter"`,
-  `"jitter_log2fc"`, `"jitter_pct"`) and DE heatmap/dot plots
-  (`"heatmap_log2fc"`, `"heatmap_pct"`, `"dot_log2fc"`, `"dot_pct"`).
-  Without it, there is no grouping axis.
+- `each` is required for jitter plots (`"jitter"`, `"jitter_log2fc"`,
+  `"jitter_pct"`) and DE heatmap/dot plots (`"heatmap_log2fc"`,
+  `"heatmap_pct"`, `"dot_log2fc"`, `"dot_pct"`). Without it, there is no
+  grouping axis.
 
 - `comparison_by` is required for expression-based plot types
   (`"heatmap"`, `"violin"`, `"box"`, `"bar"`, `"ridge"`, `"dot"`) — it
   tells the function which comparison groups to extract from the object.
 
-- When `object` is provided and `subset_by` maps to a metadata column,
-  the markers data frame is left-joined with the object metadata. Only
-  the first row per group is kept for non-key columns, which is
-  sufficient for most annotation purposes but can cause issues if
-  per-cell metadata is needed.
+- When `object` is provided and `each` maps to a metadata column, the
+  markers data frame is left-joined with the object metadata. Only the
+  first row per group is kept for non-key columns, which is sufficient
+  for most annotation purposes but can cause issues if per-cell metadata
+  is needed.
 
-- For expression-based heatmap and dot plots, when `subset_by_2` is
-  available (i.e., the metadata column is mapped), genes are
-  automatically grouped by `subset_by` via `columns_split_by`, and
-  `group_by` is set to `NULL`.
+- For expression-based heatmap and dot plots, when `each_2` is available
+  (i.e., the metadata column is mapped), genes are automatically grouped
+  by `each` via `columns_split_by`, and `group_by` is set to `NULL`.
 
 - The function calculates \\-log\_{10}(p)\\ (or
   \\-log\_{10}(p\_{adj})\\) internally and stores it in a temporary
@@ -280,7 +288,7 @@ when `combine = FALSE`, a list of individual plots is returned.
 
 ## Metadata column mapping
 
-Both `subset_by` and `comparison_by` support a special
+Both `each` and `comparison_by` support a special
 `"marker_column:metadata_column"` syntax for linking columns in the
 markers data frame to columns in the Seurat object's metadata.
 
@@ -292,22 +300,26 @@ markers data frame to columns in the Seurat object's metadata.
   markers column and the metadata column (if a matching metadata column
   exists).
 
-- Example: `subset_by = "cluster:RNA_snn_res.0.8"` maps the `cluster`
-  column in the DE results to the `RNA_snn_res.0.8` column in the Seurat
-  metadata.
+- Example: `each = "cluster:RNA_snn_res.0.8"` maps the `cluster` column
+  in the DE results to the `RNA_snn_res.0.8` column in the Seurat
+  metadata. For expression-based plots, this allows the function to
+  extract the relevant expression values from the Seurat object for the
+  specified groups. You can also specify `each = "cluster:NULL"` to use
+  "cluster" to select markers in each cluster but don't split the
+  expression plots by cluster.
 
-When the markers data frame and object metadata are merged via
-`subset_by`, only the first value of each non-key column within each
-group is retained — this is by design to avoid duplication.
+When the markers data frame and object metadata are merged via `each`,
+only the first value of each non-key column within each group is
+retained — this is by design to avoid duplication.
 
 ## Marker selection and filtering
 
 The `select` argument supports three modes:
 
 - **Numeric** — Select the top `N` markers (ordered by `order_by`)
-  within each group defined by `subset_by`. For volcano and jitter
-  plots, all markers are plotted but only the top `N` per group are
-  labeled. For other plot types, only the selected markers are shown.
+  within each group defined by `each`. For volcano and jitter plots, all
+  markers are plotted but only the top `N` per group are labeled. For
+  other plot types, only the selected markers are shown.
 
 - **Single expression** — A filter expression string evaluated by
   [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html).
@@ -315,9 +327,9 @@ The `select` argument supports three modes:
   matching the condition are retained across all groups.
 
 - **Multiple expressions** (character vector) — Each element is
-  evaluated independently. Expressions that mention the `subset_by`
-  column filter the overall data (removing groups); other expressions
-  filter within the remaining data. For example,
+  evaluated independently. Expressions that mention the `each` column
+  filter the overall data (removing groups); other expressions filter
+  within the remaining data. For example,
   `select = c("cluster %in% c('0', '1')", "p_val_adj < 0.05")` first
   restricts to clusters 0 and 1, then keeps only significant markers. A
   numeric string like `"5"` among the expressions is treated as a top-N
@@ -388,282 +400,232 @@ MarkersPlot(markers, x_cutoff = 2)
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 
-MarkersPlot(allmarkers,
-    subset_by = "cluster", ncol = 2, subset_as_facet = TRUE)
+MarkersPlot(allmarkers, each = "cluster", ncol = 2, facet_each = TRUE)
 
 MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 
 
-MarkersPlot(allmarkers, plot_type = "jitter", subset_by = "cluster")
+MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
 
 MarkersPlot(allmarkers, plot_type = "jitter_pct",
-    subset_by = "cluster", add_hline = 0, shape = 16)
+    each = "cluster", add_hline = 0, shape = 16)
 
 
-MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster")
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
+    order_by = "desc(avg_log2FC)")
 
-MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", subset_by = "cluster",
-    label = scales::label_number(accuracy = 0.01),
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
+    label = scales::label_number(accuracy = 0.01), select = 3,
     cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
 
-MarkersPlot(allmarkers, plot_type = "heatmap_pct", subset_by = "cluster",
-    cutoff = 0.05)
+MarkersPlot(allmarkers, plot_type = "heatmap_pct", each = "cluster",
+    cutoff = 0.05, select = 3)
 
 
-MarkersPlot(allmarkers, plot_type = "dot_log2fc", subset_by = "cluster",
-    add_reticle = TRUE)
+MarkersPlot(allmarkers, plot_type = "dot_log2fc", each = "cluster",
+    add_reticle = TRUE, select = 3)
 
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-   columns_split_by = "CellType",
+   columns_split_by = "CellType", layer = "data",
    comparison_by = "cluster:seurat_clusters")
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
-# Suppose we did a DE between g1 and g2 in each cluster
-allmarkers$comparison <- "g1:g2"
+# Suppose we did a DE between G2M and G1 phases in each cluster and
+# stored the results in a new column "comparison"
+allmarkers$comparison <- "G1:G2M"
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+   comparison_by = "comparison:Phase", each = "cluster:seurat_clusters",
+   layer = "data")
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+# Select by each cluster, but don't split by seurat clusters in the plot
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
+   comparison_by = "comparison:Phase", each = "cluster:NULL", select = 3,
+   layer = "data")
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot", select = 2,
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 2,
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
 # select markers with a custom condition, e.g.,
 # significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 > 0.6
 # Note that other clusters are still included in the plot
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
    select = c('cluster %in% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
-   comparison_by = "cluster:seurat_clusters",
-   cutoff = 0.05)
-#> Warning: [MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:<object_metadata_column>' to make it work.
+   comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
+#> Warning: [MarkersPlot] `each` 'cluster' is ignored, since it is not found in the object's metadata. Set `each` to 'cluster:<object_metadata_column>' to make it work.
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
 # To exclude other clusters, you can separate the filtering conditions into
 # multiple expressions
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", subset_by = "cluster",
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
    select = c('cluster %in% c("1", "2", "0")', 'pct.2 - pct.1 > 0.6'),
-   comparison_by = "cluster:seurat_clusters",
-   cutoff = 0.05)
-#> Warning: [MarkersPlot] `subset_by` 'cluster' is ignored, since it is not found in the object's metadata. Set `subset_by` to 'cluster:<object_metadata_column>' to make it work.
+   comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
+#> Warning: [MarkersPlot] `each` 'cluster' is ignored, since it is not found in the object's metadata. Set `each` to 'cluster:<object_metadata_column>' to make it work.
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters")
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #> Warning: Layer counts isn't present in the assay object; returning NULL
 
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
-   comparison_by = "Phase", subset_by = "cluster:seurat_clusters",
-   ncol = 2)
+   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data",
+   ncol = 4)
 #> Warning: Layer counts isn't present in the assay object; returning NULL
-#> Picking joint bandwidth of 0.222
-#> Picking joint bandwidth of 0.155
-#> Picking joint bandwidth of 0.32
-#> Picking joint bandwidth of 0.331
-#> Picking joint bandwidth of 0.118
-#> Picking joint bandwidth of 0.32
-#> Picking joint bandwidth of 0.322
-#> Picking joint bandwidth of 0.105
-#> Picking joint bandwidth of 0.265
-#> Picking joint bandwidth of 0.232
+#> Picking joint bandwidth of 0.464
+#> Picking joint bandwidth of 0.303
+#> Picking joint bandwidth of 0.177
+#> Picking joint bandwidth of 0.142
 #> Picking joint bandwidth of 0.326
-#> Picking joint bandwidth of 0.31
-#> Picking joint bandwidth of 0.094
-#> Picking joint bandwidth of 0.306
-#> Picking joint bandwidth of 0.0355
-#> Picking joint bandwidth of 0.116
-#> Picking joint bandwidth of 0.33
-#> Picking joint bandwidth of 0.278
-#> Picking joint bandwidth of 0.186
-#> Picking joint bandwidth of 0.102
-#> Picking joint bandwidth of 0.251
-#> Picking joint bandwidth of 0.261
-#> Picking joint bandwidth of 0.0735
-#> Picking joint bandwidth of 0.0714
-#> Picking joint bandwidth of 0.202
-#> Picking joint bandwidth of 0.267
-#> Picking joint bandwidth of 0.256
-#> Picking joint bandwidth of 0.0755
-#> Picking joint bandwidth of 0.234
-#> Picking joint bandwidth of 0.201
-#> Picking joint bandwidth of 0.381
-#> Picking joint bandwidth of 0.478
-#> Picking joint bandwidth of 0.573
-#> Picking joint bandwidth of 0.515
-#> Picking joint bandwidth of 0.381
-#> Picking joint bandwidth of 0.419
-#> Picking joint bandwidth of 0.174
-#> Picking joint bandwidth of 0.132
-#> Picking joint bandwidth of 0.368
-#> Picking joint bandwidth of 0.356
-#> Picking joint bandwidth of 0.461
-#> Picking joint bandwidth of 0.259
-#> Picking joint bandwidth of 0.327
-#> Picking joint bandwidth of 0.031
-#> Picking joint bandwidth of 0.351
-#> Picking joint bandwidth of 0.385
-#> Picking joint bandwidth of 0.145
-#> Picking joint bandwidth of 0.327
-#> Picking joint bandwidth of 0.264
-#> Picking joint bandwidth of 0.26
-#> Picking joint bandwidth of 0.0669
-#> Picking joint bandwidth of 0.0739
-#> Picking joint bandwidth of 0.187
-#> Picking joint bandwidth of 0.211
-#> Picking joint bandwidth of 0.282
-#> Picking joint bandwidth of 0.255
-#> Picking joint bandwidth of 0.229
-#> Picking joint bandwidth of 0.254
-#> Picking joint bandwidth of 0.0798
-#> Picking joint bandwidth of 0.0639
-#> Picking joint bandwidth of 0.291
-#> Picking joint bandwidth of 0.193
-#> Picking joint bandwidth of 0.188
-#> Picking joint bandwidth of 0.144
-#> Picking joint bandwidth of 0.267
-#> Picking joint bandwidth of 0.185
-#> Picking joint bandwidth of 0.0543
-#> Picking joint bandwidth of 0.0514
-#> Picking joint bandwidth of 0.18
-#> Picking joint bandwidth of 0.196
-#> Picking joint bandwidth of 0.0658
-#> Picking joint bandwidth of 0.0491
-#> Picking joint bandwidth of 0.317
-#> Picking joint bandwidth of 0.215
-#> Picking joint bandwidth of 0.204
-#> Picking joint bandwidth of 0.0904
-#> Picking joint bandwidth of 0.241
-#> Picking joint bandwidth of 0.295
-#> Picking joint bandwidth of 0.0677
-#> Picking joint bandwidth of 0.0845
-#> Picking joint bandwidth of 0.468
-#> Picking joint bandwidth of 0.282
-#> Picking joint bandwidth of 0.174
-#> Picking joint bandwidth of 0.173
-#> Picking joint bandwidth of 0.0428
-#> Picking joint bandwidth of 0.0847
-#> Picking joint bandwidth of 0.117
-#> Picking joint bandwidth of 0.343
-#> Picking joint bandwidth of 0.318
-#> Picking joint bandwidth of 0.25
-#> Picking joint bandwidth of 0.51
-#> Picking joint bandwidth of 0.378
-#> Picking joint bandwidth of 0.0588
-#> Picking joint bandwidth of 0.0605
-#> Picking joint bandwidth of 0.0428
-#> Picking joint bandwidth of 0.032
-#> Picking joint bandwidth of 0.259
-#> Picking joint bandwidth of 0.285
+#> Picking joint bandwidth of 0.464
+#> Picking joint bandwidth of 0.359
+#> Picking joint bandwidth of 0.303
 #> Picking joint bandwidth of 0.222
-#> Picking joint bandwidth of 0.155
 #> Picking joint bandwidth of 0.32
-#> Picking joint bandwidth of 0.331
-#> Picking joint bandwidth of 0.118
-#> Picking joint bandwidth of 0.32
-#> Picking joint bandwidth of 0.322
-#> Picking joint bandwidth of 0.105
-#> Picking joint bandwidth of 0.265
-#> Picking joint bandwidth of 0.232
-#> Picking joint bandwidth of 0.326
-#> Picking joint bandwidth of 0.31
-#> Picking joint bandwidth of 0.094
-#> Picking joint bandwidth of 0.306
-#> Picking joint bandwidth of 0.0355
-#> Picking joint bandwidth of 0.116
 #> Picking joint bandwidth of 0.33
-#> Picking joint bandwidth of 0.278
-#> Picking joint bandwidth of 0.186
-#> Picking joint bandwidth of 0.102
-#> Picking joint bandwidth of 0.251
-#> Picking joint bandwidth of 0.261
-#> Picking joint bandwidth of 0.0735
-#> Picking joint bandwidth of 0.0714
+#> Picking joint bandwidth of 0.433
+#> Picking joint bandwidth of 0.881
+#> Picking joint bandwidth of 0.375
 #> Picking joint bandwidth of 0.202
-#> Picking joint bandwidth of 0.267
-#> Picking joint bandwidth of 0.256
-#> Picking joint bandwidth of 0.0755
-#> Picking joint bandwidth of 0.234
-#> Picking joint bandwidth of 0.201
-#> Picking joint bandwidth of 0.381
-#> Picking joint bandwidth of 0.478
-#> Picking joint bandwidth of 0.573
-#> Picking joint bandwidth of 0.515
-#> Picking joint bandwidth of 0.381
-#> Picking joint bandwidth of 0.419
-#> Picking joint bandwidth of 0.174
-#> Picking joint bandwidth of 0.132
+#> Picking joint bandwidth of 0.319
+#> Picking joint bandwidth of 0.586
+#> Picking joint bandwidth of 0.0593
+#> Picking joint bandwidth of 0.0355
+#> Picking joint bandwidth of 0.102
+#> Picking joint bandwidth of 0.384
+#> Picking joint bandwidth of 0.427
+#> Picking joint bandwidth of 0.323
+#> Picking joint bandwidth of 0.133
 #> Picking joint bandwidth of 0.368
-#> Picking joint bandwidth of 0.356
-#> Picking joint bandwidth of 0.461
-#> Picking joint bandwidth of 0.259
-#> Picking joint bandwidth of 0.327
-#> Picking joint bandwidth of 0.031
-#> Picking joint bandwidth of 0.351
-#> Picking joint bandwidth of 0.385
-#> Picking joint bandwidth of 0.145
-#> Picking joint bandwidth of 0.327
-#> Picking joint bandwidth of 0.264
-#> Picking joint bandwidth of 0.26
-#> Picking joint bandwidth of 0.0669
-#> Picking joint bandwidth of 0.0739
+#> Picking joint bandwidth of 0.512
+#> Picking joint bandwidth of 0.423
+#> Picking joint bandwidth of 0.512
+#> Picking joint bandwidth of 0.234
+#> Picking joint bandwidth of 0.515
+#> Picking joint bandwidth of 0.363
+#> Picking joint bandwidth of 0.426
+#> Picking joint bandwidth of 0.125
+#> Picking joint bandwidth of 0.131
 #> Picking joint bandwidth of 0.187
-#> Picking joint bandwidth of 0.211
-#> Picking joint bandwidth of 0.282
-#> Picking joint bandwidth of 0.255
-#> Picking joint bandwidth of 0.229
-#> Picking joint bandwidth of 0.254
-#> Picking joint bandwidth of 0.0798
-#> Picking joint bandwidth of 0.0639
-#> Picking joint bandwidth of 0.291
-#> Picking joint bandwidth of 0.193
-#> Picking joint bandwidth of 0.188
-#> Picking joint bandwidth of 0.144
-#> Picking joint bandwidth of 0.267
-#> Picking joint bandwidth of 0.185
+#> Picking joint bandwidth of 0.327
+#> Picking joint bandwidth of 0.497
+#> Picking joint bandwidth of 0.0635
+#> Picking joint bandwidth of 0.327
+#> Picking joint bandwidth of 0.327
+#> Picking joint bandwidth of 0.0789
+#> Picking joint bandwidth of 0.116
+#> Picking joint bandwidth of 0.102
+#> Picking joint bandwidth of 0.0982
 #> Picking joint bandwidth of 0.0543
-#> Picking joint bandwidth of 0.0514
-#> Picking joint bandwidth of 0.18
-#> Picking joint bandwidth of 0.196
-#> Picking joint bandwidth of 0.0658
-#> Picking joint bandwidth of 0.0491
-#> Picking joint bandwidth of 0.317
-#> Picking joint bandwidth of 0.215
-#> Picking joint bandwidth of 0.204
-#> Picking joint bandwidth of 0.0904
+#> Picking joint bandwidth of 0.392
+#> Picking joint bandwidth of 0.115
+#> Picking joint bandwidth of 0.0379
+#> Picking joint bandwidth of 0.229
+#> Picking joint bandwidth of 0.193
+#> Picking joint bandwidth of 0.167
+#> Picking joint bandwidth of 0.325
 #> Picking joint bandwidth of 0.241
-#> Picking joint bandwidth of 0.295
-#> Picking joint bandwidth of 0.0677
-#> Picking joint bandwidth of 0.0845
-#> Picking joint bandwidth of 0.468
-#> Picking joint bandwidth of 0.282
-#> Picking joint bandwidth of 0.174
 #> Picking joint bandwidth of 0.173
+#> Picking joint bandwidth of 0.468
+#> Picking joint bandwidth of 0.358
+#> Picking joint bandwidth of 0.203
+#> Picking joint bandwidth of 0.499
+#> Picking joint bandwidth of 0.0658
+#> Picking joint bandwidth of 0.0904
+#> Picking joint bandwidth of 0.267
+#> Picking joint bandwidth of 0.28
+#> Picking joint bandwidth of 0.12
+#> Picking joint bandwidth of 0.146
 #> Picking joint bandwidth of 0.0428
-#> Picking joint bandwidth of 0.0847
-#> Picking joint bandwidth of 0.117
-#> Picking joint bandwidth of 0.343
-#> Picking joint bandwidth of 0.318
+#> Picking joint bandwidth of 0.131
+#> Picking joint bandwidth of 0.179
+#> Picking joint bandwidth of 0.364
+#> Picking joint bandwidth of 0.0428
 #> Picking joint bandwidth of 0.25
-#> Picking joint bandwidth of 0.51
-#> Picking joint bandwidth of 0.378
-#> Picking joint bandwidth of 0.0588
-#> Picking joint bandwidth of 0.0605
+#> Picking joint bandwidth of 0.464
+#> Picking joint bandwidth of 0.303
+#> Picking joint bandwidth of 0.177
+#> Picking joint bandwidth of 0.142
+#> Picking joint bandwidth of 0.326
+#> Picking joint bandwidth of 0.464
+#> Picking joint bandwidth of 0.359
+#> Picking joint bandwidth of 0.303
+#> Picking joint bandwidth of 0.222
+#> Picking joint bandwidth of 0.32
+#> Picking joint bandwidth of 0.33
+#> Picking joint bandwidth of 0.433
+#> Picking joint bandwidth of 0.881
+#> Picking joint bandwidth of 0.375
+#> Picking joint bandwidth of 0.202
+#> Picking joint bandwidth of 0.319
+#> Picking joint bandwidth of 0.586
+#> Picking joint bandwidth of 0.0593
+#> Picking joint bandwidth of 0.0355
+#> Picking joint bandwidth of 0.102
+#> Picking joint bandwidth of 0.384
+#> Picking joint bandwidth of 0.427
+#> Picking joint bandwidth of 0.323
+#> Picking joint bandwidth of 0.133
+#> Picking joint bandwidth of 0.368
+#> Picking joint bandwidth of 0.512
+#> Picking joint bandwidth of 0.423
+#> Picking joint bandwidth of 0.512
+#> Picking joint bandwidth of 0.234
+#> Picking joint bandwidth of 0.515
+#> Picking joint bandwidth of 0.363
+#> Picking joint bandwidth of 0.426
+#> Picking joint bandwidth of 0.125
+#> Picking joint bandwidth of 0.131
+#> Picking joint bandwidth of 0.187
+#> Picking joint bandwidth of 0.327
+#> Picking joint bandwidth of 0.497
+#> Picking joint bandwidth of 0.0635
+#> Picking joint bandwidth of 0.327
+#> Picking joint bandwidth of 0.327
+#> Picking joint bandwidth of 0.0789
+#> Picking joint bandwidth of 0.116
+#> Picking joint bandwidth of 0.102
+#> Picking joint bandwidth of 0.0982
+#> Picking joint bandwidth of 0.0543
+#> Picking joint bandwidth of 0.392
+#> Picking joint bandwidth of 0.115
+#> Picking joint bandwidth of 0.0379
+#> Picking joint bandwidth of 0.229
+#> Picking joint bandwidth of 0.193
+#> Picking joint bandwidth of 0.167
+#> Picking joint bandwidth of 0.325
+#> Picking joint bandwidth of 0.241
+#> Picking joint bandwidth of 0.173
+#> Picking joint bandwidth of 0.468
+#> Picking joint bandwidth of 0.358
+#> Picking joint bandwidth of 0.203
+#> Picking joint bandwidth of 0.499
+#> Picking joint bandwidth of 0.0658
+#> Picking joint bandwidth of 0.0904
+#> Picking joint bandwidth of 0.267
+#> Picking joint bandwidth of 0.28
+#> Picking joint bandwidth of 0.12
+#> Picking joint bandwidth of 0.146
 #> Picking joint bandwidth of 0.0428
-#> Picking joint bandwidth of 0.032
-#> Picking joint bandwidth of 0.259
-#> Picking joint bandwidth of 0.285
+#> Picking joint bandwidth of 0.131
+#> Picking joint bandwidth of 0.179
+#> Picking joint bandwidth of 0.364
+#> Picking joint bandwidth of 0.0428
+#> Picking joint bandwidth of 0.25
 
 # }
 ```

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,8 +56,20 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.7.7" id="version-077">Version 0.7.7<a class="anchor" aria-label="anchor" href="#version-077"></a></h2>
-<ul><li>chore: use r-meta &gt;=1.12 as conda dependency</li>
+<h2 class="pkg-version" data-toc-text="0.8.0" id="version-080">Version 0.8.0<a class="anchor" aria-label="anchor" href="#version-080"></a></h2>
+<ul><li>BREAKING: set default layer parameter to “scale.data” in FeatureStatPlot and update documentation</li>
+<li>fix: set default order_by parameter to “desc(abs(avg_log2FC))” in MarkersPlot function</li>
+<li>fix: update order_by parameter to use absolute log2FC in MarkersPlot function</li>
+<li>fix: add tidygraph to Suggests in DESCRIPTION and update comment in utils.R</li>
+<li>fix: add methods import for slot and slotNames in NAMESPACE and utils.R</li>
+<li>fix: update MarkersPlot function to replace deprecated subset_by with each, and update documentation accordingly</li>
+<li>fix(ClonalGeneUsagePlot): fix passing rows_name not working for Heatmap</li>
+<li>chore: use r-meta &gt;=1.12 as conda dependency</li>
+<li>chore(CCCPlot): use 0x2192 unicode for -&gt; in plots</li>
+<li>chore(CellStatPlot): use annotation name instead of row_names to hide rows name</li>
+<li>chore(ClonalOverlapPlot): use annotation name instead of row_names</li>
+<li>chore(FeatureStatPlot): avoid deprecation warning in the examples to adopt latest plotthis</li>
+<li>docs(MarkersPlot): make visualization better for the examples</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.6" id="version-076">Version 0.7.6<a class="anchor" aria-label="anchor" href="#version-076"></a></h2>
