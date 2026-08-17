@@ -335,28 +335,35 @@ MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
 MarkersPlot(allmarkers, plot_type = "jitter_pct",
     each = "cluster", add_hline = 0, shape = 16)
 
-MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster")
 MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
-    label = scales::label_number(accuracy = 0.01),
+    order_by = "desc(avg_log2FC)")
+MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
+    label = scales::label_number(accuracy = 0.01), select = 3,
     cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
 MarkersPlot(allmarkers, plot_type = "heatmap_pct", each = "cluster",
-    cutoff = 0.05)
+    cutoff = 0.05, select = 3)
 
 MarkersPlot(allmarkers, plot_type = "dot_log2fc", each = "cluster",
-    add_reticle = TRUE)
+    add_reticle = TRUE, select = 3)
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
    columns_split_by = "CellType", layer = "data",
    comparison_by = "cluster:seurat_clusters")
 
-# Suppose we did a DE between g1 and g2 in each cluster
-allmarkers$comparison <- "g1:g2"
+# Suppose we did a DE between G2M and G1 phases in each cluster and
+# stored the results in a new column "comparison"
+allmarkers$comparison <- "G1:G2M"
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-   comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot",
+   comparison_by = "comparison:Phase", each = "cluster:seurat_clusters",
+   layer = "data")
+# Select by each cluster, but don't split by seurat clusters in the plot
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
+   comparison_by = "comparison:Phase", each = "cluster:NULL", select = 3,
+   layer = "data")
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot", select = 2,
    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 
-MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 3,
+MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 2,
    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 
 # select markers with a custom condition, e.g.,
@@ -377,7 +384,7 @@ MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
 
 MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data",
-   ncol = 2)
+   ncol = 4)
 }
 }
 \seealso{
