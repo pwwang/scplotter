@@ -1,3 +1,6 @@
+#' @importFrom methods slot slotNames
+NULL
+
 #' @keywords internal
 #' @importFrom utils getFromNamespace
 check_columns <- getFromNamespace("check_columns", "plotthis")
