@@ -4,7 +4,10 @@
 #' Visualize differential expression (DE) results — typically the output of
 #' \code{\link[Seurat:FindMarkers]{Seurat::FindMarkers()}} or
 #' \code{\link[Seurat:FindAllMarkers]{Seurat::FindAllMarkers()}} — across a
-#' variety of plot types. \code{MarkersPlot()} bridges the gap between DE
+#' variety of plot types. You can also compose the DE results from other
+#' tools into a data frame with the required columns and use this function to visualize them.
+#'
+#' \code{MarkersPlot()} bridges the gap between DE
 #' testing and visualization by providing a unified interface for both
 #' \strong{summary-level DE visualizations} (volcano, jitter, heatmap, and dot
 #' plots of fold changes and significance) and \strong{expression-level
@@ -57,45 +60,51 @@
 #' }
 #'
 #' @section Metadata column mapping:
-#' Both \code{each} and \code{comparison_by} support a special
-#' \code{"marker_column:metadata_column"} syntax for linking columns in the
-#' markers data frame to columns in the Seurat object's metadata.
+#' Both \code{each} and \code{group_by} accept a
+#' \code{"marker_column:metadata_column"} syntax that links a column in the
+#' markers data frame to a column in the Seurat object's metadata.
 #' \itemize{
-#'   \item The part before the colon refers to a column in \code{markers}.
-#'   \item The part after the colon refers to a column in
-#'     \code{object@meta.data}.
-#'   \item If only one name is provided (no colon), it is used for both the
-#'     markers column and the metadata column (if a matching metadata column
-#'     exists).
-#'   \item Example: \code{each = "cluster:RNA_snn_res.0.8"} maps the
-#'     \code{cluster} column in the DE results to the
-#'     \code{RNA_snn_res.0.8} column in the Seurat metadata.
-#'     For expression-based plots, this allows the function to extract the relevant
-#'     expression values from the Seurat object for the specified groups.
-#'     You can also specify \code{each = "cluster:NULL"} to use "cluster"
-#'     to select markers in each cluster but don't split the expression plots
-#'     by cluster.
+#'   \item The part before the colon must be a column in \code{markers}
+#'     (e.g., \code{cluster}); the part after the colon must be a column in
+#'     \code{object@meta.data} (e.g., \code{seurat_clusters}).
+#'   \item This syntax requires \code{object} to be provided; otherwise an
+#'     error is raised.
+#'   \item Every value in the marker column must exist in the metadata
+#'     column, otherwise an error is raised.
+#'   \item For \code{each}, the metadata is merged into the markers data
+#'     frame (keeping the first row of each metadata group for non-key
+#'     columns), so metadata columns become available for arguments like
+#'     \code{order_by}. On name conflicts, the merged columns get a
+#'     \code{.meta} suffix.
+#'   \item For \code{group_by}, the object is subset to the cells whose
+#'     metadata values occur in the marker column, and the metadata column
+#'     is re-factored with those values in the order they first appear in
+#'     the marker column. Values separated by a colon (e.g.,
+#'     \code{"G1:G2M"}) are split into individual groups.
 #' }
-#' When the markers data frame and object metadata are merged via
-#' \code{each}, only the first value of each non-key column within each
-#' group is retained — this is by design to avoid duplication.
 #'
 #' @section Marker selection and filtering:
-#' The \code{select} argument supports three modes:
+#' How \code{select} picks the markers depends on the plot type and the
+#' value provided:
 #' \itemize{
 #'   \item \strong{Numeric} — Select the top \code{N} markers (ordered by
-#'     \code{order_by}) within each group defined by \code{each}. For
-#'     volcano and jitter plots, all markers are plotted but only the top
-#'     \code{N} per group are labeled. For other plot types, only the selected
-#'     markers are shown.
+#'     \code{order_by}) within each group defined by \code{each}, or overall
+#'     when \code{each} is \code{NULL}. Jitter plots label the top
+#'     \code{N} markers per group (a numeric \code{select} is required).
+#'     Volcano plots ignore \code{select} — labeling is controlled via
+#'     \code{...} (e.g., \code{nlabel}). For expression plot types, a
+#'     numeric \code{select} only keeps markers with a p-value below
+#'     \code{cutoff} (when set) before the top-N selection.
 #'   \item \strong{Single expression} — A filter expression string evaluated by
 #'     \code{\link[dplyr:filter]{dplyr::filter()}}. For example,
 #'     \code{"p_val_adj < 0.05 & avg_log2FC > 1"}. All markers matching the
 #'     condition are retained across all groups.
-#'   \item \strong{Multiple expressions} (character vector) — Each element is
-#'     evaluated independently. Expressions that mention the \code{each}
-#'     column filter the overall data (removing groups); other expressions
-#'     filter within the remaining data. For example,
+#'   \item \strong{Multiple expressions} (character vector) — Only for DE
+#'     heatmap/dot plot types (\code{"heatmap_log2fc"},
+#'     \code{"heatmap_pct"}, \code{"dot_log2fc"}, \code{"dot_pct"}). Each
+#'     element is evaluated independently: expressions that mention the
+#'     \code{each} column filter the overall data (removing groups); other
+#'     expressions filter within the remaining data. For example,
 #'     \code{select = c("cluster \%in\% c('0', '1')", "p_val_adj < 0.05")}
 #'     first restricts to clusters 0 and 1, then keeps only significant
 #'     markers. A numeric string like \code{"5"} among the expressions is
@@ -143,39 +152,52 @@
 #'   \code{"heatmap_pct"}, \code{"dot_log2fc"}, \code{"dot_pct"},
 #'   \code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
 #'   \code{"ridge"}, or \code{"dot"}. See Description for details on each type.
+#' @param group_by Used only for expression-based plot types (ignored for DE
+#'   summary plot types). A column in the Seurat object's metadata to group
+#'   cells by, e.g., a condition column — useful when the DEs were calculated
+#'   between conditions (such as cell cycle phases) and you want to compare
+#'   the expression of the markers across those conditions. A single value is
+#'   passed directly to \code{\link{FeatureStatPlot}}: for \code{heatmap} and
+#'   \code{dot} plots it is applied as the column annotation (\code{ident}),
+#'   and it only takes effect when \code{each} includes a metadata column
+#'   mapping; for \code{violin}, \code{box}, \code{bar}, and \code{ridge}
+#'   plots it is passed as \code{group_by}.
+#'   The \code{"marker_column:metadata_column"} syntax (see \strong{Metadata
+#'   column mapping}) restricts the object to only the cells involved in the
+#'   comparisons: for example, if a \code{comparison} column in the markers
+#'   data frame holds \code{"G1:G2M"}, passing
+#'   \code{group_by = "comparison:Phase"} keeps only G1 and G2M cells in the
+#'   plot, with the \code{Phase} column re-factored to these two levels in
+#'   the order they first appear in the \code{comparison} column. Without
+#'   the restriction, e.g., \code{group_by = "Phase"}, all phase cells
+#'   (G1, G2M, and S) are included in the plot. Default: \code{NULL}.
 #' @param subset_by Deprecated. Use \code{each} instead.
 #' @param each A column name in \code{markers} indicating the grouping
 #'   from which each marker was identified (e.g., the \code{cluster} column
-#'   from \code{FindAllMarkers()}). Supports the
-#'   \code{"marker_column:metadata_column"} syntax for linking to Seurat
-#'   object metadata (see \strong{Metadata column mapping} section). For
-#'   jitter and DE heatmap/dot plot types, \code{each} is required and
-#'   defines the x-axis or column groups. For expression plot types,
-#'   \code{each} controls faceting or splitting. Default: \code{NULL}.
+#'   from \code{FindAllMarkers()}). Required for jitter and DE heatmap/dot
+#'   plot types, where it defines the x-axis or column groups. For volcano
+#'   plot types, it splits the plot by group (or facets it, with
+#'   \code{facet_each = TRUE}). For expression plot types, \code{each} is
+#'   used to select the markers within each group; a plain column name does
+#'   not split the plot — use the \code{"marker_column:metadata_column"}
+#'   syntax (see \strong{Metadata column mapping}) to also split the plot by
+#'   the mapped metadata column. Default: \code{NULL}.
 #' @param subset_as_facet Deprecated. Use \code{facet_each} instead.
-#' @param facet_each Logical. If \code{TRUE}, facet the plot by
-#'   \code{each} groups instead of splitting into separate plots. Most
-#'   useful for expression plot types. For volcano plots, controls whether
-#'   faceting or split_by dispatch is used. Default: \code{FALSE}.
-#' @param comparison_by A column name in \code{markers} indicating the
-#'   comparison (e.g., \code{"g1:g2"} for a pairwise comparison, or a single
-#'   group name for one-vs-rest). Required for expression-based plot types
-#'   (\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
-#'   \code{"ridge"}, \code{"dot"}). Supports the
-#'   \code{"marker_column:metadata_column"} syntax (see \strong{Metadata
-#'   column mapping} section). If the comparison values contain a colon
-#'   (e.g., \code{"G2M:G1"}), the two groups on either side of the colon
-#'   are used to subset the object. If only a single group is present, a
-#'   one-vs-other comparison is assumed. Default: \code{NULL}.
+#' @param facet_each Logical. Only for volcano plot types: if \code{TRUE},
+#'   facet the volcano plot by the \code{each} groups instead of splitting
+#'   it into separate subplots. Ignored for other plot types. Default:
+#'   \code{FALSE}.
 #' @param p_adjust Logical. If \code{TRUE} (default), use adjusted p-value
 #'   (\code{p_val_adj} column) for significance calculations and y-axis
 #'   transformations. If \code{FALSE}, use raw p-value (\code{p_val} column).
 #' @param cutoff Numeric. The p-value (or adjusted p-value, depending on
 #'   \code{p_adjust}) threshold for labeling significance. For volcano plots,
-#'   sets \code{y_cutoff}. For heatmap-based DE plots
-#'   (\code{heatmap_log2fc}, \code{heatmap_pct}), controls which cells
-#'   receive significance marks. Default: \code{NULL} (no cutoff; defaults
-#'   to \code{0.05} for volcano plots).
+#'   sets \code{y_cutoff}. For DE heatmap plots (\code{heatmap_log2fc},
+#'   \code{heatmap_pct}), controls which cells receive significance marks.
+#'   For expression plot types with a numeric \code{select}, only markers
+#'   with a p-value below \code{cutoff} are eligible for selection. Ignored
+#'   by DE dot plots (\code{dot_log2fc}, \code{dot_pct}). Default:
+#'   \code{NULL} (no cutoff; defaults to \code{0.05} for volcano plots).
 #' @param show_labels Logical. For \code{heatmap_log2fc} and
 #'   \code{heatmap_pct} plot types only. If \code{TRUE}, display numeric
 #'   values in heatmap cells. When combined with \code{cutoff}, both values
@@ -188,24 +210,38 @@
 #'   (\code{"[*]"}, \code{"<*>"}, \code{"(*)"}, \code{"{*}"}). Note that
 #'   \code{"*"} conflicts with \code{show_labels = TRUE} because both use
 #'   the label layer — use a compound mark instead. Default: \code{"*"}.
-#' @param order_by A string expression to order markers by (evaluated with
+#' @param order_by A string of one or more comma-separated expressions used
+#'   to order the markers (evaluated with
 #'   \code{\link[dplyr:arrange]{dplyr::arrange()}}). Can reference columns
-#'   in \code{markers} as well as columns from the object metadata (when
-#'   \code{object} is provided and \code{each} enables merging). Only
-#'   the first value of merged metadata columns is used. Example:
-#'   \code{"desc(avg_log2FC)"}. The ordering affects which markers are
-#'   selected when \code{select} is numeric. Default: `desc(abs(avg_log2FC))`.
-#' @param select How to select markers for labeling or display. See
+#'   in \code{markers} as well as metadata columns merged in via a
+#'   colon-form \code{each} (see \strong{Metadata column mapping}). Only
+#'   the first value of each merged metadata column is kept. Example:
+#'   \code{"desc(avg_log2FC)"} or \code{"desc(avg_log2FC), desc(pct.1)"}.
+#'   The ordering determines which markers are selected when \code{select}
+#'   is numeric. For jitter plots, it is also passed to
+#'   \code{\link[plotthis:JitterPlot]{plotthis::JitterPlot()}}. Default:
+#'   \code{"desc(abs(avg_log2FC))"}.
+#' @param select How to select markers for display or labeling. See
 #'   \strong{Marker selection and filtering} section for full details.
 #'   \itemize{
-#'     \item Numeric: Top N markers per \code{each} group (default:
-#'       \code{5} for volcano/jitter types, \code{10} for others).
-#'     \item Character expression: Filter condition for
+#'     \item Numeric: Top N markers per \code{each} group, or overall when
+#'       \code{each} is \code{NULL} (default: \code{5} for volcano/jitter
+#'       types, \code{10} for others).
+#'     \item Single expression: Filter condition for
 #'       \code{\link[dplyr:filter]{dplyr::filter()}}.
-#'     \item Character vector: Multiple filter expressions; those containing
-#'       the \code{each} column name filter the overall data, others
-#'       filter within remaining data.
+#'     \item Character vector of multiple expressions (DE heatmap/dot plot
+#'       types only): expressions mentioning the \code{each} column name
+#'       filter the overall data, others filter within the remaining data.
 #'   }
+#' @param flatten_markers Logical. Only for the expression \code{heatmap} and
+#'   \code{dot} plot types. When \code{each} is used to select markers per
+#'   group, the markers are by default provided to
+#'   \code{\link{FeatureStatPlot}} as a named list (one entry per group),
+#'   which splits the feature rows of the plot by group. With
+#'   \code{flatten_markers = TRUE}, the selected markers are collapsed into a
+#'   single vector so the plot shows one unsplit block of features — useful
+#'   e.g. to mimic \code{\link[Seurat:DoHeatmap]{Seurat::DoHeatmap()}} on
+#'   globally selected markers. Default: \code{FALSE}.
 #' @param ... Additional arguments passed to the underlying plotting
 #'   function, depending on \code{plot_type}:
 #'   \describe{
@@ -230,7 +266,10 @@
 #'       \code{ridge}, \code{dot}}{
 #'       Passed to \code{\link{FeatureStatPlot}}. Common arguments:
 #'       \code{name}, \code{palette}, \code{ncol}, \code{nrow},
-#'       \code{stack}, \code{columns_split_by}.
+#'       \code{stack}, \code{layer}, \code{cell_type}. Note that
+#'       \code{group_by}, \code{ident}, and \code{columns_split_by} are set
+#'       by \code{MarkersPlot()} from the \code{group_by} and \code{each}
+#'       arguments.
 #'     }
 #'   }
 #' @return A ggplot object (from \code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}}
@@ -243,31 +282,38 @@
 #'   returned.
 #' @note
 #' \itemize{
+#'   \item \code{plot_type} determines which underlying plotting function is called and
+#'     also what to be plotted. `volcano`, `volcano_log2fc`, `volcano_pct`
+#'     `jitter`, `jitter_log2fc`, `jitter_pct`, `heatmap_log2fc`, `heatmap_pct`, `dot_log2fc`, and `dot_pct`
+#'     are DE summary plots that visualize the DE statistics themselves,
+#'     while `heatmap`, `violin`, `box`, `bar`, `ridge`, and `dot` are expression-based plots
+#'     that visualize the actual expression values of the selected marker genes in the context of the original Seurat object.
 #'   \item \code{each} is required for jitter plots
 #'     (\code{"jitter"}, \code{"jitter_log2fc"}, \code{"jitter_pct"}) and
 #'     DE heatmap/dot plots (\code{"heatmap_log2fc"}, \code{"heatmap_pct"},
-#'     \code{"dot_log2fc"}, \code{"dot_pct"}). Without it, there is no
-#'     grouping axis.
-#'   \item \code{comparison_by} is required for expression-based plot types
-#'     (\code{"heatmap"}, \code{"violin"}, \code{"box"}, \code{"bar"},
-#'     \code{"ridge"}, \code{"dot"}) — it tells the function which
-#'     comparison groups to extract from the object.
-#'   \item When \code{object} is provided and \code{each} maps to a
-#'     metadata column, the markers data frame is left-joined with the object
-#'     metadata. Only the first row per group is kept for non-key columns,
-#'     which is sufficient for most annotation purposes but can cause issues
-#'     if per-cell metadata is needed.
-#'   \item For expression-based heatmap and dot plots, when
-#'     \code{each_2} is available (i.e., the metadata column is mapped),
-#'     genes are automatically grouped by \code{each} via
-#'     \code{columns_split_by}, and \code{group_by} is set to \code{NULL}.
+#'     \code{"dot_log2fc"}, \code{"dot_pct"}). Its role depends on the plot
+#'     type:
+#'     \itemize{
+#'       \item Volcano plot types: the plot is split by the \code{each}
+#'         groups (faceted when \code{facet_each = TRUE}).
+#'       \item Jitter plot types: the x-axis grouping.
+#'       \item DE heatmap/dot plot types: the columns of the heatmap/dot plot.
+#'       \item Expression plot types: used to select the markers within each
+#'         group; it does not split or facet the plot. Pass
+#'         \code{"marker_column:metadata_column"} (e.g.,
+#'         \code{"cluster:seurat_clusters"}) to also split the plot by the
+#'         mapped metadata column (via \code{columns_split_by} for
+#'         heatmap/dot, or \code{ident} for violin/box/bar).
+#'     }
+#'   \item When \code{each} uses the
+#'     \code{"marker_column:metadata_column"} form, the markers data frame is
+#'     left-joined with the object metadata. Only the first row per group is
+#'     kept for non-key columns, which is sufficient for most annotation
+#'     purposes but can cause issues if per-cell metadata is needed.
 #'   \item The function calculates \eqn{-log_{10}(p)} (or
 #'     \eqn{-log_{10}(p_{adj})}) internally and stores it in a temporary
 #'     \code{neg_log10_p} column. This column is available for use in
 #'     \code{order_by}.
-#'   \item When the comparison involves only a single group (one-vs-rest),
-#'     cells not in the comparison group are labeled \code{"Other"} in the
-#'     object metadata.
 #' }
 #' @seealso
 #' \code{\link[plotthis:VolcanoPlot]{plotthis::VolcanoPlot()}},
@@ -289,11 +335,11 @@
 #' MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 #'
 #' MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
-#' MarkersPlot(allmarkers, plot_type = "jitter_pct",
+#' MarkersPlot(allmarkers, plot_type = "jitter_pct", order_by = "desc(abs(pct.1 - pct.2))",
 #'     each = "cluster", add_hline = 0, shape = 16)
 #'
 #' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
-#'     order_by = "desc(avg_log2FC)")
+#'     order_by = "desc(avg_log2FC)", select = 3)
 #' MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",
 #'     label = scales::label_number(accuracy = 0.01), select = 3,
 #'     cutoff = 0.05, show_labels = TRUE, sig_mark = '{}')
@@ -303,44 +349,44 @@
 #' MarkersPlot(allmarkers, plot_type = "dot_log2fc", each = "cluster",
 #'     add_reticle = TRUE, select = 3)
 #'
-#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-#'    columns_split_by = "CellType", layer = "data",
-#'    comparison_by = "cluster:seurat_clusters")
+#' topmarkers <- allmarkers[order(allmarkers$avg_log2FC, decreasing = TRUE), ]
+#' # Mimic Seurat's DoHeatmap()
+#' MarkersPlot(topmarkers[1:20, ], object = pancreas_sub, plot_type = "heatmap",
+#'    layer = "data", cell_type = "bars", flatten_markers = TRUE, cluster_rows = FALSE,
+#'    show_column_names = "inplace", each = "cluster:seurat_clusters")
 #'
+#' # Select top 3 markers per cluster
+#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
+#'    order_by = "desc(avg_log2FC)", select = 3,
+#'    layer = "data", cell_type = "bars",
+#'    show_column_names = "inplace", each = "cluster:seurat_clusters")
 #' # Suppose we did a DE between G2M and G1 phases in each cluster and
 #' # stored the results in a new column "comparison"
 #' allmarkers$comparison <- "G1:G2M"
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-#'    comparison_by = "comparison:Phase", each = "cluster:seurat_clusters",
-#'    layer = "data")
-#' # Select by each cluster, but don't split by seurat clusters in the plot
-#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "heatmap",
-#'    comparison_by = "comparison:Phase", each = "cluster:NULL", select = 3,
-#'    layer = "data")
+#'    group_by = "comparison:Phase", each = "cluster:seurat_clusters",
+#'    order_by = "desc(avg_log2FC)", select = 3, layer = "data")
+#'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "dot", select = 2,
-#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
+#'    flatten_markers = TRUE, order_by = "desc(avg_log2FC)",
+#'    group_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", select = 2,
-#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
+#'    position_dodge_preserve = "single", add_bg = TRUE, add_box = TRUE,
+#'    group_by = "comparison:Phase", each = "cluster:seurat_clusters", layer = "data")
 #'
 #' # select markers with a custom condition, e.g.,
 #' # significant markers in cluster 0, 1, and 2 with pct.2 - pct.1 > 0.6
 #' # Note that other clusters are still included in the plot
-#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
-#'    select = c('cluster %in% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
-#'    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
-#'
-#' # To exclude other clusters, you can separate the filtering conditions into
-#' # multiple expressions
-#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin", each = "cluster",
-#'    select = c('cluster %in% c("1", "2", "0")', 'pct.2 - pct.1 > 0.6'),
-#'    comparison_by = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
+#' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "violin",
+#'   select = c('cluster %in% c("1", "2", "0") & pct.2 - pct.1 > 0.6'),
+#'   each = "cluster:seurat_clusters", cutoff = 0.05, layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "box", select = 3,
-#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
+#'   group_by = "Phase", each = "cluster:seurat_clusters", layer = "data")
 #'
 #' MarkersPlot(allmarkers, object = pancreas_sub, plot_type = "ridge", select = 2,
-#'    comparison_by = "Phase", each = "cluster:seurat_clusters", layer = "data",
+#'    group_by = "Phase", each = "cluster:seurat_clusters", layer = "data",
 #'    ncol = 4)
 #' }
 #' @export
@@ -355,11 +401,11 @@ MarkersPlot <- function(
         # markers are selected from the markers data frame
         "heatmap", "violin", "box", "bar", "ridge", "dot"
     ),
+    group_by = NULL,
     subset_by = NULL,
     each = NULL,
     subset_as_facet = FALSE,
     facet_each = FALSE,
-    comparison_by = NULL,
     p_adjust = TRUE,
     cutoff = NULL,
     show_labels = FALSE,
@@ -369,6 +415,7 @@ MarkersPlot <- function(
         "volcano", "volcano_log2fc", "volcano_pct",
         "jitter", "jitter_log2fc", "jitter_pct"
     ), 5, 10),
+    flatten_markers = FALSE,
     ...
 ) {
     plot_type <- match.arg(plot_type)
@@ -400,62 +447,38 @@ MarkersPlot <- function(
     # Check each
     check_columns <- utils::getFromNamespace("check_columns", "plotthis")
     if (!is.null(each)) {
-        each_1 <- strsplit(each, ":")[[1]][1]
-        each_2 <- strsplit(each, ":")[[1]][2]  # NA if not provided
-        each_2 <- if (!is.na(each_2)) each_2 else NULL
-        if (is.null(each_2) && !is.null(object) && each_1 %in% colnames(object@meta.data)) {
-            each_2 <- each_1
+        if (grepl(":", each)) {
+            if (length(strsplit(each, ":")[[1]]) != 2) {
+                stop("[MarkersPlot] `each` must be in the format 'marker_column:metadata_column' or a single column name.")
+            }
+            each_1 <- strsplit(each, ":")[[1]][1]
+            each_2 <- strsplit(each, ":")[[1]][2]
+            if (!each_2 %in% colnames(object@meta.data)) {
+                stop("[MarkersPlot] `each` '", each_2, "' is not found in the object's metadata.")
+            }
+            # check if each values are consistent between markers and object
+            sub_markers <- unique(markers[[each_1]])
+            sub_object <- unique(object@meta.data[[each_2]])
+            nonexisting_sub <- setdiff(sub_markers, sub_object)
+            if (length(nonexisting_sub) > 0) {
+                stop(
+                    "[MarkersPlot] The following values in `each` '", each_1,
+                    "' are not found in the object's metadata (", each_2, "): ",
+                    paste(nonexisting_sub, collapse = ", "))
+            }
+            # Get the first row of each group in the metadata to avoid duplication
+            # User has to make sure that the metadata columns are consistent within each group
+            meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(each_2))
+            markers <- dplyr::left_join(markers, meta, by = stats::setNames(each_2, each_1), suffix = c("", ".meta"))
+        } else {
+            each_1 <- each
+            each_2 <- NULL
         }
+
+        each_1 <- check_columns(markers, each_1)
     } else {
         each_1 <- NULL
         each_2 <- NULL
-    }
-    each_1 <- check_columns(markers, each_1)
-    if (!is.null(each_1) && !is.null(each_2) && !is.null(object) && !identical(each_2, "NULL")) {
-        if (!each_2 %in% colnames(object@meta.data)) {
-            stop("[MarkersPlot] `each` '", each_2, "' is not found in the object's metadata.")
-        }
-        # check if each values are consistent between markers and object
-        sub_markers <- unique(markers[[each_1]])
-        sub_object <- unique(object@meta.data[[each_2]])
-        nonexisting_sub <- setdiff(sub_markers, sub_object)
-        if (length(nonexisting_sub) > 0) {
-            stop(
-                "[MarkersPlot] The following values in `each` '", each_1,
-                "' are not found in the object's metadata (", each_2, "): ",
-                paste(nonexisting_sub, collapse = ", "))
-        }
-        meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(each_2))
-        markers <- dplyr::left_join(markers, meta, by = stats::setNames(each_2, each_1), suffix = c("", ".meta"))
-    }
-
-    # Check comparison_by
-    if (!is.null(comparison_by)) {
-        comparison_by_1 <- strsplit(comparison_by, ":")[[1]][1]
-        comparison_by_2 <- strsplit(comparison_by, ":")[[1]][2]  # NA if not provided
-        comparison_by_2 <- if (!is.na(comparison_by_2)) comparison_by_2 else NULL
-        if (is.null(comparison_by_2) && !is.null(object) && comparison_by_1 %in% colnames(object@meta.data)) {
-            comparison_by_2 <- comparison_by_1
-        }
-    } else {
-        comparison_by_1 <- NULL
-        comparison_by_2 <- NULL
-    }
-    comparison_by_1 <- check_columns(markers, comparison_by_1)
-    if (!is.null(comparison_by_2) && !is.null(object)) {
-        if (!comparison_by_2 %in% colnames(object@meta.data)) {
-            stop("[MarkersPlot] `comparison_by` '", comparison_by_2, "' is not found in the object's metadata.")
-        }
-        # check if comparison_by values are consistent between markers and object
-        comp_markers <- unique(unlist(strsplit(unique(as.character(markers[[comparison_by_1]])), ":")))
-        comp_object <- unique(object@meta.data[[comparison_by_2]])
-        nonexisting_comp <- setdiff(comp_markers, comp_object)
-        if (length(nonexisting_comp) > 0) {
-            stop(
-                "[MarkersPlot] The following values in `comparison_by` '", comparison_by_1,
-                "' are not found in the object's metadata (", comparison_by_2, "): ",
-                paste(nonexisting_comp, collapse = ", "))
-        }
     }
 
     pcol <- ifelse(p_adjust, "p_val_adj", "p_val")
@@ -473,7 +496,7 @@ MarkersPlot <- function(
 
     # order markers by order_by
     if (!is.null(order_by)) {
-        markers <- dplyr::arrange(markers, !!rlang::parse_expr(order_by))
+        markers <- dplyr::arrange(markers, !!!rlang::parse_exprs(order_by))
     }
 
     if (plot_type %in% c("volcano", "volcano_log2fc", "volcano_pct")) {
@@ -676,47 +699,16 @@ MarkersPlot <- function(
         }
         do_call(plotthis::Heatmap, args)
     } else {  # if (plot_type %in% c("heatmap", "violin", "box", "bar", "ridge", "dot")) {
-        if (is.null(comparison_by)) {
-            stop("[MarkersPlot] `comparison_by` is required for plot_type '", plot_type, "'")
-        }
-        if (is.null(comparison_by_2)) {
-            comparison_by_2 <- comparison_by_1
-            if (!comparison_by_2 %in% colnames(object@meta.data)) {
-                stop("[MarkersPlot] `comparison_by` '", comparison_by_2, "' is not found in the object's metadata.")
-            }
-        }
-        if (!is.null(each_1) && is.null(each_2)) {
-            if (each_1 %in% colnames(object@meta.data)) {
-                each_2 <- each_1
-            } else if (is.numeric(select)) {
-                warning(
-                    "[MarkersPlot] `each` '", each_1, "' is only used to select markers, ",
-                    "but not in plotting, since it is not found in the object's metadata. ",
-                    "Set `each` to '", each_1, ":<object_metadata_column>' to make it work.",
-                    immediate. = TRUE)
-            } else {
-                warning(
-                    "[MarkersPlot] `each` '", each_1, "' is ignored, ",
-                    "since it is not found in the object's metadata. ",
-                    "Set `each` to '", each_1, ":<object_metadata_column>' to make it work.",
-                    immediate. = TRUE)
-
-            }
-        }
-        if (identical(each_2, "NULL")) {
-            each_2 <- NULL
-        }
 
         if (is.numeric(select)) {
             if (!is.null(cutoff)) {
                 markers <- dplyr::filter(markers, !!rlang::sym(pcol) < cutoff)
             }
-            if (!is.null(each)) {
+            if (!is.null(each_1)) {
                 # e.g. each cluster
                 genes <- dplyr::slice_head(markers, n = select, by = !!rlang::sym(each_1))
-                # print(genes)
 
-                if (plot_type %in% c("heatmap", "dot")) {
+                if (plot_type %in% c("heatmap", "dot") && !flatten_markers) {
                     genes <- dplyr::summarise(genes, gene = list(!!sym("gene")), .by = !!rlang::sym(each_1))
                     # keep the order of the group name
                     genes <- dplyr::arrange(genes, !!rlang::sym(each_1))
@@ -729,46 +721,56 @@ MarkersPlot <- function(
                 # generally, select top N markers overall
                 genes <- dplyr::slice_head(markers, n = select)$gene
             }
-        } else if (is.null(each) || length(select) == 1) {
-            # If each is NULL or select has only one expression,
-            # we can just filter the markers directly
-            genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select))$gene
         } else {
-            # The expressions in select with the entire `each` word in it are
-            # supposed to be the ones to filter the data
-            # e.g if each = "cluster" and select = c("cluster %in% c('1', '2')", "avg_log2FC > 0.5"),
-            # the first expression is used to filter the markers data frame, and the second expression is
-            # used to filter the genes within the remaining data
-            select_sb <- grepl(paste0("\\b", each_1, "\\b"), select)
-            if (any(select_sb)) {
-                markers <- dplyr::filter(markers, !!!rlang::parse_exprs(select[select_sb]))
-                if (all(select_sb)) {
-                    genes <- markers$gene
+            filtered <- dplyr::filter(markers, !!rlang::parse_expr(select))
+            if (!is.null(each_1)) {
+                # e.g. each cluster
+                if (plot_type %in% c("heatmap", "dot") && !flatten_markers) {
+                    genes <- dplyr::summarise(filtered, gene = list(!!sym("gene")), .by = !!rlang::sym(each_1))
+                    # keep the order of the group name
+                    genes <- dplyr::arrange(genes, !!rlang::sym(each_1))
+                    # convert to a named list, with each group name as the list name
+                    genes <- stats::setNames(genes$gene, genes[[each_1]])
                 } else {
-                    select_non_sb <- select[!select_sb]
-                    if (length(select_non_sb) == 1 && grepl("^\\d+$", select_non_sb)) {
-                        if (is.null(each)) {
-                            genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb))$gene
-                        } else {
-                            genes <- dplyr::slice_head(markers, n = as.numeric(select_non_sb), by = !!rlang::sym(each_1))$gene
-                        }
-                    } else {
-                        genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select_non_sb))$gene
-                    }
+                    genes <- filtered$gene
                 }
             } else {
-                genes <- dplyr::filter(markers, !!!rlang::parse_exprs(select))$gene
+                genes <- filtered$gene
             }
         }
 
-        # subset the object to only include the comparison groups
-        comp_groups <- unique(unlist(strsplit(unique(as.character(markers[[comparison_by_1]])), ":")))
-        if (length(comp_groups) > 1) {
-            object <- subset_seurat(object, subset = !!rlang::sym(comparison_by_2) %in% comp_groups)
+        if (!is.null(group_by)) {
+            if (grepl(":", group_by)) {
+                if (length(strsplit(group_by, ":")[[1]]) != 2) {
+                    stop("[MarkersPlot] `group_by` must be in the format 'marker_column:metadata_column' or a single column name.")
+                }
+                group_by_1 <- strsplit(group_by, ":")[[1]][1]
+                group_by_2 <- strsplit(group_by, ":")[[1]][2]
+                group_by_1 <- check_columns(markers, group_by_1)
+            } else {
+                group_by_1 <- NULL
+                group_by_2 <- group_by
+            }
+            if (!group_by_2 %in% colnames(object@meta.data)) {
+                stop("[MarkersPlot] `group_by` '", group_by_2, "' is not found in the object's metadata.")
+            }
         } else {
-            object@meta.data[[comparison_by_2]] <- ifelse(object@meta.data[[comparison_by_2]] == comp_groups, comp_groups, "Other")
-            object@meta.data[[comparison_by_2]] <- factor(object@meta.data[[comparison_by_2]], levels = c(comp_groups, "Other"))
+            group_by_1 <- NULL
+            group_by_2 <- NULL
         }
+
+        if (!is.null(group_by_1) && !is.null(group_by_2)) {
+            # check if group_by values are consistent between markers and object
+            groups <- unique(unlist(strsplit(unique(as.character(markers[[group_by_1]])), ":")))
+            if (!all(groups %in% unique(as.character(object@meta.data[[group_by_2]])))) {
+                stop("[MarkersPlot] The following values in `group_by` '", group_by_1, "' are not found in the object's metadata (", group_by_2, "): ",
+                    paste(setdiff(groups, unique(as.character(object@meta.data[[group_by_2]]))), collapse = ", ")
+                )
+            }
+            object <- subset_seurat(object, subset = !!rlang::sym(group_by_2) %in% groups)
+            object@meta.data[[group_by_2]] <- factor(object@meta.data[[group_by_2]], levels = groups)
+        }
+
         if (!is.list(genes)) {
             unigenes <- unique(genes)
         } else {
@@ -781,14 +783,11 @@ MarkersPlot <- function(
         }, error = function(e) {
             object
         })
+
         args <- list(
             object,
             features = genes,
-            group_by = comparison_by_2,
             plot_type = plot_type,
-            facet_by = if (facet_each) each_2 else NULL,
-            split_by = if (!facet_each) each_2 else NULL,
-            ident = comparison_by_2,
             ...
         )
         if (plot_type %in% c("heatmap", "dot")) {
@@ -797,17 +796,26 @@ MarkersPlot <- function(
             if (!is.null(each_2)) {
                 args$facet_by <- NULL
                 args$split_by <- NULL
-                args$columns_split_by <- each_2
                 args$group_by <- NULL
+                if (!is.null(each_2) && !is.null(group_by_2)) {
+                    args$columns_split_by <- each_2
+                    args$ident <- group_by_2
+                } else if (!is.null(each_2)) {
+                    args$ident <- each_2
+                } else if (!is.null(group_by_2)) {
+                    args$ident <- group_by_2
+                } else {
+                    args$ident <- NULL
+                }
             }
         } else if (plot_type %in% c("violin", "box", "bar")) {
             args$stack <- args$stack %||% TRUE
-            if (!is.null(each_2)) {
-                args$ident <- each_2
-                args$group_by <- comparison_by_2
-                args$split_by <- NULL
-                args$facet_by <- NULL
-            }
+            args$group_by <- group_by_2
+            args$split_by <- NULL
+            args$facet_by <- NULL
+            args$ident <- each_2 %||% "orig.ident"
+        } else {
+            args$group_by <- group_by_2
         }
         do_call(scplotter::FeatureStatPlot, args)
     }
