@@ -93,8 +93,16 @@
             xlab = xlab %||% "", ylab = ylab %||% "", x_text_angle = x_text_angle %||% 45, ...)
     } else if (plot_type == "ridge") {
         data <- downsample_data()
+        if (!is.null(group_by)) {
+            if (!is.null(split_by)) {
+                stop("[FeatureStatPlot] Cannot use both `group_by` and `split_by` for ridge plots. Use only one of them.")
+            }
+            split_by <- ident
+        } else {
+            group_by <- ident
+        }
         RidgePlot(
-            data, x = ".value", group_by = ident, split_by = split_by, facet_by = facet_by,
+            data, x = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", ...)
     } else if (plot_type == "dim") {
         FeatureDimPlot(
