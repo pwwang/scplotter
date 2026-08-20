@@ -171,7 +171,6 @@
 #'   the order they first appear in the \code{comparison} column. Without
 #'   the restriction, e.g., \code{group_by = "Phase"}, all phase cells
 #'   (G1, G2M, and S) are included in the plot. Default: \code{NULL}.
-#' @param subset_by Deprecated. Use \code{each} instead.
 #' @param each A column name in \code{markers} indicating the grouping
 #'   from which each marker was identified (e.g., the \code{cluster} column
 #'   from \code{FindAllMarkers()}). Required for jitter and DE heatmap/dot
@@ -182,7 +181,6 @@
 #'   not split the plot — use the \code{"marker_column:metadata_column"}
 #'   syntax (see \strong{Metadata column mapping}) to also split the plot by
 #'   the mapped metadata column. Default: \code{NULL}.
-#' @param subset_as_facet Deprecated. Use \code{facet_each} instead.
 #' @param facet_each Logical. Only for volcano plot types: if \code{TRUE},
 #'   facet the volcano plot by the \code{each} groups instead of splitting
 #'   it into separate subplots. Ignored for other plot types. Default:
@@ -402,9 +400,7 @@ MarkersPlot <- function(
         "heatmap", "violin", "box", "bar", "ridge", "dot"
     ),
     group_by = NULL,
-    subset_by = NULL,
     each = NULL,
-    subset_as_facet = FALSE,
     facet_each = FALSE,
     p_adjust = TRUE,
     cutoff = NULL,
@@ -419,18 +415,6 @@ MarkersPlot <- function(
     ...
 ) {
     plot_type <- match.arg(plot_type)
-    if (!missing(subset_by)) {
-        warning("[MarkersPlot] `subset_by` is deprecated; use `each` instead.")
-        if (missing(each)) {
-            each <- subset_by
-        }
-    }
-    if (!missing(subset_as_facet)) {
-        warning("[MarkersPlot] `subset_as_facet` is deprecated; use `facet_each` instead.")
-        if (missing(facet_each)) {
-            facet_each <- subset_as_facet
-        }
-    }
 
     # check if object is provided for plot types that need it
     plot_types_need_object <- c(

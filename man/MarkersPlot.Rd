@@ -11,9 +11,7 @@ MarkersPlot(
     "jitter_pct", "heatmap_log2fc", "heatmap_pct", "dot_log2fc", "dot_pct", "heatmap",
     "violin", "box", "bar", "ridge", "dot"),
   group_by = NULL,
-  subset_by = NULL,
   each = NULL,
-  subset_as_facet = FALSE,
   facet_each = FALSE,
   p_adjust = TRUE,
   cutoff = NULL,
@@ -68,8 +66,6 @@ the order they first appear in the \code{comparison} column. Without
 the restriction, e.g., \code{group_by = "Phase"}, all phase cells
 (G1, G2M, and S) are included in the plot. Default: \code{NULL}.}
 
-\item{subset_by}{Deprecated. Use \code{each} instead.}
-
 \item{each}{A column name in \code{markers} indicating the grouping
 from which each marker was identified (e.g., the \code{cluster} column
 from \code{FindAllMarkers()}). Required for jitter and DE heatmap/dot
@@ -80,8 +76,6 @@ used to select the markers within each group; a plain column name does
 not split the plot — use the \code{"marker_column:metadata_column"}
 syntax (see \strong{Metadata column mapping}) to also split the plot by
 the mapped metadata column. Default: \code{NULL}.}
-
-\item{subset_as_facet}{Deprecated. Use \code{facet_each} instead.}
 
 \item{facet_each}{Logical. Only for volcano plot types: if \code{TRUE},
 facet the volcano plot by the \code{each} groups instead of splitting
