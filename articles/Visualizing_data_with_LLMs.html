@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -652,7 +652,10 @@ environment and mention it in your prompt.</p>
 <span><span class="co">#&gt;    Visualize differential expression (DE) results — typically the output of</span></span>
 <span><span class="co">#&gt;    Seurat::FindMarkers()    or</span></span>
 <span><span class="co">#&gt;    Seurat::FindAllMarkers()    — across a</span></span>
-<span><span class="co">#&gt;    variety of plot types.    MarkersPlot()    bridges the gap between DE</span></span>
+<span><span class="co">#&gt;    variety of plot types. You can also compose the DE results from other</span></span>
+<span><span class="co">#&gt;    tools into a data frame with the required columns and use this function to visualize them.</span></span>
+<span><span class="co">#&gt;    </span></span>
+<span><span class="co">#&gt;    MarkersPlot()    bridges the gap between DE</span></span>
 <span><span class="co">#&gt;    testing and visualization by providing a unified interface for both</span></span>
 <span><span class="co">#&gt;    summary-level DE visualizations    (volcano, jitter, heatmap, and dot</span></span>
 <span><span class="co">#&gt;    plots of fold changes and significance) and    expression-level</span></span>
@@ -1528,7 +1531,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;    Visualize differential expression (DE) results — typically the output of</span></span>
 <span><span class="co">#&gt;    Seurat::FindMarkers()    or</span></span>
 <span><span class="co">#&gt;    Seurat::FindAllMarkers()    — across a</span></span>
-<span><span class="co">#&gt;    variety of plot types.    MarkersPlot()    bridges the gap between DE</span></span>
+<span><span class="co">#&gt;    variety of plot types. You can also compose the DE results from other</span></span>
+<span><span class="co">#&gt;    tools into a data frame with the required columns and use this function to visualize them.</span></span>
+<span><span class="co">#&gt;    </span></span>
+<span><span class="co">#&gt;    MarkersPlot()    bridges the gap between DE</span></span>
 <span><span class="co">#&gt;    testing and visualization by providing a unified interface for both</span></span>
 <span><span class="co">#&gt;    summary-level DE visualizations    (volcano, jitter, heatmap, and dot</span></span>
 <span><span class="co">#&gt;    plots of fold changes and significance) and    expression-level</span></span>
@@ -3777,10 +3783,10 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(data = cellphonedb_res)</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>To only debug a single conversation, you can set <code>verbose</code>
 to <code>TRUE</code> in the <code>ask()</code> method.</p>
@@ -4318,7 +4324,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;    Visualize differential expression (DE) results — typically the output of</span></span>
 <span><span class="co">#&gt;    Seurat::FindMarkers()    or</span></span>
 <span><span class="co">#&gt;    Seurat::FindAllMarkers()    — across a</span></span>
-<span><span class="co">#&gt;    variety of plot types.    MarkersPlot()    bridges the gap between DE</span></span>
+<span><span class="co">#&gt;    variety of plot types. You can also compose the DE results from other</span></span>
+<span><span class="co">#&gt;    tools into a data frame with the required columns and use this function to visualize them.</span></span>
+<span><span class="co">#&gt;    </span></span>
+<span><span class="co">#&gt;    MarkersPlot()    bridges the gap between DE</span></span>
 <span><span class="co">#&gt;    testing and visualization by providing a unified interface for both</span></span>
 <span><span class="co">#&gt;    summary-level DE visualizations    (volcano, jitter, heatmap, and dot</span></span>
 <span><span class="co">#&gt;    plots of fold changes and significance) and    expression-level</span></span>

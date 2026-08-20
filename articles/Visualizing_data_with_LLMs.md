@@ -567,7 +567,10 @@ chat$list_tools()
 #>    Visualize differential expression (DE) results — typically the output of
 #>    Seurat::FindMarkers()    or
 #>    Seurat::FindAllMarkers()    — across a
-#>    variety of plot types.    MarkersPlot()    bridges the gap between DE
+#>    variety of plot types. You can also compose the DE results from other
+#>    tools into a data frame with the required columns and use this function to visualize them.
+#>    
+#>    MarkersPlot()    bridges the gap between DE
 #>    testing and visualization by providing a unified interface for both
 #>    summary-level DE visualizations    (volcano, jitter, heatmap, and dot
 #>    plots of fold changes and significance) and    expression-level
@@ -1455,7 +1458,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    Visualize differential expression (DE) results — typically the output of
 #>    Seurat::FindMarkers()    or
 #>    Seurat::FindAllMarkers()    — across a
-#>    variety of plot types.    MarkersPlot()    bridges the gap between DE
+#>    variety of plot types. You can also compose the DE results from other
+#>    tools into a data frame with the required columns and use this function to visualize them.
+#>    
+#>    MarkersPlot()    bridges the gap between DE
 #>    testing and visualization by providing a unified interface for both
 #>    summary-level DE visualizations    (volcano, jitter, heatmap, and dot
 #>    plots of fold changes and significance) and    expression-level
@@ -3708,11 +3714,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -4253,7 +4259,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #>    Visualize differential expression (DE) results — typically the output of
 #>    Seurat::FindMarkers()    or
 #>    Seurat::FindAllMarkers()    — across a
-#>    variety of plot types.    MarkersPlot()    bridges the gap between DE
+#>    variety of plot types. You can also compose the DE results from other
+#>    tools into a data frame with the required columns and use this function to visualize them.
+#>    
+#>    MarkersPlot()    bridges the gap between DE
 #>    testing and visualization by providing a unified interface for both
 #>    summary-level DE visualizations    (volcano, jitter, heatmap, and dot
 #>    plots of fold changes and significance) and    expression-level
