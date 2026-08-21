@@ -65,17 +65,22 @@
 #' markers data frame to a column in the Seurat object's metadata.
 #' \itemize{
 #'   \item The part before the colon must be a column in \code{markers}
-#'     (e.g., \code{cluster}); the part after the colon must be a column in
-#'     \code{object@meta.data} (e.g., \code{seurat_clusters}).
+#'     (e.g., \code{cluster}) or be empty; the part after the colon must be
+#'     a column in \code{object@meta.data} (e.g., \code{seurat_clusters}).
 #'   \item This syntax requires \code{object} to be provided; otherwise an
 #'     error is raised.
-#'   \item Every value in the marker column must exist in the metadata
-#'     column, otherwise an error is raised.
-#'   \item For \code{each}, the metadata is merged into the markers data
-#'     frame (keeping the first row of each metadata group for non-key
-#'     columns), so metadata columns become available for arguments like
-#'     \code{order_by}. On name conflicts, the merged columns get a
-#'     \code{.meta} suffix.
+#'   \item When the marker part is non-empty, every value in the marker
+#'     column must exist in the metadata column, otherwise an error is
+#'     raised.
+#'   \item For \code{each} with a non-empty marker part, the metadata is
+#'     merged into the markers data frame (keeping the first row of each
+#'     metadata group for non-key columns), so metadata columns become
+#'     available for arguments like \code{order_by}. On name conflicts, the
+#'     merged columns get a \code{.meta} suffix. With an empty marker part
+#'     (\code{":metadata_column"}), no merging or per-group selection
+#'     happens; the metadata column is used only to split/annotate the
+#'     expression plot (\code{columns_split_by} for heatmap/dot, \code{ident}
+#'     for violin/box/bar).
 #'   \item For \code{group_by}, the object is subset to the cells whose
 #'     metadata values occur in the marker column, and the metadata column
 #'     is re-factored with those values in the order they first appear in
@@ -180,7 +185,11 @@
 #'   used to select the markers within each group; a plain column name does
 #'   not split the plot — use the \code{"marker_column:metadata_column"}
 #'   syntax (see \strong{Metadata column mapping}) to also split the plot by
-#'   the mapped metadata column. Default: \code{NULL}.
+#'   the mapped metadata column. Alternatively, pass
+#'   \code{":metadata_column"} with an empty marker part to split the
+#'   expression plot by the metadata column directly, without selecting
+#'   markers per group (markers are selected overall) and without merging
+#'   metadata. Default: \code{NULL}.
 #' @param facet_each Logical. Only for volcano plot types: if \code{TRUE},
 #'   facet the volcano plot by the \code{each} groups instead of splitting
 #'   it into separate subplots. Ignored for other plot types. Default:
@@ -301,13 +310,18 @@
 #'         \code{"marker_column:metadata_column"} (e.g.,
 #'         \code{"cluster:seurat_clusters"}) to also split the plot by the
 #'         mapped metadata column (via \code{columns_split_by} for
-#'         heatmap/dot, or \code{ident} for violin/box/bar).
+#'         heatmap/dot, or \code{ident} for violin/box/bar), or
+#'         \code{":metadata_column"} (e.g., \code{":seurat_clusters"}) to
+#'         split the plot by the metadata column without per-group marker
+#'         selection.
 #'     }
 #'   \item When \code{each} uses the
-#'     \code{"marker_column:metadata_column"} form, the markers data frame is
-#'     left-joined with the object metadata. Only the first row per group is
-#'     kept for non-key columns, which is sufficient for most annotation
-#'     purposes but can cause issues if per-cell metadata is needed.
+#'     \code{"marker_column:metadata_column"} form with a non-empty marker
+#'     column, the markers data frame is left-joined with the object
+#'     metadata. Only the first row per group is kept for non-key columns,
+#'     which is sufficient for most annotation purposes but can cause issues
+#'     if per-cell metadata is needed. The \code{":metadata_column"} form
+#'     (empty marker part) skips the join entirely.
 #'   \item The function calculates \eqn{-log_{10}(p)} (or
 #'     \eqn{-log_{10}(p_{adj})}) internally and stores it in a temporary
 #'     \code{neg_log10_p} column. This column is available for use in
@@ -440,20 +454,24 @@ MarkersPlot <- function(
             if (!each_2 %in% colnames(object@meta.data)) {
                 stop("[MarkersPlot] `each` '", each_2, "' is not found in the object's metadata.")
             }
-            # check if each values are consistent between markers and object
-            sub_markers <- unique(markers[[each_1]])
-            sub_object <- unique(object@meta.data[[each_2]])
-            nonexisting_sub <- setdiff(sub_markers, sub_object)
-            if (length(nonexisting_sub) > 0) {
-                stop(
-                    "[MarkersPlot] The following values in `each` '", each_1,
-                    "' are not found in the object's metadata (", each_2, "): ",
-                    paste(nonexisting_sub, collapse = ", "))
+            if (nchar(each_1) == 0) {
+                each_1 <- NULL
+            } else {
+                # check if each values are consistent between markers and object
+                sub_markers <- unique(markers[[each_1]])
+                sub_object <- unique(object@meta.data[[each_2]])
+                nonexisting_sub <- setdiff(sub_markers, sub_object)
+                if (length(nonexisting_sub) > 0) {
+                    stop(
+                        "[MarkersPlot] The following values in `each` '", each_1,
+                        "' are not found in the object's metadata (", each_2, "): ",
+                        paste(nonexisting_sub, collapse = ", "))
+                }
+                # Get the first row of each group in the metadata to avoid duplication
+                # User has to make sure that the metadata columns are consistent within each group
+                meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(each_2))
+                markers <- dplyr::left_join(markers, meta, by = stats::setNames(each_2, each_1), suffix = c("", ".meta"))
             }
-            # Get the first row of each group in the metadata to avoid duplication
-            # User has to make sure that the metadata columns are consistent within each group
-            meta <- dplyr::summarise(object@meta.data, dplyr::across(dplyr::everything(), ~ .[1]), .by = !!rlang::sym(each_2))
-            markers <- dplyr::left_join(markers, meta, by = stats::setNames(each_2, each_1), suffix = c("", ".meta"))
         } else {
             each_1 <- each
             each_2 <- NULL
