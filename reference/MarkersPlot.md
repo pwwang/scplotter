@@ -86,7 +86,9 @@ MarkersPlot(
   sig_mark = "*",
   order_by = "desc(abs(avg_log2FC))",
   select = ifelse(plot_type %in% c("volcano", "volcano_log2fc", "volcano_pct",
-    "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
+    "jitter", "jitter_log2fc", "jitter_pct"), 5, ifelse(plot_type %in% c("heatmap",
+    "violin", "box", "bar", "ridge", "dot") && !is.null(each) && !grepl("^\\s*:",
+    each), 5, 10)),
   flatten_markers = FALSE,
   ...
 )
@@ -153,7 +155,10 @@ MarkersPlot(
   select the markers within each group; a plain column name does not
   split the plot — use the `"marker_column:metadata_column"` syntax (see
   **Metadata column mapping**) to also split the plot by the mapped
-  metadata column. Default: `NULL`.
+  metadata column. Alternatively, pass `":metadata_column"` with an
+  empty marker part to split the expression plot by the metadata column
+  directly, without selecting markers per group (markers are selected
+  overall) and without merging metadata. Default: `NULL`.
 
 - facet_each:
 
@@ -215,7 +220,8 @@ MarkersPlot(
   and filtering** section for full details.
 
   - Numeric: Top N markers per `each` group, or overall when `each` is
-    `NULL` (default: `5` for volcano/jitter types, `10` for others).
+    `NULL` (default: `5` for volcano/jitter types and for expression
+    plot types when `each` selects markers per group, `10` otherwise).
 
   - Single expression: Filter condition for
     [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html).
@@ -315,13 +321,16 @@ when `combine = FALSE`, a list of individual plots is returned.
     `"marker_column:metadata_column"` (e.g.,
     `"cluster:seurat_clusters"`) to also split the plot by the mapped
     metadata column (via `columns_split_by` for heatmap/dot, or `ident`
-    for violin/box/bar).
+    for violin/box/bar), or `":metadata_column"` (e.g.,
+    `":seurat_clusters"`) to split the plot by the metadata column
+    without per-group marker selection.
 
-- When `each` uses the `"marker_column:metadata_column"` form, the
-  markers data frame is left-joined with the object metadata. Only the
-  first row per group is kept for non-key columns, which is sufficient
-  for most annotation purposes but can cause issues if per-cell metadata
-  is needed.
+- When `each` uses the `"marker_column:metadata_column"` form with a
+  non-empty marker column, the markers data frame is left-joined with
+  the object metadata. Only the first row per group is kept for non-key
+  columns, which is sufficient for most annotation purposes but can
+  cause issues if per-cell metadata is needed. The `":metadata_column"`
+  form (empty marker part) skips the join entirely.
 
 - The function calculates \\-log\_{10}(p)\\ (or
   \\-log\_{10}(p\_{adj})\\) internally and stores it in a temporary
@@ -334,19 +343,23 @@ syntax that links a column in the markers data frame to a column in the
 Seurat object's metadata.
 
 - The part before the colon must be a column in `markers` (e.g.,
-  `cluster`); the part after the colon must be a column in
+  `cluster`) or be empty; the part after the colon must be a column in
   `object@meta.data` (e.g., `seurat_clusters`).
 
 - This syntax requires `object` to be provided; otherwise an error is
   raised.
 
-- Every value in the marker column must exist in the metadata column,
-  otherwise an error is raised.
+- When the marker part is non-empty, every value in the marker column
+  must exist in the metadata column, otherwise an error is raised.
 
-- For `each`, the metadata is merged into the markers data frame
-  (keeping the first row of each metadata group for non-key columns), so
-  metadata columns become available for arguments like `order_by`. On
-  name conflicts, the merged columns get a `.meta` suffix.
+- For `each` with a non-empty marker part, the metadata is merged into
+  the markers data frame (keeping the first row of each metadata group
+  for non-key columns), so metadata columns become available for
+  arguments like `order_by`. On name conflicts, the merged columns get a
+  `.meta` suffix. With an empty marker part (`":metadata_column"`), no
+  merging or per-group selection happens; the metadata column is used
+  only to split/annotate the expression plot (`columns_split_by` for
+  heatmap/dot, `ident` for violin/box/bar).
 
 - For `group_by`, the object is subset to the cells whose metadata
   values occur in the marker column, and the metadata column is
@@ -382,8 +395,12 @@ provided:
   markers. A numeric string like `"5"` among the expressions is treated
   as a top-N selection.
 
-Default `select`: `5` for volcano and jitter plot types, `10` for all
-other plot types.
+Default `select`: `5` for volcano and jitter plot types, and for
+expression plot types when `each` is provided to select markers per
+group (a plain marker column or a non-empty
+`"marker_column:metadata_column"`); `10` otherwise (DE heatmap/dot types
+and expression plots without per-group selection, e.g., `each = NULL` or
+`":metadata_column"`).
 
 ## Significance marking in heatmaps
 

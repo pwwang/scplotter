@@ -111,7 +111,7 @@ mean expression) per gene.
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -228,7 +228,9 @@ mean expression) per gene.</p></li>
 <span>  sig_mark <span class="op">=</span> <span class="st">"*"</span>,</span>
 <span>  order_by <span class="op">=</span> <span class="st">"desc(abs(avg_log2FC))"</span>,</span>
 <span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"volcano"</span>, <span class="st">"volcano_log2fc"</span>, <span class="st">"volcano_pct"</span>,</span>
-<span>    <span class="st">"jitter"</span>, <span class="st">"jitter_log2fc"</span>, <span class="st">"jitter_pct"</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    <span class="st">"jitter"</span>, <span class="st">"jitter_log2fc"</span>, <span class="st">"jitter_pct"</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap"</span>,</span>
+<span>    <span class="st">"violin"</span>, <span class="st">"box"</span>, <span class="st">"bar"</span>, <span class="st">"ridge"</span>, <span class="st">"dot"</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">each</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^\\s*:"</span>,</span>
+<span>    <span class="va">each</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  flatten_markers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -297,7 +299,11 @@ plot types, it splits the plot by group (or facets it, with
 used to select the markers within each group; a plain column name does
 not split the plot — use the <code>"marker_column:metadata_column"</code>
 syntax (see <strong>Metadata column mapping</strong>) to also split the plot by
-the mapped metadata column. Default: <code>NULL</code>.</p></dd>
+the mapped metadata column. Alternatively, pass
+<code>":metadata_column"</code> with an empty marker part to split the
+expression plot by the metadata column directly, without selecting
+markers per group (markers are selected overall) and without merging
+metadata. Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-facet-each">facet_each<a class="anchor" aria-label="anchor" href="#arg-facet-each"></a></dt>
@@ -360,7 +366,8 @@ is numeric. For jitter plots, it is also passed to
 <dd><p>How to select markers for display or labeling. See
 <strong>Marker selection and filtering</strong> section for full details.</p><ul><li><p>Numeric: Top N markers per <code>each</code> group, or overall when
 <code>each</code> is <code>NULL</code> (default: <code>5</code> for volcano/jitter
-types, <code>10</code> for others).</p></li>
+types and for expression plot types when <code>each</code> selects
+markers per group, <code>10</code> otherwise).</p></li>
 <li><p>Single expression: Filter condition for
 <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code>.</p></li>
 <li><p>Character vector of multiple expressions (DE heatmap/dot plot
@@ -446,13 +453,18 @@ group; it does not split or facet the plot. Pass
 <code>"marker_column:metadata_column"</code> (e.g.,
 <code>"cluster:seurat_clusters"</code>) to also split the plot by the
 mapped metadata column (via <code>columns_split_by</code> for
-heatmap/dot, or <code>ident</code> for violin/box/bar).</p></li>
+heatmap/dot, or <code>ident</code> for violin/box/bar), or
+<code>":metadata_column"</code> (e.g., <code>":seurat_clusters"</code>) to
+split the plot by the metadata column without per-group marker
+selection.</p></li>
 </ul></li>
 <li><p>When <code>each</code> uses the
-<code>"marker_column:metadata_column"</code> form, the markers data frame is
-left-joined with the object metadata. Only the first row per group is
-kept for non-key columns, which is sufficient for most annotation
-purposes but can cause issues if per-cell metadata is needed.</p></li>
+<code>"marker_column:metadata_column"</code> form with a non-empty marker
+column, the markers data frame is left-joined with the object
+metadata. Only the first row per group is kept for non-key columns,
+which is sufficient for most annotation purposes but can cause issues
+if per-cell metadata is needed. The <code>":metadata_column"</code> form
+(empty marker part) skips the join entirely.</p></li>
 <li><p>The function calculates \(-log_{10}(p)\) (or
 \(-log_{10}(p_{adj})\)) internally and stores it in a temporary
 <code>neg_log10_p</code> column. This column is available for use in
@@ -465,17 +477,22 @@ purposes but can cause issues if per-cell metadata is needed.</p></li>
 <p>Both <code>each</code> and <code>group_by</code> accept a
 <code>"marker_column:metadata_column"</code> syntax that links a column in the
 markers data frame to a column in the Seurat object's metadata.</p><ul><li><p>The part before the colon must be a column in <code>markers</code>
-(e.g., <code>cluster</code>); the part after the colon must be a column in
-<code>object@meta.data</code> (e.g., <code>seurat_clusters</code>).</p></li>
+(e.g., <code>cluster</code>) or be empty; the part after the colon must be
+a column in <code>object@meta.data</code> (e.g., <code>seurat_clusters</code>).</p></li>
 <li><p>This syntax requires <code>object</code> to be provided; otherwise an
 error is raised.</p></li>
-<li><p>Every value in the marker column must exist in the metadata
-column, otherwise an error is raised.</p></li>
-<li><p>For <code>each</code>, the metadata is merged into the markers data
-frame (keeping the first row of each metadata group for non-key
-columns), so metadata columns become available for arguments like
-<code>order_by</code>. On name conflicts, the merged columns get a
-<code>.meta</code> suffix.</p></li>
+<li><p>When the marker part is non-empty, every value in the marker
+column must exist in the metadata column, otherwise an error is
+raised.</p></li>
+<li><p>For <code>each</code> with a non-empty marker part, the metadata is
+merged into the markers data frame (keeping the first row of each
+metadata group for non-key columns), so metadata columns become
+available for arguments like <code>order_by</code>. On name conflicts, the
+merged columns get a <code>.meta</code> suffix. With an empty marker part
+(<code>":metadata_column"</code>), no merging or per-group selection
+happens; the metadata column is used only to split/annotate the
+expression plot (<code>columns_split_by</code> for heatmap/dot, <code>ident</code>
+for violin/box/bar).</p></li>
 <li><p>For <code>group_by</code>, the object is subset to the cells whose
 metadata values occur in the marker column, and the metadata column
 is re-factored with those values in the order they first appear in
@@ -509,8 +526,12 @@ expressions filter within the remaining data. For example,
 first restricts to clusters 0 and 1, then keeps only significant
 markers. A numeric string like <code>"5"</code> among the expressions is
 treated as a top-N selection.</p></li>
-</ul><p>Default <code>select</code>: <code>5</code> for volcano and jitter plot types,
-<code>10</code> for all other plot types.</p>
+</ul><p>Default <code>select</code>: <code>5</code> for volcano and jitter plot types, and
+for expression plot types when <code>each</code> is provided to select markers
+per group (a plain marker column or a non-empty
+<code>"marker_column:metadata_column"</code>); <code>10</code> otherwise (DE
+heatmap/dot types and expression plots without per-group selection,
+e.g., <code>each = NULL</code> or <code>":metadata_column"</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="significance-marking-in-heatmaps">Significance marking in heatmaps<a class="anchor" aria-label="anchor" href="#significance-marking-in-heatmaps"></a></h2>
