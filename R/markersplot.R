@@ -723,11 +723,12 @@ MarkersPlot <- function(
                     # convert to a named list, with each group name as the list name
                     genes <- stats::setNames(genes$gene, genes[[each_1]])
                 } else {
-                    genes <- genes$gene
+                    genes <- unique(genes$gene)
                 }
             } else {
                 # generally, select top N markers overall
-                genes <- dplyr::slice_head(markers, n = select)$gene
+                # genes <- dplyr::slice_head(markers, n = select)$gene
+                genes <- unique(markers$gene)[1:select]
             }
         } else {
             filtered <- dplyr::filter(markers, !!rlang::parse_expr(select))
@@ -740,10 +741,10 @@ MarkersPlot <- function(
                     # convert to a named list, with each group name as the list name
                     genes <- stats::setNames(genes$gene, genes[[each_1]])
                 } else {
-                    genes <- filtered$gene
+                    genes <- unique(filtered$gene)
                 }
             } else {
-                genes <- filtered$gene
+                genes <- unique(filtered$gene)
             }
         }
 
