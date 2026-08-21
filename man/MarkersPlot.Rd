@@ -19,7 +19,9 @@ MarkersPlot(
   sig_mark = "*",
   order_by = "desc(abs(avg_log2FC))",
   select = ifelse(plot_type \%in\% c("volcano", "volcano_log2fc", "volcano_pct",
-    "jitter", "jitter_log2fc", "jitter_pct"), 5, 10),
+    "jitter", "jitter_log2fc", "jitter_pct"), 5, ifelse(plot_type \%in\% c("heatmap",
+    "violin", "box", "bar", "ridge", "dot") && !is.null(each) && !grepl("^\\\\s*:",
+    each), 5, 10)),
   flatten_markers = FALSE,
   ...
 )
@@ -130,7 +132,8 @@ is numeric. For jitter plots, it is also passed to
 \itemize{
 \item Numeric: Top N markers per \code{each} group, or overall when
 \code{each} is \code{NULL} (default: \code{5} for volcano/jitter
-types, \code{10} for others).
+types and for expression plot types when \code{each} selects
+markers per group, \code{10} otherwise).
 \item Single expression: Filter condition for
 \code{\link[dplyr:filter]{dplyr::filter()}}.
 \item Character vector of multiple expressions (DE heatmap/dot plot
@@ -349,8 +352,12 @@ markers. A numeric string like \code{"5"} among the expressions is
 treated as a top-N selection.
 }
 
-Default \code{select}: \code{5} for volcano and jitter plot types,
-\code{10} for all other plot types.
+Default \code{select}: \code{5} for volcano and jitter plot types, and
+for expression plot types when \code{each} is provided to select markers
+per group (a plain marker column or a non-empty
+\code{"marker_column:metadata_column"}); \code{10} otherwise (DE
+heatmap/dot types and expression plots without per-group selection,
+e.g., \code{each = NULL} or \code{":metadata_column"}).
 }
 
 \section{Significance marking in heatmaps}{
