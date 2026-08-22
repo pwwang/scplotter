@@ -1,7 +1,7 @@
 ## Version 0.8.0
 
 - BREAKING: set default layer parameter to "scale.data" in FeatureStatPlot and update documentation
-- BREAKING:  add group_by and flatten_markers parameters and revise select and each argument descriptions, improve metadata column mapping details, deprecate subset_by and subset_as_facet parameters
+- BREAKING: add group_by and flatten_markers parameters and revise select and each argument descriptions, improve metadata column mapping details, deprecate subset_by and subset_as_facet parameters
 - fix: set default order_by parameter to "desc(abs(avg_log2FC))" in MarkersPlot function
 - fix: update order_by parameter to use absolute log2FC in MarkersPlot function
 - fix: add tidygraph to Suggests in DESCRIPTION and update comment in utils.R
@@ -9,6 +9,7 @@
 - fix: update MarkersPlot function to replace deprecated subset_by with each, and update documentation accordingly
 - fix(ClonalGeneUsagePlot): fix passing rows_name not working for Heatmap
 - fix(FeatureStatPlot): fix group_by not working for ridge plots
+- fix(FeatureStatPlot): ensure FeatureGroups are factors with specified levels
 - chore: use r-meta >=1.12 as conda dependency
 - chore(CCCPlot): use 0x2192 unicode for -> in plots
 - chore(CellStatPlot): use annotation name instead of row_names to hide rows name
