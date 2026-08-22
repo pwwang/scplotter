@@ -455,6 +455,9 @@ MarkersPlot <- function(
             if (length(strsplit(each, ":")[[1]]) != 2) {
                 stop("[MarkersPlot] `each` must be in the format 'marker_column:metadata_column' or a single column name.")
             }
+            if (is.null(object)) {
+                stop("[MarkersPlot] `object` is required when `each` is in the format 'marker_column:metadata_column'.")
+            }
             each_1 <- strsplit(each, ":")[[1]][1]
             each_2 <- strsplit(each, ":")[[1]][2]
             if (!each_2 %in% colnames(object@meta.data)) {
@@ -770,14 +773,17 @@ MarkersPlot <- function(
 
         if (!is.null(group_by_1) && !is.null(group_by_2)) {
             # check if group_by values are consistent between markers and object
-            groups <- unique(unlist(strsplit(unique(as.character(markers[[group_by_1]])), ":")))
-            if (!all(groups %in% unique(as.character(object@meta.data[[group_by_2]])))) {
-                stop("[MarkersPlot] The following values in `group_by` '", group_by_1, "' are not found in the object's metadata (", group_by_2, "): ",
-                    paste(setdiff(groups, unique(as.character(object@meta.data[[group_by_2]]))), collapse = ", ")
-                )
+            if (length(markers[[group_by_1]]) > 0 && grepl(":", markers[[group_by_1]][1], fixed = TRUE)) {
+                # This is comparison
+                groups <- unique(unlist(strsplit(unique(as.character(markers[[group_by_1]])), ":")))
+                if (!all(groups %in% unique(as.character(object@meta.data[[group_by_2]])))) {
+                    stop("[MarkersPlot] The following values in `group_by` '", group_by_1, "' are not found in the object's metadata (", group_by_2, "): ",
+                        paste(setdiff(groups, unique(as.character(object@meta.data[[group_by_2]]))), collapse = ", ")
+                    )
+                }
+                object <- subset_seurat(object, subset = !!rlang::sym(group_by_2) %in% groups)
+                object@meta.data[[group_by_2]] <- factor(object@meta.data[[group_by_2]], levels = groups)
             }
-            object <- subset_seurat(object, subset = !!rlang::sym(group_by_2) %in% groups)
-            object@meta.data[[group_by_2]] <- factor(object@meta.data[[group_by_2]], levels = groups)
         }
 
         if (!is.list(genes)) {
