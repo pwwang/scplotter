@@ -139,7 +139,7 @@
             feature_groups <- lapply(names(features), function(x) rep(x, length(features[[x]])))
             fdata <- data.frame(
                 Features = unlisted_features,
-                FeatureGroups = do_call(c, feature_groups)
+                FeatureGroups = factor(do_call(c, feature_groups), levels = names(features))
             )
             args$rows_split_name <- args$rows_split_name %||% "Feature Groups"
             names(fdata) <- c(rows_name, args$rows_split_name)
