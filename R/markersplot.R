@@ -723,8 +723,13 @@ MarkersPlot <- function(
                     genes <- dplyr::summarise(genes, gene = list(!!sym("gene")), .by = !!rlang::sym(each_1))
                     # keep the order of the group name
                     genes <- dplyr::arrange(genes, !!rlang::sym(each_1))
+                    gene_groups <- unique(genes[[each_1]])
+                    if (is.factor(genes[[each_1]])) {
+                        gene_groups <- intersect(levels(genes[[each_1]]), gene_groups)
+                    }
                     # convert to a named list, with each group name as the list name
                     genes <- stats::setNames(genes$gene, genes[[each_1]])
+                    genes <- genes[gene_groups]  # ensure the order of the list matches the order of the groups
                 } else {
                     genes <- unique(genes$gene)
                 }
@@ -741,8 +746,13 @@ MarkersPlot <- function(
                     genes <- dplyr::summarise(filtered, gene = list(!!sym("gene")), .by = !!rlang::sym(each_1))
                     # keep the order of the group name
                     genes <- dplyr::arrange(genes, !!rlang::sym(each_1))
+                    gene_groups <- unique(genes[[each_1]])
+                    if (is.factor(genes[[each_1]])) {
+                        gene_groups <- intersect(levels(genes[[each_1]]), gene_groups)
+                    }
                     # convert to a named list, with each group name as the list name
                     genes <- stats::setNames(genes$gene, genes[[each_1]])
+                    genes <- genes[gene_groups]  # ensure the order of the list matches the order of the groups
                 } else {
                     genes <- unique(filtered$gene)
                 }
