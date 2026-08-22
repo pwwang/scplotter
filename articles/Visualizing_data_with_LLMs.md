@@ -862,6 +862,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> 
 #> Tool identified:  CCCPlot 
 #> 
+#> 
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
@@ -3714,11 +3715,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
