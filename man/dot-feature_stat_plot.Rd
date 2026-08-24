@@ -24,6 +24,7 @@
   xlab = NULL,
   ylab = NULL,
   x_text_angle = NULL,
+  center_zero = NULL,
   ...
 )
 }
@@ -133,6 +134,15 @@ Works normally with \code{"dim"}, \code{"heatmap"}, \code{"dot"}, and
 \item{x_text_angle}{Numeric. Angle (in degrees) for x-axis text labels.
 Used for \code{"violin"}, \code{"box"}, and \code{"bar"} plot types.
 Default: \code{NULL} (defaults to \code{45}).}
+
+\item{center_zero}{Logical. Whether to center the colorbar at zero by
+making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
+Only affects plots whose colorbar reflects feature values (heatmap, dot,
+dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
+Intended for 0-centered layers such as \code{"scale.data"}.
+If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
+and not center for other layers.
+Default: \code{NULL}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=FeatureStatPlot]{FeatureStatPlot}}

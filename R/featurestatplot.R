@@ -35,7 +35,7 @@
     graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, agg = mean, group_by = NULL, pos_only = c("no", "any", "all"),
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
-    ...
+    center_zero = NULL, ...
 ) {
     pos_only <- match.arg(pos_only)
     unlisted_features <- unname(unlist(features))
@@ -75,6 +75,20 @@
         }
     }
 
+    if (center_zero && plot_type %in% c("dim", "heatmap", "dot")) {
+        vals <- data[, unlisted_features, drop = FALSE]
+        vals <- vals[vapply(vals, is.numeric, logical(1))]
+        vals <- as.matrix(vals)
+        center_limit <- max(abs(vals[is.finite(vals)]), na.rm = TRUE)
+        if (!is.finite(center_limit)) {
+            stop("[FeatureStatPlot] Cannot center colorbar at zero because all feature values are NA or infinite.")
+        }
+        if (center_limit <= 0) {
+            warning("[FeatureStatPlot] All feature values are non-positive. Colorbar will be centered at zero but all values will be below zero.")
+            center_limit <- abs(min(vals[is.finite(vals)], na.rm = TRUE))
+        }
+    }
+
     if (plot_type == "violin") {
         data <- downsample_data()
         ViolinPlot(
@@ -105,11 +119,27 @@
             data, x = ".value", group_by = group_by, split_by = split_by, facet_by = facet_by,
             xlab = xlab %||% "", ylab = ylab %||% "", ...)
     } else if (plot_type == "dim") {
-        FeatureDimPlot(
-            data, dims = dims, features = unlisted_features, graph = graph, bg_cutoff = bg_cutoff,
-            split_by = split_by, facet_by = facet_by, xlab = xlab, ylab = ylab, ...)
+        args <- rlang::dots_list(...)
+        args$data <- data
+        args$dims <- dims
+        args$features <- unlisted_features
+        args$graph <- graph
+        args$bg_cutoff <- bg_cutoff
+        args$split_by <- split_by
+        args$facet_by <- facet_by
+        args$xlab <- xlab
+        args$ylab <- ylab
+        if (center_zero && is.null(args$lower_cutoff) && is.null(args$upper_cutoff)) {
+            args$lower_cutoff <- -center_limit
+            args$upper_cutoff <- center_limit
+        }
+        do_call(FeatureDimPlot, args)
     } else if (plot_type %in% c("heatmap", "dot")) {
         args <- rlang::dots_list(...)
+        if (center_zero && is.null(args$lower_cutoff) && is.null(args$upper_cutoff)) {
+            args$lower_cutoff <- -center_limit
+            args$upper_cutoff <- center_limit
+        }
         args$data <- data
         args$rows_by <- unlisted_features
         args$columns_by <- ident
@@ -320,6 +350,14 @@
 #'   Seurat objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
 #'   For Giotto objects, passed to \code{GiottoClass::getExpression()}.
 #'   Default: \code{"scale.data"}.
+#' @param center_zero Logical. Whether to center the colorbar at zero by
+#'   making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
+#'   Only affects plots whose colorbar reflects feature values (heatmap, dot,
+#'   dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
+#'   Intended for 0-centered layers such as \code{"scale.data"}.
+#'   If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
+#'   and not center for other layers.
+#'   Default: \code{NULL}.
 #' @param agg Function. The aggregation function applied when
 #'   \code{plot_type = "bar"}. Common choices: \code{mean} (default),
 #'   \code{median}, \code{sum}. Applied within each group defined by
@@ -413,7 +451,7 @@
 #' \code{\link{CellDimPlot}}, \code{\link{CellStatPlot}}
 #' @export
 #' @importFrom rlang %||%
-#' @importFrom SeuratObject GetAssayData Embeddings Graphs Reductions Idents
+#' @importFrom SeuratObject GetAssayData Embeddings Graphs Reductions Idents DefaultAssay
 #' @importFrom plotthis ViolinPlot BoxPlot BarPlot DotPlot RidgePlot FeatureDimPlot Heatmap CorPlot CorPairsPlot
 #' @details
 #' See the vignettes for examples with non-Seurat objects:
@@ -630,20 +668,33 @@
 #'    Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
 #' )
 #' FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
-#'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE, layer = "data")
+#'    plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
+#'    layer = "data")
+#'
+#' # Add scale.data to the object
+#' scale_data <- SeuratObject::GetAssayData(pancreas_sub, layer = "data")
+#' scale_data[unlist(named_features), ] <- t(scale(t(
+#'    as.matrix(scale_data[unlist(named_features), ]
+#' ))))
+#' pancreas_sub <- SeuratObject::SetAssayData(pancreas_sub,
+#'    layer = "scale.data", new.data = as.matrix(scale_data))
+#' FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
+#'    plot_type = "heatmap", name = "Expression Level",
+#'    show_row_names = TRUE, center_zero = TRUE)
 #'
 #' # Correlation plot
 #' FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
-#'    anno_items = c("eq", "r2", "spearman"), layer = "data")
+#'    anno_items = c("eq", "r2", "spearman"))
 #' FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
-#'    plot_type = "cor", layer = "data")
+#'    plot_type = "cor")
 #' }
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
-    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
+    center_zero = identical(layer, "scale.data"), ...
 ) {
     UseMethod("FeatureStatPlot")
 }
@@ -654,7 +705,8 @@ FeatureStatPlot.giotto <- function(
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
-    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
+    center_zero = identical(layer, "scale.data"), ...
 ) {
     plot_type <- match.arg(plot_type)
     if (!is.null(facet_by) && plot_type != "dim") {
@@ -759,7 +811,7 @@ FeatureStatPlot.giotto <- function(
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
-        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, center_zero = center_zero, ...
     )
 }
 
@@ -769,13 +821,17 @@ FeatureStatPlot.Seurat <- function(
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
-    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
+    center_zero = identical(layer, "scale.data"), ...
 ) {
     plot_type <- match.arg(plot_type)
     if (!is.null(facet_by) && plot_type != "dim") {
         stop("Cannot facet plots because the plots are facetted by the 'features'.")
     }
     stopifnot("[FeatureStatPlot] 'spat_unit' and 'feat_type' should not be used for Seurat object." = is.null(spat_unit) && is.null(feat_type))
+    if (center_zero && !identical(layer, "scale.data")) {
+        warning("[FeatureStatPlot] 'center_zero' is intended for 0-centered layers (e.g. 'scale.data'), but the layer is '", layer, "'.")
+    }
 
     reduction <- reduction %||% (
         if(is.null(Reductions(object))) NULL else default_dimreduc(object)
@@ -789,6 +845,7 @@ FeatureStatPlot.Seurat <- function(
     if (any(unlisted_features %in% rownames(object))) {
         assay_data <- GetAssayData(object, assay = assay, layer = layer)
         if (nrow(assay_data) == 0) {
+            assay <- assay %||% DefaultAssay(object)
             stop("[FeatureStatPlot] The assay '", assay, "' does not have any data in layer '", layer, "'.")
         }
         assay_feature <- intersect(unlisted_features, rownames(assay_data))
@@ -834,7 +891,7 @@ FeatureStatPlot.Seurat <- function(
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
-        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, center_zero = center_zero, ...
     )
 }
 
@@ -844,7 +901,8 @@ FeatureStatPlot.character <- function(
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
-    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
+    center_zero = identical(layer, "scale.data"), ...
 ) {
     if (!endsWith(object, ".h5ad")) {
         stop("[FeatureStatPlot] Currently only supports .h5ad files when called with a string/path.")
@@ -860,7 +918,7 @@ FeatureStatPlot.character <- function(
         dims = dims, rows_name = rows_name, ident = ident,
         assay = assay, layer = layer, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
-        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, center_zero = center_zero, ...
     )
 }
 
@@ -870,7 +928,8 @@ FeatureStatPlot.H5File <- function(
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
     reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
-    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
+    split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
+    center_zero = identical(layer, "scale.data"), ...
 ) {
     plot_type <- match.arg(plot_type)
     if (!is.null(facet_by) && plot_type != "dim") {
@@ -939,6 +998,6 @@ FeatureStatPlot.H5File <- function(
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
         group_by = group_by, split_by = split_by, facet_by = facet_by,
-        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, ...
+        xlab = xlab, ylab = ylab, x_text_angle = x_text_angle, center_zero = center_zero, ...
     )
 }

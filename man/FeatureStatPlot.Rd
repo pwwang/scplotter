@@ -27,6 +27,7 @@ FeatureStatPlot(
   xlab = NULL,
   ylab = NULL,
   x_text_angle = NULL,
+  center_zero = identical(layer, "scale.data"),
   ...
 )
 }
@@ -155,6 +156,15 @@ Works normally with \code{"dim"}, \code{"heatmap"}, \code{"dot"}, and
 \item{x_text_angle}{Numeric. Angle (in degrees) for x-axis text labels.
 Used for \code{"violin"}, \code{"box"}, and \code{"bar"} plot types.
 Default: \code{NULL} (defaults to \code{45}).}
+
+\item{center_zero}{Logical. Whether to center the colorbar at zero by
+making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
+Only affects plots whose colorbar reflects feature values (heatmap, dot,
+dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
+Intended for 0-centered layers such as \code{"scale.data"}.
+If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
+and not center for other layers.
+Default: \code{NULL}.}
 
 \item{...}{Additional arguments passed to the underlying \pkg{plotthis}
 plotting function, determined by \code{plot_type}:
@@ -513,13 +523,25 @@ named_features <- list(
    Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
 )
 FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
-   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE, layer = "data")
+   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
+   layer = "data")
+
+# Add scale.data to the object
+scale_data <- SeuratObject::GetAssayData(pancreas_sub, layer = "data")
+scale_data[unlist(named_features), ] <- t(scale(t(
+   as.matrix(scale_data[unlist(named_features), ]
+))))
+pancreas_sub <- SeuratObject::SetAssayData(pancreas_sub,
+   layer = "scale.data", new.data = as.matrix(scale_data))
+FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
+   plot_type = "heatmap", name = "Expression Level",
+   show_row_names = TRUE, center_zero = TRUE)
 
 # Correlation plot
 FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
-   anno_items = c("eq", "r2", "spearman"), layer = "data")
+   anno_items = c("eq", "r2", "spearman"))
 FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
-   plot_type = "cor", layer = "data")
+   plot_type = "cor")
 }
 }
 \seealso{
