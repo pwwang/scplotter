@@ -32,7 +32,7 @@
 #' @importFrom dplyr summarise %>%
 .feature_stat_plot <- function(
     data, features, plot_type, should_shrink, should_pivot, downsample,
-    graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, agg = mean, group_by = NULL, pos_only = c("no", "any", "all"),
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL,
     ...
@@ -293,7 +293,7 @@
 #' @param bg_cutoff Numeric. Expression cutoff for the background in dim
 #'   plots. Cells with expression below this value are shown in the
 #'   background color (typically gray). Set to \code{-Inf} to color all
-#'   cells. Only used when \code{plot_type = "dim"}. Default: \code{0}.
+#'   cells. Only used when \code{plot_type = "dim"}. Default: \code{NULL}.
 #' @param pos_only Character. Whether to restrict to cells with positive
 #'   feature values:
 #'   \itemize{
@@ -641,7 +641,7 @@
 FeatureStatPlot <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
-    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
@@ -652,7 +652,7 @@ FeatureStatPlot <- function(
 FeatureStatPlot.giotto <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
-    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
@@ -767,7 +767,7 @@ FeatureStatPlot.giotto <- function(
 FeatureStatPlot.Seurat <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
-    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
@@ -842,7 +842,7 @@ FeatureStatPlot.Seurat <- function(
 FeatureStatPlot.character <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
-    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {
@@ -868,7 +868,7 @@ FeatureStatPlot.character <- function(
 FeatureStatPlot.H5File <- function(
     object, features, plot_type = c("violin", "box", "bar", "ridge", "dim", "cor", "heatmap", "dot"),
     spat_unit = NULL, feat_type = NULL, downsample = NULL, pos_only = c("no", "any", "all"),
-    reduction = NULL, graph = NULL, bg_cutoff = 0, dims = 1:2, rows_name = "Features",
+    reduction = NULL, graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
     ident = NULL, assay = NULL, layer = "scale.data", agg = mean, group_by = NULL,
     split_by = NULL, facet_by = NULL, xlab = NULL, ylab = NULL, x_text_angle = NULL, ...
 ) {

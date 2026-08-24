@@ -14,7 +14,7 @@ FeatureStatPlot(
   pos_only = c("no", "any", "all"),
   reduction = NULL,
   graph = NULL,
-  bg_cutoff = 0,
+  bg_cutoff = NULL,
   dims = 1:2,
   rows_name = "Features",
   ident = NULL,
@@ -92,7 +92,7 @@ Giotto objects, the name should exist in the nearest network list. If
 \item{bg_cutoff}{Numeric. Expression cutoff for the background in dim
 plots. Cells with expression below this value are shown in the
 background color (typically gray). Set to \code{-Inf} to color all
-cells. Only used when \code{plot_type = "dim"}. Default: \code{0}.}
+cells. Only used when \code{plot_type = "dim"}. Default: \code{NULL}.}
 
 \item{dims}{Integer vector of length 2. The dimensions (columns) of the
 reduction to plot on the x and y axes. Only used when
