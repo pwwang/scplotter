@@ -459,8 +459,16 @@ allmarkers <- Seurat::FindAllMarkers(pancreas_sub)  # seurat_clusters
 MarkersPlot(markers)
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
 
 MarkersPlot(markers, x_cutoff = 2)
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 
@@ -469,12 +477,18 @@ MarkersPlot(allmarkers, each = "cluster", ncol = 2, facet_each = TRUE)
 MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
 
 
 MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
+#> Warning: [JitterPlot] `raster` is ignored when `size_by` is mapped to a column; falling back to vector points.
 
 MarkersPlot(allmarkers, plot_type = "jitter_pct", order_by = "desc(abs(pct.1 - pct.2))",
     each = "cluster", add_hline = 0, shape = 16)
+#> Warning: [JitterPlot] `raster` is ignored when `size_by` is mapped to a column; falling back to vector points.
 
 
 MarkersPlot(allmarkers, plot_type = "heatmap_log2fc", each = "cluster",

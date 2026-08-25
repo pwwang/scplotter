@@ -75,7 +75,7 @@ dispatches to the appropriate plotthis plotting function.'><meta property="og:im
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -171,7 +171,7 @@ dispatches to the appropriate <span class="pkg">plotthis</span> plotting functio
 <span>  pos_only <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no"</span>, <span class="st">"any"</span>, <span class="st">"all"</span><span class="op">)</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  graph <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bg_cutoff <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  bg_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
 <span>  rows_name <span class="op">=</span> <span class="st">"Features"</span>,</span>
 <span>  ident <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -184,6 +184,7 @@ dispatches to the appropriate <span class="pkg">plotthis</span> plotting functio
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_text_angle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  center_zero <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">layer</span>, <span class="st">"scale.data"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -266,7 +267,7 @@ Giotto objects, the name should exist in the nearest network list. If
 <dd><p>Numeric. Expression cutoff for the background in dim
 plots. Cells with expression below this value are shown in the
 background color (typically gray). Set to <code>-Inf</code> to color all
-cells. Only used when <code>plot_type = "dim"</code>. Default: <code>0</code>.</p></dd>
+cells. Only used when <code>plot_type = "dim"</code>. Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
@@ -353,6 +354,17 @@ Works normally with <code>"dim"</code>, <code>"heatmap"</code>, <code>"dot"</cod
 <dd><p>Numeric. Angle (in degrees) for x-axis text labels.
 Used for <code>"violin"</code>, <code>"box"</code>, and <code>"bar"</code> plot types.
 Default: <code>NULL</code> (defaults to <code>45</code>).</p></dd>
+
+
+<dt id="arg-center-zero">center_zero<a class="anchor" aria-label="anchor" href="#arg-center-zero"></a></dt>
+<dd><p>Logical. Whether to center the colorbar at zero by
+making the absolute limits symmetric (i.e. <code>abs(min) == abs(max)</code>).
+Only affects plots whose colorbar reflects feature values (heatmap, dot,
+dim). Ignored if <code>lower_cutoff</code>/<code>upper_cutoff</code> are provided.
+Intended for 0-centered layers such as <code>"scale.data"</code>.
+If <code>NULL</code>, the default behavior is to center at zero for <code>"scale.data"</code>
+and not center for other layers.
+Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -608,14 +620,12 @@ behave normally.</p>
 <span class="r-in"><span><span class="co"># Change the plot type from point to the hexagonal bin</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>   hex <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 4 rows containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 5 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="FeatureStatPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>   hex <span class="op">=</span> <span class="cn">TRUE</span>, hex_bins <span class="op">=</span> <span class="fl">20</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 5 rows containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 6 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="FeatureStatPlot-24.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -769,16 +779,30 @@ behave normally.</p>
 <span class="r-in"><span>   Beta <span class="op">=</span> <span class="st">"Ins1"</span>, Alpha <span class="op">=</span> <span class="st">"Gcg"</span>, Delta <span class="op">=</span> <span class="st">"Sst"</span>, Epsilon <span class="op">=</span> <span class="st">"Ghrl"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">named_features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>, show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>   layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-44.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add scale.data to the object</span></span></span>
+<span class="r-in"><span><span class="va">scale_data</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">scale_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">named_features</span><span class="op">)</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">scale_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">named_features</span><span class="op">)</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">SetAssayData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>   layer <span class="op">=</span> <span class="st">"scale.data"</span>, new.data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">scale_data</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
+<span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">named_features</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
+<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, name <span class="op">=</span> <span class="st">"Expression Level"</span>,</span></span>
+<span class="r-in"><span>   show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, center_zero <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="FeatureStatPlot-45.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Correlation plot</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pyy"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"cor"</span>,</span></span>
-<span class="r-in"><span>   anno_items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="st">"r2"</span>, <span class="st">"spearman"</span><span class="op">)</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureStatPlot-45.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"cor"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   anno_items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="st">"r2"</span>, <span class="st">"spearman"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-46.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"cor"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="FeatureStatPlot-47.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

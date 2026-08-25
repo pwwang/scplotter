@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0-6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
 <h2 class="pkg-version" data-toc-text="0.8.0" id="version-080">Version 0.8.0<a class="anchor" aria-label="anchor" href="#version-080"></a></h2>
 <ul><li>BREAKING: set default layer parameter to “scale.data” in FeatureStatPlot and update documentation</li>
 <li>BREAKING: add group_by and flatten_markers parameters and revise select and each argument descriptions, improve metadata column mapping details, deprecate subset_by and subset_as_facet parameters</li>
+<li>feat(FeatureStatPlot): add center_zero parameter to control colorbar centering⏎</li>
 <li>fix: set default order_by parameter to “desc(abs(avg_log2FC))” in MarkersPlot function</li>
 <li>fix: update order_by parameter to use absolute log2FC in MarkersPlot function</li>
 <li>fix: add tidygraph to Suggests in DESCRIPTION and update comment in utils.R</li>
@@ -67,6 +68,7 @@
 <li>fix(ClonalGeneUsagePlot): fix passing rows_name not working for Heatmap</li>
 <li>fix(FeatureStatPlot): fix group_by not working for ridge plots</li>
 <li>fix(FeatureStatPlot): ensure FeatureGroups are factors with specified levels</li>
+<li>fix(FeatureStatPlot): update bg_cutoff default value to NULL for consistency across functions</li>
 <li>chore: use r-meta &gt;=1.12 as conda dependency</li>
 <li>chore(CCCPlot): use 0x2192 unicode for -&gt; in plots</li>
 <li>chore(CellStatPlot): use annotation name instead of row_names to hide rows name</li>

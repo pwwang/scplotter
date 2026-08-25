@@ -58,7 +58,7 @@ FeatureStatPlot(
   pos_only = c("no", "any", "all"),
   reduction = NULL,
   graph = NULL,
-  bg_cutoff = 0,
+  bg_cutoff = NULL,
   dims = 1:2,
   rows_name = "Features",
   ident = NULL,
@@ -71,6 +71,7 @@ FeatureStatPlot(
   xlab = NULL,
   ylab = NULL,
   x_text_angle = NULL,
+  center_zero = identical(layer, "scale.data"),
   ...
 )
 ```
@@ -157,7 +158,7 @@ FeatureStatPlot(
   Numeric. Expression cutoff for the background in dim plots. Cells with
   expression below this value are shown in the background color
   (typically gray). Set to `-Inf` to color all cells. Only used when
-  `plot_type = "dim"`. Default: `0`.
+  `plot_type = "dim"`. Default: `NULL`.
 
 - dims:
 
@@ -242,6 +243,16 @@ FeatureStatPlot(
   Numeric. Angle (in degrees) for x-axis text labels. Used for
   `"violin"`, `"box"`, and `"bar"` plot types. Default: `NULL` (defaults
   to `45`).
+
+- center_zero:
+
+  Logical. Whether to center the colorbar at zero by making the absolute
+  limits symmetric (i.e. `abs(min) == abs(max)`). Only affects plots
+  whose colorbar reflects feature values (heatmap, dot, dim). Ignored if
+  `lower_cutoff`/`upper_cutoff` are provided. Intended for 0-centered
+  layers such as `"scale.data"`. If `NULL`, the default behavior is to
+  center at zero for `"scale.data"` and not center for other layers.
+  Default: `NULL`.
 
 - ...:
 
@@ -521,14 +532,12 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = 
 # Change the plot type from point to the hexagonal bin
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
    hex = TRUE, layer = "data")
-#> Warning: Removed 4 rows containing missing values or values outside the scale range
+#> Warning: Removed 5 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
    hex = TRUE, hex_bins = 20, layer = "data")
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -682,15 +691,29 @@ named_features <- list(
    Beta = "Ins1", Alpha = "Gcg", Delta = "Sst", Epsilon = "Ghrl"
 )
 FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
-   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE, layer = "data")
+   plot_type = "heatmap", name = "Expression Level", show_row_names = TRUE,
+   layer = "data")
+
+
+# Add scale.data to the object
+scale_data <- SeuratObject::GetAssayData(pancreas_sub, layer = "data")
+scale_data[unlist(named_features), ] <- t(scale(t(
+   as.matrix(scale_data[unlist(named_features), ]
+))))
+pancreas_sub <- SeuratObject::SetAssayData(pancreas_sub,
+   layer = "scale.data", new.data = as.matrix(scale_data))
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+FeatureStatPlot(pancreas_sub, features = named_features, ident = "SubCellType",
+   plot_type = "heatmap", name = "Expression Level",
+   show_row_names = TRUE, center_zero = TRUE)
 
 
 # Correlation plot
 FeatureStatPlot(pancreas_sub, features = c("Pyy", "Rbp4"), plot_type = "cor",
-   anno_items = c("eq", "r2", "spearman"), layer = "data")
+   anno_items = c("eq", "r2", "spearman"))
 
 FeatureStatPlot(pancreas_sub, features = c("Ins1", "Gcg", "Sst", "Ghrl"),
-   plot_type = "cor", layer = "data")
+   plot_type = "cor")
 
 # }
 ```

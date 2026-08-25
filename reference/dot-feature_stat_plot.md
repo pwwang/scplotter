@@ -23,7 +23,7 @@ heatmap and dot plots.
   should_pivot,
   downsample,
   graph = NULL,
-  bg_cutoff = 0,
+  bg_cutoff = NULL,
   dims = 1:2,
   rows_name = "Features",
   ident = NULL,
@@ -35,6 +35,7 @@ heatmap and dot plots.
   xlab = NULL,
   ylab = NULL,
   x_text_angle = NULL,
+  center_zero = NULL,
   ...
 )
 ```
@@ -102,7 +103,7 @@ heatmap and dot plots.
   Numeric. Expression cutoff for the background in dim plots. Cells with
   expression below this value are shown in the background color
   (typically gray). Set to `-Inf` to color all cells. Only used when
-  `plot_type = "dim"`. Default: `0`.
+  `plot_type = "dim"`. Default: `NULL`.
 
 - dims:
 
@@ -182,6 +183,16 @@ heatmap and dot plots.
   Numeric. Angle (in degrees) for x-axis text labels. Used for
   `"violin"`, `"box"`, and `"bar"` plot types. Default: `NULL` (defaults
   to `45`).
+
+- center_zero:
+
+  Logical. Whether to center the colorbar at zero by making the absolute
+  limits symmetric (i.e. `abs(min) == abs(max)`). Only affects plots
+  whose colorbar reflects feature values (heatmap, dot, dim). Ignored if
+  `lower_cutoff`/`upper_cutoff` are provided. Intended for 0-centered
+  layers such as `"scale.data"`. If `NULL`, the default behavior is to
+  center at zero for `"scale.data"` and not center for other layers.
+  Default: `NULL`.
 
 - ...:
 
