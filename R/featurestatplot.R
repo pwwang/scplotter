@@ -81,7 +81,8 @@
         vals <- as.matrix(vals)
         center_limit <- max(abs(vals[is.finite(vals)]), na.rm = TRUE)
         if (!is.finite(center_limit)) {
-            stop("[FeatureStatPlot] Cannot center colorbar at zero because all feature values are NA or infinite.")
+            warning("[FeatureStatPlot] Cannot center colorbar at zero because all feature values are NA or infinite.", call. = FALSE)
+            center_limit <- 1
         }
         if (center_limit <= 0) {
             warning("[FeatureStatPlot] All feature values are non-positive. Colorbar will be centered at zero but all values will be below zero.")
@@ -886,7 +887,7 @@ FeatureStatPlot.Seurat <- function(
     }
 
     .feature_stat_plot(
-        data = data, features = features, plot_type = plot_type, pos_only = pos_only,
+        data = data, in_form = "wide-rows", features = features, plot_type = plot_type, pos_only = pos_only,
         should_shrink = should_shrink, should_pivot = should_pivot,
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
