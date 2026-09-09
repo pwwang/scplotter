@@ -147,6 +147,7 @@
         args$rows_name <- rows_name
         args$split_by <- split_by
         args$show_row_names <- args$show_row_names %||% TRUE
+        args$in_form <- "wide-rows"
         if (plot_type == "heatmap") {
             args$show_column_names <- args$show_column_names %||% !identical(args$cell_type, "bars")
             args$values_fill <- args$values_fill %||% 0
@@ -887,7 +888,7 @@ FeatureStatPlot.Seurat <- function(
     }
 
     .feature_stat_plot(
-        data = data, in_form = "wide-rows", features = features, plot_type = plot_type, pos_only = pos_only,
+        data = data, features = features, plot_type = plot_type, pos_only = pos_only,
         should_shrink = should_shrink, should_pivot = should_pivot,
         graph = graph, bg_cutoff = bg_cutoff, downsample = downsample,
         dims = dims, rows_name = rows_name, ident = ident, agg = agg,
