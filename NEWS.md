@@ -1,3 +1,9 @@
+## Version 0.8.1
+
+- fix(FeatureStatPlot): plot features taken from meta.data for objects without a dimensional reduction, where cbind(object@meta.data, NULL) failed with "arguments imply differing number of rows"
+- fix(FeatureStatPlot): change error to warning for colorbar centering and set default center_limit
+- fix(FeatureStatPlot): remove redundant in_form argument in function call
+
 ## Version 0.8.0
 
 - BREAKING: set default layer parameter to "scale.data" in FeatureStatPlot and update documentation

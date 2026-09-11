@@ -857,7 +857,11 @@ FeatureStatPlot.Seurat <- function(
         assay_data <- NULL
     }
     if (is.null(reduction)) {
-        data <- cbind(object@meta.data, assay_data)
+        # cbind() does not drop a NULL operand: cbind(df, NULL) raises
+        # "arguments imply differing number of rows: n, 0". A NULL assay_data is
+        # expected here for features taken from meta.data, and `reduction` is NULL
+        # for objects that do not have any dimensional reduction yet.
+        data <- if (is.null(assay_data)) object@meta.data else cbind(object@meta.data, assay_data)
     } else {
         emb <- Embeddings(object, reduction = reduction)
         if (!is.null(assay_data)) {
