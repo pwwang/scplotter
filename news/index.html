@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1-2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,12 @@
       <small>Source: <a href="https://github.com/pwwang/scplotter/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.1" id="version-081">Version 0.8.1<a class="anchor" aria-label="anchor" href="#version-081"></a></h2>
+<ul><li>fix(FeatureStatPlot): plot features taken from meta.data for objects without a dimensional reduction, where cbind(<a href="mailto:object@meta.data" class="email">object@meta.data</a>, NULL) failed with “arguments imply differing number of rows”</li>
+<li>fix(FeatureStatPlot): change error to warning for colorbar centering and set default center_limit</li>
+<li>fix(FeatureStatPlot): remove redundant in_form argument in function call</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.0" id="version-080">Version 0.8.0<a class="anchor" aria-label="anchor" href="#version-080"></a></h2>
 <ul><li>BREAKING: set default layer parameter to “scale.data” in FeatureStatPlot and update documentation</li>
