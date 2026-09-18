@@ -63,15 +63,15 @@ FeatureStatPlot(
   rows_name = "Features",
   ident = NULL,
   assay = NULL,
-  layer = "scale.data",
+  layer = ifelse(plot_type %in% c("heatmap", "dot"), "scale.data", "data"),
   agg = mean,
   group_by = NULL,
+  center_zero = identical(layer, "scale.data"),
   split_by = NULL,
   facet_by = NULL,
   xlab = NULL,
   ylab = NULL,
   x_text_angle = NULL,
-  center_zero = identical(layer, "scale.data"),
   ...
 )
 ```
@@ -198,7 +198,8 @@ FeatureStatPlot(
   [`SeuratObject::GetAssayData()`](https://satijalab.github.io/seurat-object/reference/AssayData.html).
   For Giotto objects, passed to
   [`GiottoClass::getExpression()`](https://giotto-suite.github.io/GiottoClass/reference/getExpression.html).
-  Default: `"scale.data"`.
+  Default: `"scale.data"` for `heatmap` or `dot` plots and `"data"` for
+  other plot types.
 
 - agg:
 
@@ -211,6 +212,16 @@ FeatureStatPlot(
   Character. A metadata column name to further subdivide cells within
   each identity group (e.g., coloring by treatment within cell type).
   Works with `"violin"`, `"box"`, `"bar"`, and `"ridge"` plot types.
+  Default: `NULL`.
+
+- center_zero:
+
+  Logical. Whether to center the colorbar at zero by making the absolute
+  limits symmetric (i.e. `abs(min) == abs(max)`). Only affects plots
+  whose colorbar reflects feature values (heatmap, dot, dim). Ignored if
+  `lower_cutoff`/`upper_cutoff` are provided. Intended for 0-centered
+  layers such as `"scale.data"`. If `NULL`, the default behavior is to
+  center at zero for `"scale.data"` and not center for other layers.
   Default: `NULL`.
 
 - split_by:
@@ -243,16 +254,6 @@ FeatureStatPlot(
   Numeric. Angle (in degrees) for x-axis text labels. Used for
   `"violin"`, `"box"`, and `"bar"` plot types. Default: `NULL` (defaults
   to `45`).
-
-- center_zero:
-
-  Logical. Whether to center the colorbar at zero by making the absolute
-  limits symmetric (i.e. `abs(min) == abs(max)`). Only affects plots
-  whose colorbar reflects feature values (heatmap, dot, dim). Ignored if
-  `lower_cutoff`/`upper_cutoff` are provided. Intended for 0-centered
-  layers such as `"scale.data"`. If `NULL`, the default behavior is to
-  center at zero for `"scale.data"` and not center for other layers.
-  Default: `NULL`.
 
 - ...:
 
@@ -469,11 +470,11 @@ if (requireNamespace("ggpubr", quietly = TRUE)) {
 #> Detected more than 2 groups. Use multiple_method for comparison
 
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-   add_bg = TRUE, add_box = TRUE, stack = TRUE, layer = "data")
+   add_bg = TRUE, add_box = TRUE, stack = TRUE)
 
 # Use `pos_only` to include only cells with positive expression of all features
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all", layer = "data")
+   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all")
 
 FeatureStatPlot(pancreas_sub, features = c(
        "Sox9", "Anxa2", "Bicc1", # Ductal
@@ -481,7 +482,7 @@ FeatureStatPlot(pancreas_sub, features = c(
        "Fev", "Neurod1", # Pre-endocrine
        "Rbp4", "Pyy", # Endocrine
        "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-   ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, layer = "data",
+   ), ident = "SubCellType", add_bg = TRUE, stack = TRUE,
    legend.position = "top", legend.direction = "horizontal")
 
 FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
@@ -491,11 +492,11 @@ FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
       "Rbp4", "Pyy", # Endocrine
       "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
    ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, flip = TRUE,
-   legend.position = "top", legend.direction = "horizontal", layer = "data")
+   legend.position = "top", legend.direction = "horizontal")
 
 # Use splitting instead of facetting
 FeatureStatPlot(pancreas_sub, features = c("Neurog3", "Rbp4", "Ins1"),
-   ident = "CellType", split_by = TRUE, layer = "data")
+   ident = "CellType", split_by = TRUE)
 
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reduction = "UMAP")
@@ -512,31 +513,31 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reducti
 
 # Label and highlight cell points
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   highlight = 'SubCellType == "Delta"', layer = "data")
+   highlight = 'SubCellType == "Delta"')
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim",
    features = "Rbp4", split_by = "Phase", reduction = "UMAP",
-   highlight = TRUE, theme = "theme_blank", layer = "data")
+   highlight = TRUE, theme = "theme_blank")
 
 
 # Add a density layer
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   add_density = TRUE, layer = "data")
+   add_density = TRUE)
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   add_density = TRUE, density_filled = TRUE, layer = "data")
+   add_density = TRUE, density_filled = TRUE)
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
 
 
 # Change the plot type from point to the hexagonal bin
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   hex = TRUE, layer = "data")
+   hex = TRUE)
 #> Warning: Removed 5 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   hex = TRUE, hex_bins = 20, layer = "data")
+   hex = TRUE, hex_bins = 20)
 #> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
@@ -553,7 +554,7 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Lineage3", reductio
 
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim",
-  features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP", layer = "data",
+  features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP",
   theme = "theme_blank",
   theme_args = list(plot.subtitle = ggplot2::element_text(size = 10),
      strip.text = ggplot2::element_text(size = 8))
@@ -562,20 +563,19 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim",
 
 # Plot multiple features with different scales
 endocrine_markers <- c("Ins1", "Gcg", "Sst", "Ghrl")
-FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim",
-   layer = "data")
+FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim")
 
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", lower_quantile = 0,
-   upper_quantile = 0.8, plot_type = "dim", layer = "data")
+   upper_quantile = 0.8, plot_type = "dim")
 
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP",
-   lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim", layer = "data")
+   lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim")
 
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", bg_cutoff = 2,
-   lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim", layer = "data")
+   lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim")
 
 FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = "UMAP",
-   plot_type = "dim", layer = "data")
+   plot_type = "dim")
 
 FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
    ident = "SubCellType", plot_type = "dim", facet_by = "Phase", split_by = TRUE, ncol = 1)

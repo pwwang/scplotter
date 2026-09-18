@@ -75,7 +75,7 @@ dispatches to the appropriate plotthis plotting function.'><meta property="og:im
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1-2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -176,15 +176,15 @@ dispatches to the appropriate <span class="pkg">plotthis</span> plotting functio
 <span>  rows_name <span class="op">=</span> <span class="st">"Features"</span>,</span>
 <span>  ident <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"scale.data"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap"</span>, <span class="st">"dot"</span><span class="op">)</span>, <span class="st">"scale.data"</span>, <span class="st">"data"</span><span class="op">)</span>,</span>
 <span>  agg <span class="op">=</span> <span class="va">mean</span>,</span>
 <span>  group_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  center_zero <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">layer</span>, <span class="st">"scale.data"</span><span class="op">)</span>,</span>
 <span>  split_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  facet_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_text_angle <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  center_zero <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">layer</span>, <span class="st">"scale.data"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -307,7 +307,7 @@ Giotto objects. Default: <code>NULL</code>.</p></dd>
 from (e.g., <code>"data"</code>, <code>"counts"</code>, <code>"scale.data"</code>). For
 Seurat objects, passed to <code><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">SeuratObject::GetAssayData()</a></code>.
 For Giotto objects, passed to <code><a href="https://giotto-suite.github.io/GiottoClass/reference/getExpression.html" class="external-link">GiottoClass::getExpression()</a></code>.
-Default: <code>"scale.data"</code>.</p></dd>
+Default: <code>"scale.data"</code> for <code>heatmap</code> or <code>dot</code> plots and <code>"data"</code> for other plot types.</p></dd>
 
 
 <dt id="arg-agg">agg<a class="anchor" aria-label="anchor" href="#arg-agg"></a></dt>
@@ -322,6 +322,17 @@ Default: <code>"scale.data"</code>.</p></dd>
 cells within each identity group (e.g., coloring by treatment within
 cell type). Works with <code>"violin"</code>, <code>"box"</code>, <code>"bar"</code>,
 and <code>"ridge"</code> plot types. Default: <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-center-zero">center_zero<a class="anchor" aria-label="anchor" href="#arg-center-zero"></a></dt>
+<dd><p>Logical. Whether to center the colorbar at zero by
+making the absolute limits symmetric (i.e. <code>abs(min) == abs(max)</code>).
+Only affects plots whose colorbar reflects feature values (heatmap, dot,
+dim). Ignored if <code>lower_cutoff</code>/<code>upper_cutoff</code> are provided.
+Intended for 0-centered layers such as <code>"scale.data"</code>.
+If <code>NULL</code>, the default behavior is to center at zero for <code>"scale.data"</code>
+and not center for other layers.
+Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-split-by">split_by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
@@ -354,17 +365,6 @@ Works normally with <code>"dim"</code>, <code>"heatmap"</code>, <code>"dot"</cod
 <dd><p>Numeric. Angle (in degrees) for x-axis text labels.
 Used for <code>"violin"</code>, <code>"box"</code>, and <code>"bar"</code> plot types.
 Default: <code>NULL</code> (defaults to <code>45</code>).</p></dd>
-
-
-<dt id="arg-center-zero">center_zero<a class="anchor" aria-label="anchor" href="#arg-center-zero"></a></dt>
-<dd><p>Logical. Whether to center the colorbar at zero by
-making the absolute limits symmetric (i.e. <code>abs(min) == abs(max)</code>).
-Only affects plots whose colorbar reflects feature values (heatmap, dot,
-dim). Ignored if <code>lower_cutoff</code>/<code>upper_cutoff</code> are provided.
-Intended for 0-centered layers such as <code>"scale.data"</code>.
-If <code>NULL</code>, the default behavior is to center at zero for <code>"scale.data"</code>
-and not center for other layers.
-Default: <code>NULL</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -557,11 +557,11 @@ behave normally.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Detected more than 2 groups. Use multiple_method for comparison</span>
 <span class="r-plt img"><img src="FeatureStatPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span><span class="op">)</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>   add_bg <span class="op">=</span> <span class="cn">TRUE</span>, add_box <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   add_bg <span class="op">=</span> <span class="cn">TRUE</span>, add_box <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Use `pos_only` to include only cells with positive expression of all features</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span><span class="op">)</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>   add_bg <span class="op">=</span> <span class="cn">TRUE</span>, add_box <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span>, pos_only <span class="op">=</span> <span class="st">"all"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   add_bg <span class="op">=</span> <span class="cn">TRUE</span>, add_box <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span>, pos_only <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>       <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>, <span class="co"># Ductal</span></span></span>
@@ -569,7 +569,7 @@ behave normally.</p>
 <span class="r-in"><span>       <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>, <span class="co"># Pre-endocrine</span></span></span>
 <span class="r-in"><span>       <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>, <span class="co"># Endocrine</span></span></span>
 <span class="r-in"><span>       <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span> <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
-<span class="r-in"><span>   <span class="op">)</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, add_bg <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>   <span class="op">)</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, add_bg <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>   legend.position <span class="op">=</span> <span class="st">"top"</span>, legend.direction <span class="op">=</span> <span class="st">"horizontal"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"box"</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -579,11 +579,11 @@ behave normally.</p>
 <span class="r-in"><span>      <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>, <span class="co"># Endocrine</span></span></span>
 <span class="r-in"><span>      <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span> <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
 <span class="r-in"><span>   <span class="op">)</span>, ident <span class="op">=</span> <span class="st">"SubCellType"</span>, add_bg <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span>, flip <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>   legend.position <span class="op">=</span> <span class="st">"top"</span>, legend.direction <span class="op">=</span> <span class="st">"horizontal"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   legend.position <span class="op">=</span> <span class="st">"top"</span>, legend.direction <span class="op">=</span> <span class="st">"horizontal"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-13.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Use splitting instead of facetting</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurog3"</span>, <span class="st">"Rbp4"</span>, <span class="st">"Ins1"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   ident <span class="op">=</span> <span class="st">"CellType"</span>, split_by <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   ident <span class="op">=</span> <span class="st">"CellType"</span>, split_by <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"G2M_score"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span><span class="op">)</span></span></span>
@@ -600,31 +600,31 @@ behave normally.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Label and highlight cell points</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   highlight <span class="op">=</span> <span class="st">'SubCellType == "Delta"'</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   highlight <span class="op">=</span> <span class="st">'SubCellType == "Delta"'</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>,</span></span>
 <span class="r-in"><span>   features <span class="op">=</span> <span class="st">"Rbp4"</span>, split_by <span class="op">=</span> <span class="st">"Phase"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   highlight <span class="op">=</span> <span class="cn">TRUE</span>, theme <span class="op">=</span> <span class="st">"theme_blank"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   highlight <span class="op">=</span> <span class="cn">TRUE</span>, theme <span class="op">=</span> <span class="st">"theme_blank"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Add a density layer</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   add_density <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   add_density <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-21.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   add_density <span class="op">=</span> <span class="cn">TRUE</span>, density_filled <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   add_density <span class="op">=</span> <span class="cn">TRUE</span>, density_filled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 396 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
 <span class="r-plt img"><img src="FeatureStatPlot-22.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Change the plot type from point to the hexagonal bin</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   hex <span class="op">=</span> <span class="cn">TRUE</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   hex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 5 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="FeatureStatPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, features <span class="op">=</span> <span class="st">"Rbp4"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   hex <span class="op">=</span> <span class="cn">TRUE</span>, hex_bins <span class="op">=</span> <span class="fl">20</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   hex <span class="op">=</span> <span class="cn">TRUE</span>, hex_bins <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 6 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="FeatureStatPlot-24.png" alt="" width="700" height="433"></span>
@@ -641,7 +641,7 @@ behave normally.</p>
 <span class="r-plt img"><img src="FeatureStatPlot-27.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span><span class="op">)</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span><span class="op">)</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  theme <span class="op">=</span> <span class="st">"theme_blank"</span>,</span></span>
 <span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>plot.subtitle <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>     strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -650,20 +650,19 @@ behave normally.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot multiple features with different scales</span></span></span>
 <span class="r-in"><span><span class="va">endocrine_markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="va">endocrine_markers</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>,</span></span>
-<span class="r-in"><span>   layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="va">endocrine_markers</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-29.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="va">endocrine_markers</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, lower_quantile <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>   upper_quantile <span class="op">=</span> <span class="fl">0.8</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   upper_quantile <span class="op">=</span> <span class="fl">0.8</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-30.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="va">endocrine_markers</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   lower_cutoff <span class="op">=</span> <span class="fl">1</span>, upper_cutoff <span class="op">=</span> <span class="fl">4</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   lower_cutoff <span class="op">=</span> <span class="fl">1</span>, upper_cutoff <span class="op">=</span> <span class="fl">4</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-31.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="va">endocrine_markers</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>, bg_cutoff <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>   lower_cutoff <span class="op">=</span> <span class="fl">2</span>, upper_cutoff <span class="op">=</span> <span class="fl">4</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   lower_cutoff <span class="op">=</span> <span class="fl">2</span>, upper_cutoff <span class="op">=</span> <span class="fl">4</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-32.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sst"</span>, <span class="st">"Ghrl"</span><span class="op">)</span>, split_by <span class="op">=</span> <span class="st">"Phase"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"dim"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-33.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span>, <span class="st">"nCount_RNA"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>   ident <span class="op">=</span> <span class="st">"SubCellType"</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, facet_by <span class="op">=</span> <span class="st">"Phase"</span>, split_by <span class="op">=</span> <span class="cn">TRUE</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
