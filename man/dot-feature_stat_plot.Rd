@@ -172,7 +172,7 @@ Giotto objects. Default: \code{NULL}.}
 from (e.g., \code{"data"}, \code{"counts"}, \code{"scale.data"}). For
 Seurat objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
 For Giotto objects, passed to \code{GiottoClass::getExpression()}.
-Default: \code{"scale.data"}.}
+Default: \code{"scale.data"} for \code{heatmap} or \code{dot} plots and \code{"data"} for other plot types.}
   }}
 }
 \value{

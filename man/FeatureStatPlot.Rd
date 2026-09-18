@@ -19,15 +19,15 @@ FeatureStatPlot(
   rows_name = "Features",
   ident = NULL,
   assay = NULL,
-  layer = "scale.data",
+  layer = ifelse(plot_type \%in\% c("heatmap", "dot"), "scale.data", "data"),
   agg = mean,
   group_by = NULL,
+  center_zero = identical(layer, "scale.data"),
   split_by = NULL,
   facet_by = NULL,
   xlab = NULL,
   ylab = NULL,
   x_text_angle = NULL,
-  center_zero = identical(layer, "scale.data"),
   ...
 )
 }
@@ -123,7 +123,7 @@ Giotto objects. Default: \code{NULL}.}
 from (e.g., \code{"data"}, \code{"counts"}, \code{"scale.data"}). For
 Seurat objects, passed to \code{\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData()}}.
 For Giotto objects, passed to \code{GiottoClass::getExpression()}.
-Default: \code{"scale.data"}.}
+Default: \code{"scale.data"} for \code{heatmap} or \code{dot} plots and \code{"data"} for other plot types.}
 
 \item{agg}{Function. The aggregation function applied when
 \code{plot_type = "bar"}. Common choices: \code{mean} (default),
@@ -134,6 +134,15 @@ Default: \code{"scale.data"}.}
 cells within each identity group (e.g., coloring by treatment within
 cell type). Works with \code{"violin"}, \code{"box"}, \code{"bar"},
 and \code{"ridge"} plot types. Default: \code{NULL}.}
+
+\item{center_zero}{Logical. Whether to center the colorbar at zero by
+making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
+Only affects plots whose colorbar reflects feature values (heatmap, dot,
+dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
+Intended for 0-centered layers such as \code{"scale.data"}.
+If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
+and not center for other layers.
+Default: \code{NULL}.}
 
 \item{split_by}{Character vector or \code{TRUE}. Metadata column name(s)
 to split the data into separate plots (one per unique value).
@@ -156,15 +165,6 @@ Works normally with \code{"dim"}, \code{"heatmap"}, \code{"dot"}, and
 \item{x_text_angle}{Numeric. Angle (in degrees) for x-axis text labels.
 Used for \code{"violin"}, \code{"box"}, and \code{"bar"} plot types.
 Default: \code{NULL} (defaults to \code{45}).}
-
-\item{center_zero}{Logical. Whether to center the colorbar at zero by
-making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
-Only affects plots whose colorbar reflects feature values (heatmap, dot,
-dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
-Intended for 0-centered layers such as \code{"scale.data"}.
-If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
-and not center for other layers.
-Default: \code{NULL}.}
 
 \item{...}{Additional arguments passed to the underlying \pkg{plotthis}
 plotting function, determined by \code{plot_type}:
@@ -345,17 +345,17 @@ if (requireNamespace("ggpubr", quietly = TRUE)) {
      ident = "SubCellType", group_by = "Phase", comparisons = TRUE)
 }
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-   add_bg = TRUE, add_box = TRUE, stack = TRUE, layer = "data")
+   add_bg = TRUE, add_box = TRUE, stack = TRUE)
 # Use `pos_only` to include only cells with positive expression of all features
 FeatureStatPlot(pancreas_sub, features = c("Rbp4", "Pyy"), ident = "SubCellType",
-   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all", layer = "data")
+   add_bg = TRUE, add_box = TRUE, stack = TRUE, pos_only = "all")
 FeatureStatPlot(pancreas_sub, features = c(
        "Sox9", "Anxa2", "Bicc1", # Ductal
        "Neurog3", "Hes6", # EPs
        "Fev", "Neurod1", # Pre-endocrine
        "Rbp4", "Pyy", # Endocrine
        "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-   ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, layer = "data",
+   ), ident = "SubCellType", add_bg = TRUE, stack = TRUE,
    legend.position = "top", legend.direction = "horizontal")
 FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
       "Sox9", "Anxa2", "Bicc1", # Ductal
@@ -364,10 +364,10 @@ FeatureStatPlot(pancreas_sub, plot_type = "box", features = c(
       "Rbp4", "Pyy", # Endocrine
       "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
    ), ident = "SubCellType", add_bg = TRUE, stack = TRUE, flip = TRUE,
-   legend.position = "top", legend.direction = "horizontal", layer = "data")
+   legend.position = "top", legend.direction = "horizontal")
 # Use splitting instead of facetting
 FeatureStatPlot(pancreas_sub, features = c("Neurog3", "Rbp4", "Ins1"),
-   ident = "CellType", split_by = TRUE, layer = "data")
+   ident = "CellType", split_by = TRUE)
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reduction = "UMAP")
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reduction = "UMAP",
@@ -379,22 +379,22 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "G2M_score", reducti
 
 # Label and highlight cell points
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   highlight = 'SubCellType == "Delta"', layer = "data")
+   highlight = 'SubCellType == "Delta"')
 FeatureStatPlot(pancreas_sub, plot_type = "dim",
    features = "Rbp4", split_by = "Phase", reduction = "UMAP",
-   highlight = TRUE, theme = "theme_blank", layer = "data")
+   highlight = TRUE, theme = "theme_blank")
 
 # Add a density layer
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   add_density = TRUE, layer = "data")
+   add_density = TRUE)
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   add_density = TRUE, density_filled = TRUE, layer = "data")
+   add_density = TRUE, density_filled = TRUE)
 
 # Change the plot type from point to the hexagonal bin
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   hex = TRUE, layer = "data")
+   hex = TRUE)
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Rbp4", reduction = "UMAP",
-   hex = TRUE, hex_bins = 20, layer = "data")
+   hex = TRUE, hex_bins = 20)
 
 # Show lineages on the plot based on the pseudotime
 FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Lineage3", reduction = "UMAP",
@@ -405,7 +405,7 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim", features = "Lineage3", reductio
    lineages = "Lineage3", lineages_span = 0.1)
 
 FeatureStatPlot(pancreas_sub, plot_type = "dim",
-  features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP", layer = "data",
+  features = c("Sox9", "Anxa2", "Bicc1"), reduction = "UMAP",
   theme = "theme_blank",
   theme_args = list(plot.subtitle = ggplot2::element_text(size = 10),
      strip.text = ggplot2::element_text(size = 8))
@@ -413,16 +413,15 @@ FeatureStatPlot(pancreas_sub, plot_type = "dim",
 
 # Plot multiple features with different scales
 endocrine_markers <- c("Ins1", "Gcg", "Sst", "Ghrl")
-FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim",
-   layer = "data")
+FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", plot_type = "dim")
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", lower_quantile = 0,
-   upper_quantile = 0.8, plot_type = "dim", layer = "data")
+   upper_quantile = 0.8, plot_type = "dim")
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP",
-   lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim", layer = "data")
+   lower_cutoff = 1, upper_cutoff = 4, plot_type = "dim")
 FeatureStatPlot(pancreas_sub, endocrine_markers, reduction = "UMAP", bg_cutoff = 2,
-   lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim", layer = "data")
+   lower_cutoff = 2, upper_cutoff = 4, plot_type = "dim")
 FeatureStatPlot(pancreas_sub, c("Sst", "Ghrl"), split_by = "Phase", reduction = "UMAP",
-   plot_type = "dim", layer = "data")
+   plot_type = "dim")
 FeatureStatPlot(pancreas_sub, features = c("G2M_score", "nCount_RNA"),
    ident = "SubCellType", plot_type = "dim", facet_by = "Phase", split_by = TRUE, ncol = 1)
 

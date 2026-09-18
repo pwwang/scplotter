@@ -8,7 +8,7 @@ test_that("FeatureStatPlot() handles metadata features on objects without a redu
         nrow = 100,
         dimnames = list(paste0("gene", 1:100), paste0("cell", 1:40))
     )
-    obj <- CreateSeuratObject(mat)
+    obj <- suppressWarnings(CreateSeuratObject(mat))
     obj$Sample <- rep(c("A", "B"), each = 20)
 
     # No reduction on purpose. Features that live in meta.data have no assay
@@ -26,17 +26,17 @@ test_that("FeatureStatPlot() handles metadata features on objects without a redu
     )
     expect_false(is.null(p))
 
-    # gene features still need an assay layer: without scale.data the message
+    # gene features still need an assay layer: without data the message
     # should name the missing layer rather than fail inside cbind()
     expect_error(
-        FeatureStatPlot(
+        suppressWarnings(FeatureStatPlot(
             obj,
             features = "gene1",
             ident = "Sample",
             group_by = "Sample",
             plot_type = "violin"
-        ),
-        "does not have any data in layer 'scale.data'"
+        )),
+        "does not have any data in layer 'data'"
     )
 })
 
@@ -50,7 +50,7 @@ test_that("FeatureStatPlot() still plots metadata features when a reduction exis
         nrow = 100,
         dimnames = list(paste0("gene", 1:100), paste0("cell", 1:40))
     )
-    obj <- CreateSeuratObject(mat)
+    obj <- suppressWarnings(CreateSeuratObject(mat))
     obj$Sample <- rep(c("A", "B"), each = 20)
     obj <- NormalizeData(obj, verbose = FALSE)
     obj <- FindVariableFeatures(obj, nfeatures = 50, verbose = FALSE)
