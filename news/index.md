@@ -9,6 +9,8 @@
   and set default center_limit
 - fix(FeatureStatPlot): remove redundant in_form argument in function
   call
+- fix(FeatureStatPlot): update default layer handling and documentation
+  for plot types (scale.data for heatmp/dot, data otherwise)
 
 ## Version 0.8.0
 
