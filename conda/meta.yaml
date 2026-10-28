@@ -1,12 +1,12 @@
 package:
   name: r-scplotter
-  version: 0.8.1
+  version: 0.8.2
 
 source:
   path: ..
 
 build:
-  number: 3
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
