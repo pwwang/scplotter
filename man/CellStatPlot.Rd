@@ -49,7 +49,12 @@ column grouping.
 \item For \code{"violin"} and \code{"box"} plots, at most 2 columns are
 allowed: the first determines the x-axis breakdown, the second
 is passed as \code{group_by} to the underlying plot function.
-}}
+}
+For \code{sankey}/\code{alluvial} plots, a single column in \code{group_by} may carry an
+\verb{:expand} modifier (e.g. \code{"stim:expand"}). The column is expanded into one
+x-axis position per unique value (\code{STIM} and \code{CTRL} for \code{stim}), with the
+\code{ident} groups as the nodes at each position. Records belonging to only one
+group count as 0 for the other groups.}
 
 \item{group_by_sep}{Separator used when concatenating multiple
 \code{group_by} columns into a single variable. Default is \code{"_"}. Ignored
@@ -391,6 +396,8 @@ CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
              group_by = c("stim", "seurat_annotations", "orig.ident"))
 CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
              group_by = c("seurat_clusters", "stim", "seurat_annotations", "orig.ident"))
+CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
+             group_by = "stim:expand")
 
 # Area plot
 CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,

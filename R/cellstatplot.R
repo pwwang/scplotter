@@ -146,6 +146,11 @@
 #'           allowed: the first determines the x-axis breakdown, the second
 #'           is passed as `group_by` to the underlying plot function.
 #'   }
+#'   For `sankey`/`alluvial` plots, a single column in `group_by` may carry an
+#'   `:expand` modifier (e.g. `"stim:expand"`). The column is expanded into one
+#'   x-axis position per unique value (`STIM` and `CTRL` for `stim`), with the
+#'   `ident` groups as the nodes at each position. Records belonging to only one
+#'   group count as 0 for the other groups.
 #' @param group_by_sep Separator used when concatenating multiple
 #'   `group_by` columns into a single variable. Default is `"_"`. Ignored
 #'   for `"sankey"` and `"heatmap"` plots where columns are not combined.
@@ -347,6 +352,8 @@
 #'              group_by = c("stim", "seurat_annotations", "orig.ident"))
 #' CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
 #'              group_by = c("seurat_clusters", "stim", "seurat_annotations", "orig.ident"))
+#' CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
+#'              group_by = "stim:expand")
 #'
 #' # Area plot
 #' CellStatPlot(ifnb_sub, plot_type = "area", frac = "group", x_text_angle = 90,
@@ -523,6 +530,17 @@ CellStatPlot.data.frame <- function(
     plot_type <- match.arg(plot_type)
     if (plot_type == "donut") plot_type <- "ring"
     if (plot_type == "alluvial") plot_type <- "sankey"
+    expand_by <- NULL
+    if (identical(plot_type, "sankey") && !is.null(group_by)) {
+        is_expand <- endsWith(group_by, ":expand")
+        if (any(is_expand)) {
+            if (length(group_by) > 1) {
+                stop("[CellStatPlot] The ':expand' modifier can only be used with a single 'group_by' column.")
+            }
+            expand_by <- sub(":expand$", "", group_by)
+            group_by <- expand_by
+        }
+    }
     if (isFALSE(swap) && plot_type %in% c("sankey", "heatmap", "violin", "box")) {
         group_by <- check_columns(object, group_by, force_factor = TRUE,
             allow_multi = TRUE)
@@ -744,10 +762,26 @@ CellStatPlot.data.frame <- function(
         if (isTRUE(swap)) {
             stop("'swap = TRUE' is not supported for 'sankey' plot.")
         }
-        SankeyPlot(
-            object, x = group_by, links_fill_by = ident, xlab = "", ylab = "", flow = TRUE,
-            y = ifelse(identical(frac, "none"), ".n", ".frac"),
-            split_by = split_by, facet_by = facet_by, ...)
+        if (is.null(expand_by)) {
+            SankeyPlot(
+                object, x = group_by, links_fill_by = ident, xlab = "", ylab = "", flow = TRUE,
+                y = ifelse(identical(frac, "none"), ".n", ".frac"),
+                split_by = split_by, facet_by = facet_by, ...)
+        } else {
+            if (identical(expand_by, ident)) {
+                stop("[CellStatPlot] The ':expand' column cannot be the same as 'ident'.")
+            }
+            ycol <- ifelse(identical(frac, "none"), ".n", ".frac")
+            dat <- object[, unique(c(split_by, facet_by, ident, expand_by, ycol)), drop = FALSE]
+            dat <- dat[!is.na(dat[[expand_by]]), , drop = FALSE]
+            expanded <- pivot_wider(
+                dat, names_from = !!sym(expand_by), values_from = !!sym(ycol), values_fill = 0
+            )
+            xcols <- intersect(levels(object[[expand_by]]), colnames(expanded))
+            SankeyPlot(
+                expanded, x = xcols, links_fill_by = ident, xlab = "", ylab = "", flow = TRUE,
+                split_by = split_by, facet_by = facet_by, in_form = "counts", ...)
+        }
     } else if (plot_type == "pies") {
         if (is.null(group_by)) {
             stop("Cannot create a heatmap (cell_type = 'pie') plot without specifying 'group_by' (works as columns of the plot).")
