@@ -82,6 +82,12 @@ CellStatPlot(
     first determines the x-axis breakdown, the second is passed as
     `group_by` to the underlying plot function.
 
+  For `sankey`/`alluvial` plots, a single column in `group_by` may carry
+  an `:expand` modifier (e.g. `"stim:expand"`). The column is expanded
+  into one x-axis position per unique value (`STIM` and `CTRL` for
+  `stim`), with the `ident` groups as the nodes at each position.
+  Records belonging to only one group count as 0 for the other groups.
+
 - group_by_sep:
 
   Separator used when concatenating multiple `group_by` columns into a
@@ -494,6 +500,9 @@ CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
 CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
              group_by = c("seurat_clusters", "stim", "seurat_annotations", "orig.ident"))
 #> Missing alluvia for some stratum combinations.
+
+CellStatPlot(ifnb_sub, plot_type = "sankey", links_alpha = .6,
+             group_by = "stim:expand")
 
 
 # Area plot

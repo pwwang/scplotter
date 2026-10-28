@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8.2
+
+- feat(CellStatPlot): add “:expand” modifier for ‘group_by’ in
+  sankey/alluvial plots, expanding a column into one x-axis node per
+  value
+
 ## Version 0.8.1
 
 - fix(FeatureStatPlot): plot features taken from meta.data for objects

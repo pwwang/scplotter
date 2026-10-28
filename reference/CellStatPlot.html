@@ -45,7 +45,7 @@ delegate here after metadata extraction.
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -168,7 +168,11 @@ column grouping.</p></li>
 <li><p>For <code>"violin"</code> and <code>"box"</code> plots, at most 2 columns are
 allowed: the first determines the x-axis breakdown, the second
 is passed as <code>group_by</code> to the underlying plot function.</p></li>
-</ul></dd>
+</ul><p>For <code>sankey</code>/<code>alluvial</code> plots, a single column in <code>group_by</code> may carry an
+<code>:expand</code> modifier (e.g. <code>"stim:expand"</code>). The column is expanded into one
+x-axis position per unique value (<code>STIM</code> and <code>CTRL</code> for <code>stim</code>), with the
+<code>ident</code> groups as the nodes at each position. Records belonging to only one
+group count as 0 for the other groups.</p></dd>
 
 
 <dt id="arg-group-by-sep">group_by_sep<a class="anchor" aria-label="anchor" href="#arg-group-by-sep"></a></dt>
@@ -510,18 +514,21 @@ Underlying <span class="pkg">plotthis</span> functions for individual plot types
 <span class="r-in"><span>             group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seurat_clusters"</span>, <span class="st">"stim"</span>, <span class="st">"seurat_annotations"</span>, <span class="st">"orig.ident"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing alluvia for some stratum combinations.</span>
 <span class="r-plt img"><img src="CellStatPlot-14.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"sankey"</span>, links_alpha <span class="op">=</span> <span class="fl">.6</span>,</span></span>
+<span class="r-in"><span>             group_by <span class="op">=</span> <span class="st">"stim:expand"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="CellStatPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Area plot</span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"area"</span>, frac <span class="op">=</span> <span class="st">"group"</span>, x_text_angle <span class="op">=</span> <span class="fl">90</span>,</span></span>
 <span class="r-in"><span>             group_by <span class="op">=</span> <span class="st">"seurat_annotations"</span>, split_by <span class="op">=</span> <span class="st">"stim"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Heatmap</span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>, palette <span class="op">=</span> <span class="st">"Blues"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-17.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>,</span></span>
 <span class="r-in"><span>   frac <span class="op">=</span> <span class="st">"group"</span>, columns_split_by <span class="op">=</span> <span class="st">"seurat_annotations"</span>, swap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-17.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-18.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Pies</span></span></span>
 <span class="r-in"><span><span class="co"># Simulate some sets of cells (e.g. clones)</span></span></span>
@@ -531,26 +538,26 @@ Underlying <span class="pkg">plotthis</span> functions for individual plot types
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"pies"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>, rows_name <span class="op">=</span> <span class="st">"Clones"</span>,</span></span>
 <span class="r-in"><span>   rows_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r1"</span>, <span class="st">"r2"</span>, <span class="st">"r3"</span><span class="op">)</span>, column_names_side <span class="op">=</span> <span class="st">"top"</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>   row_names_side <span class="op">=</span> <span class="st">"right"</span>, pie_size <span class="op">=</span> <span class="st">"identity"</span>, pie_values <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Expand pies into heatmap</span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>, rows_name <span class="op">=</span> <span class="st">"Clones"</span>,</span></span>
 <span class="r-in"><span>   rows_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r1"</span>, <span class="st">"r2"</span>, <span class="st">"r3"</span><span class="op">)</span>, column_names_side <span class="op">=</span> <span class="st">"top"</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>   row_names_side <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-19.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Rows split by clones instead of idents and show fraction of cells in each clone.</span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>, frac <span class="op">=</span> <span class="st">"group"</span>,</span></span>
 <span class="r-in"><span>  rows_split_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r1"</span>, <span class="st">"r2"</span>, <span class="st">"r3"</span><span class="op">)</span>, column_names_side <span class="op">=</span> <span class="st">"top"</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  row_names_side <span class="op">=</span> <span class="st">"right"</span>, label <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">number</a></span><span class="op">(</span><span class="va">x</span>, accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  cell_type <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-20.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-21.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Radar plot/Spider plot</span></span></span>
 <span class="r-in"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"radar"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, plot_type <span class="op">=</span> <span class="st">"spider"</span>, group_by <span class="op">=</span> <span class="st">"stim"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pr</span> <span class="op">|</span> <span class="va">ps</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-21.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-22.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Box/Violin plot</span></span></span>
 <span class="r-in"><span><span class="va">ifnb_sub</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"g"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ifnb_sub</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -558,16 +565,16 @@ Underlying <span class="pkg">plotthis</span> functions for individual plot types
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"violin"</span>, add_box <span class="op">=</span> <span class="cn">TRUE</span>, ident <span class="op">=</span> <span class="st">"seurat_annotations"</span>,</span></span>
 <span class="r-in"><span>   x_text_angle <span class="op">=</span> <span class="fl">60</span>, comparisons <span class="op">=</span> <span class="cn">TRUE</span>, aspect.ratio <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[Box/Violin/BeeswarmPlot] Some pairwise comparisons may fail due to insufficient data points or variability. Adjusting data to ensure valid comparisons.</span>
-<span class="r-plt img"><img src="CellStatPlot-22.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use different agg other than counting the number of cells.</span></span></span>
 <span class="r-in"><span><span class="co"># Let's say we do the fraction of g1 in each stim group.</span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, agg <span class="op">=</span> <span class="st">"sum(group == 'g1') / n()"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"bar"</span>, ylab <span class="op">=</span> <span class="st">"Fraction of g1 cells"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-23.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-24.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span><span class="va">ifnb_sub</span>, group_by <span class="op">=</span> <span class="st">"stim"</span>, agg <span class="op">=</span> <span class="st">"sum(group == 'g1') / n()"</span>,</span></span>
 <span class="r-in"><span>   plot_type <span class="op">=</span> <span class="st">"bar"</span>, ylab <span class="op">=</span> <span class="st">"Fraction of g1 cells"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-24.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellStatPlot-25.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
