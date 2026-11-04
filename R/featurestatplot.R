@@ -29,7 +29,7 @@
 #' @keywords internal
 #' @importFrom rlang %||% syms sym
 #' @importFrom tidyr pivot_longer
-#' @importFrom dplyr summarise %>%
+#' @importFrom dplyr all_of summarise %>%
 .feature_stat_plot <- function(
     data, features, plot_type, should_shrink, should_pivot, downsample,
     graph = NULL, bg_cutoff = NULL, dims = 1:2, rows_name = "Features",
@@ -54,7 +54,7 @@
         data <- data[, selected_columns, drop = FALSE]
     }
     if (should_pivot) {
-        data <- pivot_longer(data, cols = unlisted_features, names_to = ".features", values_to = ".value")
+        data <- pivot_longer(data, cols = all_of(unlisted_features), names_to = ".features", values_to = ".value")
 
         if (isTRUE(split_by)) {
             split_by <- ".features"
