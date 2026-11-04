@@ -54,12 +54,19 @@
 #' If neither format is detected, the function stops with an error.
 #'
 #' @section Metric transformation:
-#' When the \code{metric} is a p-value column (\code{pvalue}, \code{p.adjust},
+#' When a metric column is a p-value column (\code{pvalue}, \code{p.adjust},
 #' or \code{qvalue}), the function applies a \eqn{-log_{10}} transformation
 #' so that more significant terms have higher values on the plot. The transformed
-#' metric is stored internally as \code{.metric}. When \code{cutoff} is specified,
-#' it is also transformed (e.g., \code{p.adjust = 0.05} becomes a line at
-#' \eqn{-log_{10}(0.05) = 1.3}).
+#' metric is stored internally as \code{.metric}. Other columns are used as-is.
+#'
+#' \code{metric} accepts \code{"color_column:significance_column"}. The first
+#' column drives the fill color and the \code{top_term} selection; the second
+#' drives \code{cutoff}, which both drops the terms failing it and marks the
+#' surviving ones. Both columns are transformed independently, so
+#' \code{metric = "zScore:p.adjust"} colors cells by raw \code{zScore}, keeps
+#' only the terms with \code{p.adjust < cutoff}, and marks them. A single column
+#' is shorthand for \code{"column:column"}, so \code{metric = "p.adjust"} marks
+#' cells by \code{p.adjust} without filtering.
 #'
 #' For "bar", "dot", "lollipop", "comparison", and "heatmap" plot types,
 #' \code{GeneRatio} (stored as strings like \code{"38/225"}) and \code{BgRatio}
@@ -67,10 +74,16 @@
 #'
 #' @section Term ordering and selection:
 #' For each unique combination of \code{split_by}, \code{group_by}, and
-#' \code{facet_by} levels, the function selects the \code{top_term} terms with
-#' the smallest metric values (i.e., most significant). This ensures that each
+#' \code{facet_by} levels, the function selects the \code{top_term} terms by
+#' the coloring metric (the first column of \code{metric}): the smallest values
+#' when it is a p-value column (\code{pvalue}, \code{p.adjust}, \code{qvalue}),
+#' and the largest values otherwise (e.g. \code{zScore}). This ensures that each
 #' facet or split shows its own most relevant terms rather than the globally
-#' most significant ones. The default \code{top_term} is 6 for most plot types
+#' most relevant ones. When a significance metric is given
+#' (\code{"coloring:sig"}) together with \code{cutoff}, terms that fail the
+#' cutoff in every group are dropped first (except for dot, lollipop, and
+#' comparison plots, which show them in gray); a term passing in any group is
+#' kept in all groups. The default \code{top_term} is 6 for most plot types
 #' and 100 for "enrichmap" (which benefits from showing more terms to reveal
 #' the network structure of gene set relationships).
 #'
@@ -79,34 +92,52 @@
 #'   \code{enrichPathway}, \code{enrichWP}, etc.) or an \pkg{enrichR} result
 #'   processed through \code{plotthis::prepare_enrichr_result()}. The function
 #'   auto-detects the format based on column names.
-#' @param top_term Integer. Number of top terms (by significance) to display per
-#'   group/facet combination. Default: \code{6} for all plot types except
-#'   \code{"enrichmap"} which defaults to \code{100}. Note that terms are not
-#'   filtered globally — the top terms are selected independently within each
+#' @param top_term Integer. Number of top terms to display per group/facet
+#'   combination, ranked by the coloring metric: smallest values for p-value
+#'   columns, largest values otherwise. Default: \code{6} for all plot types
+#'   except \code{"enrichmap"} which defaults to \code{100}. Note that terms are
+#'   not filtered globally — the top terms are selected independently within each
 #'   combination of \code{split_by}, \code{group_by}, and \code{facet_by} levels.
 #' @param plot_type Character. The type of plot to generate. One of:
 #'   \code{"bar"}, \code{"dot"}, \code{"lollipop"}, \code{"network"},
 #'   \code{"enrichmap"}, \code{"wordcloud"}, \code{"comparison"}, or
 #'   \code{"heatmap"}. See the Description section for guidance on choosing a
 #'   plot type. Default: \code{"bar"}.
-#' @param metric Character. The column name in \code{data} to use as the
-#'   significance metric for ordering and coloring terms. Common choices are
-#'   \code{"p.adjust"} (default), \code{"pvalue"}, or \code{"qvalue"}. When the
-#'   metric is a p-value column, a \eqn{-log_{10}} transformation is applied
-#'   automatically so that more significant terms have higher values.
-#' @param cutoff Numeric. A significance threshold to mark on the plot.
-#'   Default: \code{NULL} (no marking). The behavior depends on \code{plot_type}:
+#' @param metric Character. The column name in \code{data} to use for coloring
+#'   terms, or two column names separated by \code{":"} to use one column for
+#'   coloring and another for significance. \code{"p.adjust"} (default),
+#'   \code{"pvalue"}, and \code{"qvalue"} are transformed with
+#'   \eqn{-log_{10}} so that more significant terms have higher values; other
+#'   columns are used as-is. With \code{"zScore:p.adjust"}, cells are colored by
+#'   \code{zScore} while \code{cutoff} is applied to \code{p.adjust}. A single
+#'   column is shorthand for \code{"column:column"}. See the
+#'   \emph{Metric transformation} section.
+#' @param cutoff Numeric. A significance threshold applied to the significance
+#'   metric (the column after \code{":"} in \code{metric}, or \code{metric}
+#'   itself when no modifier is given). Default: \code{NULL} (no marking).
+#'   When \code{metric} supplies a separate significance metric, a term failing
+#'   the cutoff in every group is dropped before \code{top_term} selection. A
+#'   term that passes in at least one group is kept in all of them, so its
+#'   cells are not left empty. Dot, lollipop, and comparison plots are the
+#'   exception: they show insignificant terms in gray, so nothing is dropped.
+#'   The behavior on the plot itself depends on \code{plot_type}:
 #'   \itemize{
 #'     \item \code{"bar"} — Adds a vertical dashed line at the transformed cutoff
-#'       (e.g., \eqn{-log_{10}(0.05)}).
-#'     \item \code{"dot"}, \code{"lollipop"}, \code{"comparison"} — Terms above
-#'       the cutoff are colored gray with the legend label from
-#'       \code{fill_cutoff_name}.
-#'     \item \code{"heatmap"} — Adds asterisk (\code{*}) labels to cells where
-#'       the metric exceeds the cutoff.
-#'     \item \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"} — No effect.
+#'       (e.g., \eqn{-log_{10}(0.05)}). No line is drawn when the significance
+#'       metric differs from the coloring metric, since it would sit on a
+#'       different scale; terms are still filtered.
+#'     \item \code{"dot"}, \code{"lollipop"}, \code{"comparison"} — Terms that
+#'       fail the cutoff are colored gray with the legend label from
+#'       \code{fill_cutoff_name}, while fill color still follows the coloring
+#'       metric.
+#'     \item \code{"heatmap"} — Adds asterisk (\code{*}) labels to cells whose
+#'       significance metric passes the cutoff.
+#'     \item \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"} — Nothing
+#'       is marked on the plot; terms are still filtered when a significance
+#'       metric is given.
 #'   }
-#'   This parameter only marks terms — it does not filter them. Use
+#'   Without a separate significance metric, this parameter only marks terms —
+#'   it does not filter them. Use
 #'   \code{top_term} to control how many terms are shown.
 #' @param x_by Character. Column name(s) to use for the x-axis. Works only for
 #'   \code{"dot"} and \code{"lollipop"} plot types. Default: \code{NULL}
@@ -120,9 +151,9 @@
 #'   \code{"dot"}, and \code{"lollipop"} plot types. Default: \code{NULL}
 #'   (defaults to \code{"Non-significant"} when \code{cutoff} is set).
 #' @param fill_name Character. Legend title for the fill color scale (the
-#'   significance metric). Applies to \code{"comparison"}, \code{"dot"}, and
-#'   \code{"lollipop"} plot types. Default: \code{NULL} (auto-generated as
-#'   \code{"-log10(metric)"}).
+#'   coloring metric). Applies to \code{"comparison"}, \code{"dot"}, and
+#'   \code{"lollipop"} plot types. Default: \code{NULL} (auto-generated from
+#'   \code{metric}, e.g. \code{"-log10(p.adjust)"} or \code{"zScore"}).
 #' @param values_fill Numeric. The fill value for missing entries in the heatmap
 #'   matrix. Used only for \code{"heatmap"} plot type. Default: \code{0}.
 #' @param character_width Integer. Maximum character width for term descriptions
@@ -239,6 +270,12 @@
 #' EnrichmentPlot(enrich_example, plot_type = "heatmap", group_by = "Group",
 #'  show_row_names = TRUE, show_column_names = TRUE, cutoff = 0.05)
 #'
+#' # Color by zScore, and mark the cells whose p.adjust passes the cutoff
+#' EnrichmentPlot(enrich_example, plot_type = "heatmap", group_by = "Group",
+#'  metric = "zScore:p.adjust", cutoff = 0.05)
+#' EnrichmentPlot(enrich_example, plot_type = "dot",
+#'  metric = "zScore:p.adjust", cutoff = 1e-10)
+#'
 #' # Multiple databases#'
 #' EnrichmentPlot(enrich_multidb_example, facet_by = "Database", facet_nrow = 2)
 #'
@@ -296,27 +333,68 @@ EnrichmentPlot <- function(
     )
     descr_col <- check_columns(data, descr_col, force_factor = TRUE)
 
-    top_term <- top_term %||% ifelse(plot_type == "enrichmap", 100 , 6)
-    # if (!is.null(cutoff)) {
-    #     data <- data[data[[metric]] < cutoff, , drop = FALSE]
-    # }
+    p_metrics <- c("pvalue", "p.adjust", "qvalue")
+    metric <- strsplit(metric, ":", fixed = TRUE)[[1]]
+    if (length(metric) > 2) {
+        stop("[EnrichmentPlot] 'metric' must be 'column' or 'column:column'.")
+    }
+    fill_metric <- metric[1]
+    has_sig_metric <- length(metric) == 2
+    sig_metric <- if (has_sig_metric) metric[2] else fill_metric
+    if (!sig_metric %in% colnames(data)) {
+        stop("[EnrichmentPlot] Significance metric '", sig_metric, "' not found in data.")
+    }
+    metric_label <- if (fill_metric %in% p_metrics) {
+        paste0("-log10(", fill_metric, ")")
+    } else {
+        fill_metric
+    }
 
-    # Keep the top terms for each split_by, group_by, and facet_by
+    # A separate significance metric makes the cutoff a filter, not just a mark.
+    # Dot/lollipop/comparison can show insignificant terms in gray, so keep them.
+    if (has_sig_metric && !is.null(cutoff) &&
+            !plot_type %in% c("dot", "lollipop", "comparison")) {
+        # Keep a term in every group as long as it passes the cutoff in one of
+        # them, so its cells in the other groups are not left empty.
+        sig_terms <- unique(data[[descr_col]][data[[sig_metric]] < cutoff])
+        data <- data[data[[descr_col]] %in% sig_terms, , drop = FALSE]
+        if (nrow(data) == 0) {
+            stop(
+                "[EnrichmentPlot] No terms pass the cutoff: ",
+                sig_metric, " < ", cutoff, "."
+            )
+        }
+    }
+
+    top_term <- top_term %||% ifelse(plot_type == "enrichmap", 100 , 6)
+    # Keep the top terms for each split_by, group_by, and facet_by.
+    # Smallest values for p-value metrics; largest otherwise.
+    slice_terms <- if (fill_metric %in% p_metrics) slice_min else slice_max
     if (!is.null(split_by) || !is.null(group_by) || !is.null(facet_by)) {
         data <- data %>%
             group_by(!!!syms(unique(c(split_by, group_by, facet_by)))) %>%
-            slice_min(!!sym(metric), n = top_term, with_ties = FALSE) %>%
+            slice_terms(!!sym(fill_metric), n = top_term, with_ties = FALSE) %>%
             ungroup()
     } else {
-        data <- data %>% slice_min(!!sym(metric), n = top_term, with_ties = FALSE)
+        data <- data %>% slice_terms(!!sym(fill_metric), n = top_term, with_ties = FALSE)
     }
 
     # preprocessing
     if (plot_type %in% c("bar", "comparison", "dot", "lollipop", "heatmap")) {
-        if (metric %in% c("pvalue", "p.adjust", "qvalue")) {
-            data$.metric <- -log10(data[[metric]])
+        if (fill_metric %in% p_metrics) {
+            data$.metric <- -log10(data[[fill_metric]])
         } else {
-            data$.metric <- data[[metric]]
+            data$.metric <- data[[fill_metric]]
+        }
+        if (sig_metric %in% p_metrics) {
+            data$.sig_metric <- -log10(data[[sig_metric]])
+        } else {
+            data$.sig_metric <- data[[sig_metric]]
+        }
+        if (!is.null(cutoff) && sig_metric %in% p_metrics) {
+            sig_cutoff <- -log10(cutoff)
+        } else {
+            sig_cutoff <- cutoff
         }
         if (plot_type != "heatmap") {
             # we lost order?
@@ -333,32 +411,58 @@ EnrichmentPlot <- function(
         if (!is.null(facet_by)) {
             stop('[EnrichmentPlot] "heatmap" plot does not support "facet_by". Use "split_by" to split the heatmap.')
         }
-        data[[metric]] <- NULL
-        if (metric %in% c("pvalue", "p.adjust", "qvalue")) {
-            metric <- paste0("-log10(", metric, ")")
-            if (!is.null(cutoff)) {
-                cutoff <- -log10(cutoff)
-            }
+        if (is.null(group_by)) {
+            stop('[EnrichmentPlot] "group_by" is required for "heatmap" plot.')
         }
+        data[[fill_metric]] <- NULL
+        data[[sig_metric]] <- NULL
+        hm_args <- list(
+            data = data, in_form = "long", values_by = ".metric", name = metric_label,
+            rows_by = descr_col, columns_by = group_by, values_fill = values_fill
+        )
+        dots <- list(...)
         if (is.null(cutoff)) {
-            Heatmap(data, in_form = "long", values_by = ".metric", name = metric,
-                rows_by = descr_col, columns_by = group_by, values_fill = values_fill, ...)
+            do_call(Heatmap, c(hm_args, dots))
         } else {
-            Heatmap(data, in_form = "long", values_by = ".metric", name = metric,
-                rows_by = descr_col, columns_by = group_by, values_fill = values_fill,
-                cell_type = "label", label = function(x) {
-                    ifelse(x > cutoff, '*', NA)
-                }, ...)
+            hm_args$cell_type <- "label"
+            if (sig_metric == fill_metric) {
+                hm_args$label <- function(x) {
+                    if (isTRUE(x > sig_cutoff)) "*" else NA
+                }
+            } else {
+                # Look the significance value up by cell name. `i`/`j` are indices into the
+                # displayed (clustered) matrix, so they can't index the significance matrix.
+                # `pindex()` on a plain matrix does not undo clustering either.
+                sig_mat <- data %>%
+                    select(!!sym(descr_col), !!sym(group_by), ".sig_metric") %>%
+                    pivot_wider(
+                        id_cols = !!sym(descr_col), names_from = !!sym(group_by),
+                        values_from = ".sig_metric", values_fill = NA
+                    ) %>%
+                    as.data.frame()
+                rownames(sig_mat) <- sig_mat[[descr_col]]
+                sig_mat[[descr_col]] <- NULL
+                hm_args$label <- function(x, i, j, rname, cname) {
+                    if (isTRUE(sig_mat[rname, cname] > sig_cutoff)) "*" else NA
+                }
+            }
+            do_call(Heatmap, c(hm_args, dots))
         }
     } else if (plot_type == "bar") {
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment bar plot. Use 'facet_by'/'split_by' to split the plots.")
         }
         expand <- expand %||% c(0.1, 0.6, 0, 0.6)
-        if (!is.null(cutoff)) {
-            add_line <- -log10(cutoff)
-            line_name <- paste0(metric, " = ", cutoff)
+        if (!is.null(cutoff) && sig_metric == fill_metric) {
+            add_line <- sig_cutoff
+            line_name <- paste0(sig_metric, " = ", cutoff)
         } else {
+            if (!is.null(cutoff)) {
+                warning(
+                    "[EnrichmentPlot] No cutoff line is drawn for bar plots when the significance metric ",
+                    "differs from the fill metric; terms failing the cutoff are still dropped.", immediate. = TRUE
+                )
+            }
             add_line <- NULL
             line_name <- NULL
         }
@@ -366,22 +470,23 @@ EnrichmentPlot <- function(
             add_line = add_line, line_name = line_name,
             fill_by = "Count", palette = palette, expand = expand,
             split_by = split_by, facet_by = facet_by, facet_scales = facet_scales %||% "free_y",
-            ylab = xlab %||% paste0("-log10(", metric, ")"), xlab = ylab %||% "", ...)
+            ylab = xlab %||% metric_label, xlab = ylab %||% "", ...)
     } else if (plot_type == "comparison") {
         if (is.null(group_by)) {
             stop("'group_by' is required for Enrichment comparison plot.")
         }
         size_by <- size_by %||% "GeneRatio"
         if (!is.null(cutoff)) {
-            fill_cutoff <- -log10(cutoff)
+            fill_cutoff <- sig_cutoff
             fill_cutoff_name <- fill_cutoff_name %||% "Non-significant"
         } else {
             fill_cutoff <- NULL
             fill_cutoff_name <- fill_cutoff_name
         }
         DotPlot(data, x = group_by, y = descr_col, fill_by = ".metric",
-            fill_cutoff = fill_cutoff, fill_cutoff_name = fill_cutoff_name,
-            size_by = size_by, palette = palette, fill_name = fill_name %||% paste0("-log10(", metric, ")"),
+            fill_cutoff = fill_cutoff, fill_cutoff_by = ".sig_metric",
+            fill_cutoff_name = fill_cutoff_name,
+            size_by = size_by, palette = palette, fill_name = fill_name %||% metric_label,
             split_by = split_by, facet_by = facet_by, facet_scales = facet_scales %||% "free_y",
             xlab = xlab %||% "", ylab = ylab %||% group_by, ...)
     } else if (plot_type == "dot") {
@@ -391,15 +496,16 @@ EnrichmentPlot <- function(
         x_by <- x_by %||% "GeneRatio"
         size_by <- size_by %||% "Count"
         if (!is.null(cutoff)) {
-            fill_cutoff <- -log10(cutoff)
+            fill_cutoff <- sig_cutoff
             fill_cutoff_name <- fill_cutoff_name %||% "Non-significant"
         } else {
             fill_cutoff <- NULL
             fill_cutoff_name <- fill_cutoff_name
         }
         DotPlot(data, x = x_by, y = descr_col, fill_by = ".metric",
-            fill_cutoff = fill_cutoff, fill_cutoff_name = fill_cutoff_name,
-            size_by = size_by, palette = palette, fill_name = fill_name %||% paste0("-log10(", metric, ")"),
+            fill_cutoff = fill_cutoff, fill_cutoff_by = ".sig_metric",
+            fill_cutoff_name = fill_cutoff_name,
+            size_by = size_by, palette = palette, fill_name = fill_name %||% metric_label,
             split_by = split_by, facet_by = facet_by, facet_scales = facet_scales %||% "free_y",
             xlab = xlab %||% x_by, ylab = ylab %||% "", ...)
     } else if (plot_type == "lollipop") {
@@ -409,15 +515,16 @@ EnrichmentPlot <- function(
         x_by <- x_by %||% "GeneRatio"
         size_by <- size_by %||% "Count"
         if (!is.null(cutoff)) {
-            fill_cutoff <- -log10(cutoff)
+            fill_cutoff <- sig_cutoff
             fill_cutoff_name <- fill_cutoff_name %||% "Non-significant"
         } else {
             fill_cutoff <- NULL
             fill_cutoff_name <- fill_cutoff_name
         }
         LollipopPlot(data, x = x_by, y = descr_col, fill_by = ".metric",
-            fill_cutoff = fill_cutoff, fill_cutoff_name = fill_cutoff_name,
-            size_by = size_by, fill_name = fill_name %||% paste0("-log10(", metric, ")"),
+            fill_cutoff = fill_cutoff, fill_cutoff_by = ".sig_metric",
+            fill_cutoff_name = fill_cutoff_name,
+            size_by = size_by, fill_name = fill_name %||% metric_label,
             palette = palette, split_by = split_by, facet_by = facet_by, facet_scales = facet_scales %||% "free_y",
             xlab = xlab %||% x_by, ylab = ylab %||% "", ...)
     } else if (plot_type == "network") {
@@ -425,26 +532,26 @@ EnrichmentPlot <- function(
             stop("'group_by' is not supported for Enrichment network plot. Use 'facet_by'/'split_by' to split the plots.")
         }
         EnrichNetwork(data, in_form = "clusterProfiler", character_width = character_width, split_by = split_by,
-            facet_by = facet_by, facet_scales = facet_scales, metric = metric, palette = palette, xlab = xlab, ylab = ylab, ...)
+            facet_by = facet_by, facet_scales = facet_scales, metric = fill_metric, palette = palette, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "enrichmap") {
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment enrichmap plot. Use 'facet_by'/'split_by' to split the plots.")
         }
         EnrichMap(data, in_form = "clusterProfiler", character_width = character_width, split_by = split_by,
-            facet_by = facet_by, facet_scales = facet_scales, metric = metric, palette = palette, xlab = xlab, ylab = ylab, ...)
+            facet_by = facet_by, facet_scales = facet_scales, metric = fill_metric, palette = palette, xlab = xlab, ylab = ylab, ...)
     } else if (plot_type == "wordcloud") {
         if (!is.null(group_by)) {
             stop("'group_by' is not supported for Enrichment wordcloud plot. Use 'facet_by'/'split_by' to split the plots.")
         }
         word_type <- match.arg(word_type)
-        data$.metric <- -log10(data[[metric]])
+        data$.metric <- -log10(data[[fill_metric]])
         if (word_type == "feature") {
             data$Genes <- lapply(data$geneID, gsub, pattern = "/", replacement = " ", fixed = TRUE)
-            WordCloudPlot(data, sentence_by = "Genes", score_name = paste0("sum(-log10(", metric, "))"),
+            WordCloudPlot(data, sentence_by = "Genes", score_name = paste0("sum(-log10(", fill_metric, "))"),
                 split_by = split_by, facet_by = facet_by, score_by = ".metric", score_agg = sum,
                 facet_scales = facet_scales, palette = palette, xlab = xlab, ylab = ylab, ...)
         } else {
-            WordCloudPlot(data, sentence_by = descr_col, score_name = paste0("sum(-log10(", metric, "))"),
+            WordCloudPlot(data, sentence_by = descr_col, score_name = paste0("sum(-log10(", fill_metric, "))"),
                 split_by = split_by, facet_by = facet_by, score_by = ".metric", score_agg = sum,
                 facet_scales = facet_scales, palette = palette, xlab = xlab, ylab = ylab, ...)
         }
