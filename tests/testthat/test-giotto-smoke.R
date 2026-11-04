@@ -10,8 +10,21 @@ need <- function(pkg, min_version) {
 
 first_categorical <- function(g) {
     md <- GiottoClass::getCellMetadata(g, output = "data.table")
+    # prefer a genuine categorical column ...
     cand <- names(md)[vapply(md, function(x) is.character(x) || is.factor(x), logical(1))]
-    setdiff(cand, c("cell_ID", "fov"))[1]
+    cand <- setdiff(cand, c("cell_ID", "fov"))
+    if (length(cand)) {
+        return(cand[1])
+    }
+    # ... else fall back to the first low-cardinality numeric column, factored
+    num <- names(md)[vapply(md, is.numeric, logical(1))]
+    num <- setdiff(num, c("cell_ID", "fov"))
+    for (nm in num) {
+        if (length(unique(md[[nm]])) <= 50) {
+            return(nm)
+        }
+    }
+    NA_character_
 }
 
 built_rows <- function(p) sum(vapply(ggplot2::ggplot_build(p)$data, nrow, integer(1)))

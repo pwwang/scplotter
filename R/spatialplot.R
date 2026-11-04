@@ -935,7 +935,7 @@ SpatPlot.giotto <- function(
                 expr_feats <- intersect(features, GiottoClass::featIDs(object, feat_type = feat_type))
                 if (length(expr_feats) > 0) {
                     expr_df <- t(
-                        as.data.frame(
+                        as.matrix(
                             GiottoClass::getExpression(
                                 gobject = object,
                                 spat_unit = spat_unit,
