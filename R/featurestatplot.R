@@ -715,6 +715,14 @@ FeatureStatPlot.giotto <- function(
     if (!is.null(facet_by) && plot_type != "dim") {
         stop("Cannot facet plots because the plots are facetted by the 'features'.")
     }
+    # `layer` defaults to Seurat's vocabulary ("data"/"scale.data"); a Giotto object
+    # stores "normalized"/"scaled"/"raw"/"counts", so translate the Seurat names.
+    layer <- switch(layer,
+        "data" = "normalized",
+        "scale.data" = "scaled",
+        layer
+    )
+
     stopifnot("[FeatureStatPlot] 'assay' should not be used for Giotto object." = is.null(assay))
     if (plot_type != "dim" && is.null(ident)) {
         stop("[FeatureStatPlot] 'ident' should be provided for non-dim plot for giotto object.")
