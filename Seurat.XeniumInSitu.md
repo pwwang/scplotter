@@ -69,19 +69,19 @@ In \[4\]:
 
     head(xenium.obj)
 
-|     | orig.ident    | nCount_Xenium | nFeature_Xenium | nCount_BlankCodeword | nFeature_BlankCodeword | nCount_ControlCodeword | nFeature_ControlCodeword | nCount_ControlProbe | nFeature_ControlProbe |
-|-----|---------------|---------------|-----------------|----------------------|------------------------|------------------------|--------------------------|---------------------|-----------------------|
-|     | \<fct\>       | \<dbl\>       | \<int\>         | \<dbl\>              | \<int\>                | \<dbl\>                | \<int\>                  | \<dbl\>             | \<int\>               |
-| 1   | SeuratProject | 384           | 96              | 1                    | 1                      | 0                      | 0                        | 0                   | 0                     |
-| 2   | SeuratProject | 146           | 64              | 0                    | 0                      | 0                      | 0                        | 0                   | 0                     |
-| 3   | SeuratProject | 81            | 48              | 0                    | 0                      | 0                      | 0                        | 0                   | 0                     |
-| 4   | SeuratProject | 314           | 94              | 1                    | 1                      | 0                      | 0                        | 0                   | 0                     |
-| 5   | SeuratProject | 639           | 97              | 1                    | 1                      | 0                      | 0                        | 0                   | 0                     |
-| 6   | SeuratProject | 270           | 90              | 0                    | 0                      | 0                      | 0                        | 0                   | 0                     |
-| 7   | SeuratProject | 354           | 88              | 0                    | 0                      | 0                      | 0                        | 0                   | 0                     |
-| 8   | SeuratProject | 97            | 56              | 0                    | 0                      | 0                      | 0                        | 0                   | 0                     |
-| 9   | SeuratProject | 250           | 72              | 0                    | 0                      | 0                      | 0                        | 0                   | 0                     |
-| 10  | SeuratProject | 495           | 103             | 1                    | 1                      | 0                      | 0                        | 0                   | 0                     |
+|  | orig.ident | nCount_Xenium | nFeature_Xenium | nCount_BlankCodeword | nFeature_BlankCodeword | nCount_ControlCodeword | nFeature_ControlCodeword | nCount_ControlProbe | nFeature_ControlProbe |
+|----|----|----|----|----|----|----|----|----|----|
+|  | \<fct\> | \<dbl\> | \<int\> | \<dbl\> | \<int\> | \<dbl\> | \<int\> | \<dbl\> | \<int\> |
+| 1 | SeuratProject | 384 | 96 | 1 | 1 | 0 | 0 | 0 | 0 |
+| 2 | SeuratProject | 146 | 64 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 3 | SeuratProject | 81 | 48 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 4 | SeuratProject | 314 | 94 | 1 | 1 | 0 | 0 | 0 | 0 |
+| 5 | SeuratProject | 639 | 97 | 1 | 1 | 0 | 0 | 0 | 0 |
+| 6 | SeuratProject | 270 | 90 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 7 | SeuratProject | 354 | 88 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 8 | SeuratProject | 97 | 56 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 9 | SeuratProject | 250 | 72 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 10 | SeuratProject | 495 | 103 | 1 | 1 | 0 | 0 | 0 | 0 |
 
 A data.frame: 10 × 9
 

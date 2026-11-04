@@ -867,7 +867,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> scplotter::CCCPlot(data = cellphonedb_res)
+#> CCCPlot(data = cellphonedb_res)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -883,7 +883,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> scplotter::CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -898,7 +898,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> scplotter::CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Interactions")
+#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -907,12 +907,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                           
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - scplotter::CCCPlot(data = cellphonedb_res)"                                                                                       
-#> [3] "User: Do a heatmap instead"                                                                                                                                                                            
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - scplotter::CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                                              
-#> [5] "User: Add a proper title to the plot"                                                                                                                                                                  
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - scplotter::CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication Interactions\"\n)"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                                
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                                      
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -2821,6 +2821,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       independent of palreverse. A numeric value is also accepted as
     #>       shorthand for "<" (e.g. 18 is equivalent to
     #>       "< 18"). Requires fill_by to be set.
+    #>       - fill_cutoff_by: A character string giving the column used to decide
+    #>       which dots are greyed out. Defaults to fill_by, so the cutoff is
+    #>       applied to the column that also drives the fill colour. Set it to another
+    #>       column to grey out dots based on a different measure while still colouring
+    #>       them by fill_by.
     #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - size_min: A numeric value for the smallest dot size in the
     #>       scale_size(range = c(size_min, size_max)) range.
@@ -3714,11 +3719,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -5622,6 +5627,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>       independent of palreverse. A numeric value is also accepted as
     #>       shorthand for "<" (e.g. 18 is equivalent to
     #>       "< 18"). Requires fill_by to be set.
+    #>       - fill_cutoff_by: A character string giving the column used to decide
+    #>       which dots are greyed out. Defaults to fill_by, so the cutoff is
+    #>       applied to the column that also drives the fill colour. Set it to another
+    #>       column to grey out dots based on a different measure while still colouring
+    #>       them by fill_by.
     #>       - palreverse: A logical value indicating whether to reverse the palette. Default is FALSE.
     #>       - size_min: A numeric value for the smallest dot size in the
     #>       scale_size(range = c(size_min, size_max)) range.
@@ -6515,10 +6525,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)

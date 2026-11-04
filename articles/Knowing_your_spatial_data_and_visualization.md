@@ -31,7 +31,11 @@ types of elements are plotted by different functions from
 ``` r
 library(plotthis)
 
-g <- suppressWarnings(GiottoData::loadGiottoMini("vizgen"))
+g <- local({
+  old_option <- options(giotto.use_conda = FALSE)
+  on.exit(options(old_option))
+  suppressWarnings(GiottoData::loadGiottoMini("vizgen"))
+})
 
 SpatImagePlot(GiottoClass::getGiottoImage(g)@raster_object)
 ```

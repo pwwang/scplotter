@@ -90,8 +90,9 @@ EnrichmentPlot(
 
 - top_term:
 
-  Integer. Number of top terms (by significance) to display per
-  group/facet combination. Default: `6` for all plot types except
+  Integer. Number of top terms to display per group/facet combination,
+  ranked by the coloring metric: smallest values for p-value columns,
+  largest values otherwise. Default: `6` for all plot types except
   `"enrichmap"` which defaults to `100`. Note that terms are not
   filtered globally — the top terms are selected independently within
   each combination of `split_by`, `group_by`, and `facet_by` levels.
@@ -125,9 +126,10 @@ EnrichmentPlot(
 
 - fill_name:
 
-  Character. Legend title for the fill color scale (the significance
+  Character. Legend title for the fill color scale (the coloring
   metric). Applies to `"comparison"`, `"dot"`, and `"lollipop"` plot
-  types. Default: `NULL` (auto-generated as `"-log10(metric)"`).
+  types. Default: `NULL` (auto-generated from `metric`, e.g.
+  `"-log10(p.adjust)"` or `"zScore"`).
 
 - values_fill:
 
@@ -201,30 +203,47 @@ EnrichmentPlot(
 
 - metric:
 
-  Character. The column name in `data` to use as the significance metric
-  for ordering and coloring terms. Common choices are `"p.adjust"`
-  (default), `"pvalue"`, or `"qvalue"`. When the metric is a p-value
-  column, a \\-log\_{10}\\ transformation is applied automatically so
-  that more significant terms have higher values.
+  Character. The column name in `data` to use for coloring terms, or two
+  column names separated by `":"` to use one column for coloring and
+  another for significance. `"p.adjust"` (default), `"pvalue"`, and
+  `"qvalue"` are transformed with \\-log\_{10}\\ so that more
+  significant terms have higher values; other columns are used as-is.
+  With `"zScore:p.adjust"`, cells are colored by `zScore` while `cutoff`
+  is applied to `p.adjust`. A single column is shorthand for
+  `"column:column"`. See the *Metric transformation* section.
 
 - cutoff:
 
-  Numeric. A significance threshold to mark on the plot. Default: `NULL`
-  (no marking). The behavior depends on `plot_type`:
+  Numeric. A significance threshold applied to the significance metric
+  (the column after `":"` in `metric`, or `metric` itself when no
+  modifier is given). Default: `NULL` (no marking). When `metric`
+  supplies a separate significance metric, a term failing the cutoff in
+  every group is dropped before `top_term` selection. A term that passes
+  in at least one group is kept in all of them, so its cells are not
+  left empty. Dot, lollipop, and comparison plots are the exception:
+  they show insignificant terms in gray, so nothing is dropped. The
+  behavior on the plot itself depends on `plot_type`:
 
   - `"bar"` — Adds a vertical dashed line at the transformed cutoff
-    (e.g., \\-log\_{10}(0.05)\\).
+    (e.g., \\-log\_{10}(0.05)\\). No line is drawn when the significance
+    metric differs from the coloring metric, since it would sit on a
+    different scale; terms are still filtered.
 
-  - `"dot"`, `"lollipop"`, `"comparison"` — Terms above the cutoff are
-    colored gray with the legend label from `fill_cutoff_name`.
+  - `"dot"`, `"lollipop"`, `"comparison"` — Terms that fail the cutoff
+    are colored gray with the legend label from `fill_cutoff_name`,
+    while fill color still follows the coloring metric.
 
-  - `"heatmap"` — Adds asterisk (`*`) labels to cells where the metric
-    exceeds the cutoff.
+  - `"heatmap"` — Adds asterisk (`*`) labels to cells whose significance
+    metric passes the cutoff, plus a legend entry labelled
+    `"<significance metric> < <cutoff>"` (legend title from
+    `label_name`, default `"Significance"`).
 
-  - `"network"`, `"enrichmap"`, `"wordcloud"` — No effect.
+  - `"network"`, `"enrichmap"`, `"wordcloud"` — Nothing is marked on the
+    plot; terms are still filtered when a significance metric is given.
 
-  This parameter only marks terms — it does not filter them. Use
-  `top_term` to control how many terms are shown.
+  Without a separate significance metric, this parameter only marks
+  terms — it does not filter them. Use `top_term` to control how many
+  terms are shown.
 
 - palette:
 
@@ -333,12 +352,19 @@ If neither format is detected, the function stops with an error.
 
 ## Metric transformation
 
-When the `metric` is a p-value column (`pvalue`, `p.adjust`, or
+When a metric column is a p-value column (`pvalue`, `p.adjust`, or
 `qvalue`), the function applies a \\-log\_{10}\\ transformation so that
 more significant terms have higher values on the plot. The transformed
-metric is stored internally as `.metric`. When `cutoff` is specified, it
-is also transformed (e.g., `p.adjust = 0.05` becomes a line at
-\\-log\_{10}(0.05) = 1.3\\).
+metric is stored internally as `.metric`. Other columns are used as-is.
+
+`metric` accepts `"color_column:significance_column"`. The first column
+drives the fill color and the `top_term` selection; the second drives
+`cutoff`, which both drops the terms failing it and marks the surviving
+ones. Both columns are transformed independently, so
+`metric = "zScore:p.adjust"` colors cells by raw `zScore`, keeps only
+the terms with `p.adjust < cutoff`, and marks them. A single column is
+shorthand for `"column:column"`, so `metric = "p.adjust"` marks cells by
+`p.adjust` without filtering.
 
 For "bar", "dot", "lollipop", "comparison", and "heatmap" plot types,
 `GeneRatio` (stored as strings like `"38/225"`) and `BgRatio` are
@@ -347,12 +373,18 @@ automatically converted to numeric ratios.
 ## Term ordering and selection
 
 For each unique combination of `split_by`, `group_by`, and `facet_by`
-levels, the function selects the `top_term` terms with the smallest
-metric values (i.e., most significant). This ensures that each facet or
-split shows its own most relevant terms rather than the globally most
-significant ones. The default `top_term` is 6 for most plot types and
-100 for "enrichmap" (which benefits from showing more terms to reveal
-the network structure of gene set relationships).
+levels, the function selects the `top_term` terms by the coloring metric
+(the first column of `metric`): the smallest values when it is a p-value
+column (`pvalue`, `p.adjust`, `qvalue`), and the largest values
+otherwise (e.g. `zScore`). This ensures that each facet or split shows
+its own most relevant terms rather than the globally most relevant ones.
+When a significance metric is given (`"coloring:sig"`) together with
+`cutoff`, terms that fail the cutoff in every group are dropped first
+(except for dot, lollipop, and comparison plots, which show them in
+gray); a term passing in any group is kept in all groups. The default
+`top_term` is 6 for most plot types and 100 for "enrichmap" (which
+benefits from showing more terms to reveal the network structure of gene
+set relationships).
 
 ## See also
 
@@ -384,6 +416,14 @@ EnrichmentPlot(enrich_example, palette = "Paired")
 enrich_example$Description <- enrich_example$ID
 EnrichmentPlot(enrich_example, plot_type = "heatmap", group_by = "Group",
  show_row_names = TRUE, show_column_names = TRUE, cutoff = 0.05)
+
+
+# Color by zScore, and mark the cells whose p.adjust passes the cutoff
+EnrichmentPlot(enrich_example, plot_type = "heatmap", group_by = "Group",
+ metric = "zScore:p.adjust", cutoff = 0.05)
+
+EnrichmentPlot(enrich_example, plot_type = "dot",
+ metric = "zScore:p.adjust", cutoff = 1e-10)
 
 
 # Multiple databases#'
