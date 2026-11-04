@@ -1,6 +1,7 @@
 ## Version 0.8.2
 
 - feat(EnrichmentPlot): support `metric = "color:sig"` (e.g. `"zScore:p.adjust"`) so cells are colored by one column while `cutoff`/marking is governed by another; terms failing the cutoff in every group are dropped (a term significant in any group is kept in all groups; dot/lollipop/comparison keep them all and show them gray), and `top_term` ranks by the coloring column (smallest for p-value columns, largest otherwise); grey-out follows the significance column via plotthis' new `fill_cutoff_by`
+- feat(EnrichmentPlot): heatmap `*` marks for `cutoff` now come with a legend entry (title from `label_name`, default "Significance")
 - feat(CellStatPlot): add ":expand" modifier for 'group_by' in sankey/alluvial plots, expanding a column into one x-axis node per value
 
 ## Version 0.8.1

@@ -135,6 +135,9 @@ test_that("heatmap marks are looked up by cell name, not display position", {
     expect_true(is.na(mark("Term2", "A")))
     expect_identical(mark("Term4", "A"), "*")
     expect_true(is.na(mark("Term4", "B")))
+    # the star is accompanied by a legend entry
+    expect_identical(label(1, 1, 1, "Term1", "A")$legend, "p.adjust < 0.05")
+    expect_identical(captured$label_name, "Significance")
 })
 
 test_that("top_term selects by the fill metric, after filtering by the cutoff", {

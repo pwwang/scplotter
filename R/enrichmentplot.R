@@ -131,7 +131,9 @@
 #'       \code{fill_cutoff_name}, while fill color still follows the coloring
 #'       metric.
 #'     \item \code{"heatmap"} — Adds asterisk (\code{*}) labels to cells whose
-#'       significance metric passes the cutoff.
+#'       significance metric passes the cutoff, plus a legend entry labelled
+#'       \code{"<significance metric> < <cutoff>"} (legend title from
+#'       \code{label_name}, default \code{"Significance"}).
 #'     \item \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"} — Nothing
 #'       is marked on the plot; terms are still filtered when a significance
 #'       metric is given.
@@ -424,10 +426,11 @@ EnrichmentPlot <- function(
         if (is.null(cutoff)) {
             do_call(Heatmap, c(hm_args, dots))
         } else {
+            legend <- paste0(sig_metric, " < ", cutoff)
             hm_args$cell_type <- "label"
             if (sig_metric == fill_metric) {
                 hm_args$label <- function(x) {
-                    if (isTRUE(x > sig_cutoff)) "*" else NA
+                    if (isTRUE(x > sig_cutoff)) list("*", legend = legend) else NA
                 }
             } else {
                 # Look the significance value up by cell name. `i`/`j` are indices into the
@@ -443,9 +446,14 @@ EnrichmentPlot <- function(
                 rownames(sig_mat) <- sig_mat[[descr_col]]
                 sig_mat[[descr_col]] <- NULL
                 hm_args$label <- function(x, i, j, rname, cname) {
-                    if (isTRUE(sig_mat[rname, cname] > sig_cutoff)) "*" else NA
+                    if (isTRUE(sig_mat[rname, cname] > sig_cutoff)) {
+                        list("*", legend = legend)
+                    } else {
+                        NA
+                    }
                 }
             }
+            dots$label_name <- dots$label_name %||% "Significance"
             do_call(Heatmap, c(hm_args, dots))
         }
     } else if (plot_type == "bar") {

@@ -148,7 +148,9 @@ fail the cutoff are colored gray with the legend label from
 \code{fill_cutoff_name}, while fill color still follows the coloring
 metric.
 \item \code{"heatmap"} — Adds asterisk (\code{*}) labels to cells whose
-significance metric passes the cutoff.
+significance metric passes the cutoff, plus a legend entry labelled
+\code{"<significance metric> < <cutoff>"} (legend title from
+\code{label_name}, default \code{"Significance"}).
 \item \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"} — Nothing
 is marked on the plot; terms are still filtered when a significance
 metric is given.
