@@ -249,7 +249,43 @@ ClonalGeneUsagePlot <- function(
     all_groupings <- unique(c(group_by, split_by))
     grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
-    data <- vizGenes(data, x.axis = genes, y.axis = genes2, group.by = ".group", scale = scale, exportTable = TRUE)
+
+    ## v2.5.0 rewrote vizGenes() around percentGeneUsage(). Two consequences handled here:
+    ## `scale` was removed without a replacement (below it is passed only where the
+    ## installed scRepertoire still accepts it, so on >= 2.5.0 it is silently a no-op), and
+    ## the per-group results are indexed by group name, so the "" label that
+    ## merge_clonal_groupings() writes when there is nothing to group by matches nothing and
+    ## every row is dropped. Rename it to a placeholder; with no groupings the label is
+    ## never used downstream.
+    new_vizgenes <- "summary.fun" %in% names(formals(vizGenes))
+    if (length(all_groupings) == 0 && new_vizgenes) {
+        if (inherits(data, "Seurat")) {
+            data@meta.data$.group <- "All"
+        } else {
+            data <- lapply(data, function(d) {
+                d$.group <- "All"
+                d
+            })
+        }
+    }
+
+    ## `exportTable` survives on >= 2.5.0 as a deprecated alias, which keeps this call
+    ## identical on both versions.
+    viz_args <- list(
+        input.data = data, x.axis = genes, y.axis = genes2, group.by = ".group",
+        exportTable = TRUE
+    )
+    if ("scale" %in% names(formals(vizGenes))) {
+        viz_args$scale <- scale
+    }
+    ## >= 2.5.0 returns a matrix whose values follow `summary.fun` (default "percent",
+    ## i.e. 0-100). Ask for counts so .gene_usage_long() can rebuild the `count` and
+    ## `proportion` columns v2.2.1 returned, keeping `scale = FALSE` meaningful.
+    if (new_vizgenes) {
+        viz_args$summary.fun <- "count"
+    }
+    data <- do.call(vizGenes, viz_args)
+    data <- .gene_usage_long(data, genes2)
     if (is.null(genes2)) {
         stopifnot("[ClonalGeneUsagePlot] 'genes' must be of length 2." = plot_type != "sankey")
         axis1 <- genes
@@ -351,4 +387,43 @@ ClonalGeneUsagePlot <- function(
             links_fill_by = axis1, facet_by = group_by,
             split_by = split_by, theme_args = theme_args, ...)
     }
+}
+
+#' Put gene usage into the long frame used by ClonalGeneUsagePlot
+#'
+#' @description
+#' scRepertoire < 2.5.0 returns the long `x.axis`/`y.axis` data frame directly from
+#' `vizGenes(exportTable = TRUE)`, so it is returned unchanged. v2.5.0 rewrote
+#' `vizGenes()` around `percentGeneUsage()`, whose export is a matrix with genes
+#' (or `"gene1_gene2"` pairs) in the rows and `.group` labels in the columns.
+#' That matrix is reshaped into the same long frame, with `y.axis` (single gene)
+#' or `element.names` (dual gene) holding the `" // "`-joined group label that the
+#' caller separates back into the grouping columns.
+#' @param data The value returned by `vizGenes(exportTable = TRUE)`.
+#' @param genes2 The second gene prefix, or `NULL` for single-gene mode.
+#' @return A data frame with `x.axis`, `y.axis`, `count`, and `proportion`
+#'   columns, plus `element.names` in dual-gene mode.
+#' @keywords internal
+.gene_usage_long <- function(data, genes2) {
+    if (is.data.frame(data) && all(c("x.axis", "y.axis") %in% colnames(data))) {
+        return(data)
+    }
+
+    long <- as.data.frame(as.table(data), stringsAsFactors = FALSE)
+    if (is.null(genes2)) {
+        colnames(long) <- c("x.axis", "y.axis", "count")
+        group_col <- "y.axis"
+    } else {
+        # percentGeneUsage() pastes the two gene names together with "_" for the row names
+        long <- separate(long, "Var1", into = c("x.axis", "y.axis"), sep = "_")
+        long <- long[, c("x.axis", "y.axis", "Var2", "Freq")]
+        colnames(long) <- c("x.axis", "y.axis", "element.names", "count")
+        group_col <- "element.names"
+    }
+    long$count <- as.numeric(long$count)
+    # v2.2.1's frame carried both columns; rebuild `proportion` the same way it did
+    # (count over the group total) rather than using the new default `percent` values.
+    long$proportion <- long$count / ave(long$count, long[[group_col]], FUN = sum)
+    # v2.2.1 only returned observed combinations, so drop the zero cells of the matrix grid
+    long[long$count != 0, , drop = FALSE]
 }

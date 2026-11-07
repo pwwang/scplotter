@@ -143,8 +143,8 @@ clonal_size_data <- function(data, clone_call, chain, groupings, order) {
         data <- newdata
     }
 
-    .data.wrangle <- utils::getFromNamespace(".data.wrangle", "scRepertoire")
-    .theCall <- utils::getFromNamespace(".theCall", "scRepertoire")
+    .data.wrangle <- .screp_get(".dataWrangle", ".data.wrangle")
+    .theCall <- .screp_get(".theCall")
 
     data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE), chain)
     all_gvalues <- names(data)
