@@ -42,8 +42,8 @@ Suggests:
     ggupset,
     ggwordcloud,
     ggVennDiagram (>= 1.5.0),
-    GiottoClass,
-    GiottoData,
+    GiottoClass (>= 0.5.1),
+    GiottoData (>= 0.3.8),
     hexbin,
     igraph,
     clustree,
@@ -66,8 +66,8 @@ LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
     BorchLab/scRepertoire@v2.2.1,
-    drieslab/GiottoClass,
-    drieslab/GiottoData,
+    giotto-suite/GiottoClass,
+    giotto-suite/GiottoData,
     KennispuntTwente/tidyprompt
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/

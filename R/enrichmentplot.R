@@ -433,19 +433,50 @@ EnrichmentPlot <- function(
                     if (isTRUE(x > sig_cutoff)) list("*", legend = legend) else NA
                 }
             } else {
-                # Look the significance value up by cell name. `i`/`j` are indices into the
-                # displayed (clustered) matrix, so they can't index the significance matrix.
-                # `pindex()` on a plain matrix does not undo clustering either.
+                # plotthis names the heatmap columns "<split level> // <group>" (and the rows
+                # "<row split> // <description>") through `unite(sep = " // ")`, so the
+                # significance matrix has to use the same keys. Keying it by `group_by` alone
+                # paints a significant cell into the split panel where that term has no data
+                # at all. `i`/`j` index the displayed (clustered) matrix, so they can't be
+                # used here, and `pindex()` does not undo clustering either.
+                split_keys <- function(split_by, column_by, concat_sep) {
+                    split_by <- unique(split_by)
+                    if (length(split_by) > 1) {
+                        # plotthis concatenates multiple split columns first
+                        split_by <- paste(split_by, collapse = concat_sep)
+                    }
+                    unique(c(split_by, column_by))
+                }
+                col_keys <- split_keys(
+                    dots$columns_split_by, group_by,
+                    dots$columns_split_by_sep %||% "_"
+                )
+                row_keys <- split_keys(
+                    dots$rows_split_by, descr_col,
+                    dots$rows_split_by_sep %||% "_"
+                )
                 sig_mat <- data %>%
-                    select(!!sym(descr_col), !!sym(group_by), ".sig_metric") %>%
+                    select(all_of(c(col_keys, row_keys, ".sig_metric"))) %>%
+                    tidyr::unite(".col", all_of(col_keys), sep = " // ") %>%
+                    tidyr::unite(".row", all_of(row_keys), sep = " // ") %>%
+                    # duplicated cells are aggregated by plotthis with `cell_agg` ("nanmean")
+                    summarise(
+                        .sig_metric = if (all(is.na(.sig_metric))) NA_real_ else
+                            mean(.sig_metric, na.rm = TRUE),
+                        .by = c(".col", ".row")
+                    ) %>%
                     pivot_wider(
-                        id_cols = !!sym(descr_col), names_from = !!sym(group_by),
+                        id_cols = ".row", names_from = ".col",
                         values_from = ".sig_metric", values_fill = NA
                     ) %>%
                     as.data.frame()
-                rownames(sig_mat) <- sig_mat[[descr_col]]
-                sig_mat[[descr_col]] <- NULL
+                rownames(sig_mat) <- sig_mat[[".row"]]
+                sig_mat[[".row"]] <- NULL
+                sig_mat <- as.matrix(sig_mat)
                 hm_args$label <- function(x, i, j, rname, cname) {
+                    if (!rname %in% rownames(sig_mat) || !cname %in% colnames(sig_mat)) {
+                        return(NA)
+                    }
                     if (isTRUE(sig_mat[rname, cname] > sig_cutoff)) {
                         list("*", legend = legend)
                     } else {

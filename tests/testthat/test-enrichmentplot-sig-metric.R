@@ -199,3 +199,40 @@ test_that("invalid metrics are rejected", {
         "not found in data"
     )
 })
+
+test_that("a cross-split heatmap only marks cells that have data", {
+    d <- data.frame(
+        Description = rep(c("TermA", "TermB"), each = 2),
+        Group       = rep(c("G1", "G2"), times = 2),
+        Part        = c("P1", "P2", "P1", "P2"),
+        GeneRatio   = "10/100", BgRatio = "50/1000", Count = 10, geneID = "G1/G2",
+        zScore      = c(5, 4, 3, 2),
+        # TermA is significant only for G1/P1; TermA/G2/P2 has data but is not significant;
+        # TermA/G1/P2 and TermA/G2/P1 have no row at all (they are `values_fill` cells)
+        p.adjust    = c(1e-6, 0.9, 0.5, 0.9),
+        pvalue      = c(1e-6, 0.9, 0.5, 0.9),
+        qvalue      = c(1e-6, 0.9, 0.5, 0.9)
+    )
+    captured <- NULL
+    local_mocked_bindings(
+        Heatmap = function(...) {
+            captured <<- list(...)
+            "heatmap"
+        },
+        .package = "scplotter"
+    )
+    EnrichmentPlot(
+        d, plot_type = "heatmap", group_by = "Group",
+        columns_split_by = "Part", metric = "zScore:p.adjust", cutoff = 0.05
+    )
+    lab <- captured$label
+    # plotthis names the columns "<split level> // <group>"
+    marked <- function(term, part, group) {
+        v <- lab(1, 1, 1, term, paste(part, group, sep = " // "))
+        is.list(v) && identical(unlist(v)[[1]], "*")
+    }
+    expect_true(marked("TermA", "P1", "G1"))
+    expect_false(marked("TermA", "P1", "G2"))   # no row in that split panel
+    expect_false(marked("TermA", "P2", "G1"))   # no row in that split panel
+    expect_false(marked("TermA", "P2", "G2"))   # data present, not significant
+})
