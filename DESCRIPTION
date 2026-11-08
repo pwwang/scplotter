@@ -66,9 +66,10 @@ LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
-    BorchLab/scRepertoire@v2.2.1,
-    giotto-suite/GiottoClass,
-    giotto-suite/GiottoData,
+    BorchLab/scRepertoire@v2.7.3,
+    BorchLab/immApex@1.4.0,
+    drieslab/GiottoClass,
+    drieslab/GiottoData,
     KennispuntTwente/tidyprompt
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/

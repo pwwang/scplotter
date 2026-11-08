@@ -266,6 +266,11 @@ ClonalPositionalPlot <- function (
         }
         data <- percentAA(data, chain = chain, aa.length = aa_length, group.by = ".group",
             exportTable = TRUE)
+        # v2.5.0 rewrote percentAA() on immApex and renamed its columns; map them back to
+        # the variable/value/AA names the plotting code below was written against.
+        if ("AminoAcid" %in% colnames(data)) {
+            data <- rename(data, variable = "Position", value = "Frequency", AA = "AminoAcid")
+        }
         data <- separate(data, "group", into = all_groupings, sep = " // ")
         for (gl in names(grouping_levels)) {
             if (!is.null(data[[gl]])) {
@@ -297,7 +302,15 @@ ClonalPositionalPlot <- function (
         }
     } else if (method %in% c("shannon", "inv.simpson", "norm.entropy")) {
         data <- positionalEntropy(data, chain = chain, aa.length = aa_length, group.by = ".group",
-            method = method, exportTable = TRUE) %>%
+            method = method, exportTable = TRUE)
+        # v2.5.0 rewrote positionalEntropy() on immApex; it now returns
+        # group/Position/entropy instead of the melted Var1/Var2/value columns.
+        if ("entropy" %in% colnames(data)) {
+            data <- data.frame(
+                Var1 = data$group, Var2 = data$Position, value = data$entropy
+            )
+        }
+        data <- data %>%
             separate("Var1", into = all_groupings, sep = " // ") %>%
             rename(Position = "Var2") %>%
             unite(".group", !!!syms(group_by), sep = group_by_sep)
@@ -351,6 +364,14 @@ ClonalPositionalPlot <- function (
             )
         }
     } else {
+        # v2.5.0 renamed two property sets ("Atchley" -> "atchleyFactors",
+        # "Kidera" -> "kideraFactors"); the other names are unchanged. The return value is
+        # still a ggplot whose `$data` carries the computed properties in both versions.
+        if ("export.table" %in% names(formals(positionalProperty))) {
+            method <- switch(method,
+                Atchley = "atchleyFactors", Kidera = "kideraFactors", method
+            )
+        }
         # https://github.com/ncborcherding/scRepertoire/issues/420
         data <- positionalProperty(data, chain = chain, aa.length = aa_length, group.by = ".group",
             method = method)$data %>%

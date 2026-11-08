@@ -89,7 +89,7 @@ make notebooks     # Convert notebooks to HTML (use EXECUTE=true to run)
 
 ## Package Dependencies
 
-**Core**: `plotthis` (main plotting engine), `scRepertoire` (>= 2.0.8, < 2.3.2), `Seurat` (>= 5.0.0), `SeuratObject`
+**Core**: `plotthis` (main plotting engine), `scRepertoire` (pinned to v2.7.3 via `Remotes:`), `Seurat` (>= 5.0.0), `SeuratObject`
 
 **Spatial**: `GiottoClass`, `GiottoData`, `hdf5r`, `terra`
 
@@ -102,7 +102,7 @@ make notebooks     # Convert notebooks to HTML (use EXECUTE=true to run)
 ## Common Pitfalls
 
 1. **Don't implement plots**: Call `plotthis::*Plot()`, don't reinvent visualization logic
-2. **Version constraints**: `scRepertoire` locked to 2.0.8-2.3.1 (API changes), `ggVennDiagram >= 1.5.0`
+2. **Version constraints**: `scRepertoire` is pinned to v2.7.3 -- the newest release that still supports R 4.4. Do not bump to 2.9.1: it requires `immApex >= 1.7.1`, and every immApex from 1.5.x on Imports `immReferent`, which declares `R (>= 4.5.0)`. immApex stays at 1.4.0, the last release without immReferent. Internal helpers are resolved by name at runtime (`R/screp-compat.R`), so older installs such as v2.2.1 keep working and a future bump past 2.9.1 needs no code change. `ggVennDiagram >= 1.5.0`
 3. **Lazy data**: `LazyData: true` with `xz` compression for included datasets (`data/*.rda`)
 4. **Clone selector scope**: Selectors evaluate in caller environment - use `rlang::caller_env()` carefully
 5. **Spatial coords**: Always check platform-specific coordinate naming (x/y vs imagerow/imagecol)
