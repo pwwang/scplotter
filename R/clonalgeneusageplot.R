@@ -403,7 +403,7 @@ ClonalGeneUsagePlot <- function(
 #' @param genes2 The second gene prefix, or `NULL` for single-gene mode.
 #' @return A data frame with `x.axis`, `y.axis`, `count`, and `proportion`
 #'   columns, plus `element.names` in dual-gene mode.
-#' @keywords internal
+#' @noRd
 .gene_usage_long <- function(data, genes2) {
     if (is.data.frame(data) && all(c("x.axis", "y.axis") %in% colnames(data))) {
         return(data)

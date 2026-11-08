@@ -7,7 +7,7 @@
 #'
 #' @param name Name of the object to look up.
 #' @return The object, or `NULL` if scRepertoire does not define it.
-#' @keywords internal
+#' @noRd
 .screp_ns <- function(name) {
     tryCatch(
         utils::getFromNamespace(name, "scRepertoire"),
@@ -26,7 +26,7 @@
 #'
 #' @param ... Candidate names, in order of preference.
 #' @return The first object found.
-#' @keywords internal
+#' @noRd
 .screp_get <- function(...) {
     candidates <- c(...)
     for (candidate in candidates) {
@@ -54,7 +54,7 @@
 #'
 #' @param x An object.
 #' @return `TRUE` if `x` is a Seurat or SummarizedExperiment object.
-#' @keywords internal
+#' @noRd
 .screp_is_object <- function(x) {
     is_obj <- .screp_ns(".is.seurat.or.se.object")
     if (!is.null(is_obj)) {
@@ -77,7 +77,7 @@
 #' @param df A named list of per-sample data frames.
 #' @param clone_call Column holding the clonotype call.
 #' @return The minimum number of unique clonotypes across samples.
-#' @keywords internal
+#' @noRd
 .screp_short_check <- function(df, clone_call) {
     if (length(df) == 0) {
         return(0L)
@@ -99,13 +99,13 @@
 #' v2.9.1 replaced the per-method dotted helpers (`.shannon`, `.invsimpson`,
 #' ...) with the `.div.registry` named list, whose keys differ from scplotter's
 #' `method` values (`ACE` -> `ace`, `gini.coeff` -> `gini`). Resolution is by
-#' name rather than by version for the same reason as [.screp_get()].
+#' name rather than by version for the same reason as .screp_get().
 #' scplotter's own `gini.coeff`, `d50` and `dXX` methods are handled before
 #' this function is called.
 #'
 #' @param method A scplotter diversity method name.
 #' @return The corresponding diversity function.
-#' @keywords internal
+#' @noRd
 .screp_div_fn <- function(method) {
     registry <- .screp_ns(".div.registry")
     if (!is.null(registry)) {
