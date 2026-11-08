@@ -60,12 +60,14 @@ Suggests:
     rmarkdown,
     hdf5r,
     proxyC,
-    metR
+    metR,
+    plotly
 LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
-    BorchLab/scRepertoire@v2.2.1,
+    BorchLab/scRepertoire@v2.7.3,
+    BorchLab/immApex@1.4.0,
     drieslab/GiottoClass,
     drieslab/GiottoData,
     KennispuntTwente/tidyprompt

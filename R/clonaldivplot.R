@@ -1,7 +1,6 @@
 #' Calculate the clonal diversities.
 #'
 #' @keywords internal
-#' @importFrom utils getFromNamespace
 #' @importFrom dplyr slice_sample
 ClonalDiversity <- function(
     input.data, cloneCall = "gene", chain = "both",
@@ -24,17 +23,14 @@ ClonalDiversity <- function(
             which(dat > d)[1]
         }
     } else {
-        div_fn <- getFromNamespace(paste0(".", gsub(".", "", method, fixed = TRUE)), "scRepertoire")
+        div_fn <- .screp_div_fn(method)
     }
 
-    is_seurat_object <- getFromNamespace("is_seurat_object", "scRepertoire")
-    is_se_object <- getFromNamespace("is_se_object", "scRepertoire")
-    .data.wrangle <- getFromNamespace(".data.wrangle", "scRepertoire")
-    .theCall <- getFromNamespace(".theCall", "scRepertoire")
-    .groupList <- getFromNamespace(".groupList", "scRepertoire")
-    .short.check <- getFromNamespace(".short.check", "scRepertoire")
+    .data.wrangle <- .screp_get(".dataWrangle", ".data.wrangle")
+    .theCall <- .screp_get(".theCall")
+    .groupList <- .screp_get(".groupList")
 
-    sco <- is_seurat_object(input.data) | is_se_object(input.data)
+    sco <- .screp_is_object(input.data)
     input.data <- .data.wrangle(input.data, group_by, .theCall(input.data,
         cloneCall,
         check.df = FALSE
@@ -45,7 +41,7 @@ ClonalDiversity <- function(
     if (!is.null(group_by) & !sco) {
         input.data <- .groupList(input.data, group_by)
     }
-    min <- .short.check(input.data, cloneCall)
+    min <- .screp_short_check(input.data, cloneCall)
     for (i in seq_along(input.data)) {
         data <- as.data.frame(table(input.data[[i]][, cloneCall]))
         mat_a <- NULL
@@ -404,16 +400,14 @@ ClonalRarefactionPlot <- function(
     grouping_levels <- get_clonal_grouping_levels(data, all_groupings, order)
     data <- merge_clonal_groupings(data, all_groupings)
 
-    .data.wrangle <- getFromNamespace(".data.wrangle", "scRepertoire")
-    .theCall <- getFromNamespace(".theCall", "scRepertoire")
-    .groupList <- getFromNamespace(".groupList", "scRepertoire")
-    is_se_object <- getFromNamespace("is_se_object", "scRepertoire")
-    is_seurat_object <- getFromNamespace("is_seurat_object", "scRepertoire")
+    .data.wrangle <- .screp_get(".dataWrangle", ".data.wrangle")
+    .theCall <- .screp_get(".theCall")
+    .groupList <- .screp_get(".groupList")
 
     data <- .data.wrangle(data, ".group", .theCall(data, clone_call, check.df = FALSE), chain)
     cloneCall <- .theCall(data, clone_call)
 
-    if (!is_seurat_object(data) && !is_se_object(data)) {
+    if (!.screp_is_object(data)) {
         data <- .groupList(data, group.by = ".group")
         if (length(grouping_levels) == 1) {
             data <- data[order(match(names(data), grouping_levels[[1]]))]
