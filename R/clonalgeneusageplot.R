@@ -423,7 +423,7 @@ ClonalGeneUsagePlot <- function(
     long$count <- as.numeric(long$count)
     # v2.2.1's frame carried both columns; rebuild `proportion` the same way it did
     # (count over the group total) rather than using the new default `percent` values.
-    long$proportion <- long$count / ave(long$count, long[[group_col]], FUN = sum)
+    long$proportion <- long$count / stats::ave(long$count, long[[group_col]], FUN = sum)
     # v2.2.1 only returned observed combinations, so drop the zero cells of the matrix grid
     long[long$count != 0, , drop = FALSE]
 }

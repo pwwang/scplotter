@@ -60,7 +60,8 @@ Suggests:
     rmarkdown,
     hdf5r,
     proxyC,
-    metR
+    metR,
+    plotly
 LazyData: true
 LazyDataCompression: xz
 Remotes:
