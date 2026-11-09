@@ -4,6 +4,8 @@
 
 - [Use scplotter with Giotto CODEX
   data](https://pwwang.github.io/scplotter/articles/Giotto_CODEX.md):
+- [Use scplotter with Giotto Nanostring CosMx data (human
+  pancreas)](https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx_Pancreas.md):
 - [Use scplotter with Giotto Nanostring CosMx
   data](https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx.md):
 - [Use scplotter with Giotto seqFISH

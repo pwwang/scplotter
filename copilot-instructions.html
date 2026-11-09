@@ -35,7 +35,8 @@
     <li><a class="dropdown-item" href="articles/Giotto_Xenium.html">Visualizing Xenium data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="articles/Giotto_SlideSeq.html">Visualizing SlideSeq data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="articles/Giotto_Spatial_CITE-Seq.html">Visualizing Spatial CITE-Seq data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostirng CosMx data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostring CosMx data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="articles/Giotto_Nanostring_CosMx_Pancreas.html">Visualizing Nanostring CosMx data (human pancreas) prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="articles/Giotto_CODEX.html">Visualizing CODEX data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="articles/Giotto_vizgen.html">Visualizing vizgen data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="articles/Giotto_seqFISH.html">Visualizing seqFISH data prepared with Giotto</a></li>
@@ -150,7 +151,7 @@ make notebooks     # Convert notebooks to HTML (use EXECUTE=true to run)</code><
 </div>
 <div class="section level2">
 <h2 id="package-dependencies">Package Dependencies<a class="anchor" aria-label="anchor" href="#package-dependencies"></a></h2>
-<p><strong>Core</strong>: <code>plotthis</code> (main plotting engine), <code>scRepertoire</code> (&gt;= 2.0.8, &lt; 2.3.2), <code>Seurat</code> (&gt;= 5.0.0), <code>SeuratObject</code></p>
+<p><strong>Core</strong>: <code>plotthis</code> (main plotting engine), <code>scRepertoire</code> (pinned to v2.7.3 via <code>Remotes:</code>), <code>Seurat</code> (&gt;= 5.0.0), <code>SeuratObject</code></p>
 <p><strong>Spatial</strong>: <code>GiottoClass</code>, <code>GiottoData</code>, <code>hdf5r</code>, <code>terra</code></p>
 <p><strong>TCR/BCR</strong>: <code>scRepertoire</code>, <code>iNEXT</code> (rarefaction), <code>metap</code> (&gt;= 1.11, p-value combination)</p>
 <p><strong>LLM</strong>: <code>tidyprompt</code> (from GitHub: KennispuntTwente/tidyprompt), <code>callr</code></p>
@@ -161,7 +162,7 @@ make notebooks     # Convert notebooks to HTML (use EXECUTE=true to run)</code><
 <ol style="list-style-type: decimal"><li>
 <strong>Don’t implement plots</strong>: Call <code>plotthis::*Plot()</code>, don’t reinvent visualization logic</li>
 <li>
-<strong>Version constraints</strong>: <code>scRepertoire</code> locked to 2.0.8-2.3.1 (API changes), <code>ggVennDiagram &gt;= 1.5.0</code>
+<strong>Version constraints</strong>: <code>scRepertoire</code> is pinned to v2.7.3 – the newest release that still supports R 4.4. Do not bump to 2.9.1: it requires <code>immApex &gt;= 1.7.1</code>, and every immApex from 1.5.x on Imports <code>immReferent</code>, which declares <code>R (&gt;= 4.5.0)</code>. immApex stays at 1.4.0, the last release without immReferent. Internal helpers are resolved by name at runtime (<code>R/screp-compat.R</code>), so older installs such as v2.2.1 keep working and a future bump past 2.9.1 needs no code change. <code>ggVennDiagram &gt;= 1.5.0</code>
 </li>
 <li>
 <strong>Lazy data</strong>: <code>LazyData: true</code> with <code>xz</code> compression for included datasets (<code>data/*.rda</code>)</li>

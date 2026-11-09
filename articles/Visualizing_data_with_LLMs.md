@@ -52,9 +52,8 @@ chat$ask("List the available data that can be used for visualization.")
 #> -  Seurat::cc.genes :  Cell cycle genes 
 #> -  Seurat::cc.genes.updated.2019 :  Cell cycle genes: 2019 update 
 #> -  SeuratObject::pbmc_small :  A small example version of the PBMC dataset 
-#> -  scRepertoire::contig_list :  A list of 8 single-cell T cell receptor sequences runs. 
-#> -  scRepertoire::mini_contig_list :  Processed subset of 'contig_list' 
-#> -  scRepertoire::scRep_example :  A Seurat object of 500 single T cells,
+#> -  scRepertoire::contig_list :  A List of Eight Single-cell TCR Sequencing Runs. 
+#> -  scRepertoire::scRep_example :  A Seurat Object of 500 Single T cells,
 # or you can do it explicitly
 # chat$list_data()
 ```
@@ -867,7 +866,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res)
+#> CCCPlot(cellphonedb_res)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -883,7 +882,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -898,7 +897,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication (CellPhoneDB)")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -907,12 +906,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                                                 
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                                                        
-#> [3] "User: Do a heatmap instead"                                                                                                                                                                  
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                                               
-#> [5] "User: Add a proper title to the plot"                                                                                                                                                        
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(\n  data = cellphonedb_res,\n  plot_type = \"heatmap\",\n  title = \"Cell-Cell Communication (CellPhoneDB)\"\n)"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res)"                                                                      
+#> [3] "User: Do a heatmap instead"                                                                                                                                         
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                               
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -1774,9 +1773,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> - Seurat::cc.genes: Cell cycle genes
 #> - Seurat::cc.genes.updated.2019: Cell cycle genes: 2019 update
 #> - SeuratObject::pbmc_small: A small example version of the PBMC dataset
-#> - scRepertoire::contig_list: A list of 8 single-cell T cell receptor sequences runs.
-#> - scRepertoire::mini_contig_list: Processed subset of 'contig_list'
-#> - scRepertoire::scRep_example: A Seurat object of 500 single T cells,
+#> - scRepertoire::contig_list: A List of Eight Single-cell TCR Sequencing Runs.
+#> - scRepertoire::scRep_example: A Seurat Object of 500 Single T cells,
 #> --- Receiving response from LLM provider: ---
 #> scplotter::cellphonedb_res
 #> Data object identified:  scplotter::cellphonedb_res
@@ -4580,9 +4578,8 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> - Seurat::cc.genes: Cell cycle genes
 #> - Seurat::cc.genes.updated.2019: Cell cycle genes: 2019 update
 #> - SeuratObject::pbmc_small: A small example version of the PBMC dataset
-#> - scRepertoire::contig_list: A list of 8 single-cell T cell receptor sequences runs.
-#> - scRepertoire::mini_contig_list: Processed subset of 'contig_list'
-#> - scRepertoire::scRep_example: A Seurat object of 500 single T cells,
+#> - scRepertoire::contig_list: A List of Eight Single-cell TCR Sequencing Runs.
+#> - scRepertoire::scRep_example: A Seurat Object of 500 Single T cells,
 #> --- Receiving response from LLM provider: ---
 #> scplotter::cellphonedb_res
 #> Data object identified:  scplotter::cellphonedb_res

@@ -45,7 +45,8 @@ expansion, immune aging, or disease-associated repertoire bias."><meta property=
     <li><a class="dropdown-item" href="../articles/Giotto_Xenium.html">Visualizing Xenium data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_SlideSeq.html">Visualizing SlideSeq data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_Spatial_CITE-Seq.html">Visualizing Spatial CITE-Seq data prepared with Giotto</a></li>
-    <li><a class="dropdown-item" href="../articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostirng CosMx data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="../articles/Giotto_Nanostring_CosMx.html">Visualizing Nanostring CosMx data prepared with Giotto</a></li>
+    <li><a class="dropdown-item" href="../articles/Giotto_Nanostring_CosMx_Pancreas.html">Visualizing Nanostring CosMx data (human pancreas) prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_CODEX.html">Visualizing CODEX data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_vizgen.html">Visualizing vizgen data prepared with Giotto</a></li>
     <li><a class="dropdown-item" href="../articles/Giotto_seqFISH.html">Visualizing seqFISH data prepared with Giotto</a></li>
@@ -244,7 +245,7 @@ antigen-driven selection for specific chain combinations.</p></li>
 </ul><p>Gene usage can be displayed as raw counts or as proportions scaled within each
 group (when <code>scale = TRUE</code>), the latter being more appropriate for comparing
 samples of different sequencing depths.</p>
-<p>The function uses <code><a href="https://www.borch.dev/uploads/scRepertoire/reference/vizGenes.html" class="external-link">scRepertoire::vizGenes()</a></code>
+<p>The function uses <code><a href="https://www.borch.dev/uploads/scRepertoire/reference/percentGeneUsage.html" class="external-link">scRepertoire::vizGenes()</a></code>
 internally to compute gene usage frequencies, then passes the result to the
 appropriate <span class="pkg">plotthis</span> visualization function.</p>
     </div>
@@ -252,7 +253,7 @@ appropriate <span class="pkg">plotthis</span> visualization function.</p>
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
 
 <ul><li><p>Gene usage data is computed using
-<code><a href="https://www.borch.dev/uploads/scRepertoire/reference/vizGenes.html" class="external-link">scRepertoire::vizGenes()</a></code>, which
+<code><a href="https://www.borch.dev/uploads/scRepertoire/reference/percentGeneUsage.html" class="external-link">scRepertoire::vizGenes()</a></code>, which
 requires the input data to contain gene segment columns (e.g., <code>TRBV_gene</code>,
 <code>TRBJ_gene</code>). These columns are automatically created by
 <code><a href="https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html" class="external-link">scRepertoire::combineTCR()</a></code> and
@@ -338,7 +339,7 @@ expansion/contraction composition</p></li>
 <li><p><code><a href="ClonalPositionalPlot.html">ClonalPositionalPlot</a></code> for analyzing amino acid positional
 distributions within CDR3 sequences</p></li>
 <li><p><code><a href="ClonalKmerPlot.html">ClonalKmerPlot</a></code> for analyzing k-mer motifs in CDR3 sequences</p></li>
-<li><p><code><a href="https://www.borch.dev/uploads/scRepertoire/reference/vizGenes.html" class="external-link">scRepertoire::vizGenes()</a></code> for the
+<li><p><code><a href="https://www.borch.dev/uploads/scRepertoire/reference/percentGeneUsage.html" class="external-link">scRepertoire::vizGenes()</a></code> for the
 underlying gene usage computation</p></li>
 </ul></div>
     </div>

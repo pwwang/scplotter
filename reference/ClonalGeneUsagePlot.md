@@ -200,14 +200,14 @@ within each group (when `scale = TRUE`), the latter being more
 appropriate for comparing samples of different sequencing depths.
 
 The function uses
-[`scRepertoire::vizGenes()`](https://www.borch.dev/uploads/scRepertoire/reference/vizGenes.html)
+[`scRepertoire::vizGenes()`](https://www.borch.dev/uploads/scRepertoire/reference/percentGeneUsage.html)
 internally to compute gene usage frequencies, then passes the result to
 the appropriate plotthis visualization function.
 
 ## Note
 
 - Gene usage data is computed using
-  [`scRepertoire::vizGenes()`](https://www.borch.dev/uploads/scRepertoire/reference/vizGenes.html),
+  [`scRepertoire::vizGenes()`](https://www.borch.dev/uploads/scRepertoire/reference/percentGeneUsage.html),
   which requires the input data to contain gene segment columns (e.g.,
   `TRBV_gene`, `TRBJ_gene`). These columns are automatically created by
   [`scRepertoire::combineTCR()`](https://www.borch.dev/uploads/scRepertoire/reference/combineTCR.html)
@@ -321,7 +321,7 @@ parameter selects the most frequently used genes/genepairs for display.
 - [`ClonalKmerPlot`](https://pwwang.github.io/scplotter/reference/ClonalKmerPlot.md)
   for analyzing k-mer motifs in CDR3 sequences
 
-- [`scRepertoire::vizGenes()`](https://www.borch.dev/uploads/scRepertoire/reference/vizGenes.html)
+- [`scRepertoire::vizGenes()`](https://www.borch.dev/uploads/scRepertoire/reference/percentGeneUsage.html)
   for the underlying gene usage computation
 
 ## Examples
