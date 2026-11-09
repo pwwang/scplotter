@@ -8,3 +8,6 @@ notebooks/spatial/data/
 notebooks/data/
 .vscode/mcp.json
 scplotter_presentation.pptx
+
+# generated from notebooks/*.ipynb by `make notebooks` (rendered in CI)
+pkgdown/assets/*.html

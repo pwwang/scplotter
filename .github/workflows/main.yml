@@ -70,6 +70,19 @@ jobs:
         run: |
           devtools::install_local(force = TRUE)
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The notebook HTML under pkgdown/assets is generated from notebooks/*.ipynb and is no
+      # longer committed; without this step the deployed site keeps serving whatever was last
+      # built locally (the site deploy runs with clean: false, so stale pages never go away).
+      - name: Render notebooks to HTML
+        run: |
+          pip install --quiet nbconvert
+          make notebooks
+
       - name: Build pkgdown site
         run: |
           devtools::document()
