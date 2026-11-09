@@ -186,16 +186,24 @@ must be identical.</p></dd>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to
 <code><a href="https://pwwang.github.io/plotthis/reference/VelocityPlot.html" class="external-link">plotthis::VelocityPlot()</a></code>. Key
-parameters include:</p><ul><li><p><strong>Plot type:</strong> <code>plot_type</code> — <code>"arrow"</code> (default), <code>"grid"</code>,
-or <code>"stream"</code> (see the <em>Velocity plot types</em> section)</p></li>
-<li><p><strong>Appearance:</strong> <code>pt_size</code>, <code>pt_alpha</code>, <code>arrow_length</code>,
-<code>arrow_thickness</code>, <code>palette</code>, <code>palcolor</code>, <code>theme</code>, <code>theme_args</code>,
-<code>legend.position</code></p></li>
-<li><p><strong>Grid parameters (for <code>plot_type = "grid"</code>):</strong> <code>grid_n</code>,
-<code>grid_color</code>, <code>grid_alpha</code>, <code>grid_lwd</code></p></li>
+parameters include:</p><ul><li><p><strong>Plot type:</strong> <code>plot_type</code> — <code>"raw"</code> (default, per-cell arrows),
+<code>"grid"</code>, or <code>"stream"</code> (see the <em>Velocity plot types</em> section)</p></li>
+<li><p><strong>Velocity computation:</strong> <code>n_neighbors</code>, <code>density</code>, <code>smooth</code>,
+<code>min_mass</code>, <code>scale</code>, <code>cutoff_perc</code></p></li>
+<li><p><strong>Arrows:</strong> <code>arrow_angle</code>, <code>arrow_color</code>, <code>arrow_alpha</code>. The
+<code>"grid"</code> plot type draws its arrows with these same three arguments.</p></li>
+<li><p><strong>Groups:</strong> <code>group_by</code>, <code>group_name</code>, <code>group_palette</code>,
+<code>group_palcolor</code></p></li>
 <li><p><strong>Stream parameters (for <code>plot_type = "stream"</code>):</strong>
-<code>stream_n</code>, <code>stream_color</code>, <code>stream_alpha</code>, <code>stream_lwd</code></p></li>
-<li><p><strong>Layout:</strong> <code>split_by</code>, <code>combine</code>, <code>nrow</code>, <code>ncol</code></p></li>
+<code>streamline_n</code> (number of streamlines), <code>streamline_width</code> (length-2
+line-width range and the main control over how thick the streams
+look, default <code>c(0, 0.8)</code>), <code>streamline_l</code>, <code>streamline_minl</code>,
+<code>streamline_res</code>, <code>streamline_alpha</code>, <code>streamline_color</code>,
+<code>streamline_palette</code>, <code>streamline_palcolor</code>,
+<code>streamline_bg_color</code>, <code>streamline_bg_stroke</code></p></li>
+<li><p><strong>Layout and theme:</strong> <code>split_by</code>, <code>aspect.ratio</code>, <code>title</code>,
+<code>subtitle</code>, <code>xlab</code>, <code>ylab</code>, <code>legend.position</code>,
+<code>legend.direction</code>, <code>theme</code>, <code>theme_args</code>, <code>seed</code></p></li>
 </ul></dd>
 
 </dl></div>

@@ -2,12 +2,12 @@
 <url><loc>https://pwwang.github.io/scplotter/404.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.Nanostring_CosMx.html</loc></url>
+<url><loc>https://pwwang.github.io/scplotter/Giotto.Nanostring_CosMx_Pancreas.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.Spatial_CITE-Seq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.Visium.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.VisiumHD.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.Xenium.html</loc></url>
-<url><loc>https://pwwang.github.io/scplotter/Giotto.XeniumInSitu.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.seqFISH.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Giotto.vizgen.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/LICENSE.html</loc></url>
@@ -17,7 +17,6 @@
 <url><loc>https://pwwang.github.io/scplotter/Seurat.Nanostring_CosMx.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.SlideSeq.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Seurat.Xenium.html</loc></url>
-<url><loc>https://pwwang.github.io/scplotter/Seurat.XeniumInSitu.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/Working_with_anndata_h5ad.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_CODEX.html</loc></url>
 <url><loc>https://pwwang.github.io/scplotter/articles/Giotto_Nanostring_CosMx.html</loc></url>
