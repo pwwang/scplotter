@@ -586,6 +586,21 @@ SpatPlot.Seurat.FOV <- function(
     p
 }
 
+# Add `cols` from `values_dt` to `shapes_dt` by cell_ID, skipping columns that
+# are already present so no `.x`/`.y` suffixes are introduced.
+merge_shapes_columns <- function(shapes_dt, values_dt, cols) {
+    cols <- setdiff(intersect(cols, names(values_dt)), names(shapes_dt))
+    if (length(cols) == 0) {
+        return(shapes_dt)
+    }
+    merge(
+        shapes_dt,
+        values_dt[, c("cell_ID", cols), with = FALSE],
+        by = "cell_ID",
+        all.x = TRUE
+    )
+}
+
 #' @keywords internal
 SpatPlot.giotto <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
@@ -765,20 +780,29 @@ SpatPlot.giotto <- function(
             shapes_args$group <- "cell_ID"
 
             if (!is.null(shapes_fill_by)) {
-                # It should be a color name
-                if (length(shapes_fill_by) > 1 || shapes_fill_by %in% GiottoClass::featIDs(object, feat_type = shapes_feat_type)) {
-                    shapes_dt <- merge(
+                # features are taken from expression values, everything else
+                # from cell metadata
+                feat_names <- GiottoClass::featIDs(object, feat_type = feat_type)
+                fill_feats <- intersect(shapes_fill_by, feat_names)
+                fill_meta <- setdiff(shapes_fill_by, feat_names)
+                if (length(fill_feats) > 0) {
+                    shapes_dt <- merge_shapes_columns(
                         shapes_dt,
                         suppressMessages(GiottoClass::spatValues(
                             object,
-                            feats = shapes_fill_by,
+                            feats = fill_feats,
                             spat_unit = shapes_feat_type,
                             feat_type = feat_type,
                             spat_enr_name = spat_enr_names
                         )),
-                        by = "cell_ID",
-                        all.x = TRUE,
-                        suffixes = c(".x", "")
+                        fill_feats
+                    )
+                }
+                if (length(fill_meta) > 0) {
+                    shapes_dt <- merge_shapes_columns(
+                        shapes_dt,
+                        GiottoClass::pDataDT(object, feat_type = feat_type),
+                        fill_meta
                     )
                 }
                 shapes_args$data <- shapes_dt
@@ -935,7 +959,7 @@ SpatPlot.giotto <- function(
                 expr_feats <- intersect(features, GiottoClass::featIDs(object, feat_type = feat_type))
                 if (length(expr_feats) > 0) {
                     expr_df <- t(
-                        as.data.frame(
+                        as.matrix(
                             GiottoClass::getExpression(
                                 gobject = object,
                                 spat_unit = spat_unit,
