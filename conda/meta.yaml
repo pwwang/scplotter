@@ -1,12 +1,12 @@
 package:
   name: r-scplotter
-  version: 0.8.2
+  version: 0.9.0
 
 source:
   path: ..
 
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -19,7 +19,7 @@ requirements:
     - r-base
     - r-callr
     - r-seuratobject
-    - pwwang::bioconductor-screpertoire=2.2
+    - pwwang::bioconductor-screpertoire=2.7
     # - r-circlize
     # - r-dplyr
     # - r-scales
@@ -57,7 +57,7 @@ requirements:
     - r-base
     - r-callr
     - r-seuratobject
-    - pwwang::bioconductor-screpertoire=2.2
+    - pwwang::bioconductor-screpertoire=2.7
     - pwwang::r-plotthis>=0.11.0
     - r-gridgraphics
     - r-metap
