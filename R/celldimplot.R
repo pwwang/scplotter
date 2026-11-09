@@ -634,16 +634,24 @@ CellDimPlot.H5File <- function(
 #'   \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}. Key
 #'   parameters include:
 #'   \itemize{
-#'     \item **Plot type:** `plot_type` — `"arrow"` (default), `"grid"`,
-#'           or `"stream"` (see the \emph{Velocity plot types} section)
-#'     \item **Appearance:** `pt_size`, `pt_alpha`, `arrow_length`,
-#'           `arrow_thickness`, `palette`, `palcolor`, `theme`, `theme_args`,
-#'           `legend.position`
-#'     \item **Grid parameters (for `plot_type = "grid"`):** `grid_n`,
-#'           `grid_color`, `grid_alpha`, `grid_lwd`
+#'     \item **Plot type:** `plot_type` — `"raw"` (default, per-cell arrows),
+#'           `"grid"`, or `"stream"` (see the \emph{Velocity plot types} section)
+#'     \item **Velocity computation:** `n_neighbors`, `density`, `smooth`,
+#'           `min_mass`, `scale`, `cutoff_perc`
+#'     \item **Arrows:** `arrow_angle`, `arrow_color`, `arrow_alpha`. The
+#'           `"grid"` plot type draws its arrows with these same three arguments.
+#'     \item **Groups:** `group_by`, `group_name`, `group_palette`,
+#'           `group_palcolor`
 #'     \item **Stream parameters (for `plot_type = "stream"`):**
-#'           `stream_n`, `stream_color`, `stream_alpha`, `stream_lwd`
-#'     \item **Layout:** `split_by`, `combine`, `nrow`, `ncol`
+#'           `streamline_n` (number of streamlines), `streamline_width` (length-2
+#'           line-width range and the main control over how thick the streams
+#'           look, default `c(0, 0.8)`), `streamline_l`, `streamline_minl`,
+#'           `streamline_res`, `streamline_alpha`, `streamline_color`,
+#'           `streamline_palette`, `streamline_palcolor`,
+#'           `streamline_bg_color`, `streamline_bg_stroke`
+#'     \item **Layout and theme:** `split_by`, `aspect.ratio`, `title`,
+#'           `subtitle`, `xlab`, `ylab`, `legend.position`,
+#'           `legend.direction`, `theme`, `theme_args`, `seed`
 #'   }
 #' @return A `ggplot` object.
 #' @note

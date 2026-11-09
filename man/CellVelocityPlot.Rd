@@ -53,16 +53,24 @@ must be identical.}
 \code{\link[plotthis:VelocityPlot]{plotthis::VelocityPlot()}}. Key
 parameters include:
 \itemize{
-\item \strong{Plot type:} \code{plot_type} — \code{"arrow"} (default), \code{"grid"},
-or \code{"stream"} (see the \emph{Velocity plot types} section)
-\item \strong{Appearance:} \code{pt_size}, \code{pt_alpha}, \code{arrow_length},
-\code{arrow_thickness}, \code{palette}, \code{palcolor}, \code{theme}, \code{theme_args},
-\code{legend.position}
-\item \strong{Grid parameters (for \code{plot_type = "grid"}):} \code{grid_n},
-\code{grid_color}, \code{grid_alpha}, \code{grid_lwd}
+\item \strong{Plot type:} \code{plot_type} — \code{"raw"} (default, per-cell arrows),
+\code{"grid"}, or \code{"stream"} (see the \emph{Velocity plot types} section)
+\item \strong{Velocity computation:} \code{n_neighbors}, \code{density}, \code{smooth},
+\code{min_mass}, \code{scale}, \code{cutoff_perc}
+\item \strong{Arrows:} \code{arrow_angle}, \code{arrow_color}, \code{arrow_alpha}. The
+\code{"grid"} plot type draws its arrows with these same three arguments.
+\item \strong{Groups:} \code{group_by}, \code{group_name}, \code{group_palette},
+\code{group_palcolor}
 \item \strong{Stream parameters (for \code{plot_type = "stream"}):}
-\code{stream_n}, \code{stream_color}, \code{stream_alpha}, \code{stream_lwd}
-\item \strong{Layout:} \code{split_by}, \code{combine}, \code{nrow}, \code{ncol}
+\code{streamline_n} (number of streamlines), \code{streamline_width} (length-2
+line-width range and the main control over how thick the streams
+look, default \code{c(0, 0.8)}), \code{streamline_l}, \code{streamline_minl},
+\code{streamline_res}, \code{streamline_alpha}, \code{streamline_color},
+\code{streamline_palette}, \code{streamline_palcolor},
+\code{streamline_bg_color}, \code{streamline_bg_stroke}
+\item \strong{Layout and theme:} \code{split_by}, \code{aspect.ratio}, \code{title},
+\code{subtitle}, \code{xlab}, \code{ylab}, \code{legend.position},
+\code{legend.direction}, \code{theme}, \code{theme_args}, \code{seed}
 }}
 }
 \value{
