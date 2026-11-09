@@ -79,6 +79,7 @@ jobs:
       # longer committed; without this step the deployed site keeps serving whatever was last
       # built locally (the site deploy runs with clean: false, so stale pages never go away).
       - name: Render notebooks to HTML
+        shell: bash
         run: |
           pip install --quiet nbconvert
           make notebooks
