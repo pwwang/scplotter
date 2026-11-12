@@ -7,9 +7,9 @@
 \alias{GSEAPlot}
 \title{Objects exported from other packages}
 \seealso{
-\code{\link[plotthis:gsea]{plotthis::GSEASummaryPlot()}}
+\code{\link[plotthis:GSEASummaryPlot]{plotthis::GSEASummaryPlot()}}
 
-\code{\link[plotthis:gsea]{plotthis::GSEAPlot()}}
+\code{\link[plotthis:GSEAPlot]{plotthis::GSEAPlot()}}
 }
 \keyword{internal}
 \description{
@@ -17,6 +17,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{plotthis}{\code{\link[plotthis:gsea]{GSEAPlot}}, \code{\link[plotthis:gsea]{GSEASummaryPlot}}}
+  \item{plotthis}{\code{\link[plotthis:GSEAPlot]{GSEAPlot()}}, \code{\link[plotthis:GSEASummaryPlot]{GSEASummaryPlot()}}}
 }}
 

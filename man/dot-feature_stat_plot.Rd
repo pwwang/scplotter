@@ -145,7 +145,7 @@ and not center for other layers.
 Default: \code{NULL}.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=FeatureStatPlot]{FeatureStatPlot}}
+  Arguments passed on to \code{\link{FeatureStatPlot}}
   \describe{
     \item{\code{object}}{An object containing single-cell expression data. Supported
 types: a \pkg{Seurat} object, a \pkg{Giotto} object, a character path to

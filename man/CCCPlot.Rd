@@ -178,12 +178,12 @@ split the rows of the heatmap into separate blocks. Only used when
 plotting function. The target function depends on \code{plot_type}:
 \itemize{
 \item \code{"network"} → \code{\link[plotthis:Network]{plotthis::Network()}}
-\item \code{"chord"} / \code{"circos"} → \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}
+\item \code{"chord"} / \code{"circos"} → \code{\link[plotthis:ChordPlot]{plotthis::ChordPlot()}}
 \item \code{"heatmap"} → \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}}
-\item \code{"sankey"} / \code{"alluvial"} → \code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}
-\item \code{"dot"} → \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}
-\item \code{"box"} → \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}}
-\item \code{"violin"} → \code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}
+\item \code{"sankey"} / \code{"alluvial"} → \code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}}
+\item \code{"dot"} → \code{\link[plotthis:DotPlot]{plotthis::DotPlot()}}
+\item \code{"box"} → \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}}
+\item \code{"violin"} → \code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}
 \item \code{"ridge"} → \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}}
 \item \code{"linkedheatmap"} → \code{\link[plotthis:LinkedHeatmap]{plotthis::LinkedHeatmap()}}
 }
@@ -341,9 +341,9 @@ CCCPlot(cellphonedb_res_sub, plot_type = "ridge", method = "interaction")
 }
 \seealso{
 \itemize{
-\item \code{\link[plotthis:Network]{plotthis::Network()}}, \code{\link[plotthis:chordplot]{plotthis::ChordPlot()}}, \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
-\code{\link[plotthis:sankeyplot]{plotthis::SankeyPlot()}}, \code{\link[plotthis:dotplot]{plotthis::DotPlot()}}, \code{\link[plotthis:boxviolinplot]{plotthis::BoxPlot()}},
-\code{\link[plotthis:boxviolinplot]{plotthis::ViolinPlot()}}, \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}},
+\item \code{\link[plotthis:Network]{plotthis::Network()}}, \code{\link[plotthis:ChordPlot]{plotthis::ChordPlot()}}, \code{\link[plotthis:Heatmap]{plotthis::Heatmap()}},
+\code{\link[plotthis:SankeyPlot]{plotthis::SankeyPlot()}}, \code{\link[plotthis:DotPlot]{plotthis::DotPlot()}}, \code{\link[plotthis:BoxPlot]{plotthis::BoxPlot()}},
+\code{\link[plotthis:ViolinPlot]{plotthis::ViolinPlot()}}, \code{\link[plotthis:RidgePlot]{plotthis::RidgePlot()}},
 \code{\link[plotthis:LinkedHeatmap]{plotthis::LinkedHeatmap()}} — the underlying plotting functions.
 \item The LIANA framework for CCC inference:
 \url{https://liana-py.readthedocs.io/}

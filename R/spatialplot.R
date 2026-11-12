@@ -51,6 +51,7 @@ SpatPlot <- function(
 }
 
 #' @keywords internal
+#' @exportS3Method NULL
 SpatPlot.Seurat <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -152,6 +153,7 @@ SpatPlot.Seurat <- function(
 
 #' @keywords internal
 #' @importFrom plotthis SpatImagePlot SpatMasksPlot SpatShapesPlot SpatPointsPlot
+#' @exportS3Method NULL
 SpatPlot.Seurat.Visium <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -295,6 +297,7 @@ SpatPlot.Seurat.Visium <- function(
 }
 
 #' @keywords internal
+#' @exportS3Method NULL
 SpatPlot.Seurat.SlideSeq <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -413,6 +416,7 @@ SpatPlot.Seurat.SlideSeq <- function(
 
 #' @keywords internal
 #' @importFrom plotthis SpatImagePlot SpatMasksPlot SpatShapesPlot SpatPointsPlot
+#' @exportS3Method NULL
 SpatPlot.Seurat.FOV <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
@@ -602,6 +606,7 @@ merge_shapes_columns <- function(shapes_dt, values_dt, cols) {
 }
 
 #' @keywords internal
+#' @exportS3Method NULL
 SpatPlot.giotto <- function(
     object, fov = NULL, boundaries = NULL, image = NULL, masks = NULL, shapes = NULL, points = NULL,
     ext = NULL, crop = TRUE, group_by = NULL, features = NULL, layer = NULL, scale_factor = NULL,
