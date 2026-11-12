@@ -64,7 +64,7 @@ Suggests:
 LazyData: true
 LazyDataCompression: xz
 Remotes:
-    BorchLab/scRepertoire@v2.7.3,
+    BorchLab/scRepertoire,
     pwwang/plotthis,
     giotto-suite/GiottoClass,
     giotto-suite/GiottoData,
