@@ -69,7 +69,7 @@ jobs:
 
       - name: Show versions of all packages
         run: |
-          Rscript -e "installed.packages()[, c('Version'), drop = FALSE]"
+          print(installed.packages()[, "Version", drop = FALSE])
 
       - uses: r-lib/actions/check-r-package@v2
         env:
