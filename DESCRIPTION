@@ -8,13 +8,13 @@ Description: Publication quality plots for single cell and spatial data analysis
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Config/Needs/website: rmarkdown
 Depends:
-    R (>= 4.2.0)
+    R (>= 4.4.0)
 Imports:
+    Seurat (>= 5.0.0),
     SeuratObject,
-    scRepertoire,
+    scRepertoire (>= 2.7.3),
     circlize,
     dplyr,
     scales,
@@ -30,7 +30,6 @@ Imports:
 Suggests:
     testthat (>= 3.0.0),
     ComplexHeatmap,
-    Seurat (>= 5.0.0),
     data.table,
     Matrix,
     ggalluvial,
@@ -66,13 +65,12 @@ LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
-    BorchLab/scRepertoire@v2.7.3,
-    BorchLab/immApex@1.4.0,
-    drieslab/GiottoClass,
-    drieslab/GiottoData,
+    giotto-suite/GiottoClass,
+    giotto-suite/GiottoData,
     KennispuntTwente/tidyprompt
 URL: https://github.com/pwwang/scplotter
     https://pwwang.github.io/scplotter/
 BugReports:
     https://github.com/pwwang/scplotter/issues
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.0
