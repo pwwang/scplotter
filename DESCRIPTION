@@ -10,11 +10,11 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Config/Needs/website: rmarkdown
 Depends:
-    R (>= 4.4.0)
+    R (>= 4.5.0)
 Imports:
     Seurat (>= 5.0.0),
     SeuratObject,
-    scRepertoire (>= 2.7.3),
+    scRepertoire (>= 2.9.1),
     circlize,
     dplyr,
     scales,
@@ -65,6 +65,9 @@ LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
+    BorchLab/scRepertoire,
+    BorchLab/immApex,
+    BorchLab/immReferent,
     giotto-suite/GiottoClass,
     giotto-suite/GiottoData,
     KennispuntTwente/tidyprompt

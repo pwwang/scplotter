@@ -27,7 +27,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        r: [4.4, 4.5]
+        r: [4.5]
 
     steps:
       - uses: actions/checkout@v7
