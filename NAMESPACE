@@ -59,139 +59,159 @@ export(shared)
 export(top)
 export(uniq)
 import(R6)
-importFrom(SeuratObject,"Idents<-")
-importFrom(SeuratObject,DefaultAssay)
-importFrom(SeuratObject,Embeddings)
-importFrom(SeuratObject,GetAssayData)
-importFrom(SeuratObject,Graphs)
-importFrom(SeuratObject,Idents)
-importFrom(SeuratObject,Reductions)
+importFrom(SeuratObject,
+  "Idents<-",
+  DefaultAssay,
+  Embeddings,
+  GetAssayData,
+  Graphs,
+  Idents,
+  Reductions
+)
 importFrom(circlize,colorRamp2)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,across)
-importFrom(dplyr,all_of)
-importFrom(dplyr,arrange)
-importFrom(dplyr,case_when)
-importFrom(dplyr,desc)
-importFrom(dplyr,distinct)
-importFrom(dplyr,ends_with)
-importFrom(dplyr,everything)
-importFrom(dplyr,filter)
-importFrom(dplyr,first)
-importFrom(dplyr,group_by)
-importFrom(dplyr,group_modify)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,n)
-importFrom(dplyr,n_distinct)
-importFrom(dplyr,pull)
-importFrom(dplyr,reframe)
-importFrom(dplyr,rename)
-importFrom(dplyr,rename_with)
-importFrom(dplyr,row_number)
-importFrom(dplyr,select)
-importFrom(dplyr,slice_head)
-importFrom(dplyr,slice_max)
-importFrom(dplyr,slice_min)
-importFrom(dplyr,slice_sample)
-importFrom(dplyr,starts_with)
-importFrom(dplyr,summarise)
-importFrom(dplyr,ungroup)
+importFrom(dplyr,
+  "%>%",
+  across,
+  all_of,
+  arrange,
+  case_when,
+  desc,
+  distinct,
+  ends_with,
+  everything,
+  filter,
+  first,
+  group_by,
+  group_modify,
+  left_join,
+  mutate,
+  n,
+  n_distinct,
+  pull,
+  reframe,
+  rename,
+  rename_with,
+  row_number,
+  select,
+  slice_head,
+  slice_max,
+  slice_min,
+  slice_sample,
+  starts_with,
+  summarise,
+  ungroup
+)
 importFrom(ggnewscale,new_scale_fill)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,element_blank)
-importFrom(ggplot2,element_line)
-importFrom(ggplot2,geom_point)
-importFrom(ggplot2,geom_segment)
-importFrom(ggplot2,guide_legend)
-importFrom(ggplot2,guides)
-importFrom(ggplot2,scale_fill_manual)
-importFrom(ggplot2,scale_x_continuous)
-importFrom(ggplot2,scale_x_discrete)
-importFrom(ggplot2,scale_y_continuous)
-importFrom(ggplot2,theme)
-importFrom(ggplot2,unit)
-importFrom(ggplot2,waiver)
-importFrom(methods,slot)
-importFrom(methods,slotNames)
-importFrom(plotthis,AreaPlot)
-importFrom(plotthis,BarPlot)
-importFrom(plotthis,BoxPlot)
-importFrom(plotthis,ChordPlot)
-importFrom(plotthis,CircosPlot)
-importFrom(plotthis,CorPairsPlot)
-importFrom(plotthis,CorPlot)
-importFrom(plotthis,DensityPlot)
-importFrom(plotthis,DimPlot)
-importFrom(plotthis,DotPlot)
-importFrom(plotthis,EnrichMap)
-importFrom(plotthis,EnrichNetwork)
-importFrom(plotthis,FeatureDimPlot)
-importFrom(plotthis,GSEAPlot)
-importFrom(plotthis,GSEASummaryPlot)
-importFrom(plotthis,Heatmap)
-importFrom(plotthis,Histogram)
-importFrom(plotthis,LinePlot)
-importFrom(plotthis,LinkedHeatmap)
-importFrom(plotthis,LollipopPlot)
-importFrom(plotthis,Network)
-importFrom(plotthis,PieChart)
-importFrom(plotthis,RadarPlot)
-importFrom(plotthis,RarefactionPlot)
-importFrom(plotthis,RidgePlot)
-importFrom(plotthis,RingPlot)
-importFrom(plotthis,SankeyPlot)
-importFrom(plotthis,ScatterPlot)
-importFrom(plotthis,SpatImagePlot)
-importFrom(plotthis,SpatMasksPlot)
-importFrom(plotthis,SpatPointsPlot)
-importFrom(plotthis,SpatShapesPlot)
-importFrom(plotthis,SpiderPlot)
-importFrom(plotthis,TrendPlot)
-importFrom(plotthis,UpsetPlot)
-importFrom(plotthis,VelocityPlot)
-importFrom(plotthis,VennDiagram)
-importFrom(plotthis,ViolinPlot)
-importFrom(plotthis,WordCloudPlot)
-importFrom(plotthis,palette_this)
-importFrom(rlang,"%||%")
-importFrom(rlang,":=")
-importFrom(rlang,as_label)
-importFrom(rlang,caller_env)
-importFrom(rlang,enexpr)
-importFrom(rlang,enquo)
-importFrom(rlang,env_get)
-importFrom(rlang,env_has)
-importFrom(rlang,expr_name)
-importFrom(rlang,parse_expr)
-importFrom(rlang,sym)
-importFrom(rlang,syms)
-importFrom(scRepertoire,clonalAbundance)
-importFrom(scRepertoire,clonalDiversity)
-importFrom(scRepertoire,clonalHomeostasis)
-importFrom(scRepertoire,clonalLength)
-importFrom(scRepertoire,clonalOverlap)
-importFrom(scRepertoire,clonalProportion)
-importFrom(scRepertoire,clonalQuant)
-importFrom(scRepertoire,clonalScatter)
-importFrom(scRepertoire,percentAA)
-importFrom(scRepertoire,percentKmer)
-importFrom(scRepertoire,positionalEntropy)
-importFrom(scRepertoire,positionalProperty)
-importFrom(scRepertoire,vizGenes)
-importFrom(stats,as.dist)
-importFrom(stats,cor.test)
-importFrom(stats,quantile)
+importFrom(ggplot2,
+  aes,
+  element_blank,
+  element_line,
+  geom_point,
+  geom_segment,
+  guide_legend,
+  guides,
+  scale_fill_manual,
+  scale_x_continuous,
+  scale_x_discrete,
+  scale_y_continuous,
+  theme,
+  unit,
+  waiver
+)
+importFrom(methods,
+  slot,
+  slotNames
+)
+importFrom(plotthis,
+  AreaPlot,
+  BarPlot,
+  BoxPlot,
+  ChordPlot,
+  CircosPlot,
+  CorPairsPlot,
+  CorPlot,
+  DensityPlot,
+  DimPlot,
+  DotPlot,
+  EnrichMap,
+  EnrichNetwork,
+  FeatureDimPlot,
+  GSEAPlot,
+  GSEASummaryPlot,
+  Heatmap,
+  Histogram,
+  LinePlot,
+  LinkedHeatmap,
+  LollipopPlot,
+  Network,
+  PieChart,
+  RadarPlot,
+  RarefactionPlot,
+  RidgePlot,
+  RingPlot,
+  SankeyPlot,
+  ScatterPlot,
+  SpatImagePlot,
+  SpatMasksPlot,
+  SpatPointsPlot,
+  SpatShapesPlot,
+  SpiderPlot,
+  TrendPlot,
+  UpsetPlot,
+  VelocityPlot,
+  VennDiagram,
+  ViolinPlot,
+  WordCloudPlot,
+  palette_this
+)
+importFrom(rlang,
+  "%||%",
+  ":=",
+  as_label,
+  caller_env,
+  enexpr,
+  enquo,
+  env_get,
+  env_has,
+  expr_name,
+  parse_expr,
+  sym,
+  syms
+)
+importFrom(scRepertoire,
+  clonalAbundance,
+  clonalDiversity,
+  clonalHomeostasis,
+  clonalLength,
+  clonalOverlap,
+  clonalProportion,
+  clonalQuant,
+  clonalScatter,
+  percentAA,
+  percentKmer,
+  positionalEntropy,
+  positionalProperty,
+  vizGenes
+)
+importFrom(stats,
+  as.dist,
+  cor.test,
+  quantile
+)
 importFrom(stringr,str_wrap)
-importFrom(tidyr,complete)
-importFrom(tidyr,drop_na)
-importFrom(tidyr,full_seq)
-importFrom(tidyr,pivot_longer)
-importFrom(tidyr,pivot_wider)
-importFrom(tidyr,replace_na)
-importFrom(tidyr,separate)
-importFrom(tidyr,unite)
+importFrom(tidyr,
+  complete,
+  drop_na,
+  full_seq,
+  pivot_longer,
+  pivot_wider,
+  replace_na,
+  separate,
+  unite
+)
 importFrom(tools,parse_Rd)
-importFrom(utils,combn)
-importFrom(utils,getFromNamespace)
-importFrom(utils,help)
+importFrom(utils,
+  combn,
+  getFromNamespace,
+  help
+)
