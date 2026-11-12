@@ -14,7 +14,7 @@ Depends:
 Imports:
     Seurat (>= 5.0.0),
     SeuratObject,
-    scRepertoire (>= 2.9.1),
+    scRepertoire (>= 2.7.3),
     circlize,
     dplyr,
     scales,
@@ -65,9 +65,8 @@ LazyData: true
 LazyDataCompression: xz
 Remotes:
     pwwang/plotthis,
-    BorchLab/scRepertoire,
-    BorchLab/immApex,
-    BorchLab/immReferent,
+    BorchLab/scRepertoire@v2.7.3,
+    BorchLab/immApex@1.4.0,
     giotto-suite/GiottoClass,
     giotto-suite/GiottoData,
     KennispuntTwente/tidyprompt
