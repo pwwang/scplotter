@@ -1,6 +1,6 @@
 package:
   name: r-scplotter
-  version: 0.9.0
+  version: 0.10.0
 
 source:
   path: ..
@@ -13,56 +13,27 @@ build:
 
 requirements:
   host:
-    # commented requirements are already required by plotthis
-
     # Imports:
     - r-base
     - r-callr
     - r-seuratobject
-    - pwwang::bioconductor-screpertoire=2.7
-    # - r-circlize
-    # - r-dplyr
-    # - r-scales
-    # - r-ggnewscale
-    # - r-ggplot2
-    # - r-rlang
-    # - r-stringr
-    # - r-tidyr
-    - pwwang::r-plotthis>=0.11.0
-    # - r-r6
-
-    # Suggests:
-    # - r-clustree
-    # - r-concaveman
-    # - r-ggalluvial
-    # - r-ggforce
-    # - r-ggpubr
-    # - r-ggraph
-    # - r-ggridges
-    # - r-ggupset
-    # - r-ggvenndiagram
-    # - r-ggwordcloud
+    - pwwang::bioconductor-screpertoire=2.9
+    - pwwang::r-plotthis
     - r-gridgraphics
-    # - r-hexbin
     - r-metap >=1.12
-    # - r-igraph
-    # - r-inext
-    # - r-scattermore
     - r-seurat
-    # - bioconda::bioconductor-complexheatmap
-    # - pwwang::r-gglogger
     - pwwang::r-tidyprompt
 
   run:
     - r-base
     - r-callr
     - r-seuratobject
-    - pwwang::bioconductor-screpertoire=2.7
-    - pwwang::r-plotthis>=0.11.0
+    - pwwang::bioconductor-screpertoire=2.9
+    - pwwang::r-plotthis
     - r-gridgraphics
-    - r-metap
+    - r-metap >=1.12
     - r-seurat
-    - r-tidyprompt
+    - pwwang::r-tidyprompt
 
 test:
   commands:
