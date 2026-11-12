@@ -457,30 +457,12 @@ allmarkers <- Seurat::FindAllMarkers(pancreas_sub)  # seurat_clusters
 #> Calculating cluster 6
 
 MarkersPlot(markers)
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
 
 MarkersPlot(markers, x_cutoff = 2)
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
 
 MarkersPlot(allmarkers, each = "cluster", ncol = 2, facet_each = TRUE)
 
 MarkersPlot(markers, plot_type = "volcano_pct", flip_negative = TRUE)
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
 
 
 MarkersPlot(allmarkers, plot_type = "jitter", each = "cluster")
