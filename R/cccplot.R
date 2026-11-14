@@ -121,7 +121,7 @@
 #' @param magnitude_agg A function used to aggregate the magnitude values
 #'  across multiple LR pairs within each source-target group. Applied only in
 #'  `method = "aggregation"`. Default is [length()], which counts the number
-#'  of LR interactions. Common alternatives: [mean()], [sum()], [median()].
+#'  of LR interactions. Common alternatives: [base::mean()], [base::sum()], [stats::median()].
 #' @param magnitude_name A label for the aggregated magnitude that appears in
 #'  plot legends and axis titles. Default is `"No. of interactions"`. Adjust
 #'  this to match `magnitude_agg` (e.g., use `"Mean score"` when

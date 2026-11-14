@@ -461,8 +461,8 @@ EnrichmentPlot <- function(
                     tidyr::unite(".row", all_of(row_keys), sep = " // ") %>%
                     # duplicated cells are aggregated by plotthis with `cell_agg` ("nanmean")
                     summarise(
-                        .sig_metric = if (all(is.na(.sig_metric))) NA_real_ else
-                            mean(.sig_metric, na.rm = TRUE),
+                        .sig_metric = if (all(is.na(!!sym(".sig_metric"))) ) NA_real_ else
+                            mean(!!sym(".sig_metric"), na.rm = TRUE),
                         .by = c(".col", ".row")
                     ) %>%
                     pivot_wider(

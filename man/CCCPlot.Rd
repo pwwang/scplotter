@@ -101,7 +101,7 @@ otherwise summarized) expression of the receptor. Default is
 \item{magnitude_agg}{A function used to aggregate the magnitude values
 across multiple LR pairs within each source-target group. Applied only in
 \code{method = "aggregation"}. Default is \code{\link[=length]{length()}}, which counts the number
-of LR interactions. Common alternatives: \code{\link[=mean]{mean()}}, \code{\link[=sum]{sum()}}, \code{\link[=median]{median()}}.}
+of LR interactions. Common alternatives: \code{\link[base:mean]{base::mean()}}, \code{\link[base:sum]{base::sum()}}, \code{\link[stats:median]{stats::median()}}.}
 
 \item{magnitude_name}{A label for the aggregated magnitude that appears in
 plot legends and axis titles. Default is \code{"No. of interactions"}. Adjust
