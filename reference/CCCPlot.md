@@ -165,9 +165,9 @@ CCCPlot(
   `method = "aggregation"`. Default is
   [`length()`](https://rdrr.io/r/base/length.html), which counts the
   number of LR interactions. Common alternatives:
-  [`mean()`](https://rdrr.io/r/base/mean.html),
-  [`sum()`](https://rdrr.io/r/base/sum.html),
-  [`median()`](https://rdrr.io/r/stats/median.html).
+  [`base::mean()`](https://rdrr.io/r/base/mean.html),
+  [`base::sum()`](https://rdrr.io/r/base/sum.html),
+  [`stats::median()`](https://rdrr.io/r/stats/median.html).
 
 - magnitude_name:
 

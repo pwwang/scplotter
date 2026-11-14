@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scplotter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0-2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -1849,10 +1849,6 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt; - scRepertoire::contig_list: A List of Eight Single-cell TCR Sequencing Runs.</span></span>
 <span><span class="co">#&gt; - scRepertoire::scRep_example: A Seurat Object of 500 Single T cells,</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
-<span><span class="co">#&gt; cellphonedb_res</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Sending request to LLM provider (deepseek-v4-flash): ---</span></span></span>
-<span><span class="co">#&gt; The data object is not available. It is not in the list of available ones.</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span>
 <span><span class="co">#&gt; scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Data object identified:  scplotter::cellphonedb_res</span></span>
 <span><span class="co">#&gt; Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is</span></span>
@@ -2008,7 +2004,7 @@ print the prompt and the response from the LLM.</p>
 <span><span class="co">#&gt;   - magnitude_agg: A function used to aggregate the magnitude values</span></span>
 <span><span class="co">#&gt;   across multiple LR pairs within each source-target group. Applied only in</span></span>
 <span><span class="co">#&gt;   method = "aggregation". Default is length(), which counts the number</span></span>
-<span><span class="co">#&gt;   of LR interactions. Common alternatives: mean(), sum(), median().</span></span>
+<span><span class="co">#&gt;   of LR interactions. Common alternatives: base::mean(), base::sum(), stats::median().</span></span>
 <span><span class="co">#&gt;   - magnitude_name: A label for the aggregated magnitude that appears in</span></span>
 <span><span class="co">#&gt;   plot legends and axis titles. Default is "No. of interactions". Adjust</span></span>
 <span><span class="co">#&gt;   this to match magnitude_agg (e.g., use "Mean score" when</span></span>
@@ -4805,7 +4801,7 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt;   - magnitude_agg: A function used to aggregate the magnitude values</span></span>
 <span><span class="co">#&gt;   across multiple LR pairs within each source-target group. Applied only in</span></span>
 <span><span class="co">#&gt;   method = "aggregation". Default is length(), which counts the number</span></span>
-<span><span class="co">#&gt;   of LR interactions. Common alternatives: mean(), sum(), median().</span></span>
+<span><span class="co">#&gt;   of LR interactions. Common alternatives: base::mean(), base::sum(), stats::median().</span></span>
 <span><span class="co">#&gt;   - magnitude_name: A label for the aggregated magnitude that appears in</span></span>
 <span><span class="co">#&gt;   plot legends and axis titles. Default is "No. of interactions". Adjust</span></span>
 <span><span class="co">#&gt;   this to match magnitude_agg (e.g., use "Mean score" when</span></span>
@@ -6587,10 +6583,10 @@ to <code>TRUE</code> in the <code>ask()</code> method.</p>
 <span><span class="co">#&gt; Do not define these objects in your R code.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; <span style="font-weight: bold;">--- Receiving response from LLM provider: ---</span></span></span></code></pre>
 <pre><code><span><span class="co">#&gt; ```r</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span>
 <span><span class="co">#&gt; ```</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Code ran:</span></span>
-<span><span class="co">#&gt; CCCPlot(cellphonedb_res, plot_type = "dot")</span></span></code></pre>
+<span><span class="co">#&gt; CCCPlot(cellphonedb_res)</span></span></code></pre>
 <p><img src="Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

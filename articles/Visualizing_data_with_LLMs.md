@@ -1776,10 +1776,6 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> - scRepertoire::contig_list: A List of Eight Single-cell TCR Sequencing Runs.
 #> - scRepertoire::scRep_example: A Seurat Object of 500 Single T cells,
 #> --- Receiving response from LLM provider: ---
-#> cellphonedb_res
-#> --- Sending request to LLM provider (deepseek-v4-flash): ---
-#> The data object is not available. It is not in the list of available ones.
-#> --- Receiving response from LLM provider: ---
 #> scplotter::cellphonedb_res
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
@@ -1937,7 +1933,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>   - magnitude_agg: A function used to aggregate the magnitude values
     #>   across multiple LR pairs within each source-target group. Applied only in
     #>   method = "aggregation". Default is length(), which counts the number
-    #>   of LR interactions. Common alternatives: mean(), sum(), median().
+    #>   of LR interactions. Common alternatives: base::mean(), base::sum(), stats::median().
     #>   - magnitude_name: A label for the aggregated magnitude that appears in
     #>   plot legends and axis titles. Default is "No. of interactions". Adjust
     #>   this to match magnitude_agg (e.g., use "Mean score" when
@@ -4742,7 +4738,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #>   - magnitude_agg: A function used to aggregate the magnitude values
     #>   across multiple LR pairs within each source-target group. Applied only in
     #>   method = "aggregation". Default is length(), which counts the number
-    #>   of LR interactions. Common alternatives: mean(), sum(), median().
+    #>   of LR interactions. Common alternatives: base::mean(), base::sum(), stats::median().
     #>   - magnitude_name: A label for the aggregated magnitude that appears in
     #>   plot legends and axis titles. Default is "No. of interactions". Adjust
     #>   this to match magnitude_agg (e.g., use "Mean score" when
@@ -6526,10 +6522,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res, plot_type = "dot")
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)
