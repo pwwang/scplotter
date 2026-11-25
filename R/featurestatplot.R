@@ -79,7 +79,19 @@
         vals <- data[, unlisted_features, drop = FALSE]
         vals <- vals[vapply(vals, is.numeric, logical(1))]
         vals <- as.matrix(vals)
-        center_limit <- max(abs(vals[is.finite(vals)]), na.rm = TRUE)
+        dots <- rlang::dots_list(...)
+        if (!is.null(dots$lower_quantile) || !is.null(dots$upper_quantile)) {
+            # Match plotthis: an unspecified quantile keeps its default (0 / 0.99).
+            # Quantiles are pooled over cells, the same data center_limit has
+            # always used (plotthis' heatmap/dot use the aggregated matrix).
+            bounds <- quantile(
+                vals[is.finite(vals)],
+                c(dots$lower_quantile %||% 0, dots$upper_quantile %||% 0.99)
+            )
+            center_limit <- max(abs(bounds))
+        } else {
+            center_limit <- max(abs(vals[is.finite(vals)]), na.rm = TRUE)
+        }
         if (!is.finite(center_limit)) {
             warning("[FeatureStatPlot] Cannot center colorbar at zero because all feature values are NA or infinite.", call. = FALSE)
             center_limit <- 1
@@ -356,6 +368,9 @@
 #'   making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
 #'   Only affects plots whose colorbar reflects feature values (heatmap, dot,
 #'   dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
+#'   When \code{lower_quantile}/\code{upper_quantile} are supplied, the feature
+#'   values are bounded at those quantiles before the symmetric limits are
+#'   derived; an unspecified quantile keeps its default (0 lower, 0.99 upper).
 #'   Intended for 0-centered layers such as \code{"scale.data"}.
 #'   If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
 #'   and not center for other layers.

@@ -139,6 +139,9 @@ and \code{"ridge"} plot types. Default: \code{NULL}.}
 making the absolute limits symmetric (i.e. \code{abs(min) == abs(max)}).
 Only affects plots whose colorbar reflects feature values (heatmap, dot,
 dim). Ignored if \code{lower_cutoff}/\code{upper_cutoff} are provided.
+When \code{lower_quantile}/\code{upper_quantile} are supplied, the feature
+values are bounded at those quantiles before the symmetric limits are
+derived; an unspecified quantile keeps its default (0 lower, 0.99 upper).
 Intended for 0-centered layers such as \code{"scale.data"}.
 If \code{NULL}, the default behavior is to center at zero for \code{"scale.data"}
 and not center for other layers.
