@@ -189,10 +189,13 @@ heatmap and dot plots.
   Logical. Whether to center the colorbar at zero by making the absolute
   limits symmetric (i.e. `abs(min) == abs(max)`). Only affects plots
   whose colorbar reflects feature values (heatmap, dot, dim). Ignored if
-  `lower_cutoff`/`upper_cutoff` are provided. Intended for 0-centered
-  layers such as `"scale.data"`. If `NULL`, the default behavior is to
-  center at zero for `"scale.data"` and not center for other layers.
-  Default: `NULL`.
+  `lower_cutoff`/`upper_cutoff` are provided. When
+  `lower_quantile`/`upper_quantile` are supplied, the feature values are
+  bounded at those quantiles before the symmetric limits are derived; an
+  unspecified quantile keeps its default (0 lower, 0.99 upper). Intended
+  for 0-centered layers such as `"scale.data"`. If `NULL`, the default
+  behavior is to center at zero for `"scale.data"` and not center for
+  other layers. Default: `NULL`.
 
 - ...:
 

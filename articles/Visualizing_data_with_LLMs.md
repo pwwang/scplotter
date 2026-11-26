@@ -866,7 +866,7 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "dot")
+#> CCCPlot(data = cellphonedb_res)
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-6-1.png)
@@ -882,7 +882,7 @@ chat$ask("Do a heatmap instead")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-7-1.png)
@@ -897,7 +897,7 @@ chat$ask("Add a proper title to the plot")
 #> required to skim dataframes. Skim summary of dataframes currently not shown in
 #> prompt
 #> Code ran:
-#> CCCPlot(data = cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
+#> CCCPlot(cellphonedb_res, plot_type = "heatmap", title = "Cell-Cell Communication Heatmap")
 ```
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-8-1.png)
@@ -906,12 +906,12 @@ chat$ask("Add a proper title to the plot")
 # To fetch the previous conversation
 # Note that the response from the LLM is simplified in the history
 chat$get_history()
-#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                               
-#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"dot\")"                                                 
-#> [3] "User: Do a heatmap instead"                                                                                                                                                
-#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\")"                                             
-#> [5] "User: Add a proper title to the plot"                                                                                                                                      
-#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
+#> [1] "User: Generate a cell-cell communication plot for the cellphonedb_res data."                                                                                        
+#> [2] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(data = cellphonedb_res)"                                                               
+#> [3] "User: Do a heatmap instead"                                                                                                                                         
+#> [4] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\")"                                             
+#> [5] "User: Add a proper title to the plot"                                                                                                                               
+#> [6] "Assistant: tool - CCCPlot; data - scplotter::cellphonedb_res; code - CCCPlot(cellphonedb_res, plot_type = \"heatmap\", title = \"Cell-Cell Communication Heatmap\")"
 
 # To clear the history
 chat$clear_history()
@@ -1776,6 +1776,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> - scRepertoire::contig_list: A List of Eight Single-cell TCR Sequencing Runs.
 #> - scRepertoire::scRep_example: A Seurat Object of 500 Single T cells,
 #> --- Receiving response from LLM provider: ---
+#> cellphonedb_res
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
+#> The data object is not available. It is not in the list of available ones.
+#> --- Receiving response from LLM provider: ---
 #> scplotter::cellphonedb_res
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
@@ -3717,11 +3721,11 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
     #> ```
 
     #> Code ran:
-    #> CCCPlot(data = cellphonedb_res)
+    #> CCCPlot(cellphonedb_res)
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-10-1.png)
 
@@ -4581,6 +4585,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
 #> - scRepertoire::contig_list: A List of Eight Single-cell TCR Sequencing Runs.
 #> - scRepertoire::scRep_example: A Seurat Object of 500 Single T cells,
 #> --- Receiving response from LLM provider: ---
+#> cellphonedb_res
+#> --- Sending request to LLM provider (deepseek-v4-flash): ---
+#> The data object is not available. It is not in the list of available ones.
+#> --- Receiving response from LLM provider: ---
 #> scplotter::cellphonedb_res
 #> Data object identified:  scplotter::cellphonedb_res
 #> Warning in wrap$modify_fn(prompt_text, llm_provider): The 'skimr' package is
@@ -6522,10 +6530,10 @@ chat$ask("Generate a cell-cell communication plot for the cellphonedb_res data."
     #> --- Receiving response from LLM provider: ---
 
     #> ```r
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
     #> ```
 
     #> Code ran:
-    #> CCCPlot(cellphonedb_res)
+    #> CCCPlot(data = cellphonedb_res, plot_type = "dot")
 
 ![](Visualizing_data_with_LLMs_files/figure-html/unnamed-chunk-11-1.png)
